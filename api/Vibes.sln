@@ -16,7 +16,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{9A5AA6C3-9A56-4374-B204-E70799ECADAB}"
 	ProjectSection(SolutionItems) = preProject
 		docs\blob_glasses.png = docs\blob_glasses.png
-		Readme.md = Readme.md
+		README.md = README.md
 		docs\Manifest.md = docs\Manifest.md
 	EndProjectSection
 EndProject
