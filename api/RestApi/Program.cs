@@ -1,5 +1,5 @@
+using ApplicationCore;
 using Azure.Identity;
-using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -28,7 +28,7 @@ builder.Services.AddSwaggerGen(
         c.AddSecurityDefinition("oauth2",
             new OpenApiSecurityScheme
             {
-                Description = "Standard Authorization header using the Bearer scheme. Example: \"bearer {token}\"",
+                Description = "Standard Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
                 In = ParameterLocation.Header,
                 Name = "Authorization",
                 Type = SecuritySchemeType.ApiKey
@@ -38,6 +38,7 @@ builder.Services.AddSwaggerGen(
 builder.Configuration
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+
     // appsettings.Local.json is in the .gitignore. Using a local config instead of userSecrets to avoid references in the .csproj:
     .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
@@ -63,19 +64,24 @@ if (initialAppSettings.UseAzureAppConfig)
 
 builder.Services.Configure<AppSettings>(appSettingsSection);
 
-builder.Services.AddDbContextPool<PostgresToAzureSqlContext>(options =>
+
+var dbConnectionString = builder.Configuration.GetConnectionString("VibesDb");
+if (string.IsNullOrEmpty(dbConnectionString)) throw new Exception("Unable to load db connection string");
+
+builder.Services.AddDbContextPool<VibesSqlDbContext>(options =>
 {
     // Get connection string from configuration
-    options.UseSqlServer(builder.Configuration.GetConnectionString("VibesDb"));
+    options.UseSqlServer(dbConnectionString);
 
     // https://devblos.microsoft.com/azure-sdk/azure-identity-with-sql-graph-ef/
     options.AddInterceptors(new AzureAdAuthenticationDbConnectionInterceptor());
 });
 
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        const string variantTenantId = ""; // Use .env for some kind of application.settings.json etc.
+        var variantTenantId = initialAppSettings.TenantId;
         options.Authority = $"https://login.microsoftonline.com/{variantTenantId}/v2.0/";
         options.TokenValidationParameters = new TokenValidationParameters
         {

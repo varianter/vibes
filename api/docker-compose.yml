@@ -1,11 +1,11 @@
 ﻿version: '3'
 
 services:
-  edgesql:
+  azure-edge:
     image: mcr.microsoft.com/azure-sql-edge
-    hostname: azurehost
+    hostname: azure
     ports:
-      - "14334:1433" # Note that port is changed
+      - "1433:1433"
     environment:
       - "ACCEPT_EULA=Y"
-      - "MSSQL_SA_PASSWORD=insertAPAsswordHere"
+      - "MSSQL_SA_PASSWORD=yourStrong(!)Password"

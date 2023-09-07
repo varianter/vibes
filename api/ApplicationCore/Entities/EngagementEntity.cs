@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Infrastructure.Entities;
+namespace ApplicationCore.Entities;
 
 public record EngagementEntity
 {

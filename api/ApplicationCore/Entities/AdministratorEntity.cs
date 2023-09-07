@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Infrastructure.Entities;
+namespace ApplicationCore.Entities;
 
 public record AdministratorEntity
 {
