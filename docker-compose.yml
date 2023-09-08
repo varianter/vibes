@@ -1,0 +1,13 @@
+version: '3.5'
+
+services:
+  nextjs:
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+    container_name: vibes-yay
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./frontend:/app
+      - /frontnd/app/node_modules

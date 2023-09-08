@@ -2,6 +2,8 @@ name: .NET Core CI
 
 on:
   push:
+    paths:
+      - backend/**
     branches:
       - main
   workflow_dispatch:
@@ -13,7 +15,7 @@ env:
   DOTNET_VERSION: '7.x.x'                     # set this to the dot net version to use
 
 jobs:
-  build:
+  build-backend-and-deploy:
     runs-on: ubuntu-latest
     
     steps:

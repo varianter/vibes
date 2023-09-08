@@ -1,17 +1,20 @@
 import Image from 'next/image'
 import styles from './page.module.css'
-import {WeatherForecast} from "@/app/weather";
+import { WeatherForecast } from "@/app/weather";
 
 // @ts-ignore
 export default function Home() {
   return (
     <main className={styles.main}>
       <div className={styles.description}>
-        <p>
+        <div>
           Get started by editing&nbsp;
           <code className={styles.code}>src/app/page.tsx</code>
           <code><WeatherForecast /></code>
-        </p>
+        </div>
+        <div>
+          Test
+        </div>
         <div>
           <a
             href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
