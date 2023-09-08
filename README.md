@@ -1,23 +1,27 @@
 <div style="text-align: center;" align="center">
-    <img src="api/docs/blob_glasses.png" width="256" height="256">
+    <img src="docs/blob_glasses.png" width="256" height="256">
     <h1>VIBES</h1>
 <pre> <b>V</b>ariants <b>I</b>nterne <b>BE</b>manning<b>S</b>ystem (v2)</pre> 
 
-<p>Frontend: TBD </p> 
-<p>Backend: .NET Core v7 RESTful Web-API / EF Core / Azure Edge SQL</p> 
+<p>Frontend: Next.js / React.js </p> 
+<p>Backend: .NET Core v7 RESTful Web-API / EF Core / Azure Edge SQL</p>
 
-<p>Inspirert / mini-forket av <a href="https://github.com/varianter/chewbacca">Chewbacca</a></p>
 </div>
 
+## Motivasjon
+* Overordnet mål: Lage nytt internverktøy for bemanning og konsulent-oversikt i Variant.
 
-## Frontend
-* TBD
+* Den nye løsningen skal med tiden bytte ut gammel løsning: [Bemanninssystem (v1)](https://github.com/varianter/bemanningssystem)
 
-## Backend: 
-* Se [api/README.md](api/README.md) 
- 
+* Arbeidet er og ment som et større referanse-prosjekt for både utviklere og designere i Variant.
 
-## .gitignore bug
+Du kan lese mer dokumentasjon om mål og struktur i [manifestet](docs/MANIFESTO.md) under docs/
+
+## Kjør
+For å starte utviklingsmiljø, følg henholdsvis [README.md](frontend/README.md) i frontend og [README.md](backend/README.md) i backend mappene.
+
+
+### .gitignore bug
 Hvis du merker at filer ikke blir ignorert etter at `.gitignore` er oppdatert: Kjør
 ```shell
 git rm -rf --cached .
