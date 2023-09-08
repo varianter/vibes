@@ -3,6 +3,7 @@
 * Ny løsning skal bygges fra **bunnen av**.
 * Et tentativt ønske om release candidates mot slutten av Q4 2023.
 * Onboarding bør være minimal og enkel for Vri-konsulenter som bidrar.
+* Tasks / arbeidsflyt og struktur styres fra GitHub Projects knyttet til repo.
 
 
 ## Innhold
