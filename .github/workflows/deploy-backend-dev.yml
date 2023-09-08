@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+
 
 env:
   AZURE_WEBAPP_NAME: vibes-backend-dev        # set this to your application's name
@@ -13,7 +15,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     steps:
       # Checkout the repo
       - uses: actions/checkout@main
@@ -26,6 +28,7 @@ jobs:
       
       # Run dotnet build and publish
       - name: dotnet build and publish
+        working-directory: backend/
         run: |
           dotnet restore
           dotnet build --configuration Release
