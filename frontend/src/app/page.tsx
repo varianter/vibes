@@ -1,8 +1,6 @@
 "use client";
 
-//@ts-ignore
 import styles from "./page.module.css";
-// @ts-ignore
 import { WeatherForecast } from "@/app/weather";
 import {
   AuthenticatedTemplate,
@@ -10,7 +8,6 @@ import {
   UnauthenticatedTemplate,
 } from "@azure/msal-react";
 import { EventType } from "@azure/msal-browser";
-// @ts-ignore
 import { msalInstance } from "@/app/msalInstance";
 
 msalInstance.initialize().then(() => {
@@ -20,11 +17,11 @@ msalInstance.initialize().then(() => {
     msalInstance.setActiveAccount(accounts[0]);
   }
 
-  // @ts-ignore
   msalInstance.addEventCallback((event) => {
-    // @ts-ignore
+    // Types are outdated: Event payload is an object with account, token, etc
+    //@ts-ignore
     if (event.eventType === EventType.LOGIN_SUCCESS && event.payload.account) {
-      // @ts-ignore
+      //@ts-ignore
       const account = event.payload.account;
       msalInstance.setActiveAccount(account);
     }

@@ -1,5 +1,5 @@
-import { loginRequest } from "../authConfig.";
-import { msalInstance } from "../app/msalInstance";
+import { loginRequest } from "@/authConfig.";
+import { msalInstance } from "@/app/msalInstance";
 
 export async function fetchWithToken(path: string) {
   const account = msalInstance.getActiveAccount();
@@ -25,12 +25,7 @@ export async function fetchWithToken(path: string) {
     headers: headers,
   };
 
-  return (
-    //@ts-ignore
-    fetch(path, options)
-      //@ts-ignore
-      .then((response) => response.json())
-      //@ts-ignore
-      .catch((error) => console.log(error))
-  );
+  return fetch(path, options)
+    .then((response) => response.json())
+    .catch((error) => console.log(error));
 }
