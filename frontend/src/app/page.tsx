@@ -1,5 +1,5 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+import Image from "next/image";
+import styles from "./page.module.css";
 import { WeatherForecast } from "@/app/weather";
 
 // @ts-ignore
@@ -10,18 +10,18 @@ export default function Home() {
         <div>
           Get started by editing&nbsp;
           <code className={styles.code}>src/app/page.tsx</code>
-          <code><WeatherForecast /></code>
+          <code>
+            <WeatherForecast />
+          </code>
         </div>
-        <div>
-          Test
-        </div>
+        <div>Test</div>
         <div>
           <a
             href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
             target="_blank"
             rel="noopener noreferrer"
           >
-            By{' '}
+            By{" "}
             <Image
               src="/vercel.svg"
               alt="Vercel Logo"
@@ -97,5 +97,5 @@ export default function Home() {
         </a>
       </div>
     </main>
-  )
+  );
 }
