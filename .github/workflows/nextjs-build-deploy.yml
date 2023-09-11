@@ -42,7 +42,7 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}-
             
       - name: 'Install ci dependencies'
-        run: yarn --frozen-lockfile
+        run: yarn --frozen-lockfile --ignore-scripts
         
       - name: 'Build with Next.js'
         run: |
