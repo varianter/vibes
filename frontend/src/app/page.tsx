@@ -1,9 +1,16 @@
 "use client";
 
+//@ts-ignore
 import styles from "./page.module.css";
+// @ts-ignore
 import { WeatherForecast } from "@/app/weather";
-import { AuthenticatedTemplate, MsalProvider, UnauthenticatedTemplate } from "@azure/msal-react";
+import {
+  AuthenticatedTemplate,
+  MsalProvider,
+  UnauthenticatedTemplate,
+} from "@azure/msal-react";
 import { EventType } from "@azure/msal-browser";
+// @ts-ignore
 import { msalInstance } from "@/app/msalInstance";
 
 msalInstance.initialize().then(() => {
@@ -13,6 +20,7 @@ msalInstance.initialize().then(() => {
     msalInstance.setActiveAccount(accounts[0]);
   }
 
+  // @ts-ignore
   msalInstance.addEventCallback((event) => {
     // @ts-ignore
     if (event.eventType === EventType.LOGIN_SUCCESS && event.payload.account) {
@@ -23,28 +31,26 @@ msalInstance.initialize().then(() => {
   });
 });
 
- export default function Home() {
-  function loginRedirect(){
+export default function Home() {
+  function loginRedirect() {
     // TODO: Error handling, etc
     msalInstance.loginRedirect();
   }
 
   return (
     <MsalProvider instance={msalInstance}>
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <div>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
+      <main className={styles.main}>
+        <div className={styles.description}>
           <AuthenticatedTemplate>
-          <code><WeatherForecast /></code>
+            <code>
+              <WeatherForecast />
+            </code>
           </AuthenticatedTemplate>
           <UnauthenticatedTemplate>
             <button onClick={loginRedirect}>Log in</button>
           </UnauthenticatedTemplate>
         </div>
-      </div>
-    </main>
+      </main>
     </MsalProvider>
-  )
+  );
 }

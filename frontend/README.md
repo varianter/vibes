@@ -5,6 +5,9 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 First, run the development server:
 
 ```bash
+export NEXT_PUBLIC_CLIENT_ID=<client-id>
+export NEXT_PUBLIC_TENANT_ID=<tenant-id>
+
 yarn dev
 ```
 
