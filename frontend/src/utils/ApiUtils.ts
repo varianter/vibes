@@ -1,5 +1,5 @@
-import { loginRequest } from "@/authConfig.";
 import { msalInstance } from "@/app/msalInstance";
+import { loginRequest } from "@/authConfig";
 
 export async function fetchWithToken(path: string) {
   const account = msalInstance.getActiveAccount();
@@ -12,6 +12,7 @@ export async function fetchWithToken(path: string) {
   const response = await msalInstance.acquireTokenSilent({
     ...loginRequest,
     account: account,
+    scopes: [process.env.NEXT_PUBLIC_APP_SCOPE ?? ""],
   });
 
   // @ts-ignore
