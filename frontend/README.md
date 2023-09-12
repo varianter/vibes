@@ -7,6 +7,9 @@ First, run the development server:
 ```bash
 export NEXT_PUBLIC_CLIENT_ID=<client-id>
 export NEXT_PUBLIC_TENANT_ID=<tenant-id>
+export NEXT_PUBLIC_APP_SCOPE=<api-scope>
+
+# Alternatively set these in an .env file
 
 yarn dev
 ```

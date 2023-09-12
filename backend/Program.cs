@@ -1,14 +1,12 @@
-
 using backend.DatabaseModels;
 using backend.DomainModels;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
-using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var connection = builder.Configuration.GetConnectionString("LocalDb");
+
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApi(builder.Configuration, "AzureAd");
 builder.Services.AddAuthorization();
@@ -21,20 +19,27 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Local"))
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    
 }
 
-app.UseHttpsRedirection();
+if (app.Environment.IsProduction())
+{
+    // Only use redirection in production
+    app.UseHttpsRedirection();
+}
+
 
 app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapGet("/variant", (VariantDb dbConext) => dbConext.Variants.ToList()).WithName("Varianter").WithOpenApi();
+app.MapGet("/variant", (VariantDb dbContext) => dbContext.Variants.ToList()).WithName("Varianter").WithOpenApi();
 app.MapGet("/variant/{id}", async (VariantDb db, string id) => await db.Variants.FindAsync(id));
 app.MapPost("/variant", async (VariantDb db, Variant variant) =>
 {
