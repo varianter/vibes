@@ -1,4 +1,4 @@
-name: Pull Request Preview (Frontend)
+name: Pull Request Preview
 
 on:
   pull_request:
@@ -8,6 +8,11 @@ on:
     paths:
       - "frontend/**"
   workflow_dispatch:
+
+
+env:
+  NEXT_PUBLIC_VIBES_BACKEND_URL: https://vibes-backend-app-preview-pr-${{ github.event.pull_request.number }}.azurewebsites.net
+  FRONTEND_URL: https://vibes-frontend-app-preview-pr-${{ github.event.pull_request.number }}.azurewebsites.net
 
 jobs:
   create-deployment-preview:
@@ -30,27 +35,31 @@ jobs:
             ### Building Deployment Preview..
             A preview of this Pull Request is being created. Hold tight while it's building ⚒️
             This comment will be automatically updated when the preview is ready.
-            
       - name: Set up Node.js version
         uses: actions/setup-node@v1
         with:
           node-version: 18.x
 
-      - name: npm install, build, and test
+      - name: 'Install ci dependencies'
+        run: yarn --frozen-lockfile --ignore-scripts
+        
+      - name: 'Build with Next.js'
         run: |
-          npm install
-          npm run build --if-present
-          npm run test --if-present
+          yarn build
+          mv ./build/static ./build/standalone/build
+          mv ./public ./build/standalone
+        env:
+          NEXT_PUBLIC_VIBES_BACKEND_URL: ${{ env.NEXT_PUBLIC_VIBES_BACKEND_URL }}
 
       - name: Azure Login
         uses: Azure/login@v1.4.3
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-# FIX BUILD => Simplify with PR towards main
+
       - name: Create PR Deployment Slot
         uses: Azure/cli@v1
         with:
-          inlineScript: az webapp deployment slot create --name vibes-app --resource-group vibes-dev --slot preview-pr-${{ github.event.pull_request.number }}
+          inlineScript: az webapp deployment slot create --name vibes-frontend-app --resource-group vibes-dev --slot preview-pr-${{ github.event.pull_request.number }}
 
       - name: Update PR Preview Comment
         uses: peter-evans/create-or-update-comment@v1.4.5
@@ -59,14 +68,14 @@ jobs:
           edit-mode: replace
           body: |
             ### Deployment Preview
-            😎 Preview this PR: https://vibes-app-preview-pr-${{ github.event.pull_request.number }}.azurewebsites.net
+            😎 Preview this PR: ${{ env.FRONTEND_URL }}
             🧑🏼‍💻 Commit SHA: ${{ github.sha }}
           reactions: "rocket"
 
-      - name: Deploy to Azure Web App
+      - name: Deploy frontend to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: "vibes-app"
+          app-name: "vibes-frontend-app"
           slot-name: preview-pr-${{ github.event.pull_request.number }}
           package: ./frontend
 
@@ -102,24 +111,30 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v1
         with:
-          node-version: 14.x
+          node-version: 18.x
 
-      - name: npm install, build, and test
+      - name: 'Install ci dependencies'
+        run: yarn --frozen-lockfile --ignore-scripts
+        
+      - name: 'Build with Next.js'
         run: |
-          npm install
-          npm run build --if-present
-          npm run test --if-present
+          yarn build
+          mv ./build/static ./build/standalone/build
+          mv ./public ./build/standalone
+        env:
+          NEXT_PUBLIC_VIBES_BACKEND_URL: ${{ env.NEXT_PUBLIC_VIBES_BACKEND_URL }}
+
       - name: Azure Login
         uses: Azure/login@v1.4.3
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy to Azure Web App
+      - name: Deploy frontend to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: "vibes-app"
+          app-name: "vibes-frontend-app"
           slot-name: preview-pr-${{ github.event.pull_request.number }}
-          package: ./app
+          package: ./frontend
 
       - name: Update PR Preview Comment
         uses: peter-evans/create-or-update-comment@v1.4.5
@@ -128,7 +143,7 @@ jobs:
           edit-mode: replace
           body: |
             ### Deployment Preview
-            😎 Preview this PR: https://vibes-app-preview-pr-${{ github.event.pull_request.number }}.azurewebsites.net
+            😎 Preview this PR: ${{ env.FRONTEND_URL }}
             🧑🏼‍💻 Commit SHA: ${{ github.sha }}
 
   delete-deployment-preview:
@@ -147,8 +162,7 @@ jobs:
         uses: Azure/cli@v1
         with:
           inlineScript: |
-            az webapp deployment slot delete --name vibes-app --resource-group vibes-dev --slot preview-pr-${{ github.event.pull_request.number }}
-
+            az webapp deployment slot delete --name vibes-frontend-app --resource-group vibes-dev --slot preview-pr-${{ github.event.pull_request.number }}
       - name: Find PR Preview Comment
         uses: peter-evans/find-comment@v1
         id: deploy-preview-comment
