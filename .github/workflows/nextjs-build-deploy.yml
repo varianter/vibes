@@ -53,6 +53,7 @@ jobs:
           NEXT_PUBLIC_VIBES_BACKEND_URL: ${{ vars.NEXT_PUBLIC_VIBES_BACKEND_URL }}
           NEXT_PUBLIC_CLIENT_ID: ${{ vars.NEXT_PUBLIC_CLIENT_ID }}
           NEXT_PUBLIC_TENANT_ID: ${{ vars.NEXT_PUBLIC_TENANT_ID }}
+          NEXT_PUBLIC_APP_SCOPE: ${{ vars.NEXT_PUBLIC_APP_SCOPE }}
 
           
       - name: 'Deploy to Azure Web App (standalone)'
