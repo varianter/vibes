@@ -12,7 +12,7 @@ on:
 
 env:
   NEXT_PUBLIC_VIBES_BACKEND_URL: https://vibes-backend-app-preview-pr-${{ github.event.pull_request.number }}.azurewebsites.net
-  FRONTEND_URL: https://vibes-frontend-app-preview-pr-${{ github.event.pull_request.number }}.azurewebsites.net
+  FRONTEND_URL: https://vibes-frontend-dev-preview-pr-${{ github.event.pull_request.number }}.azurewebsites.net
 
 jobs:
   create-deployment-preview:
@@ -59,7 +59,7 @@ jobs:
       - name: Create PR Deployment Slot
         uses: Azure/cli@v1
         with:
-          inlineScript: az webapp deployment slot create --name vibes-frontend-app --resource-group vibes-dev --slot preview-pr-${{ github.event.pull_request.number }}
+          inlineScript: az webapp deployment slot create --name vibes-frontend-dev --resource-group vibes-dev --slot preview-pr-${{ github.event.pull_request.number }}
 
       - name: Update PR Preview Comment
         uses: peter-evans/create-or-update-comment@v1.4.5
@@ -75,7 +75,7 @@ jobs:
       - name: Deploy frontend to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: "vibes-frontend-app"
+          app-name: "vibes-frontend-dev"
           slot-name: preview-pr-${{ github.event.pull_request.number }}
           package: ./frontend
 
@@ -132,7 +132,7 @@ jobs:
       - name: Deploy frontend to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: "vibes-frontend-app"
+          app-name: "vibes-frontend-dev"
           slot-name: preview-pr-${{ github.event.pull_request.number }}
           package: ./frontend
 
@@ -162,7 +162,7 @@ jobs:
         uses: Azure/cli@v1
         with:
           inlineScript: |
-            az webapp deployment slot delete --name vibes-frontend-app --resource-group vibes-dev --slot preview-pr-${{ github.event.pull_request.number }}
+            az webapp deployment slot delete --name vibes-frontend-dev --resource-group vibes-dev --slot preview-pr-${{ github.event.pull_request.number }}
       - name: Find PR Preview Comment
         uses: peter-evans/find-comment@v1
         id: deploy-preview-comment
