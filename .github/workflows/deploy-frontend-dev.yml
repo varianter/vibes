@@ -1,0 +1,67 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+# Primary ref: https://dev.to/ckgrafico/deploying-nextjs-to-azure-web-app-with-github-actions-1o9c
+
+name: Next.js deploy
+
+on:
+  push:
+    paths:
+      - frontend/**
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: Development
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v3
+
+      - name: 'Setup Node.js version'
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+          
+      - name: 'Restore cache'
+        uses: actions/cache@v3
+        with:
+          path: |
+            frontend/.next/cache
+          # Generate a new cache whenever packages or source files change.
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          # If source files changed but packages didn't, rebuild from a prior cache.
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}-
+            
+      - name: 'Install ci dependencies'
+        run: yarn --frozen-lockfile --ignore-scripts
+        
+      - name: 'Build with Next.js'
+        run: |
+          yarn build
+          mv ./build/static ./build/standalone/build
+          mv ./public ./build/standalone
+        env:
+          NEXT_PUBLIC_VIBES_BACKEND_URL: ${{ vars.NEXT_PUBLIC_VIBES_BACKEND_URL }}
+          NEXT_PUBLIC_CLIENT_ID: ${{ vars.NEXT_PUBLIC_CLIENT_ID }}
+          NEXT_PUBLIC_TENANT_ID: ${{ vars.NEXT_PUBLIC_TENANT_ID }}
+          NEXT_PUBLIC_APP_SCOPE: ${{ vars.NEXT_PUBLIC_APP_SCOPE }}
+
+          
+      - name: 'Deploy to Azure Web App (standalone)'
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'vibes-frontend-dev'
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_FRONTEND }}
+          package: ./frontend/build/standalone
