@@ -1,23 +1,17 @@
 name: .NET Core CI
 
 on:
-  push:
-    paths:
-      - backend/**
-    branches:
-      - main
   workflow_dispatch:
 
-
 env:
-  AZURE_WEBAPP_NAME: vibes-backend-dev        # set this to your application's name
+  AZURE_WEBAPP_NAME: vibes-backend-prod       # set this to your application's name
   AZURE_WEBAPP_PACKAGE_PATH: './backend'      # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '7.x.x'                     # set this to the dot net version to use
 
 jobs:
   build-backend-and-deploy:
     runs-on: ubuntu-latest
-    environment: Development
+    environment: Production
     
     steps:
       # Checkout the repo
