@@ -3,7 +3,7 @@
 
 # Primary ref: https://dev.to/ckgrafico/deploying-nextjs-to-azure-web-app-with-github-actions-1o9c
 
-name: [DEV] Deploy frontend
+name: (DEV) Deploy frontend
 
 on:
   push:
