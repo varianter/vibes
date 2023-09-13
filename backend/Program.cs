@@ -5,8 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
-var connection = builder.Configuration.GetConnectionString("LocalDb");
-
+var connection = builder.Configuration.GetConnectionString("VibesDb");
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddMicrosoftIdentityWebApi(builder.Configuration, "AzureAd");
@@ -40,12 +39,15 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapGet("/variant", (VariantDb dbContext) => dbContext.Variants.ToList()).WithName("Varianter").WithOpenApi();
-app.MapGet("/variant/{id}", async (VariantDb db, string id) => await db.Variants.FindAsync(id));
+// Temporary test-endpoints
+app.MapGet("/variant", (VariantDb dbConext) => dbConext.Variants.ToList()).WithName("Varianter").WithOpenApi().RequireAuthorization();
+app.MapGet("/variant/{id}", async (VariantDb db, string id) => await db.Variants.FindAsync(id)).RequireAuthorization();
 app.MapPost("/variant", async (VariantDb db, Variant variant) =>
 {
     await db.Variants.AddAsync(variant);
     await db.SaveChangesAsync();
     return Results.Created($"/variant/{variant.Id}", variant);
-});
+}).RequireAuthorization();
+
+
 app.Run();
