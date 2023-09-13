@@ -8,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 var connection = builder.Configuration.GetConnectionString("LocalDb");
 
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApi(builder.Configuration, "AzureAd");
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+.AddMicrosoftIdentityWebApi(builder.Configuration, "AzureAd");
 builder.Services.AddAuthorization();
 builder.Services.AddDbContext<VariantDb>(options => options.UseSqlServer(connection));
 
@@ -25,7 +26,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Local"))
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    
+
 }
 
 if (app.Environment.IsProduction())
