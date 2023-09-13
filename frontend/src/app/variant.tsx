@@ -2,18 +2,17 @@
 
 import { useState, useEffect } from "react";
 import { useIsAuthenticated, useMsal } from "@azure/msal-react";
-import { fetchWithToken } from "../utils/ApiUtils";
+import { fetchWithToken } from "@/utils/ApiUtils";
+import { Variant } from "@/types";
 
-export function WeatherForecast() {
-  const [data, setData] = useState<{ temperatureC: number }>({
-    temperatureC: 0,
-  });
+export function VariantList() {
+  const [data, setData] = useState<Variant[]>([]);
   const [isLoading, setLoading] = useState(true);
   const isAuthenticated = useIsAuthenticated();
 
   useEffect(() => {
     if (isAuthenticated) {
-      fetchWithToken("/api/WeatherForecast").then((data) => {
+      fetchWithToken("/api/variant").then((data) => {
         setData(data);
         setLoading(false);
       });
@@ -25,7 +24,9 @@ export function WeatherForecast() {
 
   return (
     <div>
-      <h1>{data.temperatureC}</h1>
+      <ul>
+        {data.map((variant) => <li key={variant.id}>{variant.name}</li>)}
+      </ul>
     </div>
   );
 }

@@ -19,11 +19,10 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Local"))
+if (!app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-
 }
 
 if (app.Environment.IsProduction())
@@ -38,8 +37,14 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Temporary test-endpoints
-app.MapGet("/variant", (VariantDb dbConext) => dbConext.Variants.ToList()).WithName("Varianter").WithOpenApi().RequireAuthorization();
-app.MapGet("/variant/{id}", async (VariantDb db, string id) => await db.Variants.FindAsync(id)).RequireAuthorization();
+app.MapGet("/variant", (VariantDb dbConext) => dbConext.Variants.ToList())
+    .WithName("Varianter")
+    .WithOpenApi()
+    .RequireAuthorization();
+
+app.MapGet("/variant/{id}", async (VariantDb db, string id) => await db.Variants.FindAsync(id))
+    .RequireAuthorization();
+
 app.MapPost("/variant", async (VariantDb db, Variant variant) =>
 {
     await db.Variants.AddAsync(variant);

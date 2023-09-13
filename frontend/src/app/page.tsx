@@ -1,7 +1,7 @@
 "use client";
 
 import styles from "./page.module.css";
-import { WeatherForecast } from "@/app/weather";
+import { VariantList } from "@/app/variant";
 import {
   AuthenticatedTemplate,
   MsalProvider,
@@ -40,7 +40,7 @@ export default function Home() {
         <div className={styles.description}>
           <AuthenticatedTemplate>
             <code>
-              <WeatherForecast />
+              <VariantList />
             </code>
           </AuthenticatedTemplate>
           <UnauthenticatedTemplate>
