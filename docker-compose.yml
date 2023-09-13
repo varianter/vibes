@@ -5,18 +5,17 @@ services:
     build:
       context: .
       dockerfile: ./frontend/Dockerfile
-    container_name: vibes-yay
+    container_name: vibes-frontend
     ports:
       - '3000:3000'
     volumes:
       - ./frontend:/app
-      - /frontnd/app/node_modules
+      - /frontend/app/node_modules
 
   database:
-    image: mcr.microsoft.com/azure-sql-edge
-    environment:
-      ACCEPT_EULA: Y
-      MSSQL_SA_PASSWORD: yourStrong(!)Password
+    image: microsoft/mssql-server-linux:2022-latest
     ports:
       - '1433:1433'
-    
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: yourStrong(!)Password

@@ -1,4 +1,3 @@
-
 using backend.DatabaseModels;
 using backend.DomainModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -8,8 +7,7 @@ using Microsoft.Identity.Web;
 var builder = WebApplication.CreateBuilder(args);
 var connection = builder.Configuration.GetConnectionString("VibesDb");
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApi(builder.Configuration, "AzureAd");
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApi(builder.Configuration, "AzureAd");
 builder.Services.AddAuthorization();
 builder.Services.AddDbContext<VariantDb>(options => options.UseSqlServer(connection));
 
@@ -25,9 +23,15 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Local"))
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
 }
 
-app.UseHttpsRedirection();
+if (app.Environment.IsProduction())
+{
+    // Only use redirection in production
+    app.UseHttpsRedirection();
+}
+
 
 app.UseAuthorization();
 
