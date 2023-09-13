@@ -1,9 +1,15 @@
 # Backend
+## Prerequisites
+ * .net 7
+ * docker and docker compose 
 
-## Run in development
+## Config and run
+* `cp appsettings.Local.json.template appsettings.Local.json`
+* Add missing fields
+* `cd .. && docker-compose up`
+  * This adds a database container
+* Run from your IDE, or `dotnet run`
 
-* Create a new file `appsettings.Local.json` based on `appsettings.json` and fill out params.
-* Run dev server with key F5 or `dotnet run`
 
 # Database config 
 For localhost, the connection-string is just set with and SQL identity based on your docker-compose file. 
@@ -32,4 +38,3 @@ However, this makes access-control a more active task too.
    ```
 
 Source: [MS Docs](https://learn.microsoft.com/en-us/azure/app-service/tutorial-connect-msi-azure-database?tabs=sqldatabase,systemassigned,dotnet,windowsclient#2-configure-managed-identity-for-app)
-
