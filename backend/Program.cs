@@ -7,8 +7,7 @@ using Microsoft.Identity.Web;
 var builder = WebApplication.CreateBuilder(args);
 var connection = builder.Configuration.GetConnectionString("VibesDb");
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-.AddMicrosoftIdentityWebApi(builder.Configuration, "AzureAd");
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApi(builder.Configuration, "AzureAd");
 builder.Services.AddAuthorization();
 builder.Services.AddDbContext<VariantDb>(options => options.UseSqlServer(connection));
 
@@ -18,7 +17,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Local"))
