@@ -20,6 +20,8 @@ Du kan lese mer dokumentasjon om mål og struktur i [manifestet](docs/MANIFESTO.
 ## Kjør
 For å starte utviklingsmiljø, følg henholdsvis [README.md](frontend/README.md) i frontend og [README.md](backend/README.md) i backend mappene.
 
+## Deploy
+Kjør actions for deploy i Github Actions for hhv. dev og prod 
 
 ### .gitignore bug
 Hvis du merker at filer ikke blir ignorert etter at `.gitignore` er oppdatert: Kjør
