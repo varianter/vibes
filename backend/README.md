@@ -1,6 +1,11 @@
 # Backend
+## Prerequisites
+ * .net 7
+ * docker and docker compose 
 
-## Run in development
-
-* Create a new file `appsettings.Local.json` based on `appsettings.json` and fill out params.
-* Run dev server with key F5 or `dotnet run`
+## Config and run
+* `cp appsettings.Local.json.template appsettings.Local.json`
+* Add missing fields
+* `cd .. && docker-compose up`
+  * This adds a database container
+* Run from your IDE, or `dotnet run`
