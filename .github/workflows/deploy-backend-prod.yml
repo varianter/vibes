@@ -1,4 +1,4 @@
-name: .NET Core CI
+name: [PROD] Deploy Backend
 
 on:
   workflow_dispatch:
