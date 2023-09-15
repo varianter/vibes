@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useIsAuthenticated, useMsal } from "@azure/msal-react";
-import { fetchWithToken } from "@/utils/ApiUtils";
 import { Variant } from "@/types";
+import { fetchWithToken } from "@/utils/ApiUtils";
+import { useIsAuthenticated } from "@azure/msal-react";
+import { useEffect, useState } from "react";
 
 export function VariantList() {
   const [data, setData] = useState<Variant[]>([]);
@@ -24,7 +24,9 @@ export function VariantList() {
 
   return (
     <div>
-        <table>
+      <table>
+        <thead></thead>
+        <tbody>
           <tr>
             <th>Name</th>
             <th>Email</th>
@@ -39,7 +41,9 @@ export function VariantList() {
               <td>{variant.competences.join(", ")}</td>
             </tr>)
           }
-        </table>
+        </tbody>
+
+      </table>
 
     </div>
   );

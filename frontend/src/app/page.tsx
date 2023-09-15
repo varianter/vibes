@@ -1,14 +1,15 @@
 "use client";
 
-import styles from "./page.module.css";
+import { msalInstance } from "@/app/msalInstance";
 import { VariantList } from "@/app/variant";
+import { EventType } from "@azure/msal-browser";
 import {
   AuthenticatedTemplate,
   MsalProvider,
   UnauthenticatedTemplate,
 } from "@azure/msal-react";
-import { EventType } from "@azure/msal-browser";
-import { msalInstance } from "@/app/msalInstance";
+import Button from '@mui/material/Button';
+import styles from "./page.module.css";
 
 msalInstance.initialize().then(() => {
   // Account selection logic is app dependent. Adjust as needed for different use cases.
@@ -40,9 +41,11 @@ export default function Home() {
         <div className={styles.description}>
           <AuthenticatedTemplate>
               <VariantList />
+              
+
           </AuthenticatedTemplate>
           <UnauthenticatedTemplate>
-            <button onClick={loginRedirect}>Log in</button>
+            <Button onClick={loginRedirect}>Log in</Button>
           </UnauthenticatedTemplate>
         </div>
       </main>
