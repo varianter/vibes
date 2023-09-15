@@ -1,28 +1,91 @@
+using backend;
 using backend.DatabaseModels;
 using backend.DomainModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var connection = builder.Configuration.GetConnectionString("VibesDb");
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApi(builder.Configuration, "AzureAd");
+if (string.IsNullOrEmpty(connection))
+{
+    ErrorHandler.ThrowRequirementsException("Could not find database connection string");
+}
+
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(builder.Configuration, "AzureAd");
 builder.Services.AddAuthorization();
 builder.Services.AddDbContext<VariantDb>(options => options.UseSqlServer(connection));
 
+
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+var azureSettingsSection = builder.Configuration.GetSection("AzureAd");
+var azureSettings = azureSettingsSection.Get<AzureAdSettings>();
+
+if (azureSettings == null)
+{
+    ErrorHandler.ThrowRequirementsException("Unable to load 'AzureAd' from appsettings.*.json.");
+}
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Vibes API", Version = "v1" });
+
+    // To disable Auth to AD for pure db REST API testing.
+    if (!builder.Environment.IsProduction() && azureSettings.DisableAuthAd) return;
+
+    var scopes = new Dictionary<string, string>
+    {
+        { $"{azureSettings.ApiScope}", "Access API backend on user behalf" }
+    };
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "oauth2" }
+            },
+            new[] { azureSettings.ApiScope }
+        }
+    });
+
+    c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+        {
+            Type = SecuritySchemeType.OAuth2,
+            Flows = new OpenApiOAuthFlows
+            {
+                Implicit = new OpenApiOAuthFlow()
+                {
+                    AuthorizationUrl = azureSettings.AuthorizationUrl(),
+                    TokenUrl = azureSettings.TokenUrl(),
+                    Scopes = scopes
+                }
+            }
+        }
+    );
+});
+
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsProduction())
 {
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("v1/swagger.json", "Vibes Backend API");
+        c.OAuthClientId($"{azureSettings.ClientId}");
+        c.OAuthUsePkce();
+        c.OAuthScopeSeparator(" ");
+    });
 }
 
 if (app.Environment.IsProduction())
@@ -33,11 +96,10 @@ if (app.Environment.IsProduction())
 
 
 app.UseAuthorization();
-
 app.MapControllers();
 
 // Temporary test-endpoints
-app.MapGet("/variant", (VariantDb dbConext) => dbConext.Variants.ToList())
+app.MapGet("/variant", (VariantDb dbContext) => dbContext.Variants.ToList())
     .WithName("Varianter")
     .WithOpenApi()
     .RequireAuthorization();

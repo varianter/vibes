@@ -10,6 +10,10 @@
   * This adds a database container
 * Run from your IDE, or `dotnet run`
 
+## Swagger API Auth
+By default, the API endpoints requires authorization by a token acquired by the SSO Auth token from Azure AD.
+
+To override and disable this in development mode, set `"DisableAuthAd": true` in `appsettings.local.json`.
 
 # Database config 
 For localhost, the connection-string is just set with and SQL identity based on your docker-compose file. 
