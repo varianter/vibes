@@ -24,9 +24,23 @@ export function VariantList() {
 
   return (
     <div>
-      <ul>
-        {data.map((variant) => <li key={variant.id}>{variant.name}</li>)}
-      </ul>
+        <table>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Department</th>
+            <th>Competences</th>
+          </tr>
+          {data.map((variant) =>
+            <tr key={variant.id}>
+              <td>{variant.name}</td>
+              <td>{variant.email}</td>
+              <td>{variant.department}</td>
+              <td>{variant.competences.join(", ")}</td>
+            </tr>)
+          }
+        </table>
+
     </div>
   );
 }

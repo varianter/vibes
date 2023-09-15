@@ -39,9 +39,7 @@ export default function Home() {
       <main className={styles.main}>
         <div className={styles.description}>
           <AuthenticatedTemplate>
-            <code>
               <VariantList />
-            </code>
           </AuthenticatedTemplate>
           <UnauthenticatedTemplate>
             <button onClick={loginRedirect}>Log in</button>
