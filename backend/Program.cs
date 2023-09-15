@@ -1,4 +1,4 @@
-using backend.DatabaseModels;
+using backend.Database.Contexts;
 using backend.DomainModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -7,9 +7,11 @@ using Microsoft.Identity.Web;
 var builder = WebApplication.CreateBuilder(args);
 var connection = builder.Configuration.GetConnectionString("VibesDb");
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApi(builder.Configuration, "AzureAd");
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(builder.Configuration);
 builder.Services.AddAuthorization();
-builder.Services.AddDbContext<VariantDb>(options => options.UseSqlServer(connection));
+builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection));
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -26,10 +28,8 @@ if (!app.Environment.IsProduction())
 }
 
 if (app.Environment.IsProduction())
-{
     // Only use redirection in production
     app.UseHttpsRedirection();
-}
 
 
 app.UseAuthorization();
@@ -37,17 +37,17 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Temporary test-endpoints
-app.MapGet("/variant", (VariantDb dbConext) => dbConext.Variants.ToList())
+app.MapGet("/variant", (ApplicationContext dbConext) => dbConext.Consultant.ToList())
     .WithName("Varianter")
     .WithOpenApi()
     .RequireAuthorization();
 
-app.MapGet("/variant/{id}", async (VariantDb db, string id) => await db.Variants.FindAsync(id))
+app.MapGet("/variant/{id}", async (ApplicationContext db, string id) => await db.Consultant.FindAsync(id))
     .RequireAuthorization();
 
-app.MapPost("/variant", async (VariantDb db, Variant variant) =>
+app.MapPost("/variant", async (ApplicationContext db, Consultant variant) =>
 {
-    await db.Variants.AddAsync(variant);
+    await db.Consultant.AddAsync(variant);
     await db.SaveChangesAsync();
     return Results.Created($"/variant/{variant.Id}", variant);
 }).RequireAuthorization();
