@@ -5,5 +5,8 @@
     "ClientId": "azure_client_id_for_web_app",
     "TenantId": "azure_tenant_id_for_organization",
     "ApiScope": "Azure Ad -> App Registrations -> [app] -> Expose an Api"
-  }
+  },
+  "ConnectionStrings": {
+      "VibesDb": "<use-same-as-in-Development.json>"
+    }
 }

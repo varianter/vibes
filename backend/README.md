@@ -1,14 +1,16 @@
 # Backend
 ## Prerequisites
- * .net 7
+ * .NET 7
  * docker and docker compose 
 
 ## Config and run
 * `cp appsettings.Local.json.template appsettings.Local.json`
-* Add missing fields
+* Add _missing_ fields
 * `cd .. && docker-compose up`
   * This adds a database container
+* Update db schema and create tables: `dotnet ef database update -- --environment Local`
 * Run from your IDE, or `dotnet run`
+
 
 ## Swagger API Auth
 By default, the API endpoints requires authorization by a token acquired by the SSO Auth token from Azure AD.
@@ -28,12 +30,12 @@ Using managed identity/rbac keeps secrets out of connection-strings, which means
 
 However, this makes access-control a more active task too. 
 
-## Give database access to an appservice:
-0. Be admin :)
-1. Make sure the appservice has a System-assigned identity. 
+## Give database access to an App Service:
+1. Be admin :)
+2. Make sure the App Service has a System-assigned identity. 
    Do this in the Azure Portal. Select the app service, go to "Identity" in the sidebar and enable system-assigned identity
-2. Go to Query Editor -> New Query and run the following: 
-   ```SQL
+3. Go to Query Editor -> New Query and run the following: 
+   ```tsql
    CREATE USER "<app-name>" FROM EXTERNAL PROVIDER;
    ALTER ROLE db_datareader ADD MEMBER "<app-name>";
    ALTER ROLE db_datawriter ADD MEMBER "<app-name>";

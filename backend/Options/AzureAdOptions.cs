@@ -1,6 +1,6 @@
-namespace backend;
+namespace backend.Options;
 
-public class AzureAdSettings
+public class AzureAdOptions
 {
     public Uri Instance { get; set; } = null!;
     public bool DisableAuthAd { get; set; } = false;
