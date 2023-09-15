@@ -5,7 +5,7 @@ namespace backend.DomainModels;
 public class Organization
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public required int Id { get; set; }
+    public required string Id { get; set; }
 
     public required string Name { get; set; }
     public required float HoursPerWorkday { get; set; }

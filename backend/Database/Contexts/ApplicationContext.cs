@@ -31,7 +31,7 @@ public class ApplicationContext : DbContext
 
         modelBuilder.Entity<Consultant>()
             .HasOne<Department>(v => v.Department)
-            .WithMany(dept => dept.Variants);
+            .WithMany(dept => dept.Consultants);
 
         modelBuilder.Entity<Consultant>()
             .Property(v => v.Degree)
@@ -51,17 +51,17 @@ public class ApplicationContext : DbContext
 
         modelBuilder.Entity<Competence>().HasData(new List<Competence>
         {
-            new() { Id = 1, Name = "Frontend" },
-            new() { Id = 2, Name = "Backend" },
-            new() { Id = 3, Name = "Design" },
-            new() { Id = 4, Name = "Project Management" }
+            new() { Id = "frontend", Name = "Frontend" },
+            new() { Id = "backend", Name = "Backend" },
+            new() { Id = "design", Name = "Design" },
+            new() { Id = "project-mgmt", Name = "Project Management" }
         });
 
         modelBuilder.Entity<Organization>()
-            .HasData(new { Name = "Variant AS", HoursPerWorkday = (float)7.5, Id = 1 });
+            .HasData(new { Name = "Variant AS", HoursPerWorkday = (float)7.5, Id = "variant-as" });
 
         modelBuilder.Entity<Department>()
-            .HasData(new { Id = 1, Name = "Trondheim", OrganizationId = 1 });
+            .HasData(new { Id = "trondheim", Name = "Trondheim", OrganizationId = "variant-as" });
 
         modelBuilder.Entity<Consultant>().HasData(new
         {
@@ -69,7 +69,7 @@ public class ApplicationContext : DbContext
             Name = "Jonas",
             Email = "j@variant.no",
             StartDate = new DateOnly(2020, 1, 1),
-            DepartmentId = 1,
+            DepartmentId = "trondheim",
             Degree = Degree.Master,
             GraduationYear = 2019
         });

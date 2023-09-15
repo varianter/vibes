@@ -25,7 +25,7 @@ public class Consultant
 public class Competence
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public required int Id { get; set; }
+    public required string Id { get; set; }
 
     public required string Name { get; set; }
 }

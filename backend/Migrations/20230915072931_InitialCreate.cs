@@ -17,8 +17,7 @@ namespace backend.Migrations
                 name: "Competence",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -30,8 +29,7 @@ namespace backend.Migrations
                 name: "Organization",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     HoursPerWorkday = table.Column<float>(type: "real", nullable: false)
                 },
@@ -44,9 +42,8 @@ namespace backend.Migrations
                 name: "Department",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    OrganizationId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -70,7 +67,7 @@ namespace backend.Migrations
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DepartmentId = table.Column<int>(type: "int", nullable: false),
+                    DepartmentId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Degree = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     GraduationYear = table.Column<int>(type: "int", nullable: true)
                 },
@@ -89,7 +86,7 @@ namespace backend.Migrations
                 name: "CompetenceConsultant",
                 columns: table => new
                 {
-                    CompetencesId = table.Column<int>(type: "int", nullable: false),
+                    CompetencesId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ConsultantId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -114,26 +111,26 @@ namespace backend.Migrations
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-                    { 1, "Frontend" },
-                    { 2, "Backend" },
-                    { 3, "Design" },
-                    { 4, "Project Management" }
+                    { "backend", "Backend" },
+                    { "design", "Design" },
+                    { "frontend", "Frontend" },
+                    { "project-mgmt", "Project Management" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Organization",
                 columns: new[] { "Id", "HoursPerWorkday", "Name" },
-                values: new object[] { 1, 7.5f, "Variant AS" });
+                values: new object[] { "variant-as", 7.5f, "Variant AS" });
 
             migrationBuilder.InsertData(
                 table: "Department",
                 columns: new[] { "Id", "Name", "OrganizationId" },
-                values: new object[] { 1, "Trondheim", 1 });
+                values: new object[] { "trondheim", "Trondheim", "variant-as" });
 
             migrationBuilder.InsertData(
                 table: "Consultant",
                 columns: new[] { "Id", "Degree", "DepartmentId", "Email", "EndDate", "GraduationYear", "Name", "StartDate" },
-                values: new object[] { 1, "Master", 1, "j@variant.no", null, 2019, "Jonas", new DateTime(2020, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                values: new object[] { 1, "Master", "trondheim", "j@variant.no", null, 2019, "Jonas", new DateTime(2020, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.CreateIndex(
                 name: "IX_CompetenceConsultant_ConsultantId",

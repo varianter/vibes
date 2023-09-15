@@ -12,7 +12,7 @@ using backend.Database.Contexts;
 namespace backend.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20230915065008_InitialCreate")]
+    [Migration("20230915072931_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -27,8 +27,8 @@ namespace backend.Migrations
 
             modelBuilder.Entity("CompetenceConsultant", b =>
                 {
-                    b.Property<int>("CompetencesId")
-                        .HasColumnType("int");
+                    b.Property<string>("CompetencesId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("ConsultantId")
                         .HasColumnType("int");
@@ -42,11 +42,9 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.DomainModels.Competence", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -59,22 +57,22 @@ namespace backend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            Id = "frontend",
                             Name = "Frontend"
                         },
                         new
                         {
-                            Id = 2,
+                            Id = "backend",
                             Name = "Backend"
                         },
                         new
                         {
-                            Id = 3,
+                            Id = "design",
                             Name = "Design"
                         },
                         new
                         {
-                            Id = 4,
+                            Id = "project-mgmt",
                             Name = "Project Management"
                         });
                 });
@@ -90,8 +88,9 @@ namespace backend.Migrations
                     b.Property<string>("Degree")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("int");
+                    b.Property<string>("DepartmentId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -121,7 +120,7 @@ namespace backend.Migrations
                         {
                             Id = 1,
                             Degree = "Master",
-                            DepartmentId = 1,
+                            DepartmentId = "trondheim",
                             Email = "j@variant.no",
                             GraduationYear = 2019,
                             Name = "Jonas",
@@ -131,18 +130,17 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.DomainModels.Department", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("int");
+                    b.Property<string>("OrganizationId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -153,19 +151,17 @@ namespace backend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            Id = "trondheim",
                             Name = "Trondheim",
-                            OrganizationId = 1
+                            OrganizationId = "variant-as"
                         });
                 });
 
             modelBuilder.Entity("backend.DomainModels.Organization", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<float>("HoursPerWorkday")
                         .HasColumnType("real");
@@ -181,7 +177,7 @@ namespace backend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            Id = "variant-as",
                             HoursPerWorkday = 7.5f,
                             Name = "Variant AS"
                         });
@@ -205,7 +201,7 @@ namespace backend.Migrations
             modelBuilder.Entity("backend.DomainModels.Consultant", b =>
                 {
                     b.HasOne("backend.DomainModels.Department", "Department")
-                        .WithMany("Variants")
+                        .WithMany("Consultants")
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -226,7 +222,7 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.DomainModels.Department", b =>
                 {
-                    b.Navigation("Variants");
+                    b.Navigation("Consultants");
                 });
 
             modelBuilder.Entity("backend.DomainModels.Organization", b =>
