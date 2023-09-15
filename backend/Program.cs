@@ -1,5 +1,5 @@
 using backend;
-using backend.DatabaseModels;
+using backend.Database.Contexts;
 using backend.DomainModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -14,11 +14,11 @@ if (string.IsNullOrEmpty(connection))
     ErrorHandler.ThrowRequirementsException("Could not find database connection string");
 }
 
-
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration, "AzureAd");
+
 builder.Services.AddAuthorization();
-builder.Services.AddDbContext<VariantDb>(options => options.UseSqlServer(connection));
+builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection));
 
 
 builder.Services.AddControllers();
@@ -89,27 +89,25 @@ if (!app.Environment.IsProduction())
 }
 
 if (app.Environment.IsProduction())
-{
     // Only use redirection in production
     app.UseHttpsRedirection();
-}
 
 
 app.UseAuthorization();
 app.MapControllers();
 
 // Temporary test-endpoints
-app.MapGet("/variant", (VariantDb dbContext) => dbContext.Variants.ToList())
+app.MapGet("/variant", (ApplicationContext dbContext) => dbContext.Consultant.ToList())
     .WithName("Varianter")
     .WithOpenApi()
     .RequireAuthorization();
 
-app.MapGet("/variant/{id}", async (VariantDb db, string id) => await db.Variants.FindAsync(id))
+app.MapGet("/variant/{id}", async (ApplicationContext db, string id) => await db.Consultant.FindAsync(id))
     .RequireAuthorization();
 
-app.MapPost("/variant", async (VariantDb db, Variant variant) =>
+app.MapPost("/variant", async (ApplicationContext db, Consultant variant) =>
 {
-    await db.Variants.AddAsync(variant);
+    await db.Consultant.AddAsync(variant);
     await db.SaveChangesAsync();
     return Results.Created($"/variant/{variant.Id}", variant);
 }).RequireAuthorization();
