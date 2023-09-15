@@ -9,5 +9,5 @@ public class Department
 
     public required Organization Organization { get; set; }
     public required string Name { get; set; }
-    public required List<Variant> Variants { get; set; }
+    public required List<Consultant> Variants { get; set; }
 }

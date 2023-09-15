@@ -12,7 +12,7 @@ using backend.Database.Contexts;
 namespace backend.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20230914105829_InitialCreate")]
+    [Migration("20230915065008_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,19 +25,19 @@ namespace backend.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("CompetenceVariant", b =>
+            modelBuilder.Entity("CompetenceConsultant", b =>
                 {
                     b.Property<int>("CompetencesId")
                         .HasColumnType("int");
 
-                    b.Property<int>("VariantId")
+                    b.Property<int>("ConsultantId")
                         .HasColumnType("int");
 
-                    b.HasKey("CompetencesId", "VariantId");
+                    b.HasKey("CompetencesId", "ConsultantId");
 
-                    b.HasIndex("VariantId");
+                    b.HasIndex("ConsultantId");
 
-                    b.ToTable("CompetenceVariant");
+                    b.ToTable("CompetenceConsultant");
                 });
 
             modelBuilder.Entity("backend.DomainModels.Competence", b =>
@@ -76,6 +76,56 @@ namespace backend.Migrations
                         {
                             Id = 4,
                             Name = "Project Management"
+                        });
+                });
+
+            modelBuilder.Entity("backend.DomainModels.Consultant", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Degree")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("GraduationYear")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.ToTable("Consultant");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Degree = "Master",
+                            DepartmentId = 1,
+                            Email = "j@variant.no",
+                            GraduationYear = 2019,
+                            Name = "Jonas",
+                            StartDate = new DateTime(2020, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
 
@@ -137,58 +187,7 @@ namespace backend.Migrations
                         });
                 });
 
-            modelBuilder.Entity("backend.DomainModels.Variant", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Degree")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("GraduationYear")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DepartmentId");
-
-                    b.ToTable("Variant");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Degree = "Master",
-                            DepartmentId = 1,
-                            Email = "j@variant.no",
-                            GraduationYear = 2019,
-                            Name = "Jonas",
-                            StartDate = new DateTime(2020, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
-                });
-
-            modelBuilder.Entity("CompetenceVariant", b =>
+            modelBuilder.Entity("CompetenceConsultant", b =>
                 {
                     b.HasOne("backend.DomainModels.Competence", null)
                         .WithMany()
@@ -196,11 +195,22 @@ namespace backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("backend.DomainModels.Variant", null)
+                    b.HasOne("backend.DomainModels.Consultant", null)
                         .WithMany()
-                        .HasForeignKey("VariantId")
+                        .HasForeignKey("ConsultantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("backend.DomainModels.Consultant", b =>
+                {
+                    b.HasOne("backend.DomainModels.Department", "Department")
+                        .WithMany("Variants")
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Department");
                 });
 
             modelBuilder.Entity("backend.DomainModels.Department", b =>
@@ -212,17 +222,6 @@ namespace backend.Migrations
                         .IsRequired();
 
                     b.Navigation("Organization");
-                });
-
-            modelBuilder.Entity("backend.DomainModels.Variant", b =>
-                {
-                    b.HasOne("backend.DomainModels.Department", "Department")
-                        .WithMany("Variants")
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Department");
                 });
 
             modelBuilder.Entity("backend.DomainModels.Department", b =>

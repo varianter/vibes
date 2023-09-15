@@ -10,7 +10,7 @@ public class ApplicationContext : DbContext
     {
     }
 
-    public DbSet<Variant> Variant { get; set; } = null!;
+    public DbSet<Consultant> Consultant { get; set; } = null!;
     public DbSet<Competence> Competence { get; set; } = null!;
     public DbSet<Department> Department { get; set; } = null!;
     public DbSet<Organization> Organization { get; set; } = null!;
@@ -29,23 +29,23 @@ public class ApplicationContext : DbContext
             .HasMany<Department>(org => org.Departments)
             .WithOne(dept => dept.Organization);
 
-        modelBuilder.Entity<Variant>()
+        modelBuilder.Entity<Consultant>()
             .HasOne<Department>(v => v.Department)
             .WithMany(dept => dept.Variants);
 
-        modelBuilder.Entity<Variant>()
+        modelBuilder.Entity<Consultant>()
             .Property(v => v.Degree)
             .HasConversion<string>();
 
-        modelBuilder.Entity<Variant>()
+        modelBuilder.Entity<Consultant>()
             .Property(v => v.StartDate)
             .HasConversion<DateOnlyConverter>();
 
-        modelBuilder.Entity<Variant>()
+        modelBuilder.Entity<Consultant>()
             .Property(v => v.EndDate)
             .HasConversion<DateOnlyConverter>();
 
-        modelBuilder.Entity<Variant>()
+        modelBuilder.Entity<Consultant>()
             .HasMany(v => v.Competences)
             .WithMany();
 
@@ -63,7 +63,7 @@ public class ApplicationContext : DbContext
         modelBuilder.Entity<Department>()
             .HasData(new { Id = 1, Name = "Trondheim", OrganizationId = 1 });
 
-        modelBuilder.Entity<Variant>().HasData(new
+        modelBuilder.Entity<Consultant>().HasData(new
         {
             Id = 1,
             Name = "Jonas",

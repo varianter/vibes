@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace backend.DomainModels;
 
-public class Variant
+public class Consultant
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public required int Id { get; set; }
@@ -10,14 +10,14 @@ public class Variant
     public required string Name { get; set; }
     public required string Email { get; set; }
 
-    public required DateOnly StartDate { get; set; }
+    public DateOnly? StartDate { get; set; }
     public DateOnly? EndDate { get; set; }
 
     // TODO: Add department
     public required Department Department { get; set; }
 
-    public required Degree Degree { get; set; }
-    public required int GraduationYear { get; set; }
+    public Degree? Degree { get; set; }
+    public int? GraduationYear { get; set; }
 
     public List<Competence> Competences { get; set; } = new();
 }

@@ -61,24 +61,24 @@ namespace backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Variant",
+                name: "Consultant",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DepartmentId = table.Column<int>(type: "int", nullable: false),
-                    Degree = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    GraduationYear = table.Column<int>(type: "int", nullable: false)
+                    Degree = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    GraduationYear = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Variant", x => x.Id);
+                    table.PrimaryKey("PK_Consultant", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Variant_Department_DepartmentId",
+                        name: "FK_Consultant_Department_DepartmentId",
                         column: x => x.DepartmentId,
                         principalTable: "Department",
                         principalColumn: "Id",
@@ -86,25 +86,25 @@ namespace backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CompetenceVariant",
+                name: "CompetenceConsultant",
                 columns: table => new
                 {
                     CompetencesId = table.Column<int>(type: "int", nullable: false),
-                    VariantId = table.Column<int>(type: "int", nullable: false)
+                    ConsultantId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CompetenceVariant", x => new { x.CompetencesId, x.VariantId });
+                    table.PrimaryKey("PK_CompetenceConsultant", x => new { x.CompetencesId, x.ConsultantId });
                     table.ForeignKey(
-                        name: "FK_CompetenceVariant_Competence_CompetencesId",
+                        name: "FK_CompetenceConsultant_Competence_CompetencesId",
                         column: x => x.CompetencesId,
                         principalTable: "Competence",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_CompetenceVariant_Variant_VariantId",
-                        column: x => x.VariantId,
-                        principalTable: "Variant",
+                        name: "FK_CompetenceConsultant_Consultant_ConsultantId",
+                        column: x => x.ConsultantId,
+                        principalTable: "Consultant",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -131,37 +131,37 @@ namespace backend.Migrations
                 values: new object[] { 1, "Trondheim", 1 });
 
             migrationBuilder.InsertData(
-                table: "Variant",
+                table: "Consultant",
                 columns: new[] { "Id", "Degree", "DepartmentId", "Email", "EndDate", "GraduationYear", "Name", "StartDate" },
                 values: new object[] { 1, "Master", 1, "j@variant.no", null, 2019, "Jonas", new DateTime(2020, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CompetenceVariant_VariantId",
-                table: "CompetenceVariant",
-                column: "VariantId");
+                name: "IX_CompetenceConsultant_ConsultantId",
+                table: "CompetenceConsultant",
+                column: "ConsultantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Consultant_DepartmentId",
+                table: "Consultant",
+                column: "DepartmentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Department_OrganizationId",
                 table: "Department",
                 column: "OrganizationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Variant_DepartmentId",
-                table: "Variant",
-                column: "DepartmentId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "CompetenceVariant");
+                name: "CompetenceConsultant");
 
             migrationBuilder.DropTable(
                 name: "Competence");
 
             migrationBuilder.DropTable(
-                name: "Variant");
+                name: "Consultant");
 
             migrationBuilder.DropTable(
                 name: "Department");

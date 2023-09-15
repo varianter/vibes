@@ -37,17 +37,17 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Temporary test-endpoints
-app.MapGet("/variant", (ApplicationContext dbConext) => dbConext.Variant.ToList())
+app.MapGet("/variant", (ApplicationContext dbConext) => dbConext.Consultant.ToList())
     .WithName("Varianter")
     .WithOpenApi()
     .RequireAuthorization();
 
-app.MapGet("/variant/{id}", async (ApplicationContext db, string id) => await db.Variant.FindAsync(id))
+app.MapGet("/variant/{id}", async (ApplicationContext db, string id) => await db.Consultant.FindAsync(id))
     .RequireAuthorization();
 
-app.MapPost("/variant", async (ApplicationContext db, Variant variant) =>
+app.MapPost("/variant", async (ApplicationContext db, Consultant variant) =>
 {
-    await db.Variant.AddAsync(variant);
+    await db.Consultant.AddAsync(variant);
     await db.SaveChangesAsync();
     return Results.Created($"/variant/{variant.Id}", variant);
 }).RequireAuthorization();
