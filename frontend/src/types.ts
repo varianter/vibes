@@ -4,4 +4,5 @@ export type Variant = {
   email: string,
   competences: string[],
   department: string,
+  availability: number,
 }
