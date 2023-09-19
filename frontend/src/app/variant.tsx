@@ -30,6 +30,7 @@ export function VariantList() {
             <th>Email</th>
             <th>Department</th>
             <th>Competences</th>
+            <th>Available hours</th>
           </tr>
           {data.map((variant) =>
             <tr key={variant.id}>
@@ -37,6 +38,7 @@ export function VariantList() {
               <td>{variant.email}</td>
               <td>{variant.department}</td>
               <td>{variant.competences.join(", ")}</td>
+              <td>{variant.availability}</td>
             </tr>)
           }
         </table>
