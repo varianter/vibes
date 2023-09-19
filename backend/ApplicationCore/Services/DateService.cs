@@ -24,13 +24,8 @@ public class DateService
         return GetWeekNumber(DateTime.Today);
     }
 
-    public static bool DateIsInWeek(DateTime day, int week)
+    public static bool DateIsInWeek(DateOnly day, int year, int week)
     {
-        return GetWeekNumber(day) == week;
-    }
-
-    public static bool DateIsInWeek(DateOnly day, int week)
-    {
-        return GetWeekNumber(day.ToDateTime(TimeOnly.MinValue)) == week;
+        return day.Year == year && GetWeekNumber(day.ToDateTime(TimeOnly.MinValue)) == week;
     }
 }
