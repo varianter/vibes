@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
+using backend.ApplicationCore.DomainModels;
 using backend.BuildHelpers;
 using backend.Database.Contexts;
-using backend.DomainModels;
 using backend.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -70,20 +70,40 @@ app.MapControllers();
 
 // Temporary test-endpoints
 app.MapGet("/variant",
-        (ApplicationContext dbConext) => dbConext.Consultant.Select(c => new
+        (ApplicationContext dbConext) => dbConext.Consultant
+            .Include(c => c.Vacations)
+            .Include(c => c.PlannedAbsences)
+            .Include(c => c.Department)
+            .ThenInclude(d => d.Organization)
+            .Select(c => new
             {
                 c.Id,
                 c.Name,
                 c.Email,
                 Competences = c.Competences.Select(comp => comp.Name).ToList(),
-                Department = c.Department.Name
+                Department = c.Department.Name,
+                Availability = c.GetAvailableHours()
             })
             .ToList())
     .WithName("Varianter")
     .WithOpenApi()
     .RequireAuthorization();
 
-app.MapGet("/variant/{id}", async (ApplicationContext db, string id) => await db.Consultant.FindAsync(id))
+app.MapGet("/variant/{id}", async (ApplicationContext db, int id) =>
+        db.Consultant.Where(c => c.Id == id)
+            .Include(c => c.Vacations)
+            .Include(c => c.PlannedAbsences)
+            .Include(c => c.Department)
+            .ThenInclude(d => d.Organization)
+            .Select(c => new
+            {
+                c.Id,
+                c.Name,
+                c.Email,
+                Competences = c.Competences.Select(comp => comp.Name).ToList(),
+                Department = c.Department.Name,
+                Availability = c.GetAvailableHours()
+            }).Single())
     .RequireAuthorization();
 
 app.MapPost("/variant", async (ApplicationContext db, Consultant variant) =>

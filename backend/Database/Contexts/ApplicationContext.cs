@@ -1,5 +1,5 @@
+using backend.ApplicationCore.DomainModels;
 using backend.Database.ValueConverters;
-using backend.DomainModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Database.Contexts;
@@ -14,6 +14,8 @@ public class ApplicationContext : DbContext
     public DbSet<Competence> Competence { get; set; } = null!;
     public DbSet<Department> Department { get; set; } = null!;
     public DbSet<Organization> Organization { get; set; } = null!;
+    public DbSet<PlannedAbsence> PlannedAbsence { get; set; } = null!;
+    public DbSet<Vacation> Vacation { get; set; } = null!;
 
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -30,8 +32,16 @@ public class ApplicationContext : DbContext
             .WithOne(dept => dept.Organization);
 
         modelBuilder.Entity<Consultant>()
-            .HasOne<Department>(v => v.Department)
+            .HasOne<Department>(consultant => consultant.Department)
             .WithMany(dept => dept.Consultants);
+
+        modelBuilder.Entity<Consultant>()
+            .HasMany<Vacation>(consultant => consultant.Vacations)
+            .WithOne(vacation => vacation.Consultant);
+
+        modelBuilder.Entity<Consultant>()
+            .HasMany<PlannedAbsence>(consultant => consultant.PlannedAbsences)
+            .WithOne(absence => absence.Consultant);
 
         modelBuilder.Entity<Consultant>()
             .Property(v => v.Degree)

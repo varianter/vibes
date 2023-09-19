@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
-namespace backend.DomainModels;
+namespace backend.ApplicationCore.DomainModels;
 
 public class Organization
 {
@@ -10,5 +11,5 @@ public class Organization
     public required string Name { get; set; }
     public required float HoursPerWorkday { get; set; }
 
-    public List<Department> Departments { get; set; }
+    [JsonIgnore] public List<Department> Departments { get; set; }
 }
