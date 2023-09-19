@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
-namespace backend.DomainModels;
+namespace backend.ApplicationCore.DomainModels;
 
 public class Department
 {
@@ -9,5 +10,5 @@ public class Department
 
     public required Organization Organization { get; set; }
     public required string Name { get; set; }
-    public required List<Consultant> Consultants { get; set; }
+    [JsonIgnore] public required List<Consultant> Consultants { get; set; }
 }
