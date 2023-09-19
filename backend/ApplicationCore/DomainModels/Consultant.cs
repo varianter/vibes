@@ -29,7 +29,7 @@ public class Consultant
     public double GetAvailabilityFraction(int year, int week)
     {
         var vacationDays =
-            Vacations.Count(v => DateService.DateIsInWeek(v.Date, week));
+            Vacations.Count(v => DateService.DateIsInWeek(v.Date, year, week));
 
         var plannedAbsenceFraction = PlannedAbsences
             .Where(pa => pa.Year == year && pa.WeekNumber == week)
