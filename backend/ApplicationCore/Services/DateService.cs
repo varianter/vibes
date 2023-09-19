@@ -33,9 +33,4 @@ public class DateService
     {
         return GetWeekNumber(day.ToDateTime(TimeOnly.MinValue)) == week;
     }
-
-    public static bool CurrentWeekContains(DateTime day)
-    {
-        return DateIsInWeek(day, GetWeekNumber());
-    }
 }

@@ -70,7 +70,7 @@ app.MapControllers();
 
 // Temporary test-endpoints
 app.MapGet("/variant",
-        (ApplicationContext dbConext) => dbConext.Consultant
+        (ApplicationContext context) => context.Consultant
             .Include(c => c.Vacations)
             .Include(c => c.PlannedAbsences)
             .Include(c => c.Department)
@@ -89,7 +89,7 @@ app.MapGet("/variant",
     .WithOpenApi()
     .RequireAuthorization();
 
-app.MapGet("/variant/{id}", async (ApplicationContext db, int id) =>
+app.MapGet("/variant/{id}", (ApplicationContext db, int id) =>
         db.Consultant.Where(c => c.Id == id)
             .Include(c => c.Vacations)
             .Include(c => c.PlannedAbsences)
@@ -104,6 +104,7 @@ app.MapGet("/variant/{id}", async (ApplicationContext db, int id) =>
                 Department = c.Department.Name,
                 Availability = c.GetAvailableHours()
             }).Single())
+    .WithOpenApi()
     .RequireAuthorization();
 
 app.MapPost("/variant", async (ApplicationContext db, Consultant variant) =>
