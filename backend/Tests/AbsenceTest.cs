@@ -65,7 +65,7 @@ public class Tests
 
         consultant.PlannedAbsences.Add(new PlannedAbsence
         {
-            Id = 1, Consultant = consultant, Type = LeaveType.Parental, Year = year, WeekNumber = week,
+            Id = 1, Consultant = consultant, Type = LeaveType.Birth, Year = year, WeekNumber = week,
             ApplicableDays = 2,
             Fraction = 1
         });
