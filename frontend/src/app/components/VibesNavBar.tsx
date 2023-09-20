@@ -1,6 +1,6 @@
 'use client'
 
-import { AppBar, Container, Tab, Tabs, TabsProps, Toolbar, styled } from "@mui/material";
+import { AppBar, Box, Tab, Tabs, TabsProps, Toolbar, styled } from "@mui/material";
 import Image from "next/image";
 import React from "react";
 
@@ -15,22 +15,21 @@ export default function VibesAppBar() {
 
     return (
         <AppBar position="static">
-            <Container maxWidth="xl">
-                <Toolbar>
-                    <VibesTabs
-                        value={value}
-                        onChange={handleChange}
-                        textColor="inherit"
-                        indicatorColor="primary"
-                        variant="fullWidth"
-                    >
-                        {pages.map((page, pageIndex) => <Tab key={page} value={pageIndex} label={page} sx={{ fontSize: "1.2rem" }} />)}
-                    </VibesTabs>
-                    <Image className="variant-logo" alt="Variant logo" src="./variant-logo-1.svg" width="65" height="16" />
-                </Toolbar>
-            </Container>
+            <Toolbar>
+                <VibesTabs
+                    value={value}
+                    onChange={handleChange}
+                    textColor="inherit"
+                    indicatorColor="primary"
+                    variant="fullWidth"
 
-        </AppBar>
+                >
+                    {pages.map((page, pageIndex) => <Tab key={page} value={pageIndex} label={page} sx={{ fontSize: "1.2rem" }} />)}
+                </VibesTabs>
+                <Box component="div" sx={{ flexGrow: 1 }}></Box>
+                <Image className="variant-logo" alt="Variant logo" src="./variant-logo-1.svg" width="65" height="16" />
+            </Toolbar>
+        </AppBar >
     )
 }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { msalInstance } from "@/app/msalInstance";
-import { VariantList } from "@/app/variant";
+import { VariantList } from "@/app/pages/variant";
 import { EventType } from "@azure/msal-browser";
 import {
   AuthenticatedTemplate,
@@ -45,7 +45,7 @@ export default function Home() {
 
           </AuthenticatedTemplate>
           <UnauthenticatedTemplate>
-            <Button onClick={loginRedirect}>Log in</Button>
+            <Button onClick={loginRedirect} variant="contained">Log in</Button>
           </UnauthenticatedTemplate>
         </div>
       </main>
