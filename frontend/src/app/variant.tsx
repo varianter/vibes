@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useIsAuthenticated, useMsal } from "@azure/msal-react";
-import { fetchWithToken } from "@/utils/ApiUtils";
 import { Variant } from "@/types";
+import { fetchWithToken } from "@/utils/ApiUtils";
+import { useIsAuthenticated } from "@azure/msal-react";
+import { useEffect, useState } from "react";
 
 export function VariantList() {
   const [data, setData] = useState<Variant[]>([]);
@@ -25,26 +25,29 @@ export function VariantList() {
   return (
     <div>
       <table>
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Department</th>
-          <th>Competences</th>
-          {data[0].availability.map((availabilityWeek) => (
-            <th key={0}>W# {availabilityWeek.weekNumber}</th>
-          ))}
-        </tr>
-        {data.map((variant) => (
-          <tr key={variant.id}>
-            <td>{variant.name}</td>
-            <td>{variant.email}</td>
-            <td>{variant.department}</td>
-            <td>{variant.competences.join(", ")}</td>
-            {variant.availability.map((a) => (
-              <td key={`${variant.id}/${a.weekNumber}`}>{a.availableHours}</td>
+        <thead></thead>
+        <tbody>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Department</th>
+            <th>Competences</th>
+            {data[0].availability.map((availabilityWeek) => (
+              <th key={availabilityWeek.weekNumber}>W# {availabilityWeek.weekNumber}</th>
             ))}
           </tr>
-        ))}
+          {data.map((variant) => (
+            <tr key={variant.id + "tr"}>
+              <td>{variant.name}</td>
+              <td>{variant.email}</td>
+              <td>{variant.department}</td>
+              <td>{variant.competences.join(", ")}</td>
+              {variant.availability.map((a) => (
+                <td key={`${variant.id}/${a.weekNumber}`}>{a.availableHours}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
       </table>
     </div>
   );
