@@ -1,7 +1,5 @@
-'use client';
 import { Tabs, TabsProps, styled } from "@mui/material";
 import React from "react";
-
 
 export const VibesNavBarTabs = styled((props: VibesNavBarTabsProps) => (
     <Tabs
