@@ -52,9 +52,21 @@ public class Consultant
         return GetAvailabilityFraction(year, week) * Department.Organization.HoursPerWorkday * 5;
     }
 
-    public double GetAvailableHours()
+    public List<AvailabilityPerWeek> GetAvailableHoursForNWeeks(int n)
     {
-        return GetAvailableHours(DateTime.Now.Year, DateService.GetWeekNumber());
+        return Enumerable.Range(0, n)
+            .Select(weeksAhead =>
+            {
+                var year = DateTime.Today.AddDays(7 * weeksAhead).Year;
+                var week = DateService.GetWeekAhead(weeksAhead);
+
+                return new AvailabilityPerWeek(
+                    year,
+                    week,
+                    GetAvailableHours(year, week)
+                );
+            })
+            .ToList();
     }
 }
 
@@ -72,3 +84,5 @@ public enum Degree
     Bachelor,
     None
 }
+
+public record AvailabilityPerWeek(int Year, int WeekNumber, double AvailableHours);

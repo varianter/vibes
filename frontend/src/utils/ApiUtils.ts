@@ -9,8 +9,10 @@ export async function fetchWithToken(path: string) {
     );
   }
 
-  if(!process.env.NEXT_PUBLIC_APP_SCOPE) {
-    throw new Error("Environment variable: NEXT_PUBLIC_APP_SCOPE is missing or empty");
+  if (!process.env.NEXT_PUBLIC_APP_SCOPE) {
+    throw new Error(
+      "Environment variable: NEXT_PUBLIC_APP_SCOPE is missing or empty",
+    );
   }
 
   const response = await msalInstance.acquireTokenSilent({
@@ -32,11 +34,10 @@ export async function fetchWithToken(path: string) {
 
   try {
     const response = await fetch(path, options);
-    console.log(response)
-    const res = await response.json()
-    return res
-    
+    console.log(response);
+    const res = await response.json();
+    return res;
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 }
