@@ -14,7 +14,6 @@ public class Consultant
     public DateOnly? StartDate { get; set; }
     public DateOnly? EndDate { get; set; }
 
-    // TODO: Add department
     public required Department Department { get; set; }
 
     public Degree? Degree { get; set; }
