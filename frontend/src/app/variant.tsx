@@ -33,11 +33,11 @@ export function VariantList() {
             <th>Department</th>
             <th>Competences</th>
             {data[0].availability.map((availabilityWeek) => (
-              <th key={0}>W# {availabilityWeek.weekNumber}</th>
+              <th key={availabilityWeek.weekNumber}>W# {availabilityWeek.weekNumber}</th>
             ))}
           </tr>
           {data.map((variant) => (
-            <tr key={variant.id}>
+            <tr key={variant.id + "tr"}>
               <td>{variant.name}</td>
               <td>{variant.email}</td>
               <td>{variant.department}</td>

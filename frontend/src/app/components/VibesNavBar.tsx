@@ -5,26 +5,18 @@ import Image from "next/image";
 import React from "react";
 
 export default function VibesAppBar() {
-    const pages = ['Bemanning', 'Kunder', 'Rapporter', "Budsjett", "Konsulenter"];
-
-    const [value, setValue] = React.useState(0);
-
-    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-        setValue(newValue);
-    };
+    const pages = ['Bemanning'];
 
     return (
         <AppBar position="static">
             <Toolbar>
                 <VibesTabs
-                    value={value}
-                    onChange={handleChange}
+                    value={1}
                     textColor="inherit"
                     indicatorColor="primary"
                     variant="fullWidth"
-
                 >
-                    {pages.map((page, pageIndex) => <Tab key={page} value={pageIndex} label={page} sx={{ fontSize: "1.2rem" }} />)}
+                    <Tab key={"Bemanning"} value={1} label={"Bemanning"} sx={{ fontSize: "1.2rem" }} />
                 </VibesTabs>
                 <Box component="div" sx={{ flexGrow: 1 }}></Box>
                 <Image className="variant-logo" alt="Variant logo" src="./variant-logo-1.svg" width="65" height="16" />
@@ -36,8 +28,6 @@ export default function VibesAppBar() {
 
 interface VibesTabsProps extends TabsProps {
     children?: React.ReactNode;
-    value: number;
-    onChange: (event: React.SyntheticEvent, newValue: number) => void;
 }
 
 const VibesTabs = styled((props: VibesTabsProps) => (
