@@ -1,5 +1,4 @@
-using System.Text.Json.Serialization;
-using backend.ApplicationCore.DomainModels;
+using backend.Api;
 using backend.BuildHelpers;
 using backend.Database.Contexts;
 using backend.Options;
@@ -16,18 +15,12 @@ if (string.IsNullOrEmpty(connection))
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration);
+builder.Services.AddAuthorization(opt => opt.FallbackPolicy = opt.DefaultPolicy);
 
-builder.Services.AddAuthorization();
 builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection));
 
-
-builder.Services.AddControllers()
-    .AddJsonOptions(options => { options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles; });
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddControllers();
+//TODO: Cleanup swagger config
 builder.Services.AddEndpointsApiExplorer();
-
 var azureSettingsSection = builder.Configuration.GetSection("AzureAd");
 var azureSettings = azureSettingsSection.Get<AzureAdOptions>();
 
@@ -46,7 +39,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
-
+app.RegisterConsultantApi();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsProduction())
 {
@@ -64,55 +57,6 @@ if (!app.Environment.IsProduction())
 // Only use redirection in production
 if (app.Environment.IsProduction()) app.UseHttpsRedirection();
 
-
 app.UseAuthorization();
-app.MapControllers();
-
-// Temporary test-endpoints
-app.MapGet("/variant",
-        (ApplicationContext context) => context.Consultant
-            .Include(c => c.Vacations)
-            .Include(c => c.PlannedAbsences)
-            .Include(c => c.Department)
-            .ThenInclude(d => d.Organization)
-            .Select(c => new
-            {
-                c.Id,
-                c.Name,
-                c.Email,
-                Competences = c.Competences.Select(comp => comp.Name).ToList(),
-                Department = c.Department.Name,
-                Availability = c.GetAvailableHours()
-            })
-            .ToList())
-    .WithName("Varianter")
-    .WithOpenApi()
-    .RequireAuthorization();
-
-app.MapGet("/variant/{id}", (ApplicationContext db, int id) =>
-        db.Consultant.Where(c => c.Id == id)
-            .Include(c => c.Vacations)
-            .Include(c => c.PlannedAbsences)
-            .Include(c => c.Department)
-            .ThenInclude(d => d.Organization)
-            .Select(c => new
-            {
-                c.Id,
-                c.Name,
-                c.Email,
-                Competences = c.Competences.Select(comp => comp.Name).ToList(),
-                Department = c.Department.Name,
-                Availability = c.GetAvailableHours()
-            }).Single())
-    .WithOpenApi()
-    .RequireAuthorization();
-
-app.MapPost("/variant", async (ApplicationContext db, Consultant variant) =>
-{
-    await db.Consultant.AddAsync(variant);
-    await db.SaveChangesAsync();
-    return Results.Created($"/variant/{variant.Id}", variant);
-}).RequireAuthorization();
-
 
 app.Run();
