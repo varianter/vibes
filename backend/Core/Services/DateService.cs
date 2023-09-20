@@ -8,7 +8,7 @@ public class DateService
     // Week 1 is the 1st week of the year with a Thursday in it.
     public static int GetWeekNumber(DateTime time)
     {
-        // Seriously cheat.  If its Monday, Tuesday or Wednesday, then it'll 
+        // If its Monday, Tuesday or Wednesday, then it'll 
         // be the same week# as whatever Thursday, Friday or Saturday are,
         // and we always get those right
         var day = CultureInfo.InvariantCulture.Calendar.GetDayOfWeek(time);
@@ -19,9 +19,9 @@ public class DateService
             DayOfWeek.Monday);
     }
 
-    public static int GetWeekNumber()
+    public static int GetWeekAhead(int offset)
     {
-        return GetWeekNumber(DateTime.Today);
+        return GetWeekNumber(DateTime.Today.AddDays(7 * offset));
     }
 
     public static bool DateIsInWeek(DateOnly day, int year, int week)

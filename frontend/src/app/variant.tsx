@@ -12,7 +12,7 @@ export function VariantList() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      fetchWithToken("/api/variant").then((data) => {
+      fetchWithToken("/api/variant?weeks=8").then((data) => {
         setData(data);
         setLoading(false);
       });
@@ -32,21 +32,23 @@ export function VariantList() {
             <th>Email</th>
             <th>Department</th>
             <th>Competences</th>
-            <th>Available hours</th>
+            {data[0].availability.map((availabilityWeek) => (
+              <th key={0}>W# {availabilityWeek.weekNumber}</th>
+            ))}
           </tr>
-          {data.map((variant) =>
+          {data.map((variant) => (
             <tr key={variant.id}>
               <td>{variant.name}</td>
               <td>{variant.email}</td>
               <td>{variant.department}</td>
               <td>{variant.competences.join(", ")}</td>
-              <td>{variant.availability}</td>
-            </tr>)
-          }
+              {variant.availability.map((a) => (
+                <td key={`${variant.id}/${a.weekNumber}`}>{a.availableHours}</td>
+              ))}
+            </tr>
+          ))}
         </tbody>
-
       </table>
-
     </div>
   );
 }

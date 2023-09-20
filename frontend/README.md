@@ -5,11 +5,13 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 First, run the development server:
 
 ```bash
-cp .env.template .env 
+cp .env.template .env
 ```
- - Populate .env-file 
- - Run the backend (see [backend README](../backend/README.md))
- - Or: Override NEXT_PUBLIC_VIBES_BACKEND_URL to use the Dev-api (with reasonable caution)
+
+- Populate .env-file
+- Run the backend (see [backend README](../backend/README.md))
+- Or: Override NEXT_PUBLIC_VIBES_BACKEND_URL to use the Dev-api (with reasonable caution)
+
 ```
 yarn dev
 ```
@@ -29,5 +31,6 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-## Deployment 
+## Deployment
+
 See [project root README](../README.md).
