@@ -1,68 +1,3 @@
-:root {
-  --bakgrunn-til-knapper: rgba(252, 252, 252, 1);
-  --basics-1: 1px;
-  --basics-12: 12px;
-  --basics-16: 16px;
-  --basics-2: 2px;
-  --basics-24: 24px;
-  --basics-32: 32px;
-  --basics-4: 4px;
-  --basics-48: 48px;
-  --basics-8: 8px;
-  --body-bold-font-family: "Arial-Bold", Helvetica;
-  --body-bold-font-size: 14px;
-  --body-bold-font-style: normal;
-  --body-bold-font-weight: 700;
-  --body-bold-letter-spacing: 0px;
-  --body-bold-line-height: normal;
-  --body-font-family: "Arial-Regular", Helvetica;
-  --body-font-size: 14px;
-  --body-font-style: normal;
-  --body-font-weight: 400;
-  --body-letter-spacing: 0px;
-  --body-line-height: normal;
-  --caption-regular-font-family: "Graphik-Regular", Helvetica;
-  --caption-regular-font-size: 13px;
-  --caption-regular-font-style: normal;
-  --caption-regular-font-weight: 400;
-  --caption-regular-letter-spacing: 0px;
-  --caption-regular-line-height: 18.200000762939453px;
-  --faded: rgba(153, 159, 165, 1);
-  --h-2-font-family: "Arial-Regular", Helvetica;
-  --h-2-font-size: 43px;
-  --h-2-font-style: normal;
-  --h-2-font-weight: 400;
-  --h-2-letter-spacing: 0px;
-  --h-2-line-height: normal;
-  --h-3-font-family: "Arial-Regular", Helvetica;
-  --h-3-font-size: 28px;
-  --h-3-font-style: normal;
-  --h-3-font-weight: 400;
-  --h-3-letter-spacing: 0px;
-  --h-3-line-height: normal;
-  --h2-bold-font-family: "Arial-Regular", Helvetica;
-  --h2-bold-font-size: 43px;
-  --h2-bold-font-style: normal;
-  --h2-bold-font-weight: 400;
-  --h2-bold-letter-spacing: 0px;
-  --h2-bold-line-height: normal;
-  --hover: rgba(230, 26, 107, 1);
-  --hover-2: rgba(83, 77, 172, 1);
-  --hover-bakgrunn: rgba(240, 239, 239, 1);
-  --hover-legg-til: rgba(2, 174, 158, 1);
-  --hover-pwc: rgba(209, 57, 13, 1);
-  --nesten-svart: rgba(51, 51, 51, 1);
-  --pille-pwc: rgba(193, 67, 3, 1);
-  --pwc-rosa: rgba(219, 103, 125, 1);
-  --pwc-syle: rgba(232, 141, 20, 1);
-  --pwc-syle-2: rgba(193, 67, 3, 1);
-  --secondary-1default: rgba(66, 61, 137, 1);
-  --secondary-2l2: rgba(104, 233, 221, 1);
-  --standard-black: rgba(51, 51, 51, 1);
-  --standard-white: rgba(255, 255, 255, 1);
-}
-
-
 @font-face {
   font-family: "Graphik-Medium";
   src: url("https://anima-uploads.s3.amazonaws.com/projects/632da9fa4f45dc45af16fa8d/fonts/graphik-medium.otf")
@@ -75,27 +10,9 @@
     format("opentype");
 }
 
+/* TODO: Fix CSP or remove completely */
 @font-face {
   font-family: "Arial-Bold";
   src: url("https://anima-uploads.s3.amazonaws.com/projects/622cf300b3519bff6181cd8f/fonts/fontsfree-net-arial-bold.ttf")
     format("truetype");
-}
-
-@import url("https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css");
-* {
-  -webkit-font-smoothing: antialiased;
-  box-sizing: border-box;
-}
-html,
-body {
-  margin: 0px;
-  height: 100%;
-}
-/* a blue color as a generic focus style */
-button:focus-visible {
-  outline: 2px solid #4a90e2 !important;
-  outline: -webkit-focus-ring-color auto 5px !important;
-}
-a {
-  text-decoration: none;
 }

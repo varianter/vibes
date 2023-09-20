@@ -1,7 +1,6 @@
 "use client";
 
 import { msalInstance } from "@/app/msalInstance";
-import styles from "@/app/page.module.css";
 import { VariantList } from "@/app/variant";
 import { EventType } from "@azure/msal-browser";
 import {
@@ -37,8 +36,8 @@ export default function Home() {
 
   return (
     <MsalProvider instance={msalInstance}>
-      <main className={styles.main}>
-        <div className={styles.description}>
+      <main>
+        <div>
           <AuthenticatedTemplate>
             <VariantList />
           </AuthenticatedTemplate>
