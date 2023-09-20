@@ -1,7 +1,7 @@
 "use client";
 
 import { msalInstance } from "@/app/msalInstance";
-import { VariantList } from "@/app/pages/variant";
+import { VariantList } from "@/app/variant";
 import { EventType } from "@azure/msal-browser";
 import {
   AuthenticatedTemplate,
