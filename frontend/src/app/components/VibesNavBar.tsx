@@ -26,7 +26,7 @@ export default function VibesAppBar() {
                     >
                         {pages.map((page, pageIndex) => <Tab key={page} value={pageIndex} label={page} sx={{ fontSize: "1.2rem" }} />)}
                     </VibesTabs>
-                    <Image className="variant-logo" alt="Variant logo" src="./variant-logo-1.svg" width="65" height={16} />
+                    <Image className="variant-logo" alt="Variant logo" src="./variant-logo-1.svg" width="65" height="16" />
                 </Toolbar>
             </Container>
 
