@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using backend.ApplicationCore.Services;
 
-namespace backend.ApplicationCore.DomainModels;
+namespace backend.Core.DomainModels;
 
 public class Consultant
 {
@@ -25,31 +25,21 @@ public class Consultant
 
     public List<PlannedAbsence> PlannedAbsences { get; set; } = new();
 
-    public double GetAvailabilityFraction(int year, int week)
-    {
-        var vacationDays =
-            Vacations.Count(v => DateService.DateIsInWeek(v.Date, year, week));
-
-        var plannedAbsenceFraction = PlannedAbsences
-            .Where(pa => pa.Year == year && pa.WeekNumber == week)
-            // If a consultant has less than a whole week of leave, this will factor that in.  
-            // Example: Start an 20% leave on wednesday. 3 of 5 days have a 20% leave. 3/5 days = 60% of the week. 
-            // This means that week has a total of 20% * 60% leave.
-            .Select(pa => pa.Fraction * pa.ApplicableDays / 5)
-            .DefaultIfEmpty(0)
-            .Sum();
-
-        // Part of week that's not vacation or holidays
-        var activeWeekFraction = 1 - vacationDays * 0.2; //TODO add holidays
-
-        var workFraction = 1 - plannedAbsenceFraction;
-
-        return Math.Round(activeWeekFraction * workFraction, 2);
-    }
+    public List<Staffing> Staffings { get; set; } = new();
 
     public double GetAvailableHours(int year, int week)
     {
-        return GetAvailabilityFraction(year, week) * Department.Organization.HoursPerWorkday * 5;
+        var hoursPrWorkDay = Department.Organization.HoursPerWorkday;
+        var totalWeeklyHours = hoursPrWorkDay * 5;
+        var vacationHours = Vacations.Count(v => DateService.DateIsInWeek(v.Date, year, week)) * hoursPrWorkDay;
+
+        var totalAbsence = PlannedAbsences
+            .Where(pa => pa.Year == year && pa.WeekNumber == week)
+            .Select(pa => pa.Hours)
+            .Sum();
+
+        var workedHours = totalWeeklyHours - vacationHours - totalAbsence;
+        return Math.Max(workedHours, 0);
     }
 
     public List<AvailabilityPerWeek> GetAvailableHoursForNWeeks(int n)

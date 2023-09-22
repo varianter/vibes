@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace backend.ApplicationCore.DomainModels;
+namespace backend.Core.DomainModels;
 
 public enum LeaveType
 {
@@ -17,6 +17,5 @@ public class PlannedAbsence
     [Required] public LeaveType Type { get; set; }
     [Required] public int Year { get; set; }
     [Required] public int WeekNumber { get; set; }
-    public int ApplicableDays { get; set; }
-    public double Fraction { get; set; }
+    public double Hours { get; set; }
 }
