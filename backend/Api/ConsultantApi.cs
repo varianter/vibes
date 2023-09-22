@@ -1,4 +1,4 @@
-using backend.ApplicationCore.DomainModels;
+using backend.Core.DomainModels;
 using backend.Database.Contexts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

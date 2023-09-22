@@ -1,4 +1,4 @@
-using backend.ApplicationCore.DomainModels;
+using backend.Core.DomainModels;
 using backend.Database.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +16,9 @@ public class ApplicationContext : DbContext
     public DbSet<Organization> Organization { get; set; } = null!;
     public DbSet<PlannedAbsence> PlannedAbsence { get; set; } = null!;
     public DbSet<Vacation> Vacation { get; set; } = null!;
+    public DbSet<Client> Client { get; set; } = null!;
+    public DbSet<Project> Project { get; set; } = null!;
+    public DbSet<Staffing> Staffing { get; set; } = null!;
 
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -30,6 +33,25 @@ public class ApplicationContext : DbContext
         modelBuilder.Entity<Organization>()
             .HasMany<Department>(org => org.Departments)
             .WithOne(dept => dept.Organization);
+
+        modelBuilder.Entity<Organization>()
+            .HasMany<Client>(organization => organization.Clients)
+            .WithOne(client => client.Organization);
+
+        modelBuilder.Entity<Client>()
+            .HasMany<Project>(client => client.Projects)
+            .WithOne(project => project.Client);
+
+        modelBuilder.Entity<Project>()
+            .HasMany<Staffing>(project => project.Staffings)
+            .WithOne(staffing => staffing.Project);
+        modelBuilder.Entity<Project>()
+            .Property(project => project.State)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<Consultant>()
+            .HasMany<Staffing>(consultant => consultant.Staffings)
+            .WithOne(staffing => staffing.Consultant);
 
         modelBuilder.Entity<Consultant>()
             .HasOne<Department>(consultant => consultant.Department)
