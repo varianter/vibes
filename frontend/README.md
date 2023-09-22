@@ -34,3 +34,16 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 ## Deployment
 
 See [project root README](../README.md).
+
+
+## Issues
+This seem to be a bug in the MUI package. It is only triggered when importing styled from `@mui/material`:
+
+```ts
+import { styled } from "@mui/material";
+
+// As a workaround, I recommend importing { styled } from styles instead:
+import { styled } from "@mui/material/styles";
+```
+
+https://github.com/vercel/next.js/issues/55663
