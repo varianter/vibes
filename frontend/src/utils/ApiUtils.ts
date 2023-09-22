@@ -34,7 +34,6 @@ export async function fetchWithToken(path: string) {
 
   try {
     const response = await fetch(path, options);
-    console.log(response);
     const res = await response.json();
     return res;
   } catch (error) {

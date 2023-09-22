@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server'
 
 export function middleware(request: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
   const cspHeader = `
       default-src 'self';
-      script-src 'self' 'unsafe-eval' 'nonce-${nonce}' 'strict-dynamic';
+      script-src 'self' 'unsafe-eval' 'nonce-${nonce}';
       style-src 'self' 'unsafe-inline';
       font-src 'self' anima-uploads.s3.amazonaws.com fonts.gstatic.com;
       connect-src 'self' https://login.microsoftonline.com;

@@ -18,9 +18,10 @@ const theme = createTheme({
     secondary: {
         main: 'rgba(66, 61, 137, 1)',
     },
-    action: {
-      active: "white",
-      selected: "68e9dd"
+    
+    // action: {
+      // active: "#fff",
+      // selected: "68e9dd"
      
       //   active: string;
       //   hover: string;
@@ -34,7 +35,7 @@ const theme = createTheme({
       //   focusOpacity: number;
       //   activatedOpacity: number;
 
-    }
+    // }
   }
 });
 

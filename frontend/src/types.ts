@@ -1,3 +1,5 @@
+import { PopoverVirtualElement } from "@mui/material";
+
 export type Variant = {
   id: string;
   name: string;
@@ -12,3 +14,5 @@ export type Variant = {
     },
   ];
 };
+
+export type AnchorProp = Element | (() => Element) | PopoverVirtualElement | (() => PopoverVirtualElement) | null | undefined;

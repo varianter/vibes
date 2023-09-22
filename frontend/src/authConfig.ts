@@ -1,6 +1,7 @@
 // Config object to be passed to Msal on creation
 const msalClientId = process.env.NEXT_PUBLIC_CLIENT_ID;
 const msalTenantId = process.env.NEXT_PUBLIC_TENANT_ID;
+
 export const msalConfig = {
   auth: {
     clientId: msalClientId,
