@@ -44,7 +44,7 @@ public class ApplicationContext : DbContext
 
         modelBuilder.Entity<Project>()
             .HasMany<Staffing>(project => project.Staffings)
-            .WithOne(staffing => staffing.Project).OnDelete(DeleteBehavior.NoAction);
+            .WithOne(staffing => staffing.Project);
         modelBuilder.Entity<Project>()
             .Property(project => project.State)
             .HasConversion<string>();
