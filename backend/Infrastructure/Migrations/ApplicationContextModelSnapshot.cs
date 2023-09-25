@@ -399,7 +399,7 @@ namespace backend.Migrations
                     b.HasOne("backend.Core.DomainModels.Project", "Project")
                         .WithMany("Staffings")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Consultant");
