@@ -7,9 +7,8 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useState } from "react";
 
-export const SignOutButton = () => {
+const SignOutButton = () => {
     const { instance } = useMsal();
-    const [accountSelectorOpen, setOpen] = useState(false);
 
     const [anchorEl, setAnchorEl] = useState<AnchorProp>(null);
     const open = Boolean(anchorEl);
@@ -56,3 +55,5 @@ export const SignOutButton = () => {
         </div>
     )
 };
+
+export default SignOutButton;

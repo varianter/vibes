@@ -1,6 +1,6 @@
 import { AppBar, Box, Tab, Toolbar } from "@mui/material";
 import Image from "next/image";
-import { VibesNavBarTabs } from "./VibesNavBarTabs";
+import VibesNavBarTabs from "./VibesNavBarTabs";
 import SignInSignOutButton from "./vibes-buttons/SignInSignOutButton";
 
 export default function VibesAppBar() {

@@ -1,7 +1,7 @@
 import { InteractionStatus } from "@azure/msal-browser";
 import { useIsAuthenticated, useMsal } from "@azure/msal-react";
-import { SignInButton } from "./SignInButton";
-import { SignOutButton } from "./SignOutButton";
+import SignInButton from "./SignInButton";
+import SignOutButton from "./SignOutButton";
 
 const SignInSignOutButton = () => {
     const { inProgress } = useMsal();

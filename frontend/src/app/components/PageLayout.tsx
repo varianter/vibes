@@ -1,10 +1,9 @@
 import { AuthenticatedTemplate, UnauthenticatedTemplate } from "@azure/msal-react";
 import { Box, Container, Grid } from "@mui/material";
-import React from "react";
 import VibesAppBar from "./VibesNavBar";
 import SignInSignOutButton from "./vibes-buttons/SignInSignOutButton";
 
-export const PageLayout = (props: React.PropsWithChildren) => {
+export default function PageLayout({ children }: { children: React.ReactNode }) {
     return (
         <Grid container justifyContent="center">
             <VibesAppBar />
@@ -17,7 +16,7 @@ export const PageLayout = (props: React.PropsWithChildren) => {
             >
                 <AuthenticatedTemplate>
                     <Container>
-                        {props.children}
+                        {children}
                     </Container>
                 </AuthenticatedTemplate>
 

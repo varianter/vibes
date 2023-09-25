@@ -7,7 +7,7 @@ import Head from 'next/head';
 import { EventType } from "@azure/msal-browser";
 import { MsalProvider } from "@azure/msal-react";
 
-import { PageLayout } from '@/app/components/PageLayout';
+import PageLayout from '@/app/components/PageLayout';
 import type { AppProps } from "next/app";
 import ThemeRegistry from "../app/components/ThemeRegistry/ThemeRegistry";
 import { msalInstance } from '../app/msalInstance';
