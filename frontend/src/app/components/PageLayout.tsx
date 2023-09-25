@@ -1,3 +1,4 @@
+"use client"
 import { AuthenticatedTemplate, UnauthenticatedTemplate } from "@azure/msal-react";
 import { Box, Container, Grid } from "@mui/material";
 import VibesAppBar from "./VibesNavBar";

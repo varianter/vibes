@@ -36,6 +36,9 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 See [project root README](../README.md).
 
 
+## MSAL is only client-side
+Thats why "use client" is used on multiple places
+
 ## Issues
 This seem to be a bug in the MUI package. It is only triggered when importing styled from `@mui/material`:
 

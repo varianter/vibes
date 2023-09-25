@@ -1,6 +1,6 @@
 import { loginRequest } from "@/authConfig";
 import { useMsal } from "@azure/msal-react";
-import { Login } from "@mui/icons-material";
+import LoginIcon from "@mui/icons-material/Login";
 import { IconButton } from "@mui/material";
 
 const SignInButton = () => {
@@ -18,7 +18,7 @@ const SignInButton = () => {
                 color="inherit"
                 sx={{ ml: 2 }}
             >
-                <Login />
+                <LoginIcon />
             </IconButton>
         </div>
     )

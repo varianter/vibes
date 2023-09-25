@@ -1,3 +1,4 @@
+"use client"
 import { Variant } from '@/types';
 import { fetchWithToken } from '@/utils/ApiUtils';
 import { useIsAuthenticated } from '@azure/msal-react';

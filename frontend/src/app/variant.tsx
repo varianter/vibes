@@ -1,3 +1,4 @@
+"use client"
 import { CircularProgress } from "@mui/material";
 import useVibesApi from "./hooks/useVibesApi";
 

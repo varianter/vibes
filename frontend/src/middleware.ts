@@ -4,7 +4,7 @@ export function middleware(request: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
   const cspHeader = `
       default-src 'self';
-      script-src 'self' 'unsafe-eval' 'nonce-${nonce}';
+      script-src 'self' 'nonce-${nonce}';
       style-src 'self' 'unsafe-inline';
       font-src 'self' anima-uploads.s3.amazonaws.com fonts.gstatic.com;
       connect-src 'self' https://login.microsoftonline.com;
