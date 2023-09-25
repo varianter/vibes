@@ -7,7 +7,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useState } from "react";
 
-const SignOutButton = () => {
+export default function SignOutButton() {
     const { instance } = useMsal();
 
     const [anchorEl, setAnchorEl] = useState<AnchorProp>(null);
@@ -55,5 +55,3 @@ const SignOutButton = () => {
         </div>
     )
 };
-
-export default SignOutButton;

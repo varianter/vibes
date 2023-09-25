@@ -2,7 +2,6 @@ import { loginRequest } from "@/authConfig";
 import { useMsal } from "@azure/msal-react";
 import { Login } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
-import SignOutButton from "./SignOutButton";
 
 const SignInButton = () => {
     const { instance } = useMsal();
@@ -25,4 +24,4 @@ const SignInButton = () => {
     )
 };
 
-export default SignOutButton;
+export default SignInButton;
