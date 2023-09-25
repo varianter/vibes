@@ -12,8 +12,8 @@ using backend.Database.Contexts;
 namespace backend.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20230922105040_AddClientProjectStaffing")]
-    partial class AddClientProjectStaffing
+    [Migration("20230925090629_AddCustomerProjectStaffing")]
+    partial class AddCustomerProjectStaffing
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -402,7 +402,7 @@ namespace backend.Migrations
                     b.HasOne("backend.Core.DomainModels.Project", "Project")
                         .WithMany("Staffings")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Consultant");
