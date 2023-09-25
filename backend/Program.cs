@@ -39,7 +39,10 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
-app.RegisterConsultantApi();
+
+app.MapApiGroup("variant", "Varianter")
+    .MapConsultantApi();
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsProduction())
 {
