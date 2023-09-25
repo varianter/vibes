@@ -1,5 +1,6 @@
 using backend.Core.DomainModels;
 using backend.Database.Contexts;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,19 +8,14 @@ namespace backend.Api;
 
 public static class ConsultantApi
 {
-    public static void RegisterConsultantApi(this WebApplication app)
+    public static void MapConsultantApi(this RouteGroupBuilder group)
     {
-        app.MapGet("/variant", GetAllConsultants)
-            .WithName("Varianter")
-            .WithOpenApi();
-
-        app.MapGet("/variant/{id}", GetConsultantById)
-            .WithOpenApi();
-
-        app.MapPost("/variant", AddConsultant).WithOpenApi();
+        group.MapGet("/", GetAllConsultants);
+        group.MapGet("/{id}", GetConsultantById);
+        group.MapPost("/", AddConsultant).WithOpenApi();
     }
 
-    private static IResult GetAllConsultants(ApplicationContext context,
+    private static Ok<List<ConsultantReadModel>> GetAllConsultants(ApplicationContext context,
         [FromQuery(Name = "weeks")] int numberOfWeeks = 8)
     {
         var consultants = context.Consultant
@@ -27,13 +23,13 @@ public static class ConsultantApi
             .Include(c => c.PlannedAbsences)
             .Include(c => c.Department)
             .ThenInclude(d => d.Organization)
-            .Select(c => new ConsultantReadModel(c, numberOfWeeks))
+            .Select(c => c.MapToReadModel(numberOfWeeks))
             .ToList();
 
-        return Results.Ok(consultants);
+        return TypedResults.Ok(consultants);
     }
 
-    private static IResult GetConsultantById(ApplicationContext context, int id,
+    private static Results<Ok<ConsultantReadModel>, NotFound> GetConsultantById(ApplicationContext context, int id,
         [FromQuery(Name = "weeks")] int numberOfWeeks = 8)
     {
         var consultant = context.Consultant.Where(c => c.Id == id)
@@ -41,30 +37,30 @@ public static class ConsultantApi
             .Include(c => c.PlannedAbsences)
             .Include(c => c.Department)
             .ThenInclude(d => d.Organization)
-            .Select(c => new ConsultantReadModel(c, numberOfWeeks))
-            .Single();
-
-        return Results.Ok(consultant);
+            .Select(c => c.MapToReadModel(numberOfWeeks))
+            .SingleOrDefault();
+        
+        return consultant is null ? TypedResults.NotFound() : TypedResults.Ok(consultant);
     }
 
-    private static async Task<IResult> AddConsultant(ApplicationContext db, Consultant variant)
+    private static async Task<Created<Consultant>> AddConsultant(ApplicationContext db, Consultant variant)
     {
         await db.Consultant.AddAsync(variant);
         await db.SaveChangesAsync();
-        return Results.Created($"/variant/{variant.Id}", variant);
+        return TypedResults.Created($"/variant/{variant.Id}", variant);
     }
 
     private record ConsultantReadModel(int Id, string Name, string Email, List<string> Competences, string Department,
-        List<AvailabilityPerWeek> Availability)
+        List<AvailabilityPerWeek> Availability);
+
+    private static ConsultantReadModel MapToReadModel(this Consultant consultant, int weeks)
     {
-        public ConsultantReadModel(Consultant consultant, int weeks) : this(
+        return new ConsultantReadModel(
             consultant.Id,
             consultant.Name,
             consultant.Email,
             consultant.Competences.Select(comp => comp.Name).ToList(),
             consultant.Department.Name,
-            consultant.GetAvailableHoursForNWeeks(weeks))
-        {
-        }
+            consultant.GetAvailableHoursForNWeeks(weeks));
     }
 }
