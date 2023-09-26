@@ -231,6 +231,12 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Core.DomainModels.PlannedAbsence", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<int>("AbsenceId")
                         .HasColumnType("int");
 
@@ -246,7 +252,9 @@ namespace backend.Migrations
                     b.Property<int>("Year")
                         .HasColumnType("int");
 
-                    b.HasKey("AbsenceId", "ConsultantId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("AbsenceId");
 
                     b.HasIndex("ConsultantId");
 
