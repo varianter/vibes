@@ -25,6 +25,8 @@ public class Consultant
 
     public List<PlannedAbsence> PlannedAbsences { get; set; } = new();
 
+    public List<Project> Projects { get; set; } = new();
+
     public List<Staffing> Staffings { get; set; } = new();
 
     public double GetAvailableHours(int year, int week)
@@ -38,8 +40,8 @@ public class Consultant
             .Select(pa => pa.Hours)
             .Sum();
 
-        var workedHours = totalWeeklyHours - vacationHours - totalAbsence;
-        return Math.Max(workedHours, 0);
+        var availableHours = totalWeeklyHours - vacationHours - totalAbsence;
+        return Math.Max(availableHours, 0);
     }
 
     public List<AvailabilityPerWeek> GetAvailableHoursForNWeeks(int n)

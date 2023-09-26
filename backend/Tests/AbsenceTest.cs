@@ -42,7 +42,7 @@ public class Tests
         if (plannedAbsenceHours > 0)
             consultant.PlannedAbsences.Add(new PlannedAbsence
             {
-                Id = 1, Consultant = consultant, Type = LeaveType.Parental, Year = year, WeekNumber = week,
+                Consultant = consultant, Year = year, WeekNumber = week,
                 Hours = plannedAbsenceHours
             });
 
@@ -71,13 +71,13 @@ public class Tests
 
         consultant.PlannedAbsences.Add(new PlannedAbsence
         {
-            Id = 1, Consultant = consultant, Type = LeaveType.Birth, Year = year, WeekNumber = week,
+            Consultant = consultant, Year = year, WeekNumber = week,
             Hours = 15
         });
 
         consultant.PlannedAbsences.Add(new PlannedAbsence
         {
-            Id = 1, Consultant = consultant, Type = LeaveType.Parental, Year = year, WeekNumber = week,
+            Consultant = consultant, Year = year, WeekNumber = week,
             Hours = 15
         });
 

@@ -5,7 +5,7 @@
 namespace backend.Migrations
 {
     /// <inheritdoc />
-    public partial class AddCustomerProjectStaffing : Migration
+    public partial class StaffingAbsence : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,12 +15,38 @@ namespace backend.Migrations
                 table: "PlannedAbsence");
 
             migrationBuilder.RenameColumn(
+                name: "Type",
+                table: "PlannedAbsence",
+                newName: "AbsenceId");
+
+            migrationBuilder.RenameColumn(
                 name: "Fraction",
                 table: "PlannedAbsence",
                 newName: "Hours");
 
             migrationBuilder.CreateTable(
-                name: "Client",
+                name: "Absence",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ExcludeFromBillRate = table.Column<bool>(type: "bit", nullable: false),
+                    OrganizationId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Absence", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Absence_Organization_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organization",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Customer",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -30,9 +56,9 @@ namespace backend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Client", x => x.Id);
+                    table.PrimaryKey("PK_Customer", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Client_Organization_OrganizationId",
+                        name: "FK_Customer_Organization_OrganizationId",
                         column: x => x.OrganizationId,
                         principalTable: "Organization",
                         principalColumn: "Id",
@@ -45,19 +71,17 @@ namespace backend.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ClientId = table.Column<int>(type: "int", nullable: false),
+                    CustomerId = table.Column<int>(type: "int", nullable: false),
                     State = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ExcludeFromBillRate = table.Column<bool>(type: "bit", nullable: false),
-                    InternalProject = table.Column<bool>(type: "bit", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Project", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Project_Client_ClientId",
-                        column: x => x.ClientId,
-                        principalTable: "Client",
+                        name: "FK_Project_Customer_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customer",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -81,24 +105,34 @@ namespace backend.Migrations
                         name: "FK_Staffing_Consultant_ConsultantId",
                         column: x => x.ConsultantId,
                         principalTable: "Consultant",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Staffing_Project_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "Project",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Client_OrganizationId",
-                table: "Client",
+                name: "IX_PlannedAbsence_AbsenceId",
+                table: "PlannedAbsence",
+                column: "AbsenceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Absence_OrganizationId",
+                table: "Absence",
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Project_ClientId",
+                name: "IX_Customer_OrganizationId",
+                table: "Customer",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Project_CustomerId",
                 table: "Project",
-                column: "ClientId");
+                column: "CustomerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Staffing_ConsultantId",
@@ -109,11 +143,25 @@ namespace backend.Migrations
                 name: "IX_Staffing_ProjectId",
                 table: "Staffing",
                 column: "ProjectId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_PlannedAbsence_Absence_AbsenceId",
+                table: "PlannedAbsence",
+                column: "AbsenceId",
+                principalTable: "Absence",
+                principalColumn: "Id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_PlannedAbsence_Absence_AbsenceId",
+                table: "PlannedAbsence");
+
+            migrationBuilder.DropTable(
+                name: "Absence");
+
             migrationBuilder.DropTable(
                 name: "Staffing");
 
@@ -121,12 +169,21 @@ namespace backend.Migrations
                 name: "Project");
 
             migrationBuilder.DropTable(
-                name: "Client");
+                name: "Customer");
+
+            migrationBuilder.DropIndex(
+                name: "IX_PlannedAbsence_AbsenceId",
+                table: "PlannedAbsence");
 
             migrationBuilder.RenameColumn(
                 name: "Hours",
                 table: "PlannedAbsence",
                 newName: "Fraction");
+
+            migrationBuilder.RenameColumn(
+                name: "AbsenceId",
+                table: "PlannedAbsence",
+                newName: "Type");
 
             migrationBuilder.AddColumn<int>(
                 name: "ApplicableDays",
