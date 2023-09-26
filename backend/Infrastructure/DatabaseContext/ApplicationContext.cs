@@ -40,10 +40,10 @@ public class ApplicationContext : DbContext
 
         modelBuilder.Entity<Organization>()
             .HasMany<Customer>(organization => organization.Customers)
-            .WithOne(client => client.Organization);
+            .WithOne(customer => customer.Organization);
 
         modelBuilder.Entity<Customer>()
-            .HasMany<Project>(client => client.Projects)
+            .HasMany<Project>(customer => customer.Projects)
             .WithOne(project => project.Customer);
 
         modelBuilder.Entity<Project>()
