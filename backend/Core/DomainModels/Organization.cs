@@ -13,5 +13,7 @@ public class Organization
 
     [JsonIgnore] public List<Department> Departments { get; set; }
 
-    public required List<Client> Clients { get; set; }
+    public required List<Customer> Customers { get; set; }
+
+    public List<Absence> AbsenceTypes { get; set; }
 }

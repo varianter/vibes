@@ -5,11 +5,11 @@ namespace backend.Core.DomainModels;
 public class Staffing
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public required int Id { get; set; }
+    public int Id { get; set; }
 
-    public Project Project { get; set; }
+    public required Project Project { get; set; } = null!;
 
-    public Consultant Consultant { get; set; }
+    public required Consultant Consultant { get; set; } = null!;
 
     public required int Year { get; set; }
 

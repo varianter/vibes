@@ -37,13 +37,16 @@ namespace backend.Migrations
                     b.ToTable("CompetenceConsultant");
                 });
 
-            modelBuilder.Entity("backend.Core.DomainModels.Client", b =>
+            modelBuilder.Entity("backend.Core.DomainModels.Absence", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("ExcludeFromBillRate")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -57,7 +60,7 @@ namespace backend.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("Client");
+                    b.ToTable("Absence");
                 });
 
             modelBuilder.Entity("backend.Core.DomainModels.Competence", b =>
@@ -148,6 +151,29 @@ namespace backend.Migrations
                         });
                 });
 
+            modelBuilder.Entity("backend.Core.DomainModels.Customer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OrganizationId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.ToTable("Customer");
+                });
+
             modelBuilder.Entity("backend.Core.DomainModels.Department", b =>
                 {
                     b.Property<string>("Id")
@@ -205,11 +231,8 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Core.DomainModels.PlannedAbsence", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("AbsenceId")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ConsultantId")
                         .HasColumnType("int");
@@ -217,16 +240,13 @@ namespace backend.Migrations
                     b.Property<double>("Hours")
                         .HasColumnType("float");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
                     b.Property<int>("WeekNumber")
                         .HasColumnType("int");
 
                     b.Property<int>("Year")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("AbsenceId", "ConsultantId");
 
                     b.HasIndex("ConsultantId");
 
@@ -241,14 +261,8 @@ namespace backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ClientId")
+                    b.Property<int>("CustomerId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("ExcludeFromBillRate")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("InternalProject")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -260,7 +274,7 @@ namespace backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClientId");
+                    b.HasIndex("CustomerId");
 
                     b.ToTable("Project");
                 });
@@ -333,10 +347,10 @@ namespace backend.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("backend.Core.DomainModels.Client", b =>
+            modelBuilder.Entity("backend.Core.DomainModels.Absence", b =>
                 {
                     b.HasOne("backend.Core.DomainModels.Organization", "Organization")
-                        .WithMany("Clients")
+                        .WithMany("AbsenceTypes")
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -355,6 +369,17 @@ namespace backend.Migrations
                     b.Navigation("Department");
                 });
 
+            modelBuilder.Entity("backend.Core.DomainModels.Customer", b =>
+                {
+                    b.HasOne("backend.Core.DomainModels.Organization", "Organization")
+                        .WithMany("Customers")
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Organization");
+                });
+
             modelBuilder.Entity("backend.Core.DomainModels.Department", b =>
                 {
                     b.HasOne("backend.Core.DomainModels.Organization", "Organization")
@@ -368,24 +393,32 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Core.DomainModels.PlannedAbsence", b =>
                 {
+                    b.HasOne("backend.Core.DomainModels.Absence", "Absence")
+                        .WithMany()
+                        .HasForeignKey("AbsenceId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+
                     b.HasOne("backend.Core.DomainModels.Consultant", "Consultant")
                         .WithMany("PlannedAbsences")
                         .HasForeignKey("ConsultantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Absence");
+
                     b.Navigation("Consultant");
                 });
 
             modelBuilder.Entity("backend.Core.DomainModels.Project", b =>
                 {
-                    b.HasOne("backend.Core.DomainModels.Client", "Client")
+                    b.HasOne("backend.Core.DomainModels.Customer", "Customer")
                         .WithMany("Projects")
-                        .HasForeignKey("ClientId")
+                        .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Client");
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("backend.Core.DomainModels.Staffing", b =>
@@ -393,13 +426,13 @@ namespace backend.Migrations
                     b.HasOne("backend.Core.DomainModels.Consultant", "Consultant")
                         .WithMany("Staffings")
                         .HasForeignKey("ConsultantId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.HasOne("backend.Core.DomainModels.Project", "Project")
                         .WithMany("Staffings")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Consultant");
@@ -418,11 +451,6 @@ namespace backend.Migrations
                     b.Navigation("Consultant");
                 });
 
-            modelBuilder.Entity("backend.Core.DomainModels.Client", b =>
-                {
-                    b.Navigation("Projects");
-                });
-
             modelBuilder.Entity("backend.Core.DomainModels.Consultant", b =>
                 {
                     b.Navigation("PlannedAbsences");
@@ -432,6 +460,11 @@ namespace backend.Migrations
                     b.Navigation("Vacations");
                 });
 
+            modelBuilder.Entity("backend.Core.DomainModels.Customer", b =>
+                {
+                    b.Navigation("Projects");
+                });
+
             modelBuilder.Entity("backend.Core.DomainModels.Department", b =>
                 {
                     b.Navigation("Consultants");
@@ -439,7 +472,9 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Core.DomainModels.Organization", b =>
                 {
-                    b.Navigation("Clients");
+                    b.Navigation("AbsenceTypes");
+
+                    b.Navigation("Customers");
 
                     b.Navigation("Departments");
                 });
