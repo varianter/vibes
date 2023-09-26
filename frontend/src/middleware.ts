@@ -1,18 +1,23 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server'
+
+// nonce CSP is currently disabled because of bug:
+// https://github.com/vercel/next.js/issues/55638
 
 export function middleware(request: NextRequest) {
-  const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
   const cspHeader = `
       default-src 'self';
-      script-src 'self' 'unsafe-eval' 'nonce-${nonce}' 'strict-dynamic';
+      script-src 'self' 'unsafe-inline' http://localhost https: ${process.env.NODE_ENV === 'production' ? '' : `'unsafe-eval'`};
       style-src 'self' 'unsafe-inline';
       font-src 'self' anima-uploads.s3.amazonaws.com fonts.gstatic.com;
       connect-src 'self' https://login.microsoftonline.com;
   `
   const requestHeaders = new Headers(request.headers)
-  requestHeaders.set('x-nonce', nonce)
+
+  // requestHeaders.set('x-nonce', nonce)
   requestHeaders.set(
-    'Content-Security-Policy',
+    // 'Content-Security-Policy',
+    'Content-Security-Policy-Report-Only', // This is used for now to not break
+
     // Replace newline characters and spaces
     cspHeader.replace(/\s{2,}/g, ' ').trim()
   )

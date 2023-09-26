@@ -1,8 +1,7 @@
 import { Tabs, TabsProps } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import React from "react";
 
-export const VibesNavBarTabs = styled((props: VibesNavBarTabsProps) => (
+const VibesNavBarTabs = styled((props: VibesNavBarTabsProps) => (
     <Tabs
         {...props}
         TabIndicatorProps={{ children: <span className="MuiTabs-indicatorSpan" /> }} />
@@ -21,3 +20,5 @@ export const VibesNavBarTabs = styled((props: VibesNavBarTabsProps) => (
 interface VibesNavBarTabsProps extends TabsProps {
     children?: React.ReactNode;
 }
+
+export default VibesNavBarTabs;

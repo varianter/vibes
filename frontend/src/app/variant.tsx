@@ -1,54 +1,46 @@
-"use client";
-
-import { Variant } from "@/types";
-import { fetchWithToken } from "@/utils/ApiUtils";
-import { useIsAuthenticated } from "@azure/msal-react";
-import { useEffect, useState } from "react";
+"use client"
+import { CircularProgress } from "@mui/material";
+import useVibesApi from "./hooks/useVibesApi";
 
 export function VariantList() {
-  const [data, setData] = useState<Variant[]>([]);
-  const [isLoading, setLoading] = useState(true);
-  const isAuthenticated = useIsAuthenticated();
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchWithToken("/api/variant?weeks=8").then((data) => {
-        setData(data);
-        setLoading(false);
-      });
-    }
-  }, [isAuthenticated]);
+  const { data, isLoading, isError, error } = useVibesApi();
 
-  if (isLoading) return <p>Loading...</p>;
-  if (!data) return <p>No profile data</p>;
+  if (isLoading) {
+    return <CircularProgress />
+  }
 
-  return (
-    <div>
-      <table>
-        <thead></thead>
-        <tbody>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Department</th>
-            <th>Competences</th>
-            {data[0].availability.map((availabilityWeek) => (
-              <th key={availabilityWeek.weekNumber}>W# {availabilityWeek.weekNumber}</th>
-            ))}
-          </tr>
-          {data.map((variant) => (
-            <tr key={variant.id + "tr"}>
-              <td>{variant.name}</td>
-              <td>{variant.email}</td>
-              <td>{variant.department}</td>
-              <td>{variant.competences.join(", ")}</td>
-              {variant.availability.map((a) => (
-                <td key={`${variant.id}/${a.weekNumber}`}>{a.availableHours}</td>
+  if (data) {
+    return (
+      <div>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Department</th>
+              <th>Competences</th>
+              {data[0].availability.map((availabilityWeek) => (
+                <th key={availabilityWeek.weekNumber}>W# {availabilityWeek.weekNumber}</th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+          </thead>
+          <tbody>
+
+            {data.map((variant) => (
+              <tr key={variant.id + "tr"}>
+                <td>{variant.name}</td>
+                <td>{variant.email}</td>
+                <td>{variant.department}</td>
+                <td>{variant.competences.join(", ")}</td>
+                {variant.availability.map((a) => (
+                  <td key={`${variant.id}/${a.weekNumber}`}>{a.availableHours}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
 }
