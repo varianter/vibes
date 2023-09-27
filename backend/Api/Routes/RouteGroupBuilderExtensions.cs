@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace backend.Api;
+namespace Api.Routes;
 
 public static class RouteGroupBuilderExtensions
 {

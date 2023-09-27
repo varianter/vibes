@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace backend.Core.DomainModels;
+namespace Core.DomainModels;
 
 public class Department
 {

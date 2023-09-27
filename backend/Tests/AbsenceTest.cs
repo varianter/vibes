@@ -1,6 +1,5 @@
-using backend.Core.DomainModels;
-using backend.Core.Services;
-using Microsoft.VisualBasic;
+using Core.DomainModels;
+using Core.Services;
 using NSubstitute;
 
 namespace Tests;
@@ -52,7 +51,7 @@ public class Tests
                 {
                     Consultant = consultant,
                     // Note that this calculation is not taking into account WHICH day, but estimated weekSummary
-                    Date = new DateOnly(year, month, monday + i) 
+                    Date = new DateOnly(year, month, monday + i)
                 });
 
         if (plannedAbsenceHours > 0)

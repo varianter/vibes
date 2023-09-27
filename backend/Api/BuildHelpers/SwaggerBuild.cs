@@ -1,8 +1,8 @@
-using backend.Options;
+using Api.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace backend.BuildHelpers;
+namespace Api.BuildHelpers;
 
 public abstract class SwaggerBuild
 {
@@ -29,7 +29,7 @@ public abstract class SwaggerBuild
                 Type = SecuritySchemeType.OAuth2,
                 Flows = new OpenApiOAuthFlows
                 {
-                    Implicit = new OpenApiOAuthFlow()
+                    Implicit = new OpenApiOAuthFlow
                     {
                         AuthorizationUrl = settings.AuthorizationUrl(),
                         TokenUrl = settings.TokenUrl(),
