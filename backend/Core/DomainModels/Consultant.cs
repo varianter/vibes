@@ -34,13 +34,14 @@ public class Consultant
         var hoursPrWorkDay = Department.Organization.HoursPerWorkday;
         var totalWeeklyHours = hoursPrWorkDay * 5;
         var vacationHours = Vacations.Count(v => DateService.DateIsInWeek(v.Date, year, week)) * hoursPrWorkDay;
+        var holidayHours = Holiday.GetTotalHolidayHoursOfWeek(year, week, hoursPrWorkDay);
 
         var totalAbsence = PlannedAbsences
             .Where(pa => pa.Year == year && pa.WeekNumber == week)
             .Select(pa => pa.Hours)
             .Sum();
 
-        var availableHours = totalWeeklyHours - vacationHours - totalAbsence;
+        var availableHours = totalWeeklyHours - vacationHours - totalAbsence - holidayHours;
         return Math.Max(availableHours, 0);
     }
 

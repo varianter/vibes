@@ -114,7 +114,7 @@ public class ApplicationContext : DbContext
         });
 
         modelBuilder.Entity<Organization>()
-            .HasData(new { Name = "Variant AS", HoursPerWorkday = (float)7.5, Id = "variant-as" });
+            .HasData(new { Name = "Variant AS", HoursPerWorkday = 7.5, Id = "variant-as" });
 
         modelBuilder.Entity<Department>()
             .HasData(new { Id = "trondheim", Name = "Trondheim", OrganizationId = "variant-as" });
