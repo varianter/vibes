@@ -1,8 +1,8 @@
-using backend.Core.DomainModels;
-using backend.Database.ValueConverters;
+using Core.DomainModels;
+using Database.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 
-namespace backend.Database.Contexts;
+namespace Database.DatabaseContext;
 
 public class ApplicationContext : DbContext
 {
@@ -31,19 +31,19 @@ public class ApplicationContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Organization>()
-            .HasMany<Department>(org => org.Departments)
+            .HasMany(org => org.Departments)
             .WithOne(dept => dept.Organization);
 
         modelBuilder.Entity<Organization>()
-            .HasMany<Absence>(organization => organization.AbsenceTypes)
+            .HasMany(organization => organization.AbsenceTypes)
             .WithOne(absence => absence.Organization);
 
         modelBuilder.Entity<Organization>()
-            .HasMany<Customer>(organization => organization.Customers)
+            .HasMany(organization => organization.Customers)
             .WithOne(customer => customer.Organization);
 
         modelBuilder.Entity<Customer>()
-            .HasMany<Project>(customer => customer.Projects)
+            .HasMany(customer => customer.Projects)
             .WithOne(project => project.Customer);
 
         modelBuilder.Entity<Project>()
@@ -51,7 +51,7 @@ public class ApplicationContext : DbContext
             .HasConversion<string>();
 
         modelBuilder.Entity<Project>()
-            .HasMany<Consultant>(p => p.Consultants)
+            .HasMany(p => p.Consultants)
             .WithMany(c => c.Projects)
             .UsingEntity<Staffing>(
                 r => r.HasOne<Consultant>(s => s.Consultant)
@@ -82,11 +82,11 @@ public class ApplicationContext : DbContext
             .WithMany(dept => dept.Consultants);
 
         modelBuilder.Entity<Consultant>()
-            .HasMany<Vacation>(consultant => consultant.Vacations)
+            .HasMany(consultant => consultant.Vacations)
             .WithOne(vacation => vacation.Consultant);
 
         modelBuilder.Entity<Consultant>()
-            .HasMany<PlannedAbsence>(consultant => consultant.PlannedAbsences)
+            .HasMany(consultant => consultant.PlannedAbsences)
             .WithOne(absence => absence.Consultant);
 
         modelBuilder.Entity<Consultant>()

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using backend.Core.Services;
+using Core.Services;
 
-namespace backend.Core.DomainModels;
+namespace Core.DomainModels;
 
 public class Consultant
 {

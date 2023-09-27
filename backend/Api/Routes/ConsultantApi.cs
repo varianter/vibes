@@ -1,10 +1,10 @@
-using backend.Core.DomainModels;
-using backend.Database.Contexts;
+using Core.DomainModels;
+using Database.DatabaseContext;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace backend.Api;
+namespace Api.Routes;
 
 public static class ConsultantApi
 {
@@ -39,7 +39,7 @@ public static class ConsultantApi
             .ThenInclude(d => d.Organization)
             .Select(c => c.MapToReadModel(numberOfWeeks))
             .SingleOrDefault();
-        
+
         return consultant is null ? TypedResults.NotFound() : TypedResults.Ok(consultant);
     }
 
@@ -49,9 +49,6 @@ public static class ConsultantApi
         await db.SaveChangesAsync();
         return TypedResults.Created($"/variant/{variant.Id}", variant);
     }
-
-    private record ConsultantReadModel(int Id, string Name, string Email, List<string> Competences, string Department,
-        List<AvailabilityPerWeek> Availability);
 
     private static ConsultantReadModel MapToReadModel(this Consultant consultant, int weeks)
     {
@@ -63,4 +60,7 @@ public static class ConsultantApi
             consultant.Department.Name,
             consultant.GetAvailableHoursForNWeeks(weeks));
     }
+
+    private record ConsultantReadModel(int Id, string Name, string Email, List<string> Competences, string Department,
+        List<AvailabilityPerWeek> Availability);
 }

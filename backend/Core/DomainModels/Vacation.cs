@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace backend.Core.DomainModels;
+namespace Core.DomainModels;
 
 public class Vacation
 {

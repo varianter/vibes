@@ -1,7 +1,7 @@
-using backend.Api;
-using backend.BuildHelpers;
-using backend.Database.Contexts;
-using backend.Options;
+using Api.BuildHelpers;
+using Api.Options;
+using Api.Routes;
+using Database.DatabaseContext;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;

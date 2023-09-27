@@ -1,7 +1,7 @@
-using backend.Core.Services;
+using Core.Services;
 using PublicHoliday;
 
-namespace backend.Core.DomainModels;
+namespace Core.DomainModels;
 
 public static class Holiday
 {

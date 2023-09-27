@@ -1,4 +1,4 @@
-namespace backend.BuildHelpers;
+namespace Api.BuildHelpers;
 
 public abstract class ErrorHandler
 {
