@@ -28,13 +28,13 @@ public class DateService
     {
         return day.Year == year && GetWeekNumber(day.ToDateTime(TimeOnly.MinValue)) == week;
     }
-    
-    
-    public static IEnumerable<DateOnly> GetDatesInWorkWeek(int year, int week)
+
+
+    public static List<DateOnly> GetDatesInWorkWeek(int year, int week)
     {
         var datesInWeek = new List<DateOnly>();
         var firstDayOfWeek = FirstWorkDayOfWeek(year, week);
-        
+
         for (var i = 0; i < 5; i++)
         {
             var date = DateOnly.FromDateTime(firstDayOfWeek.AddDays(i));
@@ -43,12 +43,10 @@ public class DateService
 
         return datesInWeek;
     }
-    
-    
-    
+
+
     private static DateTime FirstWorkDayOfWeek(int year, int weekOfYear)
     {
-
         // Source: https://stackoverflow.com/a/9064954
         var jan1 = new DateTime(year, 1, 1);
         var daysOffset = DayOfWeek.Thursday - jan1.DayOfWeek;
@@ -62,10 +60,7 @@ public class DateService
         var weekNum = weekOfYear;
         // As we're adding days to a date in Week 1,
         // we need to subtract 1 in order to get the right date for week #1
-        if (firstWeek == 1)
-        {
-            weekNum -= 1;
-        }
+        if (firstWeek == 1) weekNum -= 1;
 
         // Using the first Thursday as starting week ensures that we are starting in the right year
         // then we add number of weeks multiplied with days

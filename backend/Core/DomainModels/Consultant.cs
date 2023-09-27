@@ -32,16 +32,18 @@ public class Consultant
     public double GetAvailableHours(int year, int week)
     {
         var hoursPrWorkDay = Department.Organization.HoursPerWorkday;
-        var totalWeeklyHours = hoursPrWorkDay * 5;
-        var vacationHours = Vacations.Count(v => DateService.DateIsInWeek(v.Date, year, week)) * hoursPrWorkDay;
-        var holidayHours = Holiday.GetTotalHolidayHoursOfWeek(year, week, hoursPrWorkDay);
+        var holidays = Holiday.GetTotalHolidaysOfWeek(year, week);
+        var vacations = Vacations.Count(v => DateService.DateIsInWeek(v.Date, year, week));
+        var workdaysInWeek = 5 - holidays - vacations;
 
-        var totalAbsence = PlannedAbsences
+        var workHoursInWeek = hoursPrWorkDay * workdaysInWeek;
+
+        var plannedAbsenceHours = PlannedAbsences
             .Where(pa => pa.Year == year && pa.WeekNumber == week)
             .Select(pa => pa.Hours)
             .Sum();
 
-        var availableHours = totalWeeklyHours - vacationHours - totalAbsence - holidayHours;
+        var availableHours = workHoursInWeek - plannedAbsenceHours;
         return Math.Max(availableHours, 0);
     }
 

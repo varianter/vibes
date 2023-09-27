@@ -5,34 +5,26 @@ namespace backend.Core.DomainModels;
 
 public static class Holiday
 {
-    public static double GetTotalHolidayHoursOfWeek(int year, int week, double hoursPerWorkWeek = 7.5)
+    public static int GetTotalHolidaysOfWeek(int year, int week)
     {
         var datesOfThisWeek = DateService.GetDatesInWorkWeek(year, week);
-        var totalHolidayHoursInWeek = 0.0;
 
-        foreach (var workDayDate in datesOfThisWeek)
-        {
-            var dateTimeDay = workDayDate.ToDateTime(TimeOnly.Parse("12:00"));
-            var isPublicHoliday = new NorwayPublicHoliday().IsPublicHoliday(dateTimeDay);
+        return datesOfThisWeek.Count(IsHoliday);
+    }
 
-            var isVariantChristmas = !isPublicHoliday && IsVariantChristmasHoliday(workDayDate);
+    private static bool IsHoliday(DateOnly day)
+    {
+        var isPublicHoliday = new NorwayPublicHoliday().IsPublicHoliday(day.ToDateTime(TimeOnly.MinValue));
 
-            if (isPublicHoliday || isVariantChristmas)
-            {
-                totalHolidayHoursInWeek += hoursPerWorkWeek;
-            }
-        }
-
-        return totalHolidayHoursInWeek;
+        return isPublicHoliday || IsVariantChristmasHoliday(day);
     }
 
 
-    private static bool IsVariantChristmasHoliday(DateOnly dateOnly)
+    private static bool IsVariantChristmasHoliday(DateOnly date)
     {
-        var startDate = new DateOnly(dateOnly.Year, 12, 24);
-        var endDate = new DateOnly(dateOnly.Year, 12, 31);
-        
-        return dateOnly >= startDate && dateOnly <= endDate;
+        var startDate = new DateOnly(date.Year, 12, 24);
+        var endDate = new DateOnly(date.Year, 12, 31);
 
+        return date >= startDate && date <= endDate;
     }
 }
