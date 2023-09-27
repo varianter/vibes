@@ -43,7 +43,7 @@ public class Tests
 
         var year = mondayDateOnly.Year;
         var month = mondayDateOnly.Month;
-        var day = mondayDateOnly.Day;
+        var monday = mondayDateOnly.Day;
         var week = DateService.GetWeekNumber(mondayDateOnly.ToDateTime(TimeOnly.Parse("12:00")));
 
         if (vacationDays > 0)
@@ -51,7 +51,8 @@ public class Tests
                 consultant.Vacations.Add(new Vacation
                 {
                     Consultant = consultant,
-                    Date = new DateOnly(year, month, day + numberOfHolidays + i)
+                    // Note that this calculation is not taking into account WHICH day, but estimated weekSummary
+                    Date = new DateOnly(year, month, monday + i) 
                 });
 
         if (plannedAbsenceHours > 0)
