@@ -1,9 +1,9 @@
-using backend.ApplicationCore.Services;
+using backend.Core.Services;
 using PublicHoliday;
 
 namespace backend.Core.DomainModels;
 
-public abstract class Holiday
+public static class Holiday
 {
     public static double GetTotalHolidayHoursOfWeek(int year, int week, double hoursPerWorkWeek = 7.5)
     {

@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace backend.ApplicationCore.Services;
+namespace backend.Core.Services;
 
 public class DateService
 {

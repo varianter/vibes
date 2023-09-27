@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using backend.ApplicationCore.Services;
+using backend.Core.Services;
 
 namespace backend.Core.DomainModels;
 
