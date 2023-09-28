@@ -4,13 +4,13 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Api.BuildHelpers;
 
-public abstract class SwaggerBuild
+public static class SwaggerExtensions
 {
-    public static void AddSwaggerOAuthSetupAction(AzureAdOptions? settings, SwaggerGenOptions c)
+    public static void ConfigureSwaggerAuthentication(this SwaggerGenOptions c, AzureAdOptions adOptions)
     {
         var scopes = new Dictionary<string, string>
         {
-            { $"{settings.ApiScope}", "Access API backend on user behalf" }
+            { $"{adOptions.ApiScope}", "Access API backend on user behalf" }
         };
 
         c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -20,7 +20,7 @@ public abstract class SwaggerBuild
                 {
                     Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "oauth2" }
                 },
-                new[] { settings.ApiScope }
+                new[] { adOptions.ApiScope }
             }
         });
 
@@ -31,8 +31,8 @@ public abstract class SwaggerBuild
                 {
                     Implicit = new OpenApiOAuthFlow
                     {
-                        AuthorizationUrl = settings.AuthorizationUrl(),
-                        TokenUrl = settings.TokenUrl(),
+                        AuthorizationUrl = adOptions.AuthorizationUrl(),
+                        TokenUrl = adOptions.TokenUrl(),
                         Scopes = scopes
                     }
                 }

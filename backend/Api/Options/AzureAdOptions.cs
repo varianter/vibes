@@ -3,7 +3,6 @@ namespace Api.Options;
 public class AzureAdOptions
 {
     public Uri Instance { get; set; } = null!;
-    public bool DisableAuthAd { get; set; } = false;
     public string ClientId { get; set; } = null!;
     public string TenantId { get; set; } = null!;
     public string ApiScope { get; set; } = null!;

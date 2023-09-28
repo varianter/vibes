@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 var connection = builder.Configuration.GetConnectionString("VibesDb");
 
 if (string.IsNullOrEmpty(connection))
-    ErrorHandler.ThrowRequirementsException("Could not find database connection string");
+    throw new Exception("No connection string found");
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration);
@@ -21,23 +21,15 @@ builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServe
 
 builder.Services.AddMemoryCache();
 
-//TODO: Cleanup swagger config
 builder.Services.AddEndpointsApiExplorer();
-var azureSettingsSection = builder.Configuration.GetSection("AzureAd");
-var azureSettings = azureSettingsSection.Get<AzureAdOptions>();
 
-if (azureSettings == null) // TODO: Better checking of params
-    ErrorHandler.ThrowRequirementsException("Unable to load 'AzureAd' from settings");
+var adOptions = builder.Configuration.GetSection("AzureAd").Get<AzureAdOptions>();
+if (adOptions == null) throw new Exception("Required AzureAd options are missing");
 
-builder.Services.AddSwaggerGen(c =>
+builder.Services.AddSwaggerGen(genOptions =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Vibes API", Version = "v1" });
-
-    var disableSwaggerAuth =
-        azureSettings != null && !builder.Environment.IsProduction() && azureSettings.DisableAuthAd;
-    if (disableSwaggerAuth) return;
-
-    SwaggerBuild.AddSwaggerOAuthSetupAction(azureSettings, c);
+    genOptions.SwaggerDoc("v1", new OpenApiInfo { Title = "Vibes API", Version = "v1" });
+    genOptions.ConfigureSwaggerAuthentication(adOptions);
 });
 
 var app = builder.Build();
@@ -45,19 +37,16 @@ var app = builder.Build();
 app.MapApiGroup("variant", "Varianter")
     .MapConsultantApi();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsProduction())
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseDeveloperExceptionPage();
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("v1/swagger.json", "Vibes Backend API");
-        c.OAuthClientId($"{azureSettings?.ClientId}");
-        c.OAuthUsePkce();
-        c.OAuthScopeSeparator(" ");
-    });
-}
+    c.SwaggerEndpoint("v1/swagger.json", "Vibes Backend API");
+    c.OAuthClientId(adOptions.ClientId);
+    c.OAuthUsePkce();
+    c.OAuthScopeSeparator(" ");
+});
+
+if (!app.Environment.IsProduction()) app.UseDeveloperExceptionPage();
 
 // Only use redirection in production
 if (app.Environment.IsProduction()) app.UseHttpsRedirection();
