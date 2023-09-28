@@ -49,17 +49,16 @@ public static class ConsultantApi
         var weeksInA = applicableWeeks.Select(w => w.week).Where(w => w < minWeekNum + numberOfWeeks).ToList();
         var minWeekA = weeksInA.Min();
         var maxWeekA = weeksInA.Max();
-        
+
         // Set B will be either the weeks in the current year (2022 in the above example), or and empty set in a mid-year case. 
         var yearB = applicableWeeks.Select(w => w.year).Min();
         var weeksInB = applicableWeeks.Select(w => w.week).Where(w => w < minWeekNum + numberOfWeeks).ToList();
         var minWeekB = weeksInB.Min();
         var maxWeekB = weeksInB.Max();
 
-        
+
         return context.Consultant
-            .Include(c =>
-                c.Vacations)
+            .Include(c => c.Vacations)
             .Include(c => c.PlannedAbsences.Where(pa =>
                 (pa.Year <= yearA && minWeekA <= pa.WeekNumber && pa.WeekNumber <= maxWeekA)
                 || (yearB <= pa.Year && minWeekB <= pa.WeekNumber && pa.WeekNumber <= maxWeekB)))
@@ -71,7 +70,7 @@ public static class ConsultantApi
             .Select(c => c.MapToReadModel(numberOfWeeks))
             .ToList();
     }
-    
+
     private static Results<Ok<ConsultantReadModel>, NotFound> GetConsultantById(ApplicationContext context, int id,
         [FromQuery(Name = "weeks")] int numberOfWeeks = 8)
     {
