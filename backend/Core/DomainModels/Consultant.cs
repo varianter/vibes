@@ -43,7 +43,12 @@ public class Consultant
             .Select(pa => pa.Hours)
             .Sum();
 
-        var availableHours = workHoursInWeek - plannedAbsenceHours;
+        var staffedHours = Staffings
+            .Where(s => s.Year == year && s.Week == week)
+            .Select(s => s.Hours)
+            .Sum();
+
+        var availableHours = workHoursInWeek - plannedAbsenceHours - staffedHours;
         return Math.Max(availableHours, 0);
     }
 
