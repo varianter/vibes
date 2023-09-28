@@ -6,7 +6,7 @@ namespace Core.DomainModels;
 public class Consultant
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public required int Id { get; set; }
+    public int Id { get; set; }
 
     public required string Name { get; set; }
     public required string Email { get; set; }
