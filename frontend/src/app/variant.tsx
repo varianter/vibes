@@ -1,18 +1,36 @@
-"use client"
-import { CircularProgress } from "@mui/material";
+"use client";
+import {
+  CircularProgress,
+  Switch,
+  FormControlLabel,
+  FormGroup,
+} from "@mui/material";
 import useVibesApi from "./hooks/useVibesApi";
+import React, { useState } from "react";
 
 export function VariantList() {
-
-  const { data, isLoading, isError, error } = useVibesApi();
+  const [includeOccupied, setIncludeOccupied] = useState<boolean>(false);
+  const { data, isLoading, isError, error } = useVibesApi(includeOccupied);
 
   if (isLoading) {
-    return <CircularProgress />
+    return <CircularProgress />;
   }
 
   if (data) {
     return (
       <div>
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={includeOccupied}
+                onChange={() => setIncludeOccupied((old) => !old)}
+              />
+            }
+            label={"Include occupied consultants"}
+          />
+        </FormGroup>
+
         <table>
           <thead>
             <tr>
@@ -21,12 +39,13 @@ export function VariantList() {
               <th>Department</th>
               <th>Competences</th>
               {data[0].availability.map((availabilityWeek) => (
-                <th key={availabilityWeek.weekNumber}>W# {availabilityWeek.weekNumber}</th>
+                <th key={availabilityWeek.weekNumber}>
+                  W# {availabilityWeek.weekNumber}
+                </th>
               ))}
             </tr>
           </thead>
           <tbody>
-
             {data.map((variant) => (
               <tr key={variant.id + "tr"}>
                 <td>{variant.name}</td>
@@ -34,7 +53,9 @@ export function VariantList() {
                 <td>{variant.department}</td>
                 <td>{variant.competences.join(", ")}</td>
                 {variant.availability.map((a) => (
-                  <td key={`${variant.id}/${a.weekNumber}`}>{a.availableHours}</td>
+                  <td key={`${variant.id}/${a.weekNumber}`}>
+                    {a.availableHours}
+                  </td>
                 ))}
               </tr>
             ))}

@@ -19,19 +19,50 @@ public static class ConsultantApi
     }
 
     private static Ok<List<ConsultantReadModel>> GetAllConsultants(ApplicationContext context, IMemoryCache cache,
+        [FromQuery(Name = "weeks")] int numberOfWeeks = 8,
+        [FromQuery(Name = "includeOccupied")] bool includeOccupied = false)
+    {
+        var consultants = GetConsultantsWithAvailability(context, cache, numberOfWeeks)
+            .Where(c =>
+                includeOccupied
+                || c.Availability.Select(a => a.AvailableHours).Sum() > 0
+            ).ToList();
+
+        return TypedResults.Ok(consultants);
+    }
+
+
+    private static Ok<ConsultantReadModel> GetConsultantById(ApplicationContext context, IMemoryCache cache, int id,
         [FromQuery(Name = "weeks")] int numberOfWeeks = 8)
     {
-        if (
-            numberOfWeeks == 8 &&
-            cache.TryGetValue(CacheKeys.ConsultantAvailability8Weeks, out List<ConsultantReadModel>? data)
-        )
-            return TypedResults.Ok(data);
+        var consultants = GetConsultantsWithAvailability(context, cache, numberOfWeeks);
+        return TypedResults.Ok(consultants.Single(c => c.Id == id));
+    }
 
+    private static ConsultantReadModel MapToReadModel(this Consultant consultant, int weeks)
+    {
+        return new ConsultantReadModel(
+            consultant.Id,
+            consultant.Name,
+            consultant.Email,
+            consultant.Competences.Select(comp => comp.Name).ToList(),
+            consultant.Department.Name,
+            consultant.GetAvailableHoursForNWeeks(weeks));
+    }
+
+    private static List<ConsultantReadModel> GetConsultantsWithAvailability(ApplicationContext context,
+        IMemoryCache cache, int numberOfWeeks)
+    {
+        if (numberOfWeeks == 8)
+        {
+            cache.TryGetValue(CacheKeys.ConsultantAvailability8Weeks, out List<ConsultantReadModel>? cachedConsultants);
+            if (cachedConsultants != null) return cachedConsultants;
+        }
 
         var consultants = LoadConsultantAvailability(context, numberOfWeeks);
 
         cache.Set(CacheKeys.ConsultantAvailability8Weeks, consultants);
-        return TypedResults.Ok(consultants);
+        return consultants;
     }
 
     private static List<ConsultantReadModel> LoadConsultantAvailability(ApplicationContext context, int numberOfWeeks)
@@ -71,49 +102,21 @@ public static class ConsultantApi
             .ToList();
     }
 
-    private static Results<Ok<ConsultantReadModel>, NotFound> GetConsultantById(ApplicationContext context, int id,
-        [FromQuery(Name = "weeks")] int numberOfWeeks = 8)
-    {
-        var consultant = context.Consultant.Where(c => c.Id == id)
-            .Include(c => c.Vacations)
-            .Include(c => c.PlannedAbsences)
-            .Include(c => c.Department)
-            .ThenInclude(d => d.Organization)
-            .Select(c => c.MapToReadModel(numberOfWeeks))
-            .SingleOrDefault();
-
-        return consultant is null ? TypedResults.NotFound() : TypedResults.Ok(consultant);
-    }
-
-    private static ConsultantReadModel MapToReadModel(this Consultant consultant, int weeks)
-    {
-        return new ConsultantReadModel(
-            consultant.Id,
-            consultant.Name,
-            consultant.Email,
-            consultant.Competences.Select(comp => comp.Name).ToList(),
-            consultant.Department.Name,
-            consultant.GetAvailableHoursForNWeeks(weeks));
-    }
-
-    private record ConsultantReadModel(int Id, string Name, string Email, List<string> Competences, string Department,
-        List<AvailabilityPerWeek> Availability);
-
 
     private static async Task<Created<Consultant>> AddBasicConsultant(ApplicationContext db,
         IMemoryCache cache,
         [FromBody] ConsultantWriteModel basicVariant)
     {
         var selectedDepartment = db.Department.Single(d => d.Id == basicVariant.DepartmentId);
-        
+
         // TODO
         // Sjekk epost
         // Sjekk at den er unik
         // Sjekk @-epost-format
         // sjekk at Department blir funnet
         // Sjekk unikt navn
-        
-        
+
+
         var fullVariant = new Consultant
         {
             Name = basicVariant.Name,
@@ -127,6 +130,9 @@ public static class ConsultantApi
 
         return TypedResults.Created($"/variant/{fullVariant.Id}", fullVariant);
     }
+
+    private record ConsultantReadModel(int Id, string Name, string Email, List<string> Competences, string Department,
+        List<AvailabilityPerWeek> Availability);
 
     private record ConsultantWriteModel(string Name, string Email, string DepartmentId);
 }
