@@ -4,12 +4,25 @@
  * docker and docker compose 
 
 ## Config and run
-* `cp appsettings.Local.json.template appsettings.Local.json`
-* Add _missing_ fields
-* `cd .. && docker-compose up`
-  * This adds a database container
-* Update db schema and create tables: `dotnet ef database update -- --environment Local`
-* Run from your IDE, or `dotnet run`
+```shell
+# Copy the template file and fill the missing fields:
+cd backend/
+cp appsettings.Local.json.template appsettings.Local.json
+
+
+# Start PostgreSQL inside a docker container:
+cd backend/ 
+docker-compose up database -d
+
+# Update Database to latest schema and create tables: 
+cd backend/
+dotnet ef database update --startup-project Api/ --project Database/
+
+# Start the web-server by either using the IDE launcher (launchSettings.json): Api:http
+# ...or manually by terminal 
+cd backend/Api
+dotnet run
+```
 
 
 ## Swagger API Auth
