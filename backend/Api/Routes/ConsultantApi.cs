@@ -14,7 +14,7 @@ public static class ConsultantApi
     {
         group.MapGet("/", GetAllConsultants);
         group.MapGet("/{id}", GetConsultantById);
-        group.MapPost("/", AddConsultant).WithOpenApi();
+        group.MapPost("/", AddBasicConsultant).WithOpenApi();
     }
 
     private static Ok<List<ConsultantReadModel>> GetAllConsultants(ApplicationContext context, IMemoryCache cache,
@@ -52,15 +52,6 @@ public static class ConsultantApi
         return consultant is null ? TypedResults.NotFound() : TypedResults.Ok(consultant);
     }
 
-    private static async Task<Created<Consultant>> AddConsultant(ApplicationContext db, IMemoryCache cache,
-        Consultant variant)
-    {
-        await db.Consultant.AddAsync(variant);
-        await db.SaveChangesAsync();
-        cache.Remove(CacheKeys.ConsultantAvailability8Weeks);
-        return TypedResults.Created($"/variant/{variant.Id}", variant);
-    }
-
     private static ConsultantReadModel MapToReadModel(this Consultant consultant, int weeks)
     {
         return new ConsultantReadModel(
@@ -74,4 +65,35 @@ public static class ConsultantApi
 
     private record ConsultantReadModel(int Id, string Name, string Email, List<string> Competences, string Department,
         List<AvailabilityPerWeek> Availability);
+
+
+    private static async Task<Created<Consultant>> AddBasicConsultant(ApplicationContext db,
+        IMemoryCache cache,
+        [FromBody] ConsultantWriteModel basicVariant)
+    {
+        var selectedDepartment = db.Department.Single(d => d.Id == basicVariant.DepartmentId);
+        
+        // TODO
+        // Sjekk epost
+        // Sjekk at den er unik
+        // Sjekk @-epost-format
+        // sjekk at Department blir funnet
+        // Sjekk unikt navn
+        
+        
+        var fullVariant = new Consultant
+        {
+            Name = basicVariant.Name,
+            Email = basicVariant.Email,
+            Department = selectedDepartment
+        };
+
+        await db.Consultant.AddAsync(fullVariant);
+        await db.SaveChangesAsync();
+        cache.Remove(CacheKeys.ConsultantAvailability8Weeks);
+
+        return TypedResults.Created($"/variant/{fullVariant.Id}", fullVariant);
+    }
+
+    private record ConsultantWriteModel(string Name, string Email, string DepartmentId);
 }
