@@ -3,6 +3,7 @@ using Database.DatabaseContext;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Api.Routes;
 
@@ -15,9 +16,14 @@ public static class ConsultantApi
         group.MapPost("/", AddConsultant).WithOpenApi();
     }
 
-    private static Ok<List<ConsultantReadModel>> GetAllConsultants(ApplicationContext context,
+    private static Ok<List<ConsultantReadModel>> GetAllConsultants(ApplicationContext context, IMemoryCache cache,
         [FromQuery(Name = "weeks")] int numberOfWeeks = 8)
     {
+        if (cache.TryGetValue(1, out List<ConsultantReadModel>? data))
+        {
+            return TypedResults.Ok(data);
+        }
+
         var consultants = context.Consultant
             .Include(c => c.Vacations)
             .Include(c => c.PlannedAbsences)
@@ -25,7 +31,8 @@ public static class ConsultantApi
             .ThenInclude(d => d.Organization)
             .Select(c => c.MapToReadModel(numberOfWeeks))
             .ToList();
-
+        
+        cache.Set(1, consultants);
         return TypedResults.Ok(consultants);
     }
 

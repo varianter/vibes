@@ -19,6 +19,8 @@ builder.Services.AddAuthorization(opt => opt.FallbackPolicy = opt.DefaultPolicy)
 
 builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection));
 
+builder.Services.AddMemoryCache();
+
 //TODO: Cleanup swagger config
 builder.Services.AddEndpointsApiExplorer();
 var azureSettingsSection = builder.Configuration.GetSection("AzureAd");
