@@ -6,17 +6,21 @@ namespace Tests;
 
 public class Tests
 {
-    [TestCase(2, 15, 0, 7.5)]
-    [TestCase(0, 7.5, 0, 30)]
-    [TestCase(5, 37.5, 0, 0)]
-    [TestCase(0, 0, 0, 37.5)]
-    [TestCase(5, 30, 0, 0)]
-    [TestCase(5, 0, 0, 0)]
-    [TestCase(5, 37.5, 0, 0)]
-    [TestCase(0, 0, 1, 30.0)]
-    [TestCase(0, 0, 2, 22.5)]
-    [TestCase(0, 0, 5, 0)]
+    [TestCase(2, 15, 0, 0, 7.5)]
+    [TestCase(0, 7.5, 0, 0, 30)]
+    [TestCase(5, 37.5, 0, 0, 0)]
+    [TestCase(0, 0, 0, 0, 37.5)]
+    [TestCase(5, 30, 0, 0, 0)]
+    [TestCase(5, 0, 0, 0, 0)]
+    [TestCase(5, 37.5, 0, 0, 0)]
+    [TestCase(0, 0, 1, 0, 30.0)]
+    [TestCase(0, 0, 2, 0, 22.5)]
+    [TestCase(0, 0, 5, 0, 0)]
+    [TestCase(0, 0, 0, 37.5, 0)]
+    [TestCase(0, 0, 0, 30, 7.5)]
+    [TestCase(0, 7.5, 0, 22.5, 7.5)]
     public void AvailabilityCalculation(int vacationDays, double plannedAbsenceHours, int numberOfHolidays,
+        double staffedHours,
         double expectedAvailability)
     {
         var department = Substitute.For<Department>();
@@ -59,6 +63,16 @@ public class Tests
             {
                 Consultant = consultant, Year = year, WeekNumber = week,
                 Hours = plannedAbsenceHours
+            });
+
+        if (staffedHours > 0)
+            consultant.Staffings.Add(new Staffing
+            {
+                Project = Substitute.For<Project>(),
+                Consultant = consultant,
+                Year = year,
+                Week = week,
+                Hours = staffedHours
             });
 
         var availability = consultant.GetAvailableHours(year, week);

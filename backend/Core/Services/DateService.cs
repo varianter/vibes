@@ -29,6 +29,18 @@ public class DateService
         return day.Year == year && GetWeekNumber(day.ToDateTime(TimeOnly.MinValue)) == week;
     }
 
+    public static List<(int year, int week)> GetNextWeeks(int weeksAhead)
+    {
+        return Enumerable.Range(0, weeksAhead)
+            .Select(offset =>
+            {
+                var year = DateTime.Today.AddDays(7 * offset).Year;
+                var week = GetWeekAhead(offset);
+
+                return (year, week);
+            }).ToList();
+    }
+
 
     public static List<DateOnly> GetDatesInWorkWeek(int year, int week)
     {

@@ -1,5 +1,6 @@
 using Api.Cache;
 using Core.DomainModels;
+using Core.Services;
 using Database.DatabaseContext;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -26,16 +27,48 @@ public static class ConsultantApi
         )
             return TypedResults.Ok(data);
 
-        var consultants = context.Consultant
-            .Include(c => c.Vacations)
-            .Include(c => c.PlannedAbsences)
-            .Include(c => c.Department)
-            .ThenInclude(d => d.Organization)
-            .Select(c => c.MapToReadModel(numberOfWeeks))
-            .ToList();
+
+        var consultants = LoadConsultantAvailability(context, numberOfWeeks);
 
         cache.Set(CacheKeys.ConsultantAvailability8Weeks, consultants);
         return TypedResults.Ok(consultants);
+    }
+
+    private static List<ConsultantReadModel> LoadConsultantAvailability(ApplicationContext context, int numberOfWeeks)
+    {
+        var applicableWeeks = DateService.GetNextWeeks(numberOfWeeks);
+
+        // Needed to filter planned absence and staffing.
+        // From november, we will span two years. 
+        // Given a 5-week span, the set of weeks can look like this: (2022) 51, 52, 53, 1, 2 (2023)
+        // Then we can filter as follows: Either the staffing has year 2022 and a week between 51 and 53, or year 2023 with weeks 1 and 2. 
+        var minWeekNum = applicableWeeks.Select(w => w.week).Min();
+
+        // Set A will be either the weeks in the next year (2023 in the above example), or have all the weeks in a mid-year case
+        var yearA = applicableWeeks.Select(w => w.year).Max();
+        var weeksInA = applicableWeeks.Select(w => w.week).Where(w => w < minWeekNum + numberOfWeeks).ToList();
+        var minWeekA = weeksInA.Min();
+        var maxWeekA = weeksInA.Max();
+
+        // Set B will be either the weeks in the current year (2022 in the above example), or and empty set in a mid-year case. 
+        var yearB = applicableWeeks.Select(w => w.year).Min();
+        var weeksInB = applicableWeeks.Select(w => w.week).Where(w => w < minWeekNum + numberOfWeeks).ToList();
+        var minWeekB = weeksInB.Min();
+        var maxWeekB = weeksInB.Max();
+
+
+        return context.Consultant
+            .Include(c => c.Vacations)
+            .Include(c => c.PlannedAbsences.Where(pa =>
+                (pa.Year <= yearA && minWeekA <= pa.WeekNumber && pa.WeekNumber <= maxWeekA)
+                || (yearB <= pa.Year && minWeekB <= pa.WeekNumber && pa.WeekNumber <= maxWeekB)))
+            .Include(c => c.Department)
+            .ThenInclude(d => d.Organization)
+            .Include(c => c.Staffings.Where(s =>
+                (s.Year <= yearA && minWeekA <= s.Week && s.Week <= maxWeekA)
+                || (yearB <= s.Year && minWeekB <= s.Week && s.Week <= maxWeekB)))
+            .Select(c => c.MapToReadModel(numberOfWeeks))
+            .ToList();
     }
 
     private static Results<Ok<ConsultantReadModel>, NotFound> GetConsultantById(ApplicationContext context, int id,
