@@ -1,3 +1,4 @@
+using Api.Cache;
 using Core.DomainModels;
 using Database.DatabaseContext;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -19,10 +20,11 @@ public static class ConsultantApi
     private static Ok<List<ConsultantReadModel>> GetAllConsultants(ApplicationContext context, IMemoryCache cache,
         [FromQuery(Name = "weeks")] int numberOfWeeks = 8)
     {
-        if (cache.TryGetValue(1, out List<ConsultantReadModel>? data))
-        {
+        if (
+            numberOfWeeks == 8 &&
+            cache.TryGetValue(CacheKeys.ConsultantAvailability8Weeks, out List<ConsultantReadModel>? data)
+        )
             return TypedResults.Ok(data);
-        }
 
         var consultants = context.Consultant
             .Include(c => c.Vacations)
@@ -31,8 +33,8 @@ public static class ConsultantApi
             .ThenInclude(d => d.Organization)
             .Select(c => c.MapToReadModel(numberOfWeeks))
             .ToList();
-        
-        cache.Set(1, consultants);
+
+        cache.Set(CacheKeys.ConsultantAvailability8Weeks, consultants);
         return TypedResults.Ok(consultants);
     }
 
@@ -50,10 +52,12 @@ public static class ConsultantApi
         return consultant is null ? TypedResults.NotFound() : TypedResults.Ok(consultant);
     }
 
-    private static async Task<Created<Consultant>> AddConsultant(ApplicationContext db, Consultant variant)
+    private static async Task<Created<Consultant>> AddConsultant(ApplicationContext db, IMemoryCache cache,
+        Consultant variant)
     {
         await db.Consultant.AddAsync(variant);
         await db.SaveChangesAsync();
+        cache.Remove(CacheKeys.ConsultantAvailability8Weeks);
         return TypedResults.Created($"/variant/{variant.Id}", variant);
     }
 
