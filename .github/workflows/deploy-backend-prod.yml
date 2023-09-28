@@ -25,7 +25,7 @@ jobs:
       
       # Run dotnet build and publish
       - name: dotnet build and publish
-        working-directory: backend/
+        working-directory: backend/api/
         run: |
           dotnet restore
           dotnet build --configuration Release
