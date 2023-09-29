@@ -29,14 +29,11 @@ public class Consultant
 
     public List<Staffing> Staffings { get; set; } = new();
 
-    public double GetAvailableHours(int year, int week)
+    public double GetBookedHours(int year, int week)
     {
         var hoursPrWorkDay = Department.Organization.HoursPerWorkday;
-        var holidays = Holiday.GetTotalHolidaysOfWeek(year, week);
-        var vacations = Vacations.Count(v => DateService.DateIsInWeek(v.Date, year, week));
-        var workdaysInWeek = 5 - holidays - vacations;
-
-        var workHoursInWeek = hoursPrWorkDay * workdaysInWeek;
+        var holidayHours = Holiday.GetTotalHolidaysOfWeek(year, week) * hoursPrWorkDay;
+        var vacationHours = Vacations.Count(v => DateService.DateIsInWeek(v.Date, year, week)) * hoursPrWorkDay;
 
         var plannedAbsenceHours = PlannedAbsences
             .Where(pa => pa.Year == year && pa.WeekNumber == week)
@@ -48,25 +45,30 @@ public class Consultant
             .Select(s => s.Hours)
             .Sum();
 
-        var availableHours = workHoursInWeek - plannedAbsenceHours - staffedHours;
-        return Math.Max(availableHours, 0);
+        var bookedHours = holidayHours + vacationHours + plannedAbsenceHours + staffedHours;
+        return Math.Min(bookedHours, 5 * hoursPrWorkDay);
     }
 
-    public List<AvailabilityPerWeek> GetAvailableHoursForNWeeks(int n)
+    public List<BookedHoursPerWeek> GetBookedHoursForWeeks(int weeksAhead)
     {
-        return Enumerable.Range(0, n)
-            .Select(weeksAhead =>
+        return Enumerable.Range(0, weeksAhead)
+            .Select(offset =>
             {
-                var year = DateTime.Today.AddDays(7 * weeksAhead).Year;
-                var week = DateService.GetWeekAhead(weeksAhead);
+                var year = DateTime.Today.AddDays(7 * offset).Year;
+                var week = DateService.GetWeekAhead(offset);
 
-                return new AvailabilityPerWeek(
+                return new BookedHoursPerWeek(
                     year,
                     week,
-                    GetAvailableHours(year, week)
+                    GetBookedHours(year, week)
                 );
             })
             .ToList();
+    }
+
+    public double GetHoursPrWeek()
+    {
+        return Department.Organization.HoursPerWorkday * 5;
     }
 }
 
@@ -85,4 +87,4 @@ public enum Degree
     None
 }
 
-public record AvailabilityPerWeek(int Year, int WeekNumber, double AvailableHours);
+public record BookedHoursPerWeek(int Year, int WeekNumber, double BookedHours);
