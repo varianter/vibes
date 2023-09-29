@@ -8,18 +8,7 @@ public static class ConsultantValidators
 {
     public static bool IsValidEmail(string email)
     {
-        var valid = true;
-
-        try
-        {
-            var mailAddress = new MailAddress(email);
-        }
-        catch
-        {
-            valid = false;
-        }
-
-        return valid;
+        return MailAddress.TryCreate(email, out _);
     }
 
     public static IDictionary<string, string []> ValidateUniqueness(List<Consultant> consultantList,
@@ -27,8 +16,8 @@ public static class ConsultantValidators
     {
         var results = new Dictionary<string, string[]>();
 
-        var isNameUnique = consultantList.All(item => item.Name != body.Name);
-        var isEmailUnique = consultantList.All(item => item.Email != body.Email);
+        var isNameUnique = consultantList.Any(item => item.Name == body.Name);
+        var isEmailUnique = consultantList.Any(item => item.Email == body.Email);
         var isEmailValid = IsValidEmail(body.Email);
 
         if (!isNameUnique)
