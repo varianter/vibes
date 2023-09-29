@@ -25,7 +25,7 @@ public static class ConsultantApi
         var consultants = GetConsultantsWithAvailability(context, cache, numberOfWeeks)
             .Where(c =>
                 includeOccupied
-                || c.Availability.Select(a => a.AvailableHours).Sum() > 0
+                || c.HasAvailability
             ).ToList();
 
         return TypedResults.Ok(consultants);
@@ -41,13 +41,19 @@ public static class ConsultantApi
 
     private static ConsultantReadModel MapToReadModel(this Consultant consultant, int weeks)
     {
+        const double tolerance = 0.1;
+        var bookedHours = consultant.GetBookedHoursForWeeks(weeks);
+
+        var hasAvailability = bookedHours.Any(b => b.BookedHours <= consultant.GetHoursPrWeek() - tolerance);
+
         return new ConsultantReadModel(
             consultant.Id,
             consultant.Name,
             consultant.Email,
             consultant.Competences.Select(comp => comp.Name).ToList(),
             consultant.Department.Name,
-            consultant.GetAvailableHoursForNWeeks(weeks));
+            bookedHours,
+            hasAvailability);
     }
 
     private static List<ConsultantReadModel> GetConsultantsWithAvailability(ApplicationContext context,
@@ -132,7 +138,7 @@ public static class ConsultantApi
     }
 
     private record ConsultantReadModel(int Id, string Name, string Email, List<string> Competences, string Department,
-        List<AvailabilityPerWeek> Availability);
+        List<BookedHoursPerWeek> Bookings, bool HasAvailability);
 
     private record ConsultantWriteModel(string Name, string Email, string DepartmentId);
 }

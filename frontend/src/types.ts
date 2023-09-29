@@ -6,11 +6,11 @@ export type Variant = {
   email: string;
   competences: string[];
   department: string;
-  availability: [
+  bookings: [
     {
       year: number;
       weekNumber: number;
-      availableHours: number;
+      bookedHours: number;
     },
   ];
 };
