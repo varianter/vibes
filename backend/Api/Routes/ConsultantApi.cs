@@ -90,6 +90,7 @@ public static class ConsultantApi
 
         return context.Consultant
             .Include(c => c.Vacations)
+            .Include(c => c.Competences)
             .Include(c => c.PlannedAbsences.Where(pa =>
                 (pa.Year <= yearA && minWeekA <= pa.WeekNumber && pa.WeekNumber <= maxWeekA)
                 || (yearB <= pa.Year && minWeekB <= pa.WeekNumber && pa.WeekNumber <= maxWeekB)))
