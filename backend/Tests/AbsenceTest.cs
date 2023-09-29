@@ -6,22 +6,22 @@ namespace Tests;
 
 public class Tests
 {
-    [TestCase(2, 15, 0, 0, 7.5)]
-    [TestCase(0, 7.5, 0, 0, 30)]
-    [TestCase(5, 37.5, 0, 0, 0)]
-    [TestCase(0, 0, 0, 0, 37.5)]
-    [TestCase(5, 30, 0, 0, 0)]
-    [TestCase(5, 0, 0, 0, 0)]
-    [TestCase(5, 37.5, 0, 0, 0)]
-    [TestCase(0, 0, 1, 0, 30.0)]
-    [TestCase(0, 0, 2, 0, 22.5)]
-    [TestCase(0, 0, 5, 0, 0)]
-    [TestCase(0, 0, 0, 37.5, 0)]
-    [TestCase(0, 0, 0, 30, 7.5)]
-    [TestCase(0, 7.5, 0, 22.5, 7.5)]
+    [TestCase(2, 15, 0, 0, 30)]
+    [TestCase(0, 7.5, 0, 0, 7.5)]
+    [TestCase(5, 37.5, 0, 0, 37.5)]
+    [TestCase(0, 0, 0, 0, 0)]
+    [TestCase(5, 30, 0, 0, 37.5)]
+    [TestCase(5, 0, 0, 0, 37.5)]
+    [TestCase(5, 37.5, 0, 0, 37.5)]
+    [TestCase(0, 0, 1, 0, 7.5)]
+    [TestCase(0, 0, 2, 0, 15)]
+    [TestCase(0, 0, 5, 0, 37.5)]
+    [TestCase(0, 0, 0, 37.5, 37.5)]
+    [TestCase(0, 0, 0, 30, 30)]
+    [TestCase(0, 7.5, 0, 22.5, 30)]
     public void AvailabilityCalculation(int vacationDays, double plannedAbsenceHours, int numberOfHolidays,
         double staffedHours,
-        double expectedAvailability)
+        double expectedBookedHours)
     {
         var department = Substitute.For<Department>();
         var organization = Substitute.For<Organization>();
@@ -75,8 +75,8 @@ public class Tests
                 Hours = staffedHours
             });
 
-        var availability = consultant.GetAvailableHours(year, week);
-        Assert.That(availability, Is.EqualTo(expectedAvailability));
+        var availability = consultant.GetBookedHours(year, week);
+        Assert.That(availability, Is.EqualTo(expectedBookedHours));
     }
 
     [Test]
@@ -110,7 +110,7 @@ public class Tests
             Hours = 15
         });
 
-        var availability = consultant.GetAvailableHours(year, week);
+        var availability = consultant.GetBookedHours(year, week);
         Assert.That(availability, Is.EqualTo(7.5));
     }
 }

@@ -38,9 +38,9 @@ export function VariantList() {
               <th>Email</th>
               <th>Department</th>
               <th>Competences</th>
-              {data[0].availability.map((availabilityWeek) => (
-                <th key={availabilityWeek.weekNumber}>
-                  W# {availabilityWeek.weekNumber}
+              {data[0].bookings.map((weeklyBooking) => (
+                <th key={weeklyBooking.weekNumber}>
+                  W# {weeklyBooking.weekNumber}
                 </th>
               ))}
             </tr>
@@ -52,9 +52,9 @@ export function VariantList() {
                 <td>{variant.email}</td>
                 <td>{variant.department}</td>
                 <td>{variant.competences.join(", ")}</td>
-                {variant.availability.map((a) => (
+                {variant.bookings.map((a) => (
                   <td key={`${variant.id}/${a.weekNumber}`}>
-                    {a.availableHours}
+                    {a.bookedHours}
                   </td>
                 ))}
               </tr>
