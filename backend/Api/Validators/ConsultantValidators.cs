@@ -4,7 +4,7 @@ using Core.DomainModels;
 
 namespace Api.Validators;
 
-public static class ConsultantTools
+public static class ConsultantValidators
 {
     public static bool IsValidEmail(string email)
     {

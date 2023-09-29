@@ -125,7 +125,7 @@ public static class ConsultantApi
             }
 
             var consultantList = await GetAllConsultantsAsync(db);
-            var validationResults = ConsultantTools.ValidateUniqueness(consultantList, basicVariant);
+            var validationResults = ConsultantValidators.ValidateUniqueness(consultantList, basicVariant);
 
             if (validationResults.Count > 0)
             {
@@ -140,6 +140,7 @@ public static class ConsultantApi
         }
         catch (Exception ex)
         {
+            // Adding exception handling later
             return TypedResults.Problem("An error occurred while processing the request", statusCode: 500);
         }
     }
