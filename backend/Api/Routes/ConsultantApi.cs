@@ -1,4 +1,5 @@
 using Api.Cache;
+using Api.Validators;
 using Core.DomainModels;
 using Core.Services;
 using Database.DatabaseContext;
@@ -99,34 +100,71 @@ public static class ConsultantApi
     private record ConsultantReadModel(int Id, string Name, string Email, List<string> Competences, string Department,
         List<AvailabilityPerWeek> Availability);
 
-
-    private static async Task<Created<Consultant>> AddBasicConsultant(ApplicationContext db,
+    private static async Task<Results<Created<Consultant>, ProblemHttpResult, ValidationProblem>> AddBasicConsultant(
+        ApplicationContext db,
         IMemoryCache cache,
         [FromBody] ConsultantWriteModel basicVariant)
     {
-        var selectedDepartment = db.Department.Single(d => d.Id == basicVariant.DepartmentId);
-        
-        // TODO
-        // Sjekk epost
-        // Sjekk at den er unik
-        // Sjekk @-epost-format
-        // sjekk at Department blir funnet
-        // Sjekk unikt navn
-        
-        
-        var fullVariant = new Consultant
+        try
+        {
+            var selectedDepartment = await GetDepartmentByIdAsync(db, basicVariant.DepartmentId);
+            if (selectedDepartment == null)
+            {
+                return TypedResults.Problem("Department does not exist", statusCode: 400);
+            }
+
+            var consultantList = await GetAllConsultantsAsync(db);
+            var validationResults = ConsultantTools.ValidateUniqueness(consultantList, basicVariant);
+
+            if (validationResults.Count > 0)
+            {
+                return TypedResults.ValidationProblem(validationResults);
+            }
+
+            var newConsultant = CreateConsultantFromModel(basicVariant, selectedDepartment);
+            await AddConsultantToDatabaseAsync(db, newConsultant);
+            ClearConsultantCache(cache);
+
+            return TypedResults.Created($"/variant/{newConsultant.Id}", newConsultant);
+        }
+        catch (Exception ex)
+        {
+            return TypedResults.Problem("An error occurred while processing the request", statusCode: 500);
+        }
+    }
+
+    private static async Task<Department?> GetDepartmentByIdAsync(ApplicationContext db, string departmentId)
+    {
+        return await db.Department.SingleOrDefaultAsync(d => d != null && d.Id == departmentId);
+    }
+
+    private static async Task<List<Consultant>> GetAllConsultantsAsync(ApplicationContext db)
+    {
+        return await db.Consultant.ToListAsync();
+    }
+
+    private static Consultant CreateConsultantFromModel(ConsultantWriteModel basicVariant,
+        Department selectedDepartment)
+    {
+        return new Consultant
         {
             Name = basicVariant.Name,
             Email = basicVariant.Email,
             Department = selectedDepartment
         };
-
-        await db.Consultant.AddAsync(fullVariant);
-        await db.SaveChangesAsync();
-        cache.Remove(CacheKeys.ConsultantAvailability8Weeks);
-
-        return TypedResults.Created($"/variant/{fullVariant.Id}", fullVariant);
     }
 
-    private record ConsultantWriteModel(string Name, string Email, string DepartmentId);
+    private static async Task AddConsultantToDatabaseAsync(ApplicationContext db, Consultant newConsultant)
+    {
+        await db.Consultant.AddAsync(newConsultant);
+        await db.SaveChangesAsync();
+    }
+
+    private static void ClearConsultantCache(IMemoryCache cache)
+    {
+        cache.Remove(CacheKeys.ConsultantAvailability8Weeks);
+    }
+
+
+    public record ConsultantWriteModel(string Name, string Email, string DepartmentId);
 }
