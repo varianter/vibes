@@ -100,7 +100,7 @@ public static class ConsultantApi
     private record ConsultantReadModel(int Id, string Name, string Email, List<string> Competences, string Department,
         List<AvailabilityPerWeek> Availability);
 
-    private static async Task<Results<Created<Consultant>, ProblemHttpResult, ValidationProblem>> AddBasicConsultant(
+    private static async Task<Results<Created<ConsultantWriteModel>, ProblemHttpResult, ValidationProblem>> AddBasicConsultant(
         ApplicationContext db,
         IMemoryCache cache,
         [FromBody] ConsultantWriteModel basicVariant)
@@ -125,7 +125,7 @@ public static class ConsultantApi
             await AddConsultantToDatabaseAsync(db, newConsultant);
             ClearConsultantCache(cache);
 
-            return TypedResults.Created($"/variant/{newConsultant.Id}", newConsultant);
+            return TypedResults.Created($"/variant/{newConsultant.Id}", basicVariant);
         }
         catch (Exception ex)
         {
@@ -135,7 +135,7 @@ public static class ConsultantApi
 
     private static async Task<Department?> GetDepartmentByIdAsync(ApplicationContext db, string departmentId)
     {
-        return await db.Department.SingleOrDefaultAsync(d => d != null && d.Id == departmentId);
+        return await db.Department.SingleOrDefaultAsync(d => d.Id == departmentId);
     }
 
     private static async Task<List<Consultant>> GetAllConsultantsAsync(ApplicationContext db)
