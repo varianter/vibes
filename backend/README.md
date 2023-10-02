@@ -10,8 +10,8 @@ cd backend/
 cp appsettings.Local.json.template appsettings.Local.json
 
 
-# Start Azure SQL Edge (MS SQL Server) inside a docker container:
-cd backend/ 
+# Start Azure SQL Edge (MS SQL Server) inside a docker container, from project-root folder:
+cd ../
 docker compose up -d database
 
 # Update Database to latest schema and create tables: 
