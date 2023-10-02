@@ -31,6 +31,10 @@ By default, the API endpoints requires authorization by a token acquired by the 
 ## Database credentials
 Look at `VibesDb` parameter `appsettings.Development.json` for connection details. Note that `encryption` is `disabled` in develoment-mode and need to be set in your DB-client tool.
 
+
+## Seeding 
+We have a seperate project with seed.sql data files, written i T-SQL (Microsofts SQL dialect). Ask developers for access to this. To execute these the VS-code extension `ms-mssql.mssql` can be used, or an other T-SQL compatible tool like Azure Data Studio.
+
 ## Database config 
 For localhost, the connection-string is just set with and SQL identity based on your docker-compose file. 
 
