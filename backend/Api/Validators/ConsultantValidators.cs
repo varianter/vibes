@@ -19,10 +19,9 @@ public static class ConsultantValidators
         var isNameUnique = consultantList.Any(item => item.Name == body.Name);
         var isEmailUnique = consultantList.Any(item => item.Email == body.Email);
         var isEmailValid = IsValidEmail(body.Email);
-
-        if (!isNameUnique)
+        if (isNameUnique)
             results.Add("name", new[] { "already exist" });
-        if (!isEmailUnique)
+        if (isEmailUnique)
             results.Add("email", new[] { "already exist" });
         if (!isEmailValid)
             results.Add("email", new[] { "has a invalid email format" });

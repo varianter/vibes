@@ -16,7 +16,7 @@ public static class ConsultantApi
     {
         group.MapGet("/", GetAllConsultants);
         group.MapGet("/{id}", GetConsultantById);
-        group.MapPost("/", AddBasicConsultant).WithOpenApi();
+        group.MapPost("/", AddBasicConsultant);
     }
 
     private static Ok<List<ConsultantReadModel>> GetAllConsultants(ApplicationContext context, IMemoryCache cache,
