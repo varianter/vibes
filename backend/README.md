@@ -10,9 +10,9 @@ cd backend/
 cp appsettings.Local.json.template appsettings.Local.json
 
 
-# Start PostgreSQL inside a docker container:
+# Start Azure SQL Edge (MS SQL Server) inside a docker container:
 cd backend/ 
-docker-compose up database -d
+docker compose up -d database
 
 # Update Database to latest schema and create tables: 
 cd backend/
