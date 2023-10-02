@@ -16,6 +16,7 @@ docker compose up -d database
 
 # Update Database to latest schema and create tables: 
 cd backend/
+dotnet tool install --global dotnet-ef # To install EF Core globally
 dotnet ef database update --startup-project Api/ --project Database/
 
 # Start the web-server by either using the IDE launcher (launchSettings.json): Api:http
@@ -24,13 +25,13 @@ cd backend/Api
 dotnet run
 ```
 
-
 ## Swagger API Auth
 By default, the API endpoints requires authorization by a token acquired by the SSO Auth token from Azure AD.
 
-To override and disable this in development mode, set `"DisableAuthAd": true` in `appsettings.local.json`.
+## Database credentials
+Look at `VibesDb` parameter `appsettings.Development.json` for connection details. Note that `encryption` is `disabled` in develoment-mode and need to be set in your DB-client tool.
 
-# Database config 
+## Database config 
 For localhost, the connection-string is just set with and SQL identity based on your docker-compose file. 
 
 In Azure, we use managed identity to configure database access. 

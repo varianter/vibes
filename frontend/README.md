@@ -12,7 +12,14 @@ cp .env.template .env
 - Run the backend (see [backend README](../backend/README.md))
 - Or: Override NEXT_PUBLIC_VIBES_BACKEND_URL to use the Dev-api (with reasonable caution)
 
-```
+```bash
+## We use yarn instead of npm, so install it:
+npm install --global yarn
+
+# Install packages
+yarn install
+
+# Run development
 yarn dev
 ```
 
