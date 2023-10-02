@@ -1,16 +1,13 @@
 version: '3.5'
 
 services:
-  # frontend:
-  #   build:
-  #     context: .
-  #     dockerfile: ./frontend/Dockerfile
-  #   container_name: vibes-frontend
-  #   ports:
-  #     - '3000:3000'
-  #   volumes:
-  #     - ./frontend:/app
-  #     - /frontend/app/node_modules
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile
+    container_name: vibes-frontend
+    ports:
+      - '3000:3000'
   database:
     image: mcr.microsoft.com/azure-sql-edge
     ports:
