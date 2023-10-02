@@ -17,11 +17,11 @@ public static class ConsultantValidators
         var results = new Dictionary<string, string[]>();
 
         var nameExits = consultantList.Any(item => item.Name == body.Name);
-        var emailIsNotUnique = consultantList.Any(item => item.Email == body.Email);
+        var emailExists = consultantList.Any(item => item.Email == body.Email);
         var validEmail = IsValidEmail(body.Email);
         if (nameExits)
             results.Add("name", new[] { "already exist" });
-        if (emailIsNotUnique)
+        if (emailExists)
             results.Add("email", new[] { "already exist" });
         if (!validEmail)
             results.Add("email", new[] { "has a invalid email format" });
