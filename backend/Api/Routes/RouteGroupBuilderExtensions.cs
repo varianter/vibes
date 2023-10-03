@@ -4,7 +4,7 @@ namespace Api.Routes;
 
 public static class RouteGroupBuilderExtensions
 {
-    public static RouteGroupBuilder MapApiGroup(this IEndpointRouteBuilder endpoints,
+    private static RouteGroupBuilder MapApiGroup(this IEndpointRouteBuilder endpoints,
         [StringSyntax("Route")] string routePrefix, string? groupTag = null)
     {
         var group = endpoints
@@ -14,6 +14,12 @@ public static class RouteGroupBuilderExtensions
         if (groupTag is not null)
             group.WithTags(groupTag);
 
+        return group;
+    }
+
+    public static RouteGroupBuilder ApiGroupVersionBeta(this RouteGroupBuilder group)
+    {
+        group.MapApiGroup("variants", "Varianter").MapConsultantApi();
         return group;
     }
 }

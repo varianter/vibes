@@ -28,19 +28,18 @@ if (adOptions == null) throw new Exception("Required AzureAd options are missing
 
 builder.Services.AddSwaggerGen(genOptions =>
 {
-    genOptions.SwaggerDoc("v1", new OpenApiInfo { Title = "Vibes API", Version = "v1" });
+    genOptions.SwaggerDoc("v0", new OpenApiInfo { Title = "Vibes API", Version = "v0" });
     genOptions.ConfigureSwaggerAuthentication(adOptions);
 });
 
 var app = builder.Build();
 
-app.MapApiGroup("variants", "Varianter")
-    .MapConsultantApi();
+app.MapGroup("/v0").ApiGroupVersionBeta();
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("v1/swagger.json", "Vibes Backend API");
+    c.SwaggerEndpoint("v0/swagger.json", "Vibes Backend API");
     c.OAuthClientId(adOptions.ClientId);
     c.OAuthUsePkce();
     c.OAuthScopeSeparator(" ");
