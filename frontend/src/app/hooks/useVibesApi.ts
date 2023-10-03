@@ -15,7 +15,7 @@ function useVibesApi(includeOccupied: boolean) {
   return useQuery({queryKey: 'vibes', queryFn: async () => {
     if (isAuthenticated) {
       try {
-        const response: Variant[] = await fetchWithToken(`/api/variant?weeks=8&includeOccupied=${includeOccupied}`);
+        const response: Variant[] = await fetchWithToken(`/api/variants?weeks=8&includeOccupied=${includeOccupied}`);
         return response;
         
       } catch (err) {
