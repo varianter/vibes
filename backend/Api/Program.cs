@@ -34,8 +34,7 @@ builder.Services.AddSwaggerGen(genOptions =>
 
 var app = builder.Build();
 
-app.MapApiGroup("variants", "Varianter")
-    .MapConsultantApi();
+app.MapGroup("/v1").ApiGroupVersionOne();
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>
