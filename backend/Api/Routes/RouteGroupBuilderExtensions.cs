@@ -17,7 +17,7 @@ public static class RouteGroupBuilderExtensions
         return group;
     }
 
-    public static RouteGroupBuilder ApiGroupVersionOne(this RouteGroupBuilder group)
+    public static RouteGroupBuilder ApiGroupVersionBeta(this RouteGroupBuilder group)
     {
         group.MapApiGroup("variants", "Varianter").MapConsultantApi();
         return group;
