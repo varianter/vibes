@@ -49,7 +49,7 @@ jobs:
         run: |
           yarn build
           mv ./build/static ./build/standalone/build
-          mv ./public ./build/standalone/
+          cp ./public ./build/standalone/
           mv ./build ./build-no
         env:
           NEXT_PUBLIC_VIBES_BACKEND_URL: ${{ vars.NEXT_PUBLIC_VIBES_BACKEND_URL_NO }}
@@ -61,7 +61,7 @@ jobs:
         run: |
           yarn build
           mv ./build/static ./build/standalone/build
-          mv ./public ./build/standalone
+          cp ./public ./build/standalone
           mv ./build ./build-se
         env:
           NEXT_PUBLIC_VIBES_BACKEND_URL: ${{ vars.NEXT_PUBLIC_VIBES_BACKEND_URL_SE }}
