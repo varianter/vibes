@@ -38,7 +38,7 @@ jobs:
           dotnet publish -c Release --property:PublishDir='./build' 
       
       # Deploy to Azure Web apps
-      - name: Deploy to Norwegian App Service
+      - name: Deploy to App Service (NO)
         uses: azure/webapps-deploy@v2
         with:
           app-name: vibes-backend-norway-dev 
@@ -46,7 +46,7 @@ jobs:
           package: 'backend/Api/build'
                 
       # Deploy to Azure Web apps
-      - name: Deploy to Swedish App Service
+      - name: Deploy to App Service (SE)
         uses: azure/webapps-deploy@v2
         with:
           app-name: vibes-backend-sweden-dev 

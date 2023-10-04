@@ -49,7 +49,7 @@ jobs:
         run: |
           yarn build
           mv ./build/static ./build/standalone/build
-          cp ./public ./build/standalone/
+          cp -r ./public ./build/standalone/
           mv ./build ./build-no
         env:
           NEXT_PUBLIC_VIBES_BACKEND_URL: ${{ vars.NEXT_PUBLIC_VIBES_BACKEND_URL_NO }}
@@ -61,7 +61,7 @@ jobs:
         run: |
           yarn build
           mv ./build/static ./build/standalone/build
-          cp ./public ./build/standalone
+          cp -r ./public ./build/standalone
           mv ./build ./build-se
         env:
           NEXT_PUBLIC_VIBES_BACKEND_URL: ${{ vars.NEXT_PUBLIC_VIBES_BACKEND_URL_SE }}
@@ -70,7 +70,7 @@ jobs:
           NEXT_PUBLIC_APP_SCOPE: ${{ vars.NEXT_PUBLIC_APP_SCOPE }}
 
           
-      - name: Deploy to Norwegian App Service
+      - name: Deploy to App Service (NO)
         id: deploy-to-webapp-no
         uses: azure/webapps-deploy@v2
         with:
@@ -79,7 +79,7 @@ jobs:
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_FRONTEND_NO }}
           package: ./frontend/build-no/standalone
           
-      - name: Deploy to Swedish App Service
+      - name: Deploy to App Service (SE)
         id: deploy-to-webapp-se
         uses: azure/webapps-deploy@v2
         with:
