@@ -24,8 +24,8 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
       
       # Run dotnet build and publish
-      - name: dotnet build and publish
-        working-directory: backend/api/
+      - name: Build
+        working-directory: backend/Api/
         run: |
           dotnet restore
           dotnet build --configuration Release
