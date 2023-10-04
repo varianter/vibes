@@ -105,7 +105,7 @@ public class Tests
             Hours = 15
         });
         
-        var availability = consultant.GetBookedHours(year, week);
-        Assert.That(availability, Is.EqualTo(7.5));
+        var bookedHours = consultant.GetBookedHours(year, week);
+        Assert.That(bookedHours, Is.EqualTo(30));
     }
 }
