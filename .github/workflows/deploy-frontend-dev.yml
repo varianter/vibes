@@ -48,8 +48,9 @@ jobs:
       - name: Build with Next.js (NO)
         run: |
           yarn build
-          mv ./build/static ./build/standalone/no/build
-          mv ./public ./build/standalone/no
+          mv ./build/static ./build/standalone/build
+          mv ./public ./build/standalone/
+          mv ./build ./build-no
         env:
           NEXT_PUBLIC_VIBES_BACKEND_URL: ${{ vars.NEXT_PUBLIC_VIBES_BACKEND_URL_NO }}
           NEXT_PUBLIC_CLIENT_ID: ${{ vars.NEXT_PUBLIC_CLIENT_ID }}
@@ -59,8 +60,9 @@ jobs:
       - name: Build with Next.js (SE)
         run: |
           yarn build
-          mv ./build/static ./build/standalone/se/build
-          mv ./public ./build/standalone/se
+          mv ./build/static ./build/standalone/build
+          mv ./public ./build/standalone
+          mv ./build ./build-se
         env:
           NEXT_PUBLIC_VIBES_BACKEND_URL: ${{ vars.NEXT_PUBLIC_VIBES_BACKEND_URL_SE }}
           NEXT_PUBLIC_CLIENT_ID: ${{ vars.NEXT_PUBLIC_CLIENT_ID }}
@@ -75,7 +77,7 @@ jobs:
           app-name: 'vibes-frontend-norway-dev'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_FRONTEND_NO }}
-          package: ./frontend/build/standalone/no
+          package: ./frontend/build-no/standalone
           
       - name: Deploy to Swedish App Service
         id: deploy-to-webapp-se
@@ -84,4 +86,4 @@ jobs:
           app-name: 'vibes-frontend-sweden-dev'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_FRONTEND_SE }}
-          package: ./frontend/build/standalone/se
+          package: ./frontend/build-se/standalone
