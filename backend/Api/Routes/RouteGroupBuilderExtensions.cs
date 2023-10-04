@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Api.Consultants;
 
 namespace Api.Routes;
 

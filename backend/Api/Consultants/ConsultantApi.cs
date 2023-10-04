@@ -1,5 +1,4 @@
 using Api.Cache;
-using Api.Validators;
 using Core.DomainModels;
 using Core.Services;
 using Database.DatabaseContext;
@@ -8,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Api.Routes;
+namespace Api.Consultants;
 
 public static class ConsultantApi
 {
@@ -45,7 +44,7 @@ public static class ConsultantApi
         const double tolerance = 0.1;
         var bookedHours = consultant.GetBookedHoursForWeeks(weeks);
 
-        var hasAvailability = bookedHours.Any(b => b.BookedHours <= consultant.GetHoursPrWeek() - tolerance);
+        var hasAvailability = bookedHours.Any(b => b.BookedHours <= ConsultantExtensions.GetHoursPrWeek() - tolerance);
 
         return new ConsultantReadModel(
             consultant.Id,
@@ -102,7 +101,6 @@ public static class ConsultantApi
                 (pa.Year <= yearA && minWeekA <= pa.WeekNumber && pa.WeekNumber <= maxWeekA)
                 || (yearB <= pa.Year && minWeekB <= pa.WeekNumber && pa.WeekNumber <= maxWeekB)))
             .Include(c => c.Department)
-            .ThenInclude(d => d.Organization)
             .Include(c => c.Staffings.Where(s =>
                 (s.Year <= yearA && minWeekA <= s.Week && s.Week <= maxWeekA)
                 || (yearB <= s.Year && minWeekB <= s.Week && s.Week <= maxWeekB)))

@@ -1,8 +1,7 @@
 using System.Net.Mail;
-using Api.Routes;
 using Core.DomainModels;
 
-namespace Api.Validators;
+namespace Api.Consultants;
 
 public static class ConsultantValidators
 {

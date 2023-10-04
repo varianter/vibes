@@ -5,6 +5,9 @@
     "TenantId": "azure_tenant_id_for_organization",
     "ApiScope": "Azure Ad -> App Registrations -> [app] -> Expose an Api"
   },
+  "OrganizationSettings" :{
+    "HoursPerWorkday": 7.5
+  },
   "ConnectionStrings": {
       "VibesDb": "<use-same-as-in-Development.json>"
     }

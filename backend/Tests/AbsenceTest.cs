@@ -1,3 +1,4 @@
+using Api.Consultants;
 using Core.DomainModels;
 using Core.Services;
 using NSubstitute;
@@ -24,9 +25,6 @@ public class Tests
         double expectedBookedHours)
     {
         var department = Substitute.For<Department>();
-        var organization = Substitute.For<Organization>();
-        organization.HoursPerWorkday = 7.5;
-        department.Organization = organization;
         var consultant = new Consultant
         {
             Id = 1,
@@ -83,9 +81,6 @@ public class Tests
     public void MultiplePlannedAbsences()
     {
         var department = Substitute.For<Department>();
-        var organization = Substitute.For<Organization>();
-        organization.HoursPerWorkday = 7.5;
-        department.Organization = organization;
         var consultant = new Consultant
         {
             Id = 1,
@@ -109,7 +104,7 @@ public class Tests
             Consultant = consultant, Year = year, WeekNumber = week,
             Hours = 15
         });
-
+        
         var availability = consultant.GetBookedHours(year, week);
         Assert.That(availability, Is.EqualTo(7.5));
     }
