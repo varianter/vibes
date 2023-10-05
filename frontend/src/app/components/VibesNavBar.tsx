@@ -2,10 +2,12 @@ import { AppBar, Box, Tab, Toolbar } from "@mui/material";
 import Image from "next/image";
 import VibesNavBarTabs from "./VibesNavBarTabs";
 import SignInSignOutButton from "./vibes-buttons/SignInSignOutButton";
+import zIndex from "@mui/material/styles/zIndex";
+import theme from "@/app/components/ThemeRegistry/theme";
 
 export default function VibesAppBar() {
     return (
-        <AppBar position="static">
+        <AppBar position="fixed" sx={{zIndex:  (theme) => theme.zIndex.drawer + 1}}>
             <Toolbar>
                 <VibesNavBarTabs
                     value={1}
