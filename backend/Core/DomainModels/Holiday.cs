@@ -1,3 +1,4 @@
+using Core.Options;
 using Core.Services;
 using PublicHoliday;
 
@@ -8,20 +9,35 @@ public static class Holiday
     public static int GetTotalHolidaysOfWeek(int year, int week)
     {
         var datesOfThisWeek = DateService.GetDatesInWorkWeek(year, week);
-
         return datesOfThisWeek.Count(IsHoliday);
     }
 
     private static bool IsHoliday(DateOnly day)
     {
-        var isPublicHoliday = new NorwayPublicHoliday().IsPublicHoliday(day.ToDateTime(TimeOnly.MinValue));
-
+        var holidayCountry = GetHolidayCountry();
+        var isPublicHoliday = holidayCountry.IsPublicHoliday(day.ToDateTime(TimeOnly.MinValue));
         return isPublicHoliday || IsVariantChristmasHoliday(day);
     }
 
+    private static PublicHolidayBase GetHolidayCountry()
+    {
+        var country = OrganizationOptions.Current.Country;
+
+        return country switch
+        {
+            "norway" => new NorwayPublicHoliday(),
+            "sweden" => new SwedenPublicHoliday(),
+            _ => new NorwayPublicHoliday()
+        };
+    }
 
     private static bool IsVariantChristmasHoliday(DateOnly date)
     {
+        if (!OrganizationOptions.Current.HasVacationInChristmas)
+        {
+            return false;
+        }
+
         var startDate = new DateOnly(date.Year, 12, 24);
         var endDate = new DateOnly(date.Year, 12, 31);
 

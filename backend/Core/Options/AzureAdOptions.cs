@@ -1,4 +1,4 @@
-namespace Api.Options;
+namespace Core.Options;
 
 public class AzureAdOptions
 {

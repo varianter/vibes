@@ -1,15 +1,22 @@
+using Microsoft.Extensions.Configuration;
 
-namespace Api.Options;
+namespace Core.Options;
 
 public class OrganizationOptions
 {
     private static OrganizationOptions _organizationOptions;
 
-    public double HoursPerWorkday { get; set; }
+    public double HoursPerWorkday { get; }
+    public bool HasVacationInChristmas { get; }
+    public int NumberOfVacationDaysInYear { get; }
+    public string Country { get; }
 
     public OrganizationOptions(IConfiguration config)
     {
         this.HoursPerWorkday = config.GetValue<double>("HoursPerWorkday");
+        this.HasVacationInChristmas = config.GetValue<bool>("HasVacationInChristmas");
+        this.NumberOfVacationDaysInYear = config.GetValue<int>("NumberOfVacationDaysInYear");
+        this.Country = config.GetValue<string>("Country");
 
         // Now set Current
         _organizationOptions = this;
@@ -31,10 +38,10 @@ public class OrganizationOptions
     public static OrganizationOptions GetCurrentSettings()
     {
         var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        
+
         var builder = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            // .AddJsonFile($"appsettings.{env}.json", optional: true, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{env}.json", optional: true, reloadOnChange: true)
             .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true)
             .AddEnvironmentVariables();
 

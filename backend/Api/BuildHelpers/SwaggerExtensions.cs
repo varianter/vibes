@@ -1,4 +1,4 @@
-using Api.Options;
+using Core.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
