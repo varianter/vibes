@@ -1,6 +1,4 @@
-using Microsoft.Extensions.Configuration;
-
-namespace Core.Options;
+namespace Api.Options;
 
 public class OrganizationOptions
 {

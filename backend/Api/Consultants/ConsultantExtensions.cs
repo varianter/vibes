@@ -1,5 +1,5 @@
+using Api.Options;
 using Core.DomainModels;
-using Core.Options;
 using Core.Services;
 
 
@@ -12,7 +12,7 @@ public static class ConsultantExtensions
         var hoursPrWorkDay = OrganizationOptions.Current.HoursPerWorkday;
 
         Console.WriteLine(hoursPrWorkDay);
-        var holidayHours = Holiday.GetTotalHolidaysOfWeek(year, week) * hoursPrWorkDay;
+        var holidayHours = HolidayService.GetTotalHolidaysOfWeek(year, week) * hoursPrWorkDay;
         var vacationHours = consultant.Vacations.Count(v => DateService.DateIsInWeek(v.Date, year, week)) *
                             hoursPrWorkDay;
 

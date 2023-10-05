@@ -1,6 +1,6 @@
 using Api.BuildHelpers;
+using Api.Options;
 using Api.Routes;
-using Core.Options;
 using Database.DatabaseContext;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;

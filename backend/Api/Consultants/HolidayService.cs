@@ -1,10 +1,10 @@
-using Core.Options;
+using Api.Options;
 using Core.Services;
 using PublicHoliday;
 
-namespace Core.DomainModels;
+namespace Api.Consultants;
 
-public static class Holiday
+public static class HolidayService
 {
     public static int GetTotalHolidaysOfWeek(int year, int week)
     {

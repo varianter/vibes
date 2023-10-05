@@ -6,7 +6,10 @@
     "ApiScope": "Azure Ad -> App Registrations -> [app] -> Expose an Api"
   },
   "OrganizationSettings" :{
-    "HoursPerWorkday": 7.5
+    "HoursPerWorkday": 7.5 or 8,
+    "NumberOfVacationDaysInYear": 25 or 30,
+    "HasVacationInChristmas": true or false,
+    "Country": "norway or sweden"
   },
   "ConnectionStrings": {
       "VibesDb": "<use-same-as-in-Development.json>"
