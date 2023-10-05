@@ -23,15 +23,15 @@ jobs:
         working-directory: frontend
 
     steps:
-      - name: 'Checkout'
+      - name: Checkout
         uses: actions/checkout@v3
 
-      - name: 'Setup Node.js version'
+      - name: Setup Node.js version
         uses: actions/setup-node@v3
         with:
           node-version: "18.x"
           
-      - name: 'Restore cache'
+      - name: Restore cache
         uses: actions/cache@v3
         with:
           path: |
@@ -42,26 +42,48 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}-
             
-      - name: 'Install ci dependencies'
+      - name: Install ci dependencies
         run: yarn --frozen-lockfile --ignore-scripts
         
-      - name: 'Build with Next.js'
+      - name: Build with Next.js (NO)
         run: |
           yarn build
           mv ./build/static ./build/standalone/build
-          mv ./public ./build/standalone
+          cp -r ./public ./build/standalone/
+          mv ./build ./build-no
         env:
-          NEXT_PUBLIC_VIBES_BACKEND_URL: ${{ vars.NEXT_PUBLIC_VIBES_BACKEND_URL }}
+          NEXT_PUBLIC_VIBES_BACKEND_URL: ${{ vars.NEXT_PUBLIC_VIBES_BACKEND_URL_NO }}
+          NEXT_PUBLIC_CLIENT_ID: ${{ vars.NEXT_PUBLIC_CLIENT_ID }}
+          NEXT_PUBLIC_TENANT_ID: ${{ vars.NEXT_PUBLIC_TENANT_ID }}
+          NEXT_PUBLIC_APP_SCOPE: ${{ vars.NEXT_PUBLIC_APP_SCOPE }}
+
+      - name: Build with Next.js (SE)
+        run: |
+          yarn build
+          mv ./build/static ./build/standalone/build
+          cp -r ./public ./build/standalone
+          mv ./build ./build-se
+        env:
+          NEXT_PUBLIC_VIBES_BACKEND_URL: ${{ vars.NEXT_PUBLIC_VIBES_BACKEND_URL_SE }}
           NEXT_PUBLIC_CLIENT_ID: ${{ vars.NEXT_PUBLIC_CLIENT_ID }}
           NEXT_PUBLIC_TENANT_ID: ${{ vars.NEXT_PUBLIC_TENANT_ID }}
           NEXT_PUBLIC_APP_SCOPE: ${{ vars.NEXT_PUBLIC_APP_SCOPE }}
 
           
-      - name: 'Deploy to Azure Web App (standalone)'
-        id: deploy-to-webapp
+      - name: Deploy to App Service (NO)
+        id: deploy-to-webapp-no
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'vibes-frontend-dev'
+          app-name: 'vibes-frontend-norway-dev'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_FRONTEND }}
-          package: ./frontend/build/standalone
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_FRONTEND_NO }}
+          package: ./frontend/build-no/standalone
+          
+      - name: Deploy to App Service (SE)
+        id: deploy-to-webapp-se
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'vibes-frontend-sweden-dev'
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_FRONTEND_SE }}
+          package: ./frontend/build-se/standalone

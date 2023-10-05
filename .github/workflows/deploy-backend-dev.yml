@@ -11,7 +11,7 @@ on:
 
 env:
   AZURE_WEBAPP_NAME: vibes-backend-dev        # set this to your application's name
-  AZURE_WEBAPP_PACKAGE_PATH: './build'  # set this to the path to your web app project, defaults to the repository root
+  AZURE_WEBAPP_PACKAGE_PATH: './build'        # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '7.x.x'                     # set this to the dot net version to use
 
 jobs:
@@ -30,7 +30,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
       
       # Run dotnet build and publish
-      - name: dotnet build and publish
+      - name: Build
         working-directory: backend/Api/
         run: |
           dotnet restore
@@ -38,9 +38,17 @@ jobs:
           dotnet publish -c Release --property:PublishDir='./build' 
       
       # Deploy to Azure Web apps
-      - name: 'Run Azure webapp deploy action using publish profile credentials'
+      - name: Deploy to App Service (NO)
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_BACKEND  }} # Define secret variable in repository settings as per action documentation
+          app-name: vibes-backend-norway-dev 
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_BACKEND_NO  }} # Define secret variable in repository settings as per action documentation
+          package: 'backend/Api/build'
+                
+      # Deploy to Azure Web apps
+      - name: Deploy to App Service (SE)
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: vibes-backend-sweden-dev 
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_BACKEND_SE  }} # Define secret variable in repository settings as per action documentation
           package: 'backend/Api/build'
