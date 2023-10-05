@@ -26,6 +26,9 @@ builder.Services.AddEndpointsApiExplorer();
 var adOptions = builder.Configuration.GetSection("AzureAd").Get<AzureAdOptions>();
 if (adOptions == null) throw new Exception("Required AzureAd options are missing");
 
+var orgOptions = builder.Configuration.GetSection("OrganizationSettings");
+ConfigSingleton.SetConfig(orgOptions);
+
 builder.Services.AddSwaggerGen(genOptions =>
 {
     genOptions.SwaggerDoc("v0", new OpenApiInfo { Title = "Vibes API", Version = "v0" });

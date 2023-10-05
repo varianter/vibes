@@ -21,7 +21,7 @@ public static class HolidayService
 
     private static PublicHolidayBase GetHolidayCountry()
     {
-        var country = OrganizationOptions.Current.Country;
+        var country = ConfigSingleton.GetConfig().Country;
 
         return country switch
         {
@@ -33,7 +33,7 @@ public static class HolidayService
 
     private static bool IsVariantChristmasHoliday(DateOnly date)
     {
-        if (!OrganizationOptions.Current.HasVacationInChristmas)
+        if (!ConfigSingleton.GetConfig().HasVacationInChristmas)
         {
             return false;
         }

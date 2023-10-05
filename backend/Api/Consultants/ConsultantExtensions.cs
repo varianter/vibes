@@ -9,9 +9,7 @@ public static class ConsultantExtensions
 {
     public static double GetBookedHours(this Consultant consultant, int year, int week)
     {
-        var hoursPrWorkDay = OrganizationOptions.Current.HoursPerWorkday;
-
-        Console.WriteLine(hoursPrWorkDay);
+        var hoursPrWorkDay = ConfigSingleton.GetConfig().HoursPerWorkday;
         var holidayHours = HolidayService.GetTotalHolidaysOfWeek(year, week) * hoursPrWorkDay;
         var vacationHours = consultant.Vacations.Count(v => DateService.DateIsInWeek(v.Date, year, week)) *
                             hoursPrWorkDay;
@@ -50,6 +48,6 @@ public static class ConsultantExtensions
 
     public static double GetHoursPrWeek()
     {
-        return OrganizationOptions.Current.HoursPerWorkday * 5;
+        return ConfigSingleton.GetConfig().HoursPerWorkday * 5;
     }
 }
