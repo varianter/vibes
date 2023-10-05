@@ -1,27 +1,35 @@
 using Api.Options;
 using Core.Services;
+using Microsoft.Extensions.Options;
 using PublicHoliday;
 
 namespace Api.Consultants;
 
-public static class HolidayService
+public class HolidayService
 {
-    public static int GetTotalHolidaysOfWeek(int year, int week)
+    private readonly OrganizationOptions _organizationOptions;
+
+    public HolidayService(IOptions<OrganizationOptions> options)
+    {
+        _organizationOptions = options.Value;
+    }
+
+    public int GetTotalHolidaysOfWeek(int year, int week)
     {
         var datesOfThisWeek = DateService.GetDatesInWorkWeek(year, week);
         return datesOfThisWeek.Count(IsHoliday);
     }
 
-    private static bool IsHoliday(DateOnly day)
+    private bool IsHoliday(DateOnly day)
     {
         var holidayCountry = GetHolidayCountry();
         var isPublicHoliday = holidayCountry.IsPublicHoliday(day.ToDateTime(TimeOnly.MinValue));
         return isPublicHoliday || IsVariantChristmasHoliday(day);
     }
 
-    private static PublicHolidayBase GetHolidayCountry()
+    private PublicHolidayBase GetHolidayCountry()
     {
-        var country = OrganizationOptions.Current.Country;
+        var country = _organizationOptions.Country;
 
         return country switch
         {
@@ -31,12 +39,9 @@ public static class HolidayService
         };
     }
 
-    private static bool IsVariantChristmasHoliday(DateOnly date)
+    private bool IsVariantChristmasHoliday(DateOnly date)
     {
-        if (!OrganizationOptions.Current.HasVacationInChristmas)
-        {
-            return false;
-        }
+        if (!_organizationOptions.HasVacationInChristmas) return false;
 
         var startDate = new DateOnly(date.Year, 12, 24);
         var endDate = new DateOnly(date.Year, 12, 31);

@@ -1,6 +1,8 @@
 using Api.Consultants;
+using Api.Options;
 using Core.DomainModels;
 using Core.Services;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 
 namespace Tests;
@@ -73,8 +75,15 @@ public class Tests
                 Hours = staffedHours
             });
 
-        var availability = consultant.GetBookedHours(year, week);
-        Assert.That(availability, Is.EqualTo(expectedBookedHours));
+        var organization = new OrganizationOptions();
+        organization.HoursPerWorkday = 7.5;
+        organization.HasVacationInChristmas = true;
+        var orgOptions = Options.Create(organization);
+        var holidayService = new HolidayService(orgOptions);
+
+        var bookedHours =
+            new ConsultantService(orgOptions, holidayService).GetBookedHours(consultant, year, week);
+        Assert.That(bookedHours, Is.EqualTo(expectedBookedHours));
     }
 
     [Test]
@@ -104,8 +113,15 @@ public class Tests
             Consultant = consultant, Year = year, WeekNumber = week,
             Hours = 15
         });
-        
-        var bookedHours = consultant.GetBookedHours(year, week);
+
+        var organization = new OrganizationOptions();
+        organization.HoursPerWorkday = 7.5;
+        var orgOptions = Options.Create(organization);
+        var holidayService = new HolidayService(orgOptions);
+
+        var bookedHours =
+            new ConsultantService(orgOptions, holidayService).GetBookedHours(consultant, year, week);
+
         Assert.That(bookedHours, Is.EqualTo(30));
     }
 }
