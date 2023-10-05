@@ -9,8 +9,8 @@ import useVibesApi from "./hooks/useVibesApi";
 import React, { useState } from "react";
 
 export function VariantList() {
-  const [includeOccupied, setIncludeOccupied] = useState<boolean>(false);
-  const { data, isLoading, isError, error } = useVibesApi(includeOccupied);
+  // Add a switch for this later
+  const { data, isLoading, isError, error } = useVibesApi(true);
 
   if (isLoading) {
     return <CircularProgress />;
@@ -19,18 +19,6 @@ export function VariantList() {
   if (data) {
     return (
       <div>
-        <FormGroup>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={includeOccupied}
-                onChange={() => setIncludeOccupied((old) => !old)}
-              />
-            }
-            label={"Include occupied consultants"}
-          />
-        </FormGroup>
-
         <table>
           <thead>
             <tr>
