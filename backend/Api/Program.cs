@@ -1,6 +1,6 @@
 using Api.BuildHelpers;
+using Api.Consultants;
 using Api.Options;
-using Api.Routes;
 using Database.DatabaseContext;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +21,13 @@ builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServe
 
 builder.Services.AddMemoryCache();
 
+
+builder.Services.Configure<OrganizationOptions>(builder.Configuration.GetSection("OrganizationSettings"));
+builder.Services.AddSingleton<HolidayService>();
+builder.Services.AddSingleton<ConsultantService>();
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
 
 var adOptions = builder.Configuration.GetSection("AzureAd").Get<AzureAdOptions>();
 if (adOptions == null) throw new Exception("Required AzureAd options are missing");
@@ -34,7 +40,8 @@ builder.Services.AddSwaggerGen(genOptions =>
 
 var app = builder.Build();
 
-app.MapGroup("/v0").ApiGroupVersionBeta();
+app.UsePathBase("/v0");
+app.MapControllers();
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>

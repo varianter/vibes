@@ -1,8 +1,7 @@
 using System.Net.Mail;
-using Api.Routes;
 using Core.DomainModels;
 
-namespace Api.Validators;
+namespace Api.Consultants;
 
 public static class ConsultantValidators
 {
@@ -11,8 +10,8 @@ public static class ConsultantValidators
         return MailAddress.TryCreate(email, out _);
     }
 
-    public static IDictionary<string, string []> ValidateUniqueness(List<Consultant> consultantList,
-        ConsultantApi.ConsultantWriteModel body)
+    public static IDictionary<string, string[]> ValidateUniqueness(List<Consultant> consultantList,
+        ConsultantController.ConsultantWriteModel body)
     {
         var results = new Dictionary<string, string[]>();
 

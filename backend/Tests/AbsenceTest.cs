@@ -1,5 +1,8 @@
+using Api.Consultants;
+using Api.Options;
 using Core.DomainModels;
 using Core.Services;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 
 namespace Tests;
@@ -24,9 +27,6 @@ public class Tests
         double expectedBookedHours)
     {
         var department = Substitute.For<Department>();
-        var organization = Substitute.For<Organization>();
-        organization.HoursPerWorkday = 7.5;
-        department.Organization = organization;
         var consultant = new Consultant
         {
             Id = 1,
@@ -75,17 +75,21 @@ public class Tests
                 Hours = staffedHours
             });
 
-        var availability = consultant.GetBookedHours(year, week);
-        Assert.That(availability, Is.EqualTo(expectedBookedHours));
+        var organization = new OrganizationOptions();
+        organization.HoursPerWorkday = 7.5;
+        organization.HasVacationInChristmas = true;
+        var orgOptions = Options.Create(organization);
+        var holidayService = new HolidayService(orgOptions);
+
+        var bookedHours =
+            new ConsultantService(orgOptions, holidayService).GetBookedHours(consultant, year, week);
+        Assert.That(bookedHours, Is.EqualTo(expectedBookedHours));
     }
 
     [Test]
     public void MultiplePlannedAbsences()
     {
         var department = Substitute.For<Department>();
-        var organization = Substitute.For<Organization>();
-        organization.HoursPerWorkday = 7.5;
-        department.Organization = organization;
         var consultant = new Consultant
         {
             Id = 1,
@@ -110,7 +114,14 @@ public class Tests
             Hours = 15
         });
 
-        var availability = consultant.GetBookedHours(year, week);
-        Assert.That(availability, Is.EqualTo(7.5));
+        var organization = new OrganizationOptions();
+        organization.HoursPerWorkday = 7.5;
+        var orgOptions = Options.Create(organization);
+        var holidayService = new HolidayService(orgOptions);
+
+        var bookedHours =
+            new ConsultantService(orgOptions, holidayService).GetBookedHours(consultant, year, week);
+
+        Assert.That(bookedHours, Is.EqualTo(30));
     }
 }
