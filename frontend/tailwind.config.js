@@ -1,6 +1,6 @@
-import type { Config } from "tailwindcss";
-export default {
-  content: ["./app/**/*.{js,jsx,ts,tsx}"],
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     colors: {
       black: "#000000",
@@ -18,4 +18,5 @@ export default {
       xl: "1400px",
     },
   },
-} satisfies Config;
+  plugins: [],
+};
