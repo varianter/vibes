@@ -6,14 +6,10 @@ export default {
       black: "#000000",
       white: "#FFFFFF",
       primary_default: "#423D89",
-      primary_d1: "#35316E"
+      primary_l3: "#ECECF3",
+      secondary_default: "#F076A6",
     },
-    extend: {
-    },
-    fontFamily: {
-      sans: ['"Graphik-Regular"', "system-ui"],
-      serif: ['"Recoleta-Regular"', "ui-serif"],
-    },
+    extend: {},
     screens: {
       xs: "640px",
       sm: "768px",
