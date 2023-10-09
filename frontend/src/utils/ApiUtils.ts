@@ -1,4 +1,4 @@
-import { msalInstance } from "@/app/msalInstance";
+import { msalInstance } from "@/utils/msalInstance";
 import { loginRequest } from "@/authConfig";
 
 export async function fetchWithToken(path: string) {

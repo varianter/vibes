@@ -3,7 +3,7 @@ import { EventType } from "@azure/msal-browser";
 import { MsalProvider } from "@azure/msal-react";
 import { CssBaseline } from "@mui/material";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { msalInstance } from "../msalInstance";
+import { msalInstance } from "../utils/msalInstance";
 import PageLayout from "./PageLayout";
 import ThemeRegistry from "./ThemeRegistry/ThemeRegistry";
 
