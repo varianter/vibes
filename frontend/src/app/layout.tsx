@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import AppProviders from './components/AppProviders';
+import AppProviders from '../components/AppProviders';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (

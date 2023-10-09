@@ -1,4 +1,4 @@
-import { VariantList } from "./variants";
+import { VariantList } from "../components/variants";
 
 export default function Page() {
 

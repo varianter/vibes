@@ -5,7 +5,7 @@ import {
   FormControlLabel,
   FormGroup,
 } from "@mui/material";
-import useVibesApi from "./hooks/useVibesApi";
+import useVibesApi from "../hooks/useVibesApi";
 import React, { useState } from "react";
 
 export function VariantList() {
