@@ -1,18 +1,102 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
 @font-face {
-  font-family: "Graphik-Medium";
-  src: url("https://anima-uploads.s3.amazonaws.com/projects/632da9fa4f45dc45af16fa8d/fonts/graphik-medium.otf")
-    format("opentype");
+  font-family: "Recoleta-Regular";
+  src: url(../../public/fonts/recoleta-regular.woff) format("truetype");
+}
+
+@font-face {
+  font-family: "Recoleta-Medium";
+  src: url(../../public/fonts/recoleta-medium.woff) format("truetype");
 }
 
 @font-face {
   font-family: "Graphik-Regular";
-  src: url("https://anima-uploads.s3.amazonaws.com/projects/632da9fa4f45dc45af16fa8d/fonts/graphik-regular.otf")
-    format("opentype");
+  src: url(../../public/fonts/Graphik-Regular-Web.woff2) format("truetype");
 }
 
-/* TODO: Fix CSP or remove completely */
 @font-face {
-  font-family: "Arial-Bold";
-  src: url("https://anima-uploads.s3.amazonaws.com/projects/622cf300b3519bff6181cd8f/fonts/fontsfree-net-arial-bold.ttf")
-    format("truetype");
+  font-family: "Graphik-Medium";
+  src: url(../../public/fonts/Graphik-Medium-Web.woff2) format("truetype");
+}
+
+@font-face {
+  font-family: "Graphik-Semibold";
+  src: url(../../public/fonts/Graphik-Semibold-Web.woff2) format("truetype");
+}
+
+@font-face {
+  font-family: "Graphik-Bold";
+  src: url(../../public/fonts/Graphik-Bold-Web.woff2) format("truetype");
+}
+
+@layer components {
+}
+
+@layer utilities {
+  body {
+    background-color: #ffffff;
+  }
+
+  h1 {
+    font-size: 2rem;
+    font-family: "Recoletta-Regular";
+    line-height: 2.5rem;
+  }
+
+  h2 {
+    font-size: 1.625rem;
+    font-family: "Graphik-Regular";
+    line-height: 2.5rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    font-family: "Graphik-Regular";
+    line-height: 2.5rem;
+  }
+
+  .body {
+    font-size: 0.9rem;
+    font-family: "Graphik-Regular";
+    line-height: 1rem;
+  }
+
+  .body-bold {
+    font-size: 0.9rem;
+    font-family: "Graphik-SemiBold";
+    line-height: 1rem;
+  }
+
+  .body-small {
+    font-size: 0.75rem;
+    font-family: "Graphik-Regular";
+    line-height: 1rem;
+  }
+
+  .body-small-bold {
+    font-size: 0.75rem;
+    font-family: "Graphik-Medium";
+    line-height: 1rem;
+  }
+
+  .detail {
+    font-size: 0.625rem;
+    font-family: "Graphik-Regular";
+    line-height: 1rem;
+  }
+
+  .body-large {
+    font-size: 1rem;
+    font-family: "Graphik-Regular";
+    line-height: 1.25rem;
+  }
+
+  .body-large-bold {
+    font-size: 1rem;
+    font-family: "Graphik-Medium";
+    line-height: 1.25rem;
+  }
 }
