@@ -7,7 +7,9 @@ module.exports = {
       white: "#FFFFFF",
       primary_default: "#423D89",
       primary_l3: "#ECECF3",
+      primary_l4: "#F6F5F9",
       secondary_default: "#F076A6",
+      neutral_l1: "#858585",
     },
     extend: {},
     screens: {

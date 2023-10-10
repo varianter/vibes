@@ -17,7 +17,9 @@ export default function RootLayout({
         />
       </Head>
       <body>
-        <AppProviders> {children}</AppProviders>
+        <AppProviders>
+          <div className="p-6">{children}</div>
+        </AppProviders>
       </body>
     </html>
   );
