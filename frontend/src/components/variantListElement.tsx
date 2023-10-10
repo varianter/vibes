@@ -15,10 +15,12 @@ const VariantListElement = ({ variant }: VariantListElementProps) => {
 
   return (
     <div
-      className={`flex flex-col ${isListElementVisible && "bg-primary_l4"} `}
+      className={`flex flex-col ${
+        isListElementVisible && "bg-primary_l4"
+      } border-t-2  border-primary_l4 `}
     >
       <button
-        className="flex flex-row gap-6 p-3 border-t-2  border-primary_l4 hover:bg-primary_default hover:bg-opacity-5"
+        className="flex flex-row gap-6 p-3  hover:bg-primary_default hover:bg-opacity-5"
         onClick={toggleListElementVisibility}
       >
         <div className={`w-6 h-6 m-3 ${isListElementVisible && "rotate-180"}`}>
