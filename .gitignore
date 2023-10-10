@@ -455,3 +455,4 @@ $RECYCLE.BIN/
 !.vscode/extensions.json
 
 *.[Ll]ocal.json
+frontend/.prettierrc
