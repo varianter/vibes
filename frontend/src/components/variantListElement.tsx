@@ -1,6 +1,7 @@
 "use client";
 import { Variant } from "@/types";
 import { useState } from "react";
+import { ChevronDown } from "react-feather";
 
 interface VariantListElementProps {
   variant: Variant;
@@ -24,7 +25,7 @@ const VariantListElement = ({ variant }: VariantListElementProps) => {
         onClick={toggleListElementVisibility}
       >
         <div className={`w-6 h-6 m-3 ${isListElementVisible && "rotate-180"}`}>
-          <img src="icons/chevron-down.svg" alt="chevron-down" className="" />
+          <ChevronDown className={`text-primary_default`} />
         </div>
         <div className="flex flex-col gap-1 justify-center items-start">
           <p className="body text-black"> {variant.name}</p>
