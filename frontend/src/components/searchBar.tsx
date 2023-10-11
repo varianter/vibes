@@ -1,15 +1,33 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Search } from "react-feather";
 
 const SearchBar = () => {
   const router = useRouter();
   const [searchText, setSearchText] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     router.push(`/bemanning?search=${searchText}`);
   }, [searchText, router]);
+
+  useEffect(() => {
+    const keyDownHandler = (e: { code: string }) => {
+      if (
+        (e.code.startsWith("Key") || e.code.includes("Backspace")) &&
+        inputRef.current
+      ) {
+        inputRef.current.focus();
+      }
+    };
+    document.addEventListener("keydown", keyDownHandler);
+
+    // clean up
+    return () => {
+      document.removeEventListener("keydown", keyDownHandler);
+    };
+  }, []);
 
   return (
     <div className="flex flex-col gap-2">
@@ -20,6 +38,8 @@ const SearchBar = () => {
           placeholder="Søk etter konsulent"
           className="input w-36 focus:outline-none body-small "
           onChange={(e) => setSearchText(e.target.value)}
+          autoFocus
+          ref={inputRef}
         ></input>
       </div>
     </div>
