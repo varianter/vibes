@@ -4,7 +4,11 @@ namespace Core.Services;
 
 public class DateService
 {
-    // This presumes that weeks start with Monday.
+   public static DateOnly GetFirstDayOfWeekContainingDate(DateTime time){
+    return DateOnly.FromDateTime(FirstWorkDayOfWeek(time.Year, GetWeekNumber(time)));
+   }
+   
+   // This presumes that weeks start with Monday.
     // Week 1 is the 1st week of the year with a Thursday in it.
     public static int GetWeekNumber(DateTime time)
     {
