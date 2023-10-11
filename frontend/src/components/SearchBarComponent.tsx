@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Search } from "react-feather";
 
-const SearchBar = () => {
+export default function SearchBarComponent() {
   const router = useRouter();
   const [searchText, setSearchText] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -13,14 +13,14 @@ const SearchBar = () => {
   }, [searchText, router]);
 
   useEffect(() => {
-    const keyDownHandler = (e: { code: string }) => {
+    function keyDownHandler(e: { code: string }) {
       if (
         (e.code.startsWith("Key") || e.code.includes("Backspace")) &&
         inputRef.current
       ) {
         inputRef.current.focus();
       }
-    };
+    }
     document.addEventListener("keydown", keyDownHandler);
 
     // clean up
@@ -44,6 +44,4 @@ const SearchBar = () => {
       </div>
     </div>
   );
-};
-
-export default SearchBar;
+}
