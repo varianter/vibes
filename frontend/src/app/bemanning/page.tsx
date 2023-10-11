@@ -1,6 +1,6 @@
 "use client";
 
-import FilteredVariantList from "@/components/FilteredVariantList";
+import FilteredVariantList from "@/components/FilteredConsultantsList";
 import useVibesApi from "@/hooks/useVibesApi";
 import { CircularProgress } from "@mui/material";
 
