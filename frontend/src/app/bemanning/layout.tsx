@@ -1,4 +1,4 @@
-import SearchBar from "@/components/SearchBar";
+import SearchBar from "@/components/SearchBarComponent";
 
 const BemanningLayout = ({ children }: { children: React.ReactNode }) => {
   return (

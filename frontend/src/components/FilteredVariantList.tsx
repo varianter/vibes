@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import VariantListElement from "./VariantListElement";
+import VariantListElement from "./ConsultantListElement";
 import { Variant } from "@/types";
 import { useSearchParams } from "next/navigation";
 
@@ -12,7 +12,7 @@ const FilteredVariantList = ({ variants }: { variants: Variant[] }) => {
   useEffect(() => {
     if (search && search.length > 0) {
       const filtered = variants?.filter((variant) =>
-        variant.name.toLowerCase().includes(search.toLowerCase())
+        variant.name.toLowerCase().includes(search.toLowerCase()),
       );
       setFilteredVariants(filtered);
     } else {
