@@ -1,17 +1,20 @@
 "use client";
 import { Variant } from "@/types";
 import { useState } from "react";
+import { ChevronDown } from "react-feather";
 
-interface VariantListElementProps {
-  variant: Variant;
+interface ConsultantListElementProps {
+  consultant: Variant;
 }
 
-const VariantListElement = ({ variant }: VariantListElementProps) => {
+export default function ConsultantListElement({
+  consultant,
+}: ConsultantListElementProps) {
   const [isListElementVisible, setIsListElementVisible] = useState(false);
 
-  const toggleListElementVisibility = () => {
+  function toggleListElementVisibility() {
     setIsListElementVisible(!isListElementVisible);
-  };
+  }
 
   return (
     <div
@@ -24,16 +27,14 @@ const VariantListElement = ({ variant }: VariantListElementProps) => {
         onClick={toggleListElementVisibility}
       >
         <div className={`w-6 h-6 m-3 ${isListElementVisible && "rotate-180"}`}>
-          <img src="icons/chevron-down.svg" alt="chevron-down" className="" />
+          <ChevronDown className={`text-primary_default`} />
         </div>
         <div className="flex flex-col gap-1 justify-center items-start">
-          <p className="body text-black"> {variant.name}</p>
-          <p className="detail text-neutral_l1">{variant.email}</p>
+          <p className="body text-black"> {consultant.name}</p>
+          <p className="detail text-neutral_l1">{consultant.email}</p>
         </div>
       </button>
       <div className={`${!isListElementVisible && "hidden"} h-[198px] `}></div>
     </div>
   );
-};
-
-export default VariantListElement;
+}

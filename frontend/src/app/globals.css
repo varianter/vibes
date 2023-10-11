@@ -99,4 +99,9 @@
     font-family: "Graphik-Medium";
     line-height: 1.25rem;
   }
+
+  .input {
+    flex: 1;
+    background-color: transparent;
+  }
 }
