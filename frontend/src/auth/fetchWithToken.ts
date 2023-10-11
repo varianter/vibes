@@ -1,7 +1,12 @@
-import { msalInstance } from "@/utils/msalInstance";
+import { msalInstance } from "@/auth/msalInstance";
 import { loginRequest } from "@/authConfig";
+import { MockConsultants } from "../../mockdata/mockConsultants";
 
 export async function fetchWithToken(path: string) {
+  if(process.env.NEXT_PUBLIC_NO_AUTH){
+    return mockedCall(path);
+  }
+
   const account = msalInstance.getActiveAccount();
   if (!account) {
     throw Error(
@@ -34,9 +39,15 @@ export async function fetchWithToken(path: string) {
 
   try {
     const response = await fetch(path, options);
-    const res = await response.json();
-    return res;
+    return await response.json();
   } catch (error) {
     console.error(error);
   }
 }
+
+function mockedCall(path: string){
+  if(path.includes('/variants')){
+      return MockConsultants;
+    }
+}
+

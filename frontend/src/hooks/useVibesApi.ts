@@ -1,12 +1,12 @@
 "use client"
 import { Variant } from '@/types';
-import { fetchWithToken } from '@/utils/ApiUtils';
+import { fetchWithToken } from '@/auth/fetchWithToken';
 import { useIsAuthenticated } from '@azure/msal-react';
 import { useQuery, useQueryClient } from "react-query";
 import { useEffect } from "react";
 
 function useVibesApi(includeOccupied: boolean) {
-  const isAuthenticated = useIsAuthenticated();
+  const isAuthenticated = useIsAuthenticated() || process.env.NEXT_PUBLIC_NO_AUTH;
   const client = useQueryClient();
 
   //TODO: We need a better way of handling state/cache. This works for now though, but it's a bit hacky ngl
