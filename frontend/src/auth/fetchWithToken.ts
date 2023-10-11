@@ -3,7 +3,7 @@ import { loginRequest } from "@/authConfig";
 import { MockConsultants } from "../../mockdata/mockConsultants";
 
 export async function fetchWithToken(path: string) {
-  if(process.env.NEXT_PUBLIC_NO_AUTH){
+  if (process.env.NEXT_PUBLIC_NO_AUTH) {
     return mockedCall(path);
   }
 
@@ -45,9 +45,8 @@ export async function fetchWithToken(path: string) {
   }
 }
 
-function mockedCall(path: string){
-  if(path.includes('/variants')){
-      return MockConsultants;
-    }
+function mockedCall(path: string) {
+  if (path.includes("/variants")) {
+    return MockConsultants;
+  }
 }
-

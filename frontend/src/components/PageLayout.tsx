@@ -34,10 +34,17 @@ export default function PageLayout({
 }
 
 function Authenticated({ children }: { children: React.ReactNode }) {
-  return process.env.NEXT_PUBLIC_NO_AUTH ? <>{children}</> : <AuthenticatedTemplate>{children}</AuthenticatedTemplate>;
+  return process.env.NEXT_PUBLIC_NO_AUTH ? (
+    <>{children}</>
+  ) : (
+    <AuthenticatedTemplate>{children}</AuthenticatedTemplate>
+  );
 }
 
 function Unauthenticated({ children }: { children: React.ReactNode }) {
-  return process.env.NEXT_PUBLIC_NO_AUTH ?
-    <></> : <UnauthenticatedTemplate>{children}</UnauthenticatedTemplate>;
+  return process.env.NEXT_PUBLIC_NO_AUTH ? (
+    <></>
+  ) : (
+    <UnauthenticatedTemplate>{children}</UnauthenticatedTemplate>
+  );
 }
