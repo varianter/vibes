@@ -1,6 +1,6 @@
 "use client";
 
-import FilteredVariantList from "@/components/FilteredConsultantsList";
+import FilteredConsultantsList from "@/components/FilteredConsultantsList";
 import useVibesApi from "@/hooks/useVibesApi";
 import { CircularProgress } from "@mui/material";
 
@@ -15,7 +15,7 @@ export default function Bemanning() {
     return (
       <div>
         <h1>Konsulenter</h1>
-        <FilteredVariantList variants={data} />
+        <FilteredConsultantsList consultants={data} />
       </div>
     );
   }

@@ -1,24 +1,28 @@
 "use client";
 import { useEffect, useState } from "react";
-import VariantListElement from "./ConsultantListElement";
+import ConsultantListElement from "./ConsultantListElement";
 import { Variant } from "@/types";
 import { useSearchParams } from "next/navigation";
 
-const FilteredVariantList = ({ variants }: { variants: Variant[] }) => {
+export default function FilteredConsultantList({
+  consultants,
+}: {
+  consultants: Variant[];
+}) {
   const searchParams = useSearchParams();
   const search = searchParams.get("search");
-  const [filteredVariants, setFilteredVariants] = useState(variants);
+  const [filteredConsultants, setFilteredConsultants] = useState(consultants);
 
   useEffect(() => {
     if (search && search.length > 0) {
-      const filtered = variants?.filter((variant) =>
-        variant.name.toLowerCase().includes(search.toLowerCase()),
+      const filtered = consultants?.filter((consultant) =>
+        consultant.name.toLowerCase().includes(search.toLowerCase()),
       );
-      setFilteredVariants(filtered);
+      setFilteredConsultants(filtered);
     } else {
-      setFilteredVariants(variants);
+      setFilteredConsultants(consultants);
     }
-  }, [search, variants]);
+  }, [search, consultants]);
 
   return (
     <div>
@@ -26,14 +30,12 @@ const FilteredVariantList = ({ variants }: { variants: Variant[] }) => {
         <p className="body-large-bold ">Konsulentliste</p>
 
         <div className="rounded-full bg-black bg-opacity-5 px-2 py-1">
-          <p className="text-black body-small">{filteredVariants?.length}</p>
+          <p className="text-black body-small">{filteredConsultants?.length}</p>
         </div>
       </div>
-      {filteredVariants?.map((variant) => (
-        <VariantListElement key={variant.id} variant={variant} />
+      {filteredConsultants?.map((consultant) => (
+        <ConsultantListElement key={consultant.id} consultant={consultant} />
       ))}
     </div>
   );
-};
-
-export default FilteredVariantList;
+}
