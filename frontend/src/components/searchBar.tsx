@@ -1,6 +1,16 @@
+"use client";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Search } from "react-feather";
 
 const SearchBar = () => {
+  const router = useRouter();
+  const [searchText, setSearchText] = useState("");
+
+  useEffect(() => {
+    router.push(`/bemanning?search=${searchText}`);
+  }, [searchText, router]);
+
   return (
     <div className="flex flex-col gap-2">
       <p className="body-small">Søk</p>
@@ -9,6 +19,7 @@ const SearchBar = () => {
         <input
           placeholder="Søk etter konsulent"
           className="input w-36 focus:outline-none body-small "
+          onChange={(e) => setSearchText(e.target.value)}
         ></input>
       </div>
     </div>
