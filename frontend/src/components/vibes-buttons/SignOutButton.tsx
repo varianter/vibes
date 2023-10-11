@@ -15,11 +15,11 @@ export default function SignOutButton() {
   const [anchorEl, setAnchorEl] = useState<AnchorProp>(null);
   const open = Boolean(anchorEl);
 
-  const handleLogout = () => {
+  function handleLogout() {
     instance.logoutRedirect().catch((e) => {
       console.error(`logoutPopup failed: ${e}`);
     });
-  };
+  }
 
   return (
     <div>
