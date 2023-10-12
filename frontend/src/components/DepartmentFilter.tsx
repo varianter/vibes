@@ -7,7 +7,7 @@ export default function DepartmentFilter() {
   const { data, isLoading } = useDepartmentsApi();
 
   if (isLoading) {
-    <CircularProgress />;
+    return <CircularProgress />;
   }
 
   if (data) {
