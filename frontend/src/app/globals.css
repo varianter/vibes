@@ -104,4 +104,10 @@
     flex: 1;
     background-color: transparent;
   }
+
+  .interaction-chip {
+    font-size: 0.75rem;
+    font-family: "Graphik-SemiBold";
+    line-height: 0.875rem;
+  }
 }

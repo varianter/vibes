@@ -11,6 +11,7 @@ module.exports = {
       primary_l4: "#F6F5F9",
       secondary_default: "#F076A6",
       neutral_l1: "#858585",
+      transparent: "transparent",
     },
     extend: {},
     screens: {

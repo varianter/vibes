@@ -15,4 +15,15 @@ export type Variant = {
   ];
 };
 
-export type AnchorProp = Element | (() => Element) | PopoverVirtualElement | (() => PopoverVirtualElement) | null | undefined;
+export type Department = {
+  id: string;
+  name: string;
+};
+
+export type AnchorProp =
+  | Element
+  | (() => Element)
+  | PopoverVirtualElement
+  | (() => PopoverVirtualElement)
+  | null
+  | undefined;

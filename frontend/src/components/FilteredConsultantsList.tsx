@@ -11,18 +11,23 @@ export default function FilteredConsultantList({
 }) {
   const searchParams = useSearchParams();
   const search = searchParams.get("search");
+  const filter = searchParams.get("filter");
   const [filteredConsultants, setFilteredConsultants] = useState(consultants);
 
   useEffect(() => {
+    var newFilteredConsultants = consultants;
     if (search && search.length > 0) {
-      const filtered = consultants?.filter((consultant) =>
+      newFilteredConsultants = newFilteredConsultants?.filter((consultant) =>
         consultant.name.toLowerCase().includes(search.toLowerCase()),
       );
-      setFilteredConsultants(filtered);
-    } else {
-      setFilteredConsultants(consultants);
     }
-  }, [search, consultants]);
+    if (filter && filter.length > 0) {
+      newFilteredConsultants = newFilteredConsultants?.filter((consultant) =>
+        filter.toLowerCase().includes(consultant.department.toLowerCase()),
+      );
+    }
+    setFilteredConsultants(newFilteredConsultants);
+  }, [consultants, filter, search]);
 
   return (
     <div>
