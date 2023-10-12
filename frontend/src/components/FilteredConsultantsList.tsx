@@ -18,7 +18,7 @@ export default function FilteredConsultantList({
     var newFilteredConsultants = consultants;
     if (search && search.length > 0) {
       newFilteredConsultants = newFilteredConsultants?.filter((consultant) =>
-        consultant.name.toLowerCase().includes(search.toLowerCase()),
+        consultant.name.match(new RegExp(`\\b${search}.*\\b`, "gi")),
       );
     }
     if (filter && filter.length > 0) {

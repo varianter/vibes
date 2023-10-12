@@ -20,17 +20,17 @@ export default function ConsultantListElement({
     <div
       className={`flex flex-col ${
         isListElementVisible && "bg-primary_l4"
-      } border-t-2  border-primary_l4 `}
+      } border-t  border-primary_l4 `}
     >
       <button
-        className="flex flex-row gap-6 p-3  hover:bg-primary_default hover:bg-opacity-5"
+        className="flex flex-row gap-3 py-0.5  hover:bg-primary_default hover:bg-opacity-5"
         onClick={toggleListElementVisibility}
       >
-        <div className={`w-6 h-6 m-3 ${isListElementVisible && "rotate-180"}`}>
+        <div className={`w-6 h-6 m-2 ${isListElementVisible && "rotate-180"}`}>
           <ChevronDown className={`text-primary_default`} />
         </div>
-        <div className="flex flex-col gap-1 justify-center items-start">
-          <p className="body text-black"> {consultant.name}</p>
+        <div className="flex flex-col justify-center items-start">
+          <p className="body text-black text-sm"> {consultant.name}</p>
           <p className="detail text-neutral_l1">{consultant.email}</p>
         </div>
       </button>
