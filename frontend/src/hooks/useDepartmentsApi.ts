@@ -1,11 +1,13 @@
 "use client";
-import { fetchWithToken } from "@/utils/ApiUtils";
+
 import { useIsAuthenticated } from "@azure/msal-react";
 import { useQuery } from "react-query";
 import { Department } from "@/types";
+import { fetchWithToken } from "@/auth/fetchWithToken";
 
 function useDepartmentsApi() {
-  const isAuthenticated = useIsAuthenticated();
+  const isAuthenticated =
+    useIsAuthenticated() || process.env.NEXT_PUBLIC_NO_AUTH;
 
   return useQuery({
     queryKey: "departments",
