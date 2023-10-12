@@ -1,6 +1,7 @@
 import { msalInstance } from "@/auth/msalInstance";
 import { loginRequest } from "@/authConfig";
 import { MockConsultants } from "../../mockdata/mockConsultants";
+import { MockDepartments } from "../../mockdata/mockDepartments";
 
 export async function fetchWithToken(path: string) {
   if (process.env.NEXT_PUBLIC_NO_AUTH) {
@@ -48,5 +49,8 @@ export async function fetchWithToken(path: string) {
 function mockedCall(path: string) {
   if (path.includes("/variants")) {
     return MockConsultants;
+  }
+  if (path.includes("/departments")) {
+    return MockDepartments;
   }
 }

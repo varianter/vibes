@@ -15,6 +15,11 @@ export type Variant = {
   ];
 };
 
+export type Department = {
+  id: string;
+  name: string;
+};
+
 export type AnchorProp =
   | Element
   | (() => Element)

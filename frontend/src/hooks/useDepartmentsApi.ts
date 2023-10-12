@@ -1,21 +1,21 @@
 "use client";
-import { Variant } from "@/types";
-import { fetchWithToken } from "@/auth/fetchWithToken";
+
 import { useIsAuthenticated } from "@azure/msal-react";
 import { useQuery } from "react-query";
+import { Department } from "@/types";
+import { fetchWithToken } from "@/auth/fetchWithToken";
 
-function useVibesApi(includeOccupied: boolean) {
+function useDepartmentsApi() {
   const isAuthenticated =
     useIsAuthenticated() || process.env.NEXT_PUBLIC_NO_AUTH;
 
   return useQuery({
-    queryKey: "vibes",
+    queryKey: "departments",
     queryFn: async () => {
       if (isAuthenticated) {
         try {
-          const response: Variant[] = await fetchWithToken(
-            `/api/v0/variants?weeks=8&includeOccupied=${includeOccupied}`,
-          );
+          const response: Department[] =
+            await fetchWithToken(`/api/departments`);
           return response;
         } catch (err) {
           console.error(err);
@@ -29,4 +29,4 @@ function useVibesApi(includeOccupied: boolean) {
   });
 }
 
-export default useVibesApi;
+export default useDepartmentsApi;
