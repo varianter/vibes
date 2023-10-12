@@ -40,14 +40,6 @@ public class ConsultantController : ControllerBase
     }
 
 
-    [HttpGet("{id}")]
-    public Ok<ConsultantReadModel> GetConsultantById(int id,
-        [FromQuery(Name = "weeks")] int numberOfWeeks = 8)
-    {
-        var consultants = GetConsultantsWithAvailability(numberOfWeeks);
-        return TypedResults.Ok(consultants.Single(c => c.Id == id));
-    }
-
     [HttpPost]
     public async Task<Results<Created<ConsultantWriteModel>, ProblemHttpResult, ValidationProblem>> AddBasicConsultant(
         [FromBody] ConsultantWriteModel basicVariant)
@@ -95,6 +87,8 @@ public class ConsultantController : ControllerBase
     private List<Consultant> LoadConsultantAvailability(int numberOfWeeks)
     {
         var applicableWeeks = DateService.GetNextWeeks(numberOfWeeks);
+        var firstDayOfCurrentWeek = DateService.GetFirstDayOfWeekContainingDate(DateTime.Now);
+        var firstWorkDayOutOfScope = DateService.GetFirstDayOfWeekContainingDate(DateTime.Now.AddDays(numberOfWeeks*7));
 
         // Needed to filter planned absence and staffing.
         // From november, we will span two years. 
@@ -116,6 +110,8 @@ public class ConsultantController : ControllerBase
 
 
         return _context.Consultant
+            .Where(c => c.EndDate == null || c.EndDate > firstDayOfCurrentWeek)
+            .Where(c => c.StartDate == null || c.StartDate <= firstWorkDayOutOfScope)
             .Include(c => c.Vacations)
             .Include(c => c.Competences)
             .Include(c => c.PlannedAbsences.Where(pa =>
@@ -125,6 +121,7 @@ public class ConsultantController : ControllerBase
             .Include(c => c.Staffings.Where(s =>
                 (s.Year <= yearA && minWeekA <= s.Week && s.Week <= maxWeekA)
                 || (yearB <= s.Year && minWeekB <= s.Week && s.Week <= maxWeekB)))
+            .OrderBy(c => c.Name)
             .ToList();
     }
 
