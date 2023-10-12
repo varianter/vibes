@@ -3,9 +3,10 @@ import {
   AuthenticatedTemplate,
   UnauthenticatedTemplate,
 } from "@azure/msal-react";
-import { Box, Container, Grid } from "@mui/material";
+import { Box } from "@mui/material";
 import VibesAppBar from "./VibesNavBar";
 import SignInSignOutButton from "./vibes-buttons/SignInSignOutButton";
+import React from "react";
 
 export default function PageLayout({
   children,
@@ -15,9 +16,9 @@ export default function PageLayout({
   return (
     <div>
       <VibesAppBar />
-      <AuthenticatedTemplate>{children}</AuthenticatedTemplate>
+      <Authenticated>{children}</Authenticated>
 
-      <UnauthenticatedTemplate>
+      <Unauthenticated>
         <Box
           display="flex"
           justifyContent="center"
@@ -27,7 +28,23 @@ export default function PageLayout({
           Please log in first
           <SignInSignOutButton />
         </Box>
-      </UnauthenticatedTemplate>
+      </Unauthenticated>
     </div>
+  );
+}
+
+function Authenticated({ children }: { children: React.ReactNode }) {
+  return process.env.NEXT_PUBLIC_NO_AUTH ? (
+    <>{children}</>
+  ) : (
+    <AuthenticatedTemplate>{children}</AuthenticatedTemplate>
+  );
+}
+
+function Unauthenticated({ children }: { children: React.ReactNode }) {
+  return process.env.NEXT_PUBLIC_NO_AUTH ? (
+    <></>
+  ) : (
+    <UnauthenticatedTemplate>{children}</UnauthenticatedTemplate>
   );
 }
