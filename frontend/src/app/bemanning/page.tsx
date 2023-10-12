@@ -1,5 +1,5 @@
 import FilteredConsultantsList from "@/components/FilteredConsultantsList";
-import { getConsultants } from "@/hooks/useVibesApi";
+import { getConsultants } from "@/data/getConsultants";
 import { CircularProgress } from "@mui/material";
 
 export default async function Bemanning() {
@@ -7,9 +7,7 @@ export default async function Bemanning() {
 
   if (consultants.length == 0) {
     return <CircularProgress />;
-  }
-
-  else {
+  } else {
     return (
       <div>
         <h1>Konsulenter</h1>

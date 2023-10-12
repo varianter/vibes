@@ -1,13 +1,19 @@
 import { MockConsultants } from "../../mockdata/mockConsultants";
 import { MockDepartments } from "../../mockdata/mockDepartments";
-import { authOptions, getCustomServerSession } from "@/app/api/auth/[...nextauth]/route";
+import {
+  authOptions,
+  getCustomServerSession,
+} from "@/app/api/auth/[...nextauth]/route";
 
 export async function fetchWithToken(path: string) {
   if (process.env.NEXT_PUBLIC_NO_AUTH) {
     return mockedCall(path);
   }
 
-  const session = await getCustomServerSession(authOptions)
+  const session = await getCustomServerSession(authOptions);
+
+  const apiBackendUrl =
+    process.env.NEXT_PUBLIC_VIBES_BACKEND_URL ?? "http://localhost:7172/v0";
 
   // @ts-ignore
   const headers = new Headers();
@@ -21,7 +27,7 @@ export async function fetchWithToken(path: string) {
   };
 
   try {
-    const response = await fetch(path, options);
+    const response = await fetch(`${apiBackendUrl}/${path}`, options);
     return await response.json();
   } catch (error) {
     console.error(error);
@@ -29,10 +35,10 @@ export async function fetchWithToken(path: string) {
 }
 
 function mockedCall(path: string) {
-  if (path.includes("/variants")) {
+  if (path.includes("variants")) {
     return MockConsultants;
   }
-  if (path.includes("/departments")) {
+  if (path.includes("departments")) {
     return MockDepartments;
   }
 }

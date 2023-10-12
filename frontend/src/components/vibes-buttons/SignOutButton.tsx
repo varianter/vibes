@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { AnchorProp } from "@/types";
 import { Logout } from "@mui/icons-material";
 import { Avatar, ListItemIcon } from "@mui/material";
@@ -10,15 +10,8 @@ import { signOut } from "next-auth/react";
 import { useState } from "react";
 
 export default function SignOutButton() {
-
   const [anchorEl, setAnchorEl] = useState<AnchorProp>(null);
   const open = Boolean(anchorEl);
-
-
-  const handleLogout = () => {
-    
-    signOut();
-  };
 
   return (
     <div>
@@ -59,7 +52,7 @@ export default function SignOutButton() {
         open={open}
         onClose={() => setAnchorEl(null)}
       >
-        <MenuItem onClick={handleLogout}>
+        <MenuItem onClick={() => signOut()}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>

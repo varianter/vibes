@@ -11,7 +11,7 @@ export default function AppProviders({
   return (
     <ThemeRegistry>
       <CssBaseline />
-          <PageLayout>{children}</PageLayout>
+      <PageLayout>{children}</PageLayout>
     </ThemeRegistry>
   );
 }
