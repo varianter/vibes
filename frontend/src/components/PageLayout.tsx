@@ -1,10 +1,11 @@
-"use client"
-import { AuthenticatedTemplate, UnauthenticatedTemplate } from "@azure/msal-react";
-import { Box, Container, Grid } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import VibesAppBar from "./VibesNavBar";
-import SignInSignOutButton from "./vibes-buttons/SignInSignOutButton";
+import SignInField from "./SignInField";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function PageLayout({ children }: { children: React.ReactNode }) {
+    const { isAuthenticated } = useAuth();
+
     return (
         <Grid container justifyContent="center">
             <VibesAppBar />
@@ -15,23 +16,10 @@ export default function PageLayout({ children }: { children: React.ReactNode }) 
                     bgcolor: 'background.default',
                 }}
             >
-                <AuthenticatedTemplate>
-                    <Container>
-                        {children}
-                    </Container>
-                </AuthenticatedTemplate>
-
-                <UnauthenticatedTemplate>
-                    <Box
-                        display="flex"
-                        justifyContent="center"
-                        alignItems="center"
-                        minHeight="50vh"
-                    >
-                        Please log in first
-                        <SignInSignOutButton />
-                    </Box>
-                </UnauthenticatedTemplate>
+                {isAuthenticated ?
+                    children :
+                    <SignInField />
+                }
             </Box>
         </Grid>
     );

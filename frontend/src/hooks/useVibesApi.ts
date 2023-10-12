@@ -1,22 +1,36 @@
 "use client"
 import { Variant } from '@/types';
-import { fetchWithToken } from '@/utils/ApiUtils';
-import { useIsAuthenticated } from '@azure/msal-react';
 import { useQuery, useQueryClient } from "react-query";
 import { useEffect } from "react";
+import { useAuth } from './useAuth';
+import { useVibesSession } from './useVibesSession';
 
 function useVibesApi(includeOccupied: boolean) {
-  const isAuthenticated = useIsAuthenticated();
   const client = useQueryClient();
 
   //TODO: We need a better way of handling state/cache. This works for now though, but it's a bit hacky ngl
   useEffect(()=> client.clear(), [includeOccupied, client])
 
+  const { isAuthenticated } = useAuth();
+  const { azureToken } = useVibesSession();
+
   return useQuery({queryKey: 'vibes', queryFn: async () => {
-    if (isAuthenticated) {
+    if (isAuthenticated && azureToken) {
       try {
-        const response: Variant[] = await fetchWithToken(`/api/v0/variants?weeks=8&includeOccupied=${includeOccupied}`);
-        return response;
+
+        const headers = new Headers();
+        const bearer = `Bearer ${azureToken}`;
+      
+        headers.append("Authorization", bearer);
+      
+        const options = {
+          method: "GET",
+          headers: headers,
+        };
+
+        const response = (await fetch(`/api/v0/variants?weeks=8&includeOccupied=${includeOccupied}`, options));
+        const data: Variant[] = await response.json();
+        return data;
         
       } catch (err) {
         console.error(err)
