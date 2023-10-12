@@ -1,11 +1,12 @@
 "use client";
 import { Variant } from "@/types";
-import { fetchWithToken } from "@/utils/ApiUtils";
+import { fetchWithToken } from "@/auth/fetchWithToken";
 import { useIsAuthenticated } from "@azure/msal-react";
 import { useQuery } from "react-query";
 
 function useVibesApi(includeOccupied: boolean) {
-  const isAuthenticated = useIsAuthenticated();
+  const isAuthenticated =
+    useIsAuthenticated() || process.env.NEXT_PUBLIC_NO_AUTH;
 
   return useQuery({
     queryKey: "vibes",
