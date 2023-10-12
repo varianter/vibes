@@ -7,7 +7,8 @@
     "start-test": "NEXT_PUBLIC_NO_AUTH=true next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prettier:ci": "prettier --check . "
   },
   "dependencies": {
     "@azure/msal-browser": "^3.1.0",
