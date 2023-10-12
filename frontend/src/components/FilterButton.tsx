@@ -5,7 +5,7 @@ import { useState } from "react";
 export default function FilterButton({ filterName }: { filterName: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isButtonActive, setIsButtonActive] = useState(false);
+  const [isButtonActive, setIsButtonActive] = useState(checkFilterInUrl);
 
   function handleFilterClick() {
     setIsButtonActive((prevState) => !prevState);
@@ -20,8 +20,13 @@ export default function FilterButton({ filterName }: { filterName: string }) {
     } else {
       newFilters.splice(filterIndex, 1);
     }
-    const newFilterString = newFilters.join(",");
+    const newFilterString = newFilters.join(",").replace(/^,/, "");
     router.push(`/bemanning?search=${currentSearch}&filter=${newFilterString}`);
+  }
+
+  function checkFilterInUrl() {
+    const currentFilter = searchParams.get("filter") || "";
+    return currentFilter.includes(filterName);
   }
 
   return (
