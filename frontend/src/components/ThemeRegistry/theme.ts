@@ -1,24 +1,22 @@
-import { createTheme } from '@mui/material/styles';
+import { createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
   typography: {
-    fontFamily: [
-      "Graphik-Regular", "Helvetica", "Arial"
-    ].join(','),
+    fontFamily: ["Graphik-Regular", "Helvetica", "Arial"].join(","),
     button: {
-      textTransform: "none"
-    }
+      textTransform: "none",
+    },
   },
   palette: {
-    mode: 'light',
+    mode: "light",
     primary: {
-        main: 'rgba(66, 61, 137, 1)',
-        contrastText: "#fff"
+      main: "rgba(66, 61, 137, 1)",
+      contrastText: "#fff",
     },
     secondary: {
-        main: 'rgba(66, 61, 137, 1)',
+      main: "rgba(66, 61, 137, 1)",
     },
-  }
+  },
 });
 
 export default theme;

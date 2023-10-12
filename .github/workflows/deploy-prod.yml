@@ -3,13 +3,14 @@
 
 # Primary ref: https://dev.to/ckgrafico/deploying-nextjs-to-azure-web-app-with-github-actions-1o9c
 
-name: (PROD) Deploy frontend
+name: (PROD) Deploy
 
 on:
   workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  build-and-deploy-frontend:
+    name: 'Build and deploy Frontend'
     runs-on: ubuntu-latest
     environment: Production
 
@@ -82,4 +83,43 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_FRONTEND_SE }}
           package: ./frontend/build-se/standalone
+
+  build-and-deploy-backend:
+    name: 'Build and deploy Backend'
+    runs-on: ubuntu-latest
+    environment: Production
+    
+    steps:
+      # Checkout the repo
+      - uses: actions/checkout@main
+      
+      # Setup .NET Core SDK
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '7.x.x'
+      
+      # Run dotnet build and publish
+      - name: Build
+        working-directory: backend/Api/
+        run: |
+          dotnet restore
+          dotnet build --configuration Release
+          dotnet publish -c Release --property:PublishDir='./build' 
+      
+      # Deploy to Azure Web apps
+      - name: Deploy to App Service (NO)
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: vibes-backend-norway-prod 
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_BACKEND_NO  }} # Define secret variable in repository settings as per action documentation
+          package: 'backend/Api/build'
+                
+      # Deploy to Azure Web apps
+      - name: Deploy to App Service (SE)
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: vibes-backend-sweden-prod
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_BACKEND_SE  }} # Define secret variable in repository settings as per action documentation
+          package: 'backend/Api/build'
 

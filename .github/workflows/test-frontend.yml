@@ -1,11 +1,11 @@
-name: Playwright Tests
+name: Frontend Tests
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
 jobs:
-  test:
+  playwright:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
@@ -28,3 +28,24 @@ jobs:
         name: playwright-report
         path: ./frontend/playwright-report/
         retention-days: 30
+        
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: yarn
+      - name: Build
+        working-directory: ./frontend
+        run: yarn next build
+      - name: Lint
+        working-directory: ./frontend
+        run: yarn next lint 
+      - name: Check formatting
+        working-directory: ./frontend
+        run: yarn prettier:ci       
+      

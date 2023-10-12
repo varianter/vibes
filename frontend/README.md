@@ -42,8 +42,8 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 See [project root README](../README.md).
 
-
 ## Issues
+
 This seem to be a bug in the MUI package. It is only triggered when importing styled from `@mui/material`:
 
 ```ts
