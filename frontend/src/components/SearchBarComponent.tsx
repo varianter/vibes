@@ -6,7 +6,9 @@ import { Search } from "react-feather";
 export default function SearchBarComponent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [searchText, setSearchText] = useState("");
+  const [searchText, setSearchText] = useState(
+    searchParams.get("search") || "",
+  );
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -21,6 +23,9 @@ export default function SearchBarComponent() {
         inputRef.current
       ) {
         inputRef.current.focus();
+      }
+      if (e.code.includes("Escape")) {
+        setSearchText("");
       }
     }
     document.addEventListener("keydown", keyDownHandler);
@@ -42,6 +47,7 @@ export default function SearchBarComponent() {
           onChange={(e) => setSearchText(e.target.value)}
           autoFocus
           ref={inputRef}
+          value={searchText}
         ></input>
       </div>
     </div>
