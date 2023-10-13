@@ -55,4 +55,4 @@ export async function getCustomServerSession(authOptions: AuthOptions) {
   return (await getServerSession(authOptions)) as CustomSession;
 }
 
-export { handler as GET, handler as POST }
+export { handler as GET, handler as POST };
