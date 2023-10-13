@@ -1,22 +1,14 @@
-"use client";
-
 import FilteredConsultantsList from "@/components/FilteredConsultantsList";
-import useVibesApi from "@/hooks/useVibesApi";
-import { CircularProgress } from "@mui/material";
+import { fetchWithToken } from "@/data/fetchWithToken";
+import { Variant } from "@/types";
 
-export default function Bemanning() {
-  const { data, isLoading } = useVibesApi(true);
+export default async function Bemanning() {
+  const consultants = (await fetchWithToken<Variant[]>("variants")) ?? [];
 
-  if (isLoading) {
-    return <CircularProgress />;
-  }
-
-  if (data) {
-    return (
-      <div>
-        <h1>Konsulenter</h1>
-        <FilteredConsultantsList consultants={data} />
-      </div>
-    );
-  }
+  return (
+    <div>
+      <h1>Konsulenter</h1>
+      <FilteredConsultantsList consultants={consultants} />
+    </div>
+  );
 }

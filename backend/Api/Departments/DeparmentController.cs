@@ -1,7 +1,7 @@
 using Database.DatabaseContext;
 using Microsoft.AspNetCore.Mvc;
 
-[Route("/departments")]
+[Route("/v0/departments")]
 [ApiController]
 public class DepartmentController : ControllerBase {
 

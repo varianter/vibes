@@ -1,21 +1,19 @@
-import { InteractionStatus } from "@azure/msal-browser";
-import { useIsAuthenticated, useMsal } from "@azure/msal-react";
+"use client";
+import { CircularProgress } from "@mui/material";
 import SignInButton from "./SignInButton";
 import SignOutButton from "./SignOutButton";
+import { useSession } from "next-auth/react";
 
-export default function SignInSignOutButton() {
-  const { inProgress } = useMsal();
-  const isAuthenticated = useIsAuthenticated();
+function SignInSignOutButton() {
+  const { status } = useSession();
 
-  if (isAuthenticated) {
+  if (status === "authenticated") {
     return <SignOutButton />;
-  } else if (
-    inProgress !== InteractionStatus.Startup &&
-    inProgress !== InteractionStatus.HandleRedirect
-  ) {
-    // inProgress check prevents sign-in button from being displayed briefly after returning from a redirect sign-in. Processing the server response takes a render cycle or two
+  } else if (status === "unauthenticated") {
     return <SignInButton />;
   } else {
-    return null;
+    return <CircularProgress />;
   }
 }
+
+export default SignInSignOutButton;

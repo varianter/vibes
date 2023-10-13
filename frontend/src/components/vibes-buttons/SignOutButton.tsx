@@ -1,25 +1,17 @@
+"use client";
 import { AnchorProp } from "@/types";
-import { useAccount, useMsal } from "@azure/msal-react";
 import { Logout } from "@mui/icons-material";
 import { Avatar, ListItemIcon } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import { signOut } from "next-auth/react";
+
 import { useState } from "react";
-import { AccountInfo } from "@azure/msal-common";
 
 export default function SignOutButton() {
-  const { instance } = useMsal();
-  const account = useAccount();
-
   const [anchorEl, setAnchorEl] = useState<AnchorProp>(null);
   const open = Boolean(anchorEl);
-
-  function handleLogout() {
-    instance.logoutRedirect().catch((e) => {
-      console.error(`logoutPopup failed: ${e}`);
-    });
-  }
 
   return (
     <div>
@@ -42,7 +34,7 @@ export default function SignOutButton() {
             fontSize: "90%",
           }}
         >
-          {GetInitials(account)}
+          ABC
         </Avatar>
       </IconButton>
       <Menu
@@ -60,7 +52,7 @@ export default function SignOutButton() {
         open={open}
         onClose={() => setAnchorEl(null)}
       >
-        <MenuItem onClick={handleLogout}>
+        <MenuItem onClick={() => signOut()}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>
@@ -69,15 +61,4 @@ export default function SignOutButton() {
       </Menu>
     </div>
   );
-}
-
-function GetInitials(account: AccountInfo | null): string {
-  if (!account) return "";
-
-  const initials = account.name?.split(" ").map((n) => n.substring(0, 1)) ?? [
-    "",
-    "",
-  ];
-
-  return `${initials[0]}${initials[initials.length - 1]}`;
 }

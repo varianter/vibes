@@ -38,7 +38,6 @@ export default function VibesAppBar() {
           }}
           ml={2}
         ></Box>
-        <SignInSignOutButton />
       </Toolbar>
     </AppBar>
   );
