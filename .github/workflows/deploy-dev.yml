@@ -71,7 +71,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: ghcr.io/${{ env.REPO }}:${{ github.ref }}
+          tags: ghcr.io/${{ env.REPO }}:${{ github.sha }}
           file: ./Dockerfile
 
   deploy:
@@ -92,4 +92,4 @@ jobs:
         with:
           app-name: frontend-docker-test-2
           publish-profile: ${{ secrets.TMP_DOCKER_PUSH }}
-          images: 'ghcr.io/${{ env.REPO }}:${{ github.ref }}'
+          images: 'ghcr.io/${{ env.REPO }}:${{ github.sha }}'
