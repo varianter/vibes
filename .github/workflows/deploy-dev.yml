@@ -79,7 +79,7 @@ jobs:
         with:
           push: true
           tags: ghcr.io/${{ env.REPO }}:${{ github.sha }}
-          file: ./frontend/Dockerfile
+          file: Frontend.Dockerfile
 
   deploy-frontend:
     permissions:
