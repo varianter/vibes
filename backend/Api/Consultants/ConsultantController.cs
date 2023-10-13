@@ -27,7 +27,7 @@ public class ConsultantController : ControllerBase
     [HttpGet]
     public ActionResult<List<ConsultantReadModel>> Get(
         [FromQuery(Name = "weeks")] int numberOfWeeks = 8,
-        [FromQuery(Name = "includeOccupied")] bool includeOccupied = false)
+        [FromQuery(Name = "includeOccupied")] bool includeOccupied = true)
     {
         var consultants = GetConsultantsWithAvailability(numberOfWeeks)
             .Where(c =>
@@ -88,7 +88,8 @@ public class ConsultantController : ControllerBase
     {
         var applicableWeeks = DateService.GetNextWeeks(numberOfWeeks);
         var firstDayOfCurrentWeek = DateService.GetFirstDayOfWeekContainingDate(DateTime.Now);
-        var firstWorkDayOutOfScope = DateService.GetFirstDayOfWeekContainingDate(DateTime.Now.AddDays(numberOfWeeks*7));
+        var firstWorkDayOutOfScope =
+            DateService.GetFirstDayOfWeekContainingDate(DateTime.Now.AddDays(numberOfWeeks * 7));
 
         // Needed to filter planned absence and staffing.
         // From november, we will span two years. 
