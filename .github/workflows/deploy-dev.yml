@@ -16,6 +16,7 @@ on:
 jobs:
   
   build-and-deploy-backend:
+    if: false
     name: 'Build and deploy Backend'
     runs-on: ubuntu-latest
     environment: Development
@@ -78,7 +79,7 @@ jobs:
         with:
           push: true
           tags: ghcr.io/${{ env.REPO }}:${{ github.sha }}
-          file: ./Dockerfile
+          file: ./frontend/Dockerfile
 
   deploy-frontend:
     permissions:
