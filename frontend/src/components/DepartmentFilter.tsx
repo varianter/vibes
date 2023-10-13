@@ -3,7 +3,7 @@ import { fetchWithToken } from "@/data/fetchWithToken";
 import { Department } from "@/types";
 
 export default async function DepartmentFilter() {
-  const departments =  await fetchWithToken<Department[]>("departments")?? [];
+  const departments = (await fetchWithToken<Department[]>("departments")) ?? [];
 
   if (departments.length > 0) {
     return (

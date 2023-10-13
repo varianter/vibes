@@ -3,7 +3,7 @@ import { fetchWithToken } from "@/data/fetchWithToken";
 import { Variant } from "@/types";
 
 export default async function Bemanning() {
-  const consultants =  await fetchWithToken<Variant[]>("variants") ?? [];
+  const consultants = (await fetchWithToken<Variant[]>("variants")) ?? [];
 
   return (
     <div>
