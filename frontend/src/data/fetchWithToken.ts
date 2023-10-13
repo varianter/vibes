@@ -14,8 +14,7 @@ export async function fetchWithToken<T>(path: string): Promise<T | undefined> {
 
   if (!session || !session.access_token) return;
 
-  const apiBackendUrl =
-    process.env.BACKEND_URL ?? "http://localhost:7172/v0";
+  const apiBackendUrl = process.env.BACKEND_URL ?? "http://localhost:7172/v0";
 
   // @ts-ignore
   const headers = new Headers();

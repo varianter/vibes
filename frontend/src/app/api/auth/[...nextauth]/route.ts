@@ -1,4 +1,4 @@
-import NextAuth, { AuthOptions, getServerSession, Session } from "next-auth";
+import { AuthOptions, getServerSession, Session } from "next-auth";
 import AzureADProvider from "next-auth/providers/azure-ad";
 
 export type CustomSession = {
@@ -21,8 +21,6 @@ export const authOptions: AuthOptions = {
       idToken: true,
     }),
   ],
-  debug: true,
-  // TO ENV
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
@@ -51,10 +49,6 @@ export const authOptions: AuthOptions = {
   },
 };
 
-const handler = NextAuth(authOptions);
-
 export async function getCustomServerSession(authOptions: AuthOptions) {
   return (await getServerSession(authOptions)) as CustomSession;
 }
-
-export { handler as GET, handler as POST };
