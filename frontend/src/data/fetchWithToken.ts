@@ -26,10 +26,7 @@ export async function fetchWithToken<T>(path: string): Promise<T | undefined> {
     method: "GET",
     headers: headers,
   };
-  console.log(`${apiBackendUrl}/${path}`);
-
   const response = await fetch(`${apiBackendUrl}/${path}`, options);
-  console.log(response.status);
   return (await response.json()) as T;
 }
 
