@@ -2,7 +2,6 @@
 // See backend/launchSettings.json for details on dev-env
 
 const nextConfig = {
-  output: "standalone",
   distDir: "build",
   swcMinify: true,
   modularizeImports: {
