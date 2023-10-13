@@ -77,7 +77,7 @@ jobs:
         uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # v5.0.0
         with:
           push: true
-          tags: ghcr.io/${{ env.REPO }}:${{ github.sha }}
+          tags: ghcr.io/${{ env.REPO }}-frontend:${{ github.sha }}
           file: Frontend.Dockerfile
 
   deploy-frontend:
@@ -99,4 +99,4 @@ jobs:
         with:
           app-name: vibes-frontend-dev
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_FRONTEND }}
-          images: 'ghcr.io/${{ env.REPO }}:${{ github.sha }}'
+          images: 'ghcr.io/${{ env.REPO }}-frontend:${{ github.sha }}'
