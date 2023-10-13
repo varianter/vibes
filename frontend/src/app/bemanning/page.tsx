@@ -1,8 +1,9 @@
 import FilteredConsultantsList from "@/components/FilteredConsultantsList";
-import { getConsultants } from "@/data/getConsultants";
+import { fetchWithToken } from "@/data/fetchWithToken";
+import { Variant } from "@/types";
 
 export default async function Bemanning() {
-  const consultants = await getConsultants();
+  const consultants =  await fetchWithToken<Variant[]>("variants") ?? [];
 
   return (
     <div>
