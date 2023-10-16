@@ -1,6 +1,6 @@
 import { PopoverVirtualElement } from "@mui/material";
 
-export type Variant = {
+export type Consultant = {
   id: string;
   name: string;
   email: string;

@@ -1,13 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
 import ConsultantListElement from "./ConsultantListElement";
-import { Variant } from "@/types";
+import { Consultant } from "@/types";
 import { useSearchParams } from "next/navigation";
 
 export default function FilteredConsultantList({
   consultants,
 }: {
-  consultants: Variant[];
+  consultants: Consultant[];
 }) {
   const searchParams = useSearchParams();
   const search = searchParams.get("search");
