@@ -32,7 +32,7 @@ export async function fetchWithToken<T>(path: string): Promise<T | undefined> {
 
 function mockedCall<T>(path: string): Promise<T> {
   return new Promise((resolve) => {
-    if (path.includes("variants")) {
+    if (path.includes("consultants")) {
       resolve(MockConsultants as T);
     }
     if (path.includes("departments")) {

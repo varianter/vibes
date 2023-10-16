@@ -9,7 +9,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Api.Consultants;
 
-[Route("v0/variants")]
+[Route("v0/consultants")]
 [ApiController]
 public class ConsultantController : ControllerBase
 {
@@ -42,23 +42,23 @@ public class ConsultantController : ControllerBase
 
     [HttpPost]
     public async Task<Results<Created<ConsultantWriteModel>, ProblemHttpResult, ValidationProblem>> AddBasicConsultant(
-        [FromBody] ConsultantWriteModel basicVariant)
+        [FromBody] ConsultantWriteModel basicConsultant)
     {
         try
         {
-            var selectedDepartment = await GetDepartmentByIdAsync(basicVariant.DepartmentId);
+            var selectedDepartment = await GetDepartmentByIdAsync(basicConsultant.DepartmentId);
             if (selectedDepartment == null) return TypedResults.Problem("Department does not exist", statusCode: 400);
 
             var consultantList = await GetAllConsultantsAsync(_context);
-            var validationResults = ConsultantValidators.ValidateUniqueness(consultantList, basicVariant);
+            var validationResults = ConsultantValidators.ValidateUniqueness(consultantList, basicConsultant);
 
             if (validationResults.Count > 0) return TypedResults.ValidationProblem(validationResults);
 
-            var newConsultant = CreateConsultantFromModel(basicVariant, selectedDepartment);
+            var newConsultant = CreateConsultantFromModel(basicConsultant, selectedDepartment);
             await AddConsultantToDatabaseAsync(_context, newConsultant);
             ClearConsultantCache();
 
-            return TypedResults.Created($"/variant/{newConsultant.Id}", basicVariant);
+            return TypedResults.Created($"/consultant/{newConsultant.Id}", basicConsultant);
         }
         catch
         {
@@ -137,13 +137,13 @@ public class ConsultantController : ControllerBase
         return await db.Consultant.ToListAsync();
     }
 
-    private static Consultant CreateConsultantFromModel(ConsultantWriteModel basicVariant,
+    private static Consultant CreateConsultantFromModel(ConsultantWriteModel basicConsultant,
         Department selectedDepartment)
     {
         return new Consultant
         {
-            Name = basicVariant.Name,
-            Email = basicVariant.Email,
+            Name = basicConsultant.Name,
+            Email = basicConsultant.Email,
             Department = selectedDepartment
         };
     }

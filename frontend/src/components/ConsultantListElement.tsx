@@ -1,10 +1,10 @@
 "use client";
-import { Variant } from "@/types";
+import { Consultant } from "@/types";
 import { useState } from "react";
 import { ChevronDown } from "react-feather";
 
 interface ConsultantListElementProps {
-  consultant: Variant;
+  consultant: Consultant;
 }
 
 export default function ConsultantListElement({
