@@ -1,6 +1,6 @@
-import { Variant } from "@/types";
+import { Consultant } from "@/types";
 
-export const MockConsultants: Variant[] = [
+export const MockConsultants: Consultant[] = [
   {
     id: "id",
     name: "Test Consultant",

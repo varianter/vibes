@@ -1,4 +1,4 @@
-import { Department, Variant } from "@/types";
+import { Department, Consultant } from "@/types";
 
 export const MockDepartments: Department[] = [
   {
