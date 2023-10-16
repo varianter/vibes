@@ -5,12 +5,17 @@ import {
 import Dropdown from "./NavBarDropdown";
 
 export default async function NavBarUserIcon() {
-  const session = await getCustomServerSession(authOptions);
+  const session = process.env.NEXT_PUBLIC_NO_AUTH
+    ? null
+    : await getCustomServerSession(authOptions);
+
   const initials =
-    session.user?.name
-      ?.split(" ")
-      .map((n) => n.charAt(0).toUpperCase())
-      .join("") || "";
+    session && session.user && session.user.name
+      ? session.user.name
+          ?.split(" ")
+          .map((n) => n.charAt(0).toUpperCase())
+          .join("")
+      : "";
 
   if (session) {
     return <Dropdown initials={initials} />;
