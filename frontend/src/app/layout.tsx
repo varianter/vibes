@@ -1,6 +1,6 @@
 import "./globals.css";
 import Head from "next/head";
-import AppProviders from "../components/AppProviders";
+import NavBar from "@/components/NavBar";
 
 export default function RootLayout({
   children,
@@ -17,7 +17,8 @@ export default function RootLayout({
         />
       </Head>
       <body>
-        <AppProviders>{children}</AppProviders>
+        <NavBar />
+        {children}
       </body>
     </html>
   );
