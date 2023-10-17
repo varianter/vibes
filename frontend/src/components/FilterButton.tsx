@@ -1,13 +1,19 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-export default function FilterButton({ filterName }: { filterName: string }) {
+export default function FilterButton({
+  filterName,
+  number,
+}: {
+  filterName: string;
+  number: number;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isButtonActive, setIsButtonActive] = useState(checkFilterInUrl);
 
-  function handleFilterClick() {
+  const handleFilterClick = useCallback(() => {
     setIsButtonActive((prevState) => !prevState);
 
     const currentSearch = searchParams.get("search");
@@ -22,12 +28,26 @@ export default function FilterButton({ filterName }: { filterName: string }) {
     }
     const newFilterString = newFilters.join(",").replace(/^,/, "");
     router.push(`/bemanning?search=${currentSearch}&filter=${newFilterString}`);
-  }
+  }, [filterName, router, searchParams]);
 
   function checkFilterInUrl() {
     const currentFilter = searchParams.get("filter") || "";
     return currentFilter.includes(filterName);
   }
+
+  useEffect(() => {
+    function keyDownHandler(e: { code: string }) {
+      if (e.code.startsWith("Digit") && e.code.includes(number.toString())) {
+        handleFilterClick();
+      }
+    }
+    document.addEventListener("keydown", keyDownHandler);
+
+    // clean up
+    return () => {
+      document.removeEventListener("keydown", keyDownHandler);
+    };
+  }, [handleFilterClick, number]);
 
   return (
     <button

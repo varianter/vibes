@@ -12,7 +12,11 @@ export default async function DepartmentFilter() {
           <p className="body-small">Avdelinger</p>
           <div className="flex flew-row flex-wrap gap-2 w-52">
             {departments?.map((department, index) => (
-              <FilterButton key={index} filterName={department.name} />
+              <FilterButton
+                key={index}
+                filterName={department.name}
+                number={index + 1}
+              />
             ))}
           </div>
         </div>
