@@ -117,11 +117,11 @@ public class ApplicationContext : DbContext
         modelBuilder.Entity<Organization>()
             .HasData(new
             {
-                Id = "variant-as", 
-                Name = "Variant AS", 
-                TagName = "variant-as",
+                Id = "variant-as",
+                Name = "Variant AS",
+                UrlKey = "variant-as",
                 Country = "norway",
-                HoursPerWorkday = 7.5, 
+                HoursPerWorkday = 7.5,
                 HasVacationInChristmas = true,
                 NumberOfVacationDaysInYear = 25
             });
