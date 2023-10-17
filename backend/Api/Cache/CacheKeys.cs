@@ -2,5 +2,6 @@ namespace Api.Cache;
 
 public enum CacheKeys
 {
-    ConsultantAvailability8Weeks
+    ConsultantAvailability8Weeks,
+    ConsulantsPrOrganisation
 }

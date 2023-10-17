@@ -1,3 +1,4 @@
+using Api.Cache;
 using Core.DomainModels;
 using Database.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
@@ -7,8 +8,8 @@ namespace Api.Authorization;
 
 public class AuthorizationService
 {
-    private IMemoryCache _cache;
-    private ApplicationContext _context;
+    private readonly IMemoryCache _cache;
+    private readonly ApplicationContext _context;
 
     public AuthorizationService(IMemoryCache cache, ApplicationContext context)
     {
@@ -18,16 +19,25 @@ public class AuthorizationService
 
     public List<Organization> GetAuthorizedOrganizations(string userEmail)
     {
+        var foundCache = _cache.TryGetValue<Dictionary<string, List<Organization>>>(
+            CacheKeys.ConsulantsPrOrganisation,
+            out var consultantOrgMap);
 
-        return _context.Organization
-            .Include(org => org.Departments)
-            .ThenInclude(dept => dept.Consultants)
-            .Where(org => org.Departments
-                .Count(dept => dept.Consultants.Select(c => c.Email).Contains(userEmail)) > 0)
-            .ToList();
+        if (!foundCache || consultantOrgMap is null)
+            consultantOrgMap = _context.Consultant
+                .Include(c => c.Department)
+                .ThenInclude(d => d.Organization)
+                .ToDictionary(c => c.Email, consultant => new List<Organization>
+                {
+                    consultant.Department.Organization
+                });
+
+        _cache.Set(CacheKeys.ConsulantsPrOrganisation, consultantOrgMap);
+        return consultantOrgMap.TryGetValue(userEmail, out var orgList) ? orgList : new List<Organization>();
     }
 
-    public bool IsInOrganisation(string userEmail, string orgId){
+    public bool IsInOrganisation(string userEmail, string orgId)
+    {
         return GetAuthorizedOrganizations(userEmail).Any(org => org.Id == orgId);
     }
 }

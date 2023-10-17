@@ -3,7 +3,6 @@ using Api.BuildHelpers;
 using Api.Consultants;
 using Api.Options;
 using Database.DatabaseContext;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -18,10 +17,12 @@ if (string.IsNullOrEmpty(connection))
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration);
-builder.Services.AddAuthorization(opt => {
-    opt.FallbackPolicy = opt.DefaultPolicy; 
-    opt.AddPolicy("Organisation", policy=>policy.Requirements.Add(new OrganisationRequirement()));
-    });
+builder.Services.AddAuthorization(opt =>
+{
+    opt.FallbackPolicy = opt.DefaultPolicy;
+    opt.AddPolicy(AuthorizationPolicies.ConsultantInOrganisation,
+        policy => policy.Requirements.Add(new OrganisationRequirement()));
+});
 
 builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection));
 
