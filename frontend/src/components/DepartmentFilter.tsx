@@ -10,7 +10,7 @@ export default async function DepartmentFilter() {
       <div>
         <div className="flex flex-col gap-2">
           <p className="body-small">Avdelinger</p>
-          <div className="flex flew-row flex-wrap gap-2 w-52">
+          <div className="flex flex-col gap-2 w-52">
             {departments?.map((department, index) => (
               <FilterButton
                 key={index}
