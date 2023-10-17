@@ -55,10 +55,10 @@ public class ApplicationContext : DbContext
             .HasMany(p => p.Consultants)
             .WithMany(c => c.Projects)
             .UsingEntity<Staffing>(
-                r => r.HasOne<Consultant>(s => s.Consultant)
+                staffing => staffing.HasOne<Consultant>(s => s.Consultant)
                     .WithMany(c => c.Staffings)
                     .OnDelete(DeleteBehavior.ClientCascade),
-                l => l
+                staffing => staffing
                     .HasOne<Project>(s => s.Project)
                     .WithMany(c => c.Staffings)
                     .OnDelete(DeleteBehavior.Cascade)

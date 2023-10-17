@@ -8,7 +8,6 @@ public class Project
     public required int Id { get; set; }
 
     public required Customer Customer { get; set; }
-    public required Organization Organization { get; set; }
 
     public required ProjectState State { get; set; }
 
