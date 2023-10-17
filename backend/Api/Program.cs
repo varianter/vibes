@@ -1,8 +1,11 @@
+using Api.Authorization;
 using Api.BuildHelpers;
 using Api.Consultants;
 using Api.Options;
 using Database.DatabaseContext;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
@@ -15,7 +18,10 @@ if (string.IsNullOrEmpty(connection))
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration);
-builder.Services.AddAuthorization(opt => opt.FallbackPolicy = opt.DefaultPolicy);
+builder.Services.AddAuthorization(opt => {
+    opt.FallbackPolicy = opt.DefaultPolicy; 
+    opt.AddPolicy("Organisation", policy=>policy.Requirements.Add(new OrganisationRequirement()));
+    });
 
 builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection));
 
@@ -25,6 +31,8 @@ builder.Services.AddMemoryCache();
 builder.Services.Configure<OrganizationOptions>(builder.Configuration.GetSection("OrganizationSettings"));
 builder.Services.AddSingleton<HolidayService>();
 builder.Services.AddSingleton<ConsultantService>();
+builder.Services.AddSingleton<IAuthorizationHandler, OrganisationPolicyHandler>();
+builder.Services.AddTransient<AuthorizationService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 

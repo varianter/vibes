@@ -2,6 +2,7 @@ using Api.Cache;
 using Core.DomainModels;
 using Core.Services;
 using Database.DatabaseContext;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Api.Consultants;
 
-[Route("v0/consultants")]
+[Route("v0/{orgId}/consultants")]
 [ApiController]
 public class ConsultantController : ControllerBase
 {
@@ -24,8 +25,10 @@ public class ConsultantController : ControllerBase
         _consultantService = consultantService;
     }
 
+    [Authorize(Policy = "Organisation")]
     [HttpGet]
     public ActionResult<List<ConsultantReadModel>> Get(
+        [FromRoute] string orgId,
         [FromQuery(Name = "weeks")] int numberOfWeeks = 8,
         [FromQuery(Name = "includeOccupied")] bool includeOccupied = true)
     {

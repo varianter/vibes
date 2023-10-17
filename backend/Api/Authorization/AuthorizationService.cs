@@ -1,20 +1,33 @@
 using Core.DomainModels;
 using Database.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Api.Authorization;
 
-public static class AuthorizationService
+public class AuthorizationService
 {
-    public static List<Organization> GetAuthorizedOrganizations(ApplicationContext dbContext, HttpContext httpContext)
-    {
-        var uname = httpContext.User.Claims.Single(c => c.Type == "preferred_username").Value;
+    private IMemoryCache _cache;
+    private ApplicationContext _context;
 
-        return dbContext.Organization
+    public AuthorizationService(IMemoryCache cache, ApplicationContext context)
+    {
+        _cache = cache;
+        _context = context;
+    }
+
+    public List<Organization> GetAuthorizedOrganizations(string userEmail)
+    {
+
+        return _context.Organization
             .Include(org => org.Departments)
             .ThenInclude(dept => dept.Consultants)
             .Where(org => org.Departments
-                .Count(dept => dept.Consultants.Select(c => c.Email).Contains(uname)) > 0)
+                .Count(dept => dept.Consultants.Select(c => c.Email).Contains(userEmail)) > 0)
             .ToList();
+    }
+
+    public bool IsInOrganisation(string userEmail, string orgId){
+        return GetAuthorizedOrganizations(userEmail).Any(org => org.Id == orgId);
     }
 }
