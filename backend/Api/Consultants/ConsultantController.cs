@@ -119,6 +119,7 @@ public class ConsultantController : ControllerBase
                 (pa.Year <= yearA && minWeekA <= pa.WeekNumber && pa.WeekNumber <= maxWeekA)
                 || (yearB <= pa.Year && minWeekB <= pa.WeekNumber && pa.WeekNumber <= maxWeekB)))
             .Include(c => c.Department)
+            .ThenInclude(d => d.Organization)
             .Include(c => c.Staffings.Where(s =>
                 (s.Year <= yearA && minWeekA <= s.Week && s.Week <= maxWeekA)
                 || (yearB <= s.Year && minWeekB <= s.Week && s.Week <= maxWeekB)))
