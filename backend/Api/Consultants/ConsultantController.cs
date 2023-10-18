@@ -1,3 +1,4 @@
+using Api.Authorization;
 using Api.Cache;
 using Core.DomainModels;
 using Core.Services;
@@ -10,7 +11,8 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Api.Consultants;
 
-[Route("v0/{orgId}/consultants")]
+[Authorize(Policy = AuthorizationPolicies.ConsultantInOrganisation)]
+[Route("/v0/{orgId}/consultants")]
 [ApiController]
 public class ConsultantController : ControllerBase
 {
@@ -25,7 +27,6 @@ public class ConsultantController : ControllerBase
         _consultantService = consultantService;
     }
 
-    [Authorize(Policy = "Organisation")]
     [HttpGet]
     public ActionResult<List<ConsultantReadModel>> Get(
         [FromRoute] string orgId,

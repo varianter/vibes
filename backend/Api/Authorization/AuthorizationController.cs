@@ -1,6 +1,4 @@
-using Database.DatabaseContext;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Api.Authorization;
 
@@ -9,19 +7,10 @@ namespace Api.Authorization;
 public class AuthorizationController : ControllerBase
 {
     [HttpGet]
-    public ActionResult<List<OrganizationReadModel>> Get(ApplicationContext context)
+    public ActionResult<List<OrganizationReadModel>> Get(AuthorizationService authorizationService)
     {
-        var uname = HttpContext.User.Claims.Single(c => c.Type == "preferred_username").Value;
-
-        var orgs = context.Organization
-            .Include(org => org.Departments)
-            .ThenInclude(dept => dept.Consultants)
-            .Where(org => org.Departments
-                .Count(dept => dept.Consultants.Select(c => c.Email).Contains(uname)) > 0)
-            .Select(organization =>
-                new OrganizationReadModel(organization.Id, organization.UrlKey, organization.Name))
-            .ToList();
-
-        return Ok(orgs);
+        var email = HttpContext.User.Claims.Single(c => c.Type == "preferred_username").Value;
+        return Ok(authorizationService.GetAuthorizedOrganizations(email)
+            .Select(org => new OrganizationReadModel(org.Id, org.UrlKey, org.Name)));
     }
 }
