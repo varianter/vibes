@@ -2,22 +2,22 @@ import {
   authOptions,
   getCustomServerSession,
 } from "@/app/api/auth/[...nextauth]/route";
-import Dropdown from "./NavBarDropdown";
+import NavBarDropdown from "./NavBarDropdown";
 
 export default async function NavBarUserIcon() {
-  const session = process.env.NEXT_PUBLIC_NO_AUTH
-    ? null
-    : await getCustomServerSession(authOptions);
+  const session =
+    !process.env.NEXT_PUBLIC_NO_AUTH &&
+    (await getCustomServerSession(authOptions));
 
   const initials =
     session && session.user && session.user.name
       ? session.user.name
-          ?.split(" ")
-          .map((n) => n.charAt(0).toUpperCase())
+          .split(" ")
+          .map((name) => name.charAt(0).toUpperCase())
           .join("")
       : "";
 
   if (session) {
-    return <Dropdown initials={initials} />;
+    return <NavBarDropdown initials={initials} />;
   }
 }

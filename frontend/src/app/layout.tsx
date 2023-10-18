@@ -1,6 +1,6 @@
 import "./globals.css";
 import Head from "next/head";
-import NavBar from "@/components/NavBar";
+import NavBar from "@/components/NavBar/NavBar";
 
 export default function RootLayout({
   children,
