@@ -22,6 +22,9 @@ module.exports = {
       lg: "1280px",
       xl: "1400px",
     },
+    boxShadow: {
+      md: "0 4px 4px 0 rgba(66, 61, 137, 0.10)",
+    },
   },
   plugins: [],
 };
