@@ -1,4 +1,3 @@
-using Api.Authorization;
 using Api.Cache;
 using Core.DomainModels;
 using Core.Services;
@@ -11,8 +10,8 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Api.Consultants;
 
-[Authorize(Policy = AuthorizationPolicies.ConsultantInOrganisation)]
-[Route("/v0/{orgId}/consultants")]
+[Authorize]
+[Route("/v0/consultants")]
 [ApiController]
 public class ConsultantController : ControllerBase
 {
@@ -29,7 +28,6 @@ public class ConsultantController : ControllerBase
 
     [HttpGet]
     public ActionResult<List<ConsultantReadModel>> Get(
-        [FromRoute] string orgId,
         [FromQuery(Name = "weeks")] int numberOfWeeks = 8,
         [FromQuery(Name = "includeOccupied")] bool includeOccupied = true)
     {
