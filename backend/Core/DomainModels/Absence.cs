@@ -9,4 +9,5 @@ public class Absence
 
     public required string Name { get; set; }
     public required bool ExcludeFromBillRate { get; set; } = false;
+    public required Organization Organization { get; set; }
 }

@@ -1,9 +1,10 @@
 "use client";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 export default function FilterButton({ filterName }: { filterName: string }) {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isButtonActive, setIsButtonActive] = useState(checkFilterInUrl);
 
@@ -21,7 +22,9 @@ export default function FilterButton({ filterName }: { filterName: string }) {
       newFilters.splice(filterIndex, 1);
     }
     const newFilterString = newFilters.join(",").replace(/^,/, "");
-    router.push(`/bemanning?search=${currentSearch}&filter=${newFilterString}`);
+    router.push(
+      `${pathname}?search=${currentSearch}&filter=${newFilterString}`,
+    );
   }
 
   function checkFilterInUrl() {
