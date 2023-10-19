@@ -26,8 +26,13 @@ export async function fetchWithToken<T>(path: string): Promise<T | undefined> {
     method: "GET",
     headers: headers,
   };
-  const response = await fetch(`${apiBackendUrl}/${path}`, options);
-  return (await response.json()) as T;
+  try{
+    const response = await fetch(`${apiBackendUrl}/${path}`, options);
+    return (await response.json()) as T;
+  } catch (e) {
+    console.log(`${apiBackendUrl}/${path}`)
+    console.error(e)
+  }
 }
 
 function mockedCall<T>(path: string): Promise<T> {
