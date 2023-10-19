@@ -5,25 +5,25 @@ import { Filter } from "react-feather";
 export default function ActiveFilters() {
   const searchParams = useSearchParams();
 
-  const currentSearch =
+  const currentNameSearch =
     searchParams.get("search") != ""
       ? `"` + searchParams.get("search") + `"`
       : "";
-  const currentFilter =
+  const filteredDepartments =
     searchParams.get("filter") != ""
       ? searchParams.get("filter")?.split(",").join(", ")
       : "";
-  const activeFilters =
-    currentFilter != "" && currentSearch != ""
-      ? [currentFilter, currentSearch].join(", ").replace(/,^/, "")
-      : currentFilter + currentSearch;
+  const filterSummaryText =
+    filteredDepartments != "" && currentNameSearch != ""
+      ? [filteredDepartments, currentNameSearch].join(", ").replace(/,^/, "")
+      : filteredDepartments + currentNameSearch;
 
   return (
     <>
-      {activeFilters != "" && (
+      {filterSummaryText != "" && (
         <div className="flex flex-row gap-[5px] text-primary_default items-center">
           <Filter size="12" />{" "}
-          <p className="body-small-bold"> {activeFilters} </p>
+          <p className="body-small-bold"> {filterSummaryText} </p>
         </div>
       )}
     </>

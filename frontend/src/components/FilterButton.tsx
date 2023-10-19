@@ -43,8 +43,8 @@ export default function FilterButton({
   const clearFilter = useCallback(() => {
     setIsButtonActive(false);
     const currentSearch = searchParams.get("search");
-    router.push(`/bemanning?search=${currentSearch}&filter=`);
-  }, [router, searchParams]);
+    router.push(`${pathname}?search=${currentSearch}&filter=`);
+  }, [pathname, router, searchParams]);
 
   useEffect(() => {
     function keyDownHandler(e: { code: string }) {
@@ -57,10 +57,7 @@ export default function FilterButton({
       ) {
         handleFilterClick();
       }
-      if (e.code.includes("Escape")) {
-        clearFilter();
-      }
-      if (e.code.includes("Escape")) {
+      if (e.code.includes("0")) {
         clearFilter();
       }
     }
@@ -75,11 +72,18 @@ export default function FilterButton({
   function setCheckboxTimeout() {
     setTimeout(() => {
       setCheckboxIsDisabled(false);
-    }, 1000);
+    }, 200);
   }
 
   return (
-    <div className="flex items-center">
+    <div
+      className="flex items-center"
+      onClick={() => {
+        setCheckboxIsDisabled(true);
+        handleFilterClick();
+        setCheckboxTimeout();
+      }}
+    >
       <input
         id="checkbox"
         type="checkbox"
