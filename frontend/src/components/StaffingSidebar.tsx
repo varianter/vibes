@@ -10,8 +10,8 @@ export default function StaffingSidebar() {
   return (
     <div>
       <div
-        className={`bg-primary_l4 py-6 px-4 flex flex-col gap-6 min-h-screen ${
-          isSidebarHidden && "hidden"
+        className={`bg-primary_l4 py-6 px-4 flex flex-col gap-6 min-h-screen w-[211px] ${
+          isSidebarHidden && "absolute -left-[211px]"
         }`}
       >
         <div className="flex flex-row justify-between">

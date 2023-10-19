@@ -49,7 +49,7 @@ export default function SearchBarComponent() {
         <Search className="text-primary_default h-4 w-4" />
         <input
           placeholder="Søk etter konsulent"
-          className="input w-36 focus:outline-none body-small "
+          className="input w-[131px] focus:outline-none body-small "
           onChange={(e) => setSearchText(e.target.value)}
           ref={inputRef}
           value={searchText}
