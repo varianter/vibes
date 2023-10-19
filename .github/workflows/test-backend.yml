@@ -1,11 +1,11 @@
-name: Frontend Tests
+name: Backend Tests
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
 jobs:
-  archtest:
+  all_backend_tests:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     strategy:
