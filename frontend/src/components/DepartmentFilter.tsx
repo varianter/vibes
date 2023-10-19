@@ -1,30 +1,32 @@
 "use client";
-import { URL_PATH } from "@/constants";
 import FilterButton from "./FilterButton";
 import { Department } from "@/types";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
-async function getDepartments(setDepartments: Function) {
+async function getDepartments(setDepartments: Function, pathName: string) {
   try {
-    const data = await fetch(`${URL_PATH}/bemanning/api/departments`, {
-      method: "get",
-    });
+    const data = await fetch(
+      `${pathName}/api/departments?organisationName=${pathName.split("/")[1]}`,
+      {
+        method: "get",
+      },
+    );
 
     const departments = await data.json();
     setDepartments(departments);
   } catch (e) {
-    console.error("Error fetching number of installations:", e);
+    console.error("Error fetching departments:", e);
   }
 }
 
 export default function DepartmentFilter() {
   const [departments, setDepartments] = useState<Department[]>([]);
-  const route = useRouter();
+  const pathName = usePathname();
 
   useEffect(() => {
-    getDepartments(setDepartments);
-  }, []);
+    getDepartments(setDepartments, pathName);
+  }, [pathName]);
 
   if (departments.length > 0) {
     return (
