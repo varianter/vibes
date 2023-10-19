@@ -19,10 +19,10 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
       - name: Install dependencies
-        working-directory: backend/Api/
+        working-directory: backend/
         run: dotnet restore
       - name: Test with dotnet
-        working-directory: backend/Api/
+        working-directory: backend/
         run: dotnet test --logger trx --results-directory "TestResults-${{ matrix.dotnet-version }}"
       - name: Upload dotnet test results
         uses: actions/upload-artifact@v3
