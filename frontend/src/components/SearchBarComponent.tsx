@@ -4,22 +4,24 @@ import { useEffect, useRef, useState } from "react";
 import { Search } from "react-feather";
 
 export default function SearchBarComponent() {
-  const router = useRouter();
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const searchParams = useSearchParams();
+  const currentFilter = searchParams.get("filter") || "";
   const [searchText, setSearchText] = useState(
     searchParams.get("search") || "",
   );
-  const inputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
-    const currentFilter = searchParams.get("filter") || "";
     router.push(`/bemanning?search=${searchText}&filter=${currentFilter}`);
-  }, [searchText, searchParams, router]);
+  }, [currentFilter, router, searchText]);
 
   useEffect(() => {
     function keyDownHandler(e: { code: string }) {
       if (
         (e.code.startsWith("Key") || e.code.includes("Backspace")) &&
+        inputRef &&
         inputRef.current
       ) {
         inputRef.current.focus();

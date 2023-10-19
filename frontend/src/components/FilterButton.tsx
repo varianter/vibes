@@ -12,6 +12,7 @@ export default function FilterButton({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isButtonActive, setIsButtonActive] = useState(checkFilterInUrl);
+  const [checkboxIsDisabled, setCheckboxIsDisabled] = useState(false);
 
   const handleFilterClick = useCallback(() => {
     setIsButtonActive((prevState) => !prevState);
@@ -55,6 +56,9 @@ export default function FilterButton({
       if (e.code.includes("Escape")) {
         clearFilter();
       }
+      if (e.code.includes("Escape")) {
+        clearFilter();
+      }
     }
     document.addEventListener("keydown", keyDownHandler);
 
@@ -64,6 +68,12 @@ export default function FilterButton({
     };
   }, [clearFilter, handleFilterClick, number]);
 
+  function setCheckboxTimeout() {
+    setTimeout(() => {
+      setCheckboxIsDisabled(false);
+    }, 1000);
+  }
+
   return (
     <div className="flex items-center">
       <input
@@ -71,7 +81,12 @@ export default function FilterButton({
         type="checkbox"
         className="appearance-none border flex items-center border-primary_default m-[1px] mr-2 h-4 w-4 rounded-sm hover:bg-primary_l2 hover:border-primary_l2 checked:bg-primary_default"
         checked={isButtonActive}
-        onChange={() => handleFilterClick()}
+        onChange={() => {
+          setCheckboxIsDisabled(true);
+          handleFilterClick();
+          setCheckboxTimeout();
+        }}
+        disabled={checkboxIsDisabled}
       />
       <svg
         xmlns="http://www.w3.org/2000/svg"
