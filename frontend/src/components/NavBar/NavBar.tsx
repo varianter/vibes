@@ -6,7 +6,7 @@ export default function NavBar() {
   return (
     <div className="bg-primary_default w-full h-[52px] flex flex-row justify-between sticky top-0 px-4">
       <div className="flex flex-row">
-        <NavBarLink text="Bemanning" path="/" />
+        <NavBarLink text="Bemanning" path={`/bemanning`} />
       </div>
       <div className="flex flex-row gap-6 items-center">
         <Image
