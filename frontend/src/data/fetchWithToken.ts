@@ -33,7 +33,6 @@ export async function fetchWithToken<T>(path: string): Promise<T | undefined> {
   } catch (e) {
     console.error(e);
   }
-
 }
 
 function mockedCall<T>(path: string): Promise<T> {
