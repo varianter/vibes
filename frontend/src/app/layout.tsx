@@ -1,6 +1,11 @@
 import "./globals.css";
-import Head from "next/head";
 import NavBar from "@/components/NavBar/NavBar";
+import { Metadata } from "next";
+
+export const metaData: Metadata = {
+  title: "Vibes",
+  description: ""
+}
 
 export default function RootLayout({
   children,
@@ -9,13 +14,6 @@ export default function RootLayout({
 }) {
   return (
     <html>
-      <Head>
-        <title>Vibes Frontend</title>
-        <meta
-          name="viewport"
-          content="minimum-scale=1, initial-scale=1, width=device-width"
-        />
-      </Head>
       <body>
         <NavBar />
         {children}
