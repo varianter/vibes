@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dotnet-version: [ '7.0.x' ]
+        dotnet-version: [ '7.x.x' ]
 
     steps:
       - uses: actions/checkout@v4
@@ -19,8 +19,10 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
       - name: Install dependencies
-        run: dotnet restore Api
+        working-directory: backend/Api/
+        run: dotnet restore
       - name: Test with dotnet
+        working-directory: backend/Api/
         run: dotnet test --logger trx --results-directory "TestResults-${{ matrix.dotnet-version }}"
       - name: Upload dotnet test results
         uses: actions/upload-artifact@v3
