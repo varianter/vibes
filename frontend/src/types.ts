@@ -1,5 +1,3 @@
-import { PopoverVirtualElement } from "@mui/material";
-
 export type Consultant = {
   id: string;
   name: string;
@@ -21,14 +19,6 @@ export type Department = {
 };
 
 export type Organisation = {
-  name: string;
-  urlKey: string;
-};
-
-export type AnchorProp =
-  | Element
-  | (() => Element)
-  | PopoverVirtualElement
-  | (() => PopoverVirtualElement)
-  | null
-  | undefined;
+  name: string,
+  urlKey: string
+}
