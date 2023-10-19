@@ -3,7 +3,8 @@ import { usePathname } from "next/navigation";
 
 export default function NavBarLink(props: { text: string; path: string }) {
   const pathname = usePathname();
-  const isCurrentPath = props.path.includes(pathname);
+  const isCurrentPath = pathname.includes(props.path);
+  const orgUrl = pathname.split("/")[1] || "";
 
   return (
     <a
@@ -12,7 +13,7 @@ export default function NavBarLink(props: { text: string; path: string }) {
           ? "body-large-bold border-b-[3px] border-secondary_default"
           : "body-large opacity-70 hover:opacity-100"
       }`}
-      href={`${props.path}`}
+      href={`/${orgUrl}/${props.path}`}
     >
       {props.text}
     </a>
