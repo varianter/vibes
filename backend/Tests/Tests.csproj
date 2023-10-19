@@ -16,6 +16,8 @@
         <PackageReference Include="NUnit3TestAdapter" Version="4.4.2" />
         <PackageReference Include="NUnit.Analyzers" Version="3.6.1" />
         <PackageReference Include="coverlet.collector" Version="3.2.0" />
+        <PackageReference Include="TngTech.ArchUnitNET" Version="0.10.6" />
+        <PackageReference Include="TngTech.ArchUnitNET.NUnit" Version="0.10.6" />
     </ItemGroup>
 
 
