@@ -35,19 +35,11 @@ jobs:
           dotnet publish -c Release --property:PublishDir='./build' 
       
       # Deploy to Azure Web apps
-      - name: Deploy to App Service (NO)
+      - name: Deploy to App Service
         uses: azure/webapps-deploy@v2
         with:
-          app-name: vibes-backend-norway-prod 
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_BACKEND_NO  }} # Define secret variable in repository settings as per action documentation
-          package: 'backend/Api/build'
-                
-      # Deploy to Azure Web apps
-      - name: Deploy to App Service (SE)
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: vibes-backend-sweden-prod
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_BACKEND_SE  }} # Define secret variable in repository settings as per action documentation
+          app-name: vibes-backend-prod
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_BACKEND }} # Define secret variable in repository settings as per action documentation
           package: 'backend/Api/build'
 
   build-frontend:
