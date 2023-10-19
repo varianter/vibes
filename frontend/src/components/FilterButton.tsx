@@ -22,7 +22,9 @@ export default function FilterButton({ filterName }: { filterName: string }) {
       newFilters.splice(filterIndex, 1);
     }
     const newFilterString = newFilters.join(",").replace(/^,/, "");
-    router.push(`${pathname}?search=${currentSearch}&filter=${newFilterString}`);
+    router.push(
+      `${pathname}?search=${currentSearch}&filter=${newFilterString}`,
+    );
   }
 
   function checkFilterInUrl() {
