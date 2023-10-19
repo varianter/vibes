@@ -1,9 +1,12 @@
-import { MockConsultants } from "../../mockdata/mockConsultants";
-import { MockDepartments } from "../../mockdata/mockDepartments";
 import {
   authOptions,
   getCustomServerSession,
 } from "@/app/api/auth/[...nextauth]/route";
+import {
+  MockConsultants,
+  MockDepartments,
+  MockOrganisations,
+} from "../../mockdata/mockData";
 
 export async function fetchWithToken<T>(path: string): Promise<T | undefined> {
   if (process.env.NEXT_PUBLIC_NO_AUTH) {
@@ -41,6 +44,9 @@ function mockedCall<T>(path: string): Promise<T> {
     }
     if (path.includes("departments")) {
       resolve(MockDepartments as T);
+    }
+    if (path.includes("organisations")) {
+      resolve(MockOrganisations as T);
     }
   });
 }

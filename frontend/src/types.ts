@@ -19,6 +19,6 @@ export type Department = {
 };
 
 export type Organisation = {
-  name: string,
-  urlKey: string
-}
+  name: string;
+  urlKey: string;
+};
