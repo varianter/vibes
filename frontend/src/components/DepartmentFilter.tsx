@@ -1,9 +1,27 @@
+"use client";
+import { URL_PATH } from "@/constants";
 import FilterButton from "./FilterButton";
-import { fetchWithToken } from "@/data/fetchWithToken";
 import { Department } from "@/types";
+import { useEffect, useState } from "react";
 
-export default async function DepartmentFilter() {
-  const departments = (await fetchWithToken<Department[]>("departments")) ?? [];
+async function getDepartments(setDepartments: Function) {
+  try {
+    const data = await fetch(`${URL_PATH}/bemanning/api/departments`, {
+      method: "get",
+    });
+    const departments = await data.json();
+    setDepartments(departments);
+  } catch (e) {
+    console.error("Error fetching number of installations:", e);
+  }
+}
+
+export default function DepartmentFilter() {
+  const [departments, setDepartments] = useState<Department[]>([]);
+
+  useEffect(() => {
+    getDepartments(setDepartments);
+  }, []);
 
   if (departments.length > 0) {
     return (

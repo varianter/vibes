@@ -7,7 +7,7 @@ export default function FilterButton({
   number,
 }: {
   filterName: string;
-  number: number;
+  number?: number;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -35,10 +35,25 @@ export default function FilterButton({
     return currentFilter.includes(filterName);
   }
 
+  const clearFilter = useCallback(() => {
+    setIsButtonActive(false);
+    const currentSearch = searchParams.get("search");
+    router.push(`/bemanning?search=${currentSearch}&filter=`);
+  }, [router, searchParams]);
+
   useEffect(() => {
     function keyDownHandler(e: { code: string }) {
-      if (e.code.startsWith("Digit") && e.code.includes(number.toString())) {
+      if (
+        number &&
+        e.code.startsWith("Digit") &&
+        e.code.includes(number.toString()) &&
+        (document.activeElement?.tagName.toLowerCase() !== "input" ||
+          document.activeElement?.id === "checkbox")
+      ) {
         handleFilterClick();
+      }
+      if (e.code.includes("Escape")) {
+        clearFilter();
       }
     }
     document.addEventListener("keydown", keyDownHandler);
@@ -47,10 +62,10 @@ export default function FilterButton({
     return () => {
       document.removeEventListener("keydown", keyDownHandler);
     };
-  }, [handleFilterClick, number]);
+  }, [clearFilter, handleFilterClick, number]);
 
   return (
-    <div className="flex items-center ">
+    <div className="flex items-center">
       <input
         id="checkbox"
         type="checkbox"
