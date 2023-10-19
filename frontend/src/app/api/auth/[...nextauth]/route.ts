@@ -23,7 +23,7 @@ export const authOptions: AuthOptions = {
   ],
   session: {
     strategy: "jwt",
-    maxAge: 1 * 60 * 60, // 1h 5min (calculated from Azure AD token) or 1h 30 min in other cases.
+    maxAge: 60 * 60, // 1h: Azure has ~1h 30 min, but setting 1h to ensure we force refresh before expire
   },
 
   callbacks: {
