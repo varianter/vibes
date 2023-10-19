@@ -6,6 +6,7 @@ import {
 } from "@/app/api/auth/[...nextauth]/route";
 
 export async function fetchWithToken<T>(path: string): Promise<T | undefined> {
+  console.time(path);
   if (process.env.NEXT_PUBLIC_NO_AUTH) {
     return mockedCall<T>(path);
   }
@@ -26,12 +27,13 @@ export async function fetchWithToken<T>(path: string): Promise<T | undefined> {
     method: "GET",
     headers: headers,
   };
-  try{
+  try {
     const response = await fetch(`${apiBackendUrl}/${path}`, options);
+    console.timeEnd(path);
     return (await response.json()) as T;
   } catch (e) {
-    console.log(`${apiBackendUrl}/${path}`)
-    console.error(e)
+    console.log(`${apiBackendUrl}/${path}`);
+    console.error(e);
   }
 }
 
