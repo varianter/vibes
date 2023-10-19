@@ -5,7 +5,7 @@ on:
   pull_request:
     branches: [ main ]
 jobs:
-  all_backend_tests:
+  dotnet_core_project_tests:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     strategy:
