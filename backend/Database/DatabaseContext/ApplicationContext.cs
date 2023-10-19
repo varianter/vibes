@@ -13,6 +13,7 @@ public class ApplicationContext : DbContext
     public DbSet<Consultant> Consultant { get; set; } = null!;
     public DbSet<Competence> Competence { get; set; } = null!;
     public DbSet<Department> Department { get; set; } = null!;
+    public DbSet<Organization> Organization { get; set; } = null!;
     public DbSet<PlannedAbsence> PlannedAbsence { get; set; } = null!;
     public DbSet<Vacation> Vacation { get; set; } = null!;
     public DbSet<Customer> Customer { get; set; } = null!;
@@ -29,6 +30,19 @@ public class ApplicationContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Organization>()
+            .HasMany(org => org.Departments)
+            .WithOne(dept => dept.Organization);
+
+        modelBuilder.Entity<Organization>()
+            .HasMany(organization => organization.AbsenceTypes)
+            .WithOne(absence => absence.Organization);
+
+        modelBuilder.Entity<Organization>()
+            .HasMany(organization => organization.Customers)
+            .WithOne(customer => customer.Organization);
+
+
         modelBuilder.Entity<Customer>()
             .HasMany(customer => customer.Projects)
             .WithOne(project => project.Customer);
@@ -41,10 +55,10 @@ public class ApplicationContext : DbContext
             .HasMany(p => p.Consultants)
             .WithMany(c => c.Projects)
             .UsingEntity<Staffing>(
-                r => r.HasOne<Consultant>(s => s.Consultant)
+                staffing => staffing.HasOne<Consultant>(s => s.Consultant)
                     .WithMany(c => c.Staffings)
                     .OnDelete(DeleteBehavior.ClientCascade),
-                l => l
+                staffing => staffing
                     .HasOne<Project>(s => s.Project)
                     .WithMany(c => c.Staffings)
                     .OnDelete(DeleteBehavior.Cascade)
@@ -99,6 +113,18 @@ public class ApplicationContext : DbContext
             new() { Id = "design", Name = "Design" },
             new() { Id = "project-mgmt", Name = "Project Management" }
         });
+
+        modelBuilder.Entity<Organization>()
+            .HasData(new
+            {
+                Id = "variant-as",
+                Name = "Variant AS",
+                UrlKey = "variant-as",
+                Country = "norway",
+                HoursPerWorkday = 7.5,
+                HasVacationInChristmas = true,
+                NumberOfVacationDaysInYear = 25
+            });
 
         modelBuilder.Entity<Department>()
             .HasData(new { Id = "trondheim", Name = "Trondheim", OrganizationId = "variant-as" });

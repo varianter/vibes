@@ -21,7 +21,7 @@ public class ConsultantService
         const double tolerance = 0.1;
         var bookedHours = GetBookedHoursForWeeks(consultant, weeks);
 
-        var isOccupied = bookedHours.All(b => b.BookedHours >= GetHoursPrWeek() - tolerance);
+        var isOccupied = bookedHours.All(b => b.BookedHours >= GetHoursPrWeek(consultant) - tolerance);
 
         return new ConsultantReadModel(
             consultant.Id,
@@ -36,7 +36,8 @@ public class ConsultantService
 
     public double GetBookedHours(Consultant consultant, int year, int week)
     {
-        var hoursPrWorkDay = _organizationOptions.HoursPerWorkday;
+        var hoursPrWorkDay = consultant.Department.Organization.HoursPerWorkday;
+        // var hoursPrWorkDay = _organizationOptions.HoursPerWorkday;
 
         var holidayHours = _holidayService.GetTotalHolidaysOfWeek(year, week) * hoursPrWorkDay;
         var vacationHours = consultant.Vacations.Count(v => DateService.DateIsInWeek(v.Date, year, week)) *
@@ -73,8 +74,8 @@ public class ConsultantService
             .ToList();
     }
 
-    public double GetHoursPrWeek()
+    public double GetHoursPrWeek(Consultant consultant)
     {
-        return _organizationOptions.HoursPerWorkday * 5;
+        return consultant.Department.Organization.HoursPerWorkday * 5;
     }
 }

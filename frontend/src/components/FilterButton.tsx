@@ -1,6 +1,6 @@
 "use client";
-import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export default function FilterButton({
   filterName,
@@ -10,6 +10,7 @@ export default function FilterButton({
   number?: number;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isButtonActive, setIsButtonActive] = useState(checkFilterInUrl);
   const [checkboxIsDisabled, setCheckboxIsDisabled] = useState(false);
@@ -28,8 +29,11 @@ export default function FilterButton({
       newFilters.splice(filterIndex, 1);
     }
     const newFilterString = newFilters.join(",").replace(/^,/, "");
-    router.push(`/bemanning?search=${currentSearch}&filter=${newFilterString}`);
-  }, [filterName, router, searchParams]);
+
+    router.push(
+      `${pathname}?search=${currentSearch}&filter=${newFilterString}`,
+    );
+  }, [filterName, pathname, router, searchParams]);
 
   function checkFilterInUrl() {
     const currentFilter = searchParams.get("filter") || "";

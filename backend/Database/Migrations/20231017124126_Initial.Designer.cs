@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace backend.Migrations
+namespace Database.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20231004195542_RemovedOrganization")]
-    partial class RemovedOrganization
+    [Migration("20231017124126_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,7 +55,13 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("OrganizationId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("OrganizationId");
 
                     b.ToTable("Absence");
                 });
@@ -160,7 +166,13 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("OrganizationId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("OrganizationId");
 
                     b.ToTable("Customer");
                 });
@@ -171,11 +183,20 @@ namespace backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int?>("Hotkey")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("OrganizationId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("OrganizationId");
 
                     b.ToTable("Department");
 
@@ -183,7 +204,51 @@ namespace backend.Migrations
                         new
                         {
                             Id = "trondheim",
-                            Name = "Trondheim"
+                            Name = "Trondheim",
+                            OrganizationId = "variant-as"
+                        });
+                });
+
+            modelBuilder.Entity("Core.DomainModels.Organization", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("HasVacationInChristmas")
+                        .HasColumnType("bit");
+
+                    b.Property<double>("HoursPerWorkday")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("NumberOfVacationDaysInYear")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UrlKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Organization");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "variant-as",
+                            Country = "norway",
+                            HasVacationInChristmas = true,
+                            HoursPerWorkday = 7.5,
+                            Name = "Variant AS",
+                            NumberOfVacationDaysInYear = 25,
+                            UrlKey = "variant-as"
                         });
                 });
 
@@ -313,6 +378,17 @@ namespace backend.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Core.DomainModels.Absence", b =>
+                {
+                    b.HasOne("Core.DomainModels.Organization", "Organization")
+                        .WithMany("AbsenceTypes")
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Organization");
+                });
+
             modelBuilder.Entity("Core.DomainModels.Consultant", b =>
                 {
                     b.HasOne("Core.DomainModels.Department", "Department")
@@ -322,6 +398,28 @@ namespace backend.Migrations
                         .IsRequired();
 
                     b.Navigation("Department");
+                });
+
+            modelBuilder.Entity("Core.DomainModels.Customer", b =>
+                {
+                    b.HasOne("Core.DomainModels.Organization", "Organization")
+                        .WithMany("Customers")
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Organization");
+                });
+
+            modelBuilder.Entity("Core.DomainModels.Department", b =>
+                {
+                    b.HasOne("Core.DomainModels.Organization", "Organization")
+                        .WithMany("Departments")
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Organization");
                 });
 
             modelBuilder.Entity("Core.DomainModels.PlannedAbsence", b =>
@@ -401,6 +499,15 @@ namespace backend.Migrations
             modelBuilder.Entity("Core.DomainModels.Department", b =>
                 {
                     b.Navigation("Consultants");
+                });
+
+            modelBuilder.Entity("Core.DomainModels.Organization", b =>
+                {
+                    b.Navigation("AbsenceTypes");
+
+                    b.Navigation("Customers");
+
+                    b.Navigation("Departments");
                 });
 
             modelBuilder.Entity("Core.DomainModels.Project", b =>

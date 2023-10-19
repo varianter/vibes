@@ -1,7 +1,10 @@
 import { test, expect } from "@playwright/test";
 
-test("has title", async ({ page }) => {
+test("Has organisation index page", async ({ page }) => {
   await page.goto("/");
+  const orgLink = page.getByText("My Organisation");
+  await orgLink.click();
+
   const consultantName = page.getByText("Test Consultant");
 
   await expect(consultantName).toBeVisible();

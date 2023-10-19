@@ -1,9 +1,12 @@
-import { MockConsultants } from "../../mockdata/mockConsultants";
-import { MockDepartments } from "../../mockdata/mockDepartments";
 import {
   authOptions,
   getCustomServerSession,
 } from "@/app/api/auth/[...nextauth]/route";
+import {
+  MockConsultants,
+  MockDepartments,
+  MockOrganisations,
+} from "../../mockdata/mockData";
 
 export async function fetchWithToken<T>(path: string): Promise<T | undefined> {
   if (process.env.NEXT_PUBLIC_NO_AUTH) {
@@ -26,8 +29,12 @@ export async function fetchWithToken<T>(path: string): Promise<T | undefined> {
     method: "GET",
     headers: headers,
   };
-  const response = await fetch(`${apiBackendUrl}/${path}`, options);
-  return (await response.json()) as T;
+  try {
+    const response = await fetch(`${apiBackendUrl}/${path}`, options);
+    return (await response.json()) as T;
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 function mockedCall<T>(path: string): Promise<T> {
@@ -37,6 +44,9 @@ function mockedCall<T>(path: string): Promise<T> {
     }
     if (path.includes("departments")) {
       resolve(MockDepartments as T);
+    }
+    if (path.includes("organisations")) {
+      resolve(MockOrganisations as T);
     }
   });
 }

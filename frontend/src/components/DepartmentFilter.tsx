@@ -3,12 +3,14 @@ import { URL_PATH } from "@/constants";
 import FilterButton from "./FilterButton";
 import { Department } from "@/types";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 async function getDepartments(setDepartments: Function) {
   try {
     const data = await fetch(`${URL_PATH}/bemanning/api/departments`, {
       method: "get",
     });
+
     const departments = await data.json();
     setDepartments(departments);
   } catch (e) {
@@ -18,6 +20,7 @@ async function getDepartments(setDepartments: Function) {
 
 export default function DepartmentFilter() {
   const [departments, setDepartments] = useState<Department[]>([]);
+  const route = useRouter();
 
   useEffect(() => {
     getDepartments(setDepartments);

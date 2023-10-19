@@ -1,5 +1,5 @@
 "use client";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Search } from "react-feather";
 
@@ -8,14 +8,15 @@ export default function SearchBarComponent() {
 
   const searchParams = useSearchParams();
   const currentFilter = searchParams.get("filter") || "";
+  const pathname = usePathname();
   const [searchText, setSearchText] = useState(
     searchParams.get("search") || "",
   );
   const router = useRouter();
 
   useEffect(() => {
-    router.push(`/bemanning?search=${searchText}&filter=${currentFilter}`);
-  }, [currentFilter, router, searchText]);
+    router.push(`${pathname}?search=${searchText}&filter=${currentFilter}`);
+  }, [searchText, router, pathname, currentFilter]);
 
   useEffect(() => {
     function keyDownHandler(e: { code: string }) {

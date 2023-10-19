@@ -2,6 +2,7 @@ using Api.Cache;
 using Core.DomainModels;
 using Core.Services;
 using Database.DatabaseContext;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,8 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Api.Consultants;
 
-[Route("v0/consultants")]
+[Authorize]
+[Route("/v0/{orgUrlKey}/consultants")]
 [ApiController]
 public class ConsultantController : ControllerBase
 {
@@ -26,10 +28,11 @@ public class ConsultantController : ControllerBase
 
     [HttpGet]
     public ActionResult<List<ConsultantReadModel>> Get(
+        [FromRoute] string orgUrlKey,
         [FromQuery(Name = "weeks")] int numberOfWeeks = 8,
         [FromQuery(Name = "includeOccupied")] bool includeOccupied = true)
     {
-        var consultants = GetConsultantsWithAvailability(numberOfWeeks)
+        var consultants = GetConsultantsWithAvailability(orgUrlKey, numberOfWeeks)
             .Where(c =>
                 includeOccupied
                 || c.IsOccupied
@@ -56,7 +59,7 @@ public class ConsultantController : ControllerBase
 
             var newConsultant = CreateConsultantFromModel(basicConsultant, selectedDepartment);
             await AddConsultantToDatabaseAsync(_context, newConsultant);
-            ClearConsultantCache();
+            ClearConsultantCache(selectedDepartment.Organization.UrlKey);
 
             return TypedResults.Created($"/consultant/{newConsultant.Id}", basicConsultant);
         }
@@ -67,24 +70,24 @@ public class ConsultantController : ControllerBase
         }
     }
 
-    private List<ConsultantReadModel> GetConsultantsWithAvailability(int numberOfWeeks)
+    private List<ConsultantReadModel> GetConsultantsWithAvailability(string orgUrlKey, int numberOfWeeks)
     {
         if (numberOfWeeks == 8)
         {
-            _cache.TryGetValue(CacheKeys.ConsultantAvailability8Weeks,
+            _cache.TryGetValue(
+                $"{orgUrlKey}/{CacheKeys.ConsultantAvailability8Weeks}",
                 out List<ConsultantReadModel>? cachedConsultants);
             if (cachedConsultants != null) return cachedConsultants;
         }
 
-        var consultants = LoadConsultantAvailability(numberOfWeeks)
+        var consultants = LoadConsultantAvailability(orgUrlKey, numberOfWeeks)
             .Select(c => _consultantService.MapConsultantToReadModel(c, numberOfWeeks)).ToList();
 
-
-        _cache.Set(CacheKeys.ConsultantAvailability8Weeks, consultants);
+        _cache.Set($"{orgUrlKey}/{CacheKeys.ConsultantAvailability8Weeks}", consultants);
         return consultants;
     }
 
-    private List<Consultant> LoadConsultantAvailability(int numberOfWeeks)
+    private List<Consultant> LoadConsultantAvailability(string orgUrlKey, int numberOfWeeks)
     {
         var applicableWeeks = DateService.GetNextWeeks(numberOfWeeks);
         var firstDayOfCurrentWeek = DateService.GetFirstDayOfWeekContainingDate(DateTime.Now);
@@ -119,6 +122,8 @@ public class ConsultantController : ControllerBase
                 (pa.Year <= yearA && minWeekA <= pa.WeekNumber && pa.WeekNumber <= maxWeekA)
                 || (yearB <= pa.Year && minWeekB <= pa.WeekNumber && pa.WeekNumber <= maxWeekB)))
             .Include(c => c.Department)
+            .ThenInclude(d => d.Organization)
+            .Where(c => c.Department.Organization.UrlKey == orgUrlKey)
             .Include(c => c.Staffings.Where(s =>
                 (s.Year <= yearA && minWeekA <= s.Week && s.Week <= maxWeekA)
                 || (yearB <= s.Year && minWeekB <= s.Week && s.Week <= maxWeekB)))
@@ -154,9 +159,9 @@ public class ConsultantController : ControllerBase
         await db.SaveChangesAsync();
     }
 
-    private void ClearConsultantCache()
+    private void ClearConsultantCache(string orgUrlKey)
     {
-        _cache.Remove(CacheKeys.ConsultantAvailability8Weeks);
+        _cache.Remove($"{orgUrlKey}/{CacheKeys.ConsultantAvailability8Weeks}");
     }
 
 
