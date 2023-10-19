@@ -59,7 +59,7 @@ public class ConsultantController : ControllerBase
 
             var newConsultant = CreateConsultantFromModel(basicConsultant, selectedDepartment);
             await AddConsultantToDatabaseAsync(_context, newConsultant);
-            ClearConsultantCache();
+            ClearConsultantCache(selectedDepartment.Organization.UrlKey);
 
             return TypedResults.Created($"/consultant/{newConsultant.Id}", basicConsultant);
         }
@@ -83,8 +83,7 @@ public class ConsultantController : ControllerBase
         var consultants = LoadConsultantAvailability(orgUrlKey, numberOfWeeks)
             .Select(c => _consultantService.MapConsultantToReadModel(c, numberOfWeeks)).ToList();
 
-
-        _cache.Set(CacheKeys.ConsultantAvailability8Weeks, consultants);
+        _cache.Set($"{orgUrlKey}/{CacheKeys.ConsultantAvailability8Weeks}", consultants);
         return consultants;
     }
 
@@ -160,9 +159,9 @@ public class ConsultantController : ControllerBase
         await db.SaveChangesAsync();
     }
 
-    private void ClearConsultantCache()
+    private void ClearConsultantCache(string orgUrlKey)
     {
-        _cache.Remove(CacheKeys.ConsultantAvailability8Weeks);
+        _cache.Remove($"{orgUrlKey}/{CacheKeys.ConsultantAvailability8Weeks}");
     }
 
 
