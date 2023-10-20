@@ -1,35 +1,27 @@
-using Api.Options;
+using Core.DomainModels;
 using Core.Services;
-using Microsoft.Extensions.Options;
 using PublicHoliday;
 
 namespace Api.Consultants;
 
-public class HolidayService
+public static class HolidayService
 {
-    private readonly OrganizationOptions _organizationOptions;
-
-    public HolidayService(IOptions<OrganizationOptions> options)
-    {
-        _organizationOptions = options.Value;
-    }
-
-    public int GetTotalHolidaysOfWeek(int year, int week)
+    public static int GetTotalHolidaysOfWeek(this Consultant consultant, int year, int week)
     {
         var datesOfThisWeek = DateService.GetDatesInWorkWeek(year, week);
-        return datesOfThisWeek.Count(IsHoliday);
+        return datesOfThisWeek.Count(consultant.IsHoliday);
     }
 
-    private bool IsHoliday(DateOnly day)
+    private static bool IsHoliday(this Consultant consultant, DateOnly day)
     {
-        var holidayCountry = GetHolidayCountry();
+        var holidayCountry = consultant.GetHolidayCountry();
         var isPublicHoliday = holidayCountry.IsPublicHoliday(day.ToDateTime(TimeOnly.MinValue));
-        return isPublicHoliday || IsVariantChristmasHoliday(day);
+        return isPublicHoliday || consultant.IsVariantChristmasHoliday(day);
     }
 
-    private PublicHolidayBase GetHolidayCountry()
+    private static PublicHolidayBase GetHolidayCountry(this Consultant consultant)
     {
-        var country = _organizationOptions.Country;
+        var country = consultant.Department.Organization.Country;
 
         return country switch
         {
@@ -39,9 +31,9 @@ public class HolidayService
         };
     }
 
-    private bool IsVariantChristmasHoliday(DateOnly date)
+    private static bool IsVariantChristmasHoliday(this Consultant consultant, DateOnly date)
     {
-        if (!_organizationOptions.HasVacationInChristmas) return false;
+        if (consultant.Department.Organization.HasVacationInChristmas) return false;
 
         var startDate = new DateOnly(date.Year, 12, 24);
         var endDate = new DateOnly(date.Year, 12, 31);
