@@ -38,7 +38,7 @@ export default function DepartmentFilter() {
               <FilterButton
                 key={index}
                 filterName={department.name}
-                number={index + 1}
+                hotKey={index + 1}
               />
             ))}
           </div>

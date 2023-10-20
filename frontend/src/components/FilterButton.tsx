@@ -4,10 +4,10 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export default function FilterButton({
   filterName,
-  number,
+  hotKey,
 }: {
   filterName: string;
-  number?: number;
+  hotKey?: number;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -49,9 +49,9 @@ export default function FilterButton({
   useEffect(() => {
     function keyDownHandler(e: { code: string }) {
       if (
-        number &&
+        hotKey &&
         e.code.startsWith("Digit") &&
-        e.code.includes(number.toString()) &&
+        e.code.includes(hotKey.toString()) &&
         (document.activeElement?.tagName.toLowerCase() !== "input" ||
           document.activeElement?.id === "checkbox")
       ) {
@@ -67,7 +67,7 @@ export default function FilterButton({
     return () => {
       document.removeEventListener("keydown", keyDownHandler);
     };
-  }, [clearFilter, handleFilterClick, number]);
+  }, [clearFilter, handleFilterClick, hotKey]);
 
   function setCheckboxTimeout() {
     setTimeout(() => {
