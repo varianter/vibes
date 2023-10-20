@@ -32,11 +32,11 @@ public class OrganisationController : ControllerBase
             .Include(o => o.Departments)
             .Single(o => o.UrlKey == orgUrlKey)
             .Departments
-            .Select(d => new DepartmentReadModel(d.Id, d.Name))
+            .Select(d => new DepartmentReadModel(d.Id, d.Name, d.Hotkey))
             .ToList();
     }
 }
 
-public record DepartmentReadModel(string Id, string Name);
+public record DepartmentReadModel(string Id, string Name, int? Hotkey);
 
 public record OrganisationReadModel(string Name, string UrlKey);
