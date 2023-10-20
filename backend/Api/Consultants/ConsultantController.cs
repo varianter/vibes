@@ -16,12 +16,14 @@ namespace Api.Consultants;
 public class ConsultantController : ControllerBase
 {
     private readonly IMemoryCache _cache;
+    private readonly ConsultantService _consultantService;
     private readonly ApplicationContext _context;
 
-    public ConsultantController(ApplicationContext context, IMemoryCache cache)
+    public ConsultantController(ApplicationContext context, IMemoryCache cache, ConsultantService consultantService)
     {
         _context = context;
         _cache = cache;
+        _consultantService = consultantService;
     }
 
     [HttpGet]
@@ -79,7 +81,7 @@ public class ConsultantController : ControllerBase
         }
 
         var consultants = LoadConsultantAvailability(orgUrlKey, numberOfWeeks)
-            .Select(c => c.MapConsultantToReadModel(numberOfWeeks)).ToList();
+            .Select(c => _consultantService.MapConsultantToReadModel(c, numberOfWeeks)).ToList();
 
         _cache.Set($"{orgUrlKey}/{CacheKeys.ConsultantAvailability8Weeks}", consultants);
         return consultants;

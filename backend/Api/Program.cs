@@ -1,7 +1,9 @@
 using Api.BuildHelpers;
+using Api.Consultants;
 using Api.Options;
 using Database.DatabaseContext;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
@@ -20,6 +22,10 @@ builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServe
 
 builder.Services.AddMemoryCache();
 
+
+builder.Services.Configure<OrganizationOptions>(builder.Configuration.GetSection("OrganizationSettings"));
+builder.Services.AddSingleton<HolidayService>();
+builder.Services.AddSingleton<ConsultantService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
