@@ -30,7 +30,10 @@ export function useFilteredConsultants() {
     router.push(`${pathname}?search=${newSearch}&filter=${currentFilter}`);
   }
 
-  function clearNameSearch() {}
+  function clearNameSearch() {
+    const currentFilter = searchParams.get("filter") || "";
+    router.push(`${pathname}?search=&filter=${currentFilter}`);
+  }
 
   const toggleDepartmentFilter = useCallback(
     (d: Department) => {
@@ -53,7 +56,10 @@ export function useFilteredConsultants() {
     [pathname, router, searchParams],
   );
 
-  function clearDepartmentFilter() {}
+  const clearDepartmentFilter = useCallback(() => {
+    const currentSearch = searchParams.get("search") || "";
+    router.push(`${pathname}?search=${currentSearch}&filter=`);
+  }, [pathname, router, searchParams]);
 
   const clearAll = useCallback(() => {
     router.push(`${pathname}?search=&filter=`);
@@ -85,7 +91,7 @@ export function useFilteredConsultants() {
     return () => {
       document.removeEventListener("keydown", keyDownHandler);
     };
-  }, [clearAll, departments, toggleDepartmentFilter]);
+  }, [clearAll, clearDepartmentFilter, departments, toggleDepartmentFilter]);
 
   return {
     consultants,
