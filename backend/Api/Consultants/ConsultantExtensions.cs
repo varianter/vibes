@@ -4,7 +4,7 @@ using Core.Services;
 
 namespace Api.Consultants;
 
-public static class ConsultantService
+public static class ConsultantExtensions
 {
     public static ConsultantReadModel MapConsultantToReadModel(this Consultant consultant, int weeks)
     {

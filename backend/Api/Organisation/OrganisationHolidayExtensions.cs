@@ -4,7 +4,7 @@ using PublicHoliday;
 
 namespace Api.Organisation;
 
-public static class HolidayService
+public static class OrganisationHolidayExtensions
 {
     public static int GetTotalHolidaysOfWeek(this Organization organization, int year, int week)
     {
@@ -14,14 +14,14 @@ public static class HolidayService
 
     private static bool IsHoliday(this Organization organization, DateOnly day)
     {
-        return organization.IsPublicHoliday(day) || organization.IsVariantChristmasHoliday(day);
+        return organization.IsPublicHoliday(day) || organization.IsChristmasHoliday(day);
     }
 
     private static bool IsPublicHoliday(this Organization organization, DateOnly day)
     {
         var publicHoliday = organization.GetPublicHoliday();
         var isPublicHoliday = publicHoliday.IsPublicHoliday(day.ToDateTime(TimeOnly.MinValue));
-        return isPublicHoliday || organization.IsVariantChristmasHoliday(day);
+        return isPublicHoliday || organization.IsChristmasHoliday(day);
     }
 
     private static PublicHolidayBase GetPublicHoliday(this Organization organization)
@@ -36,7 +36,7 @@ public static class HolidayService
         };
     }
 
-    private static bool IsVariantChristmasHoliday(this Organization organization, DateOnly date)
+    private static bool IsChristmasHoliday(this Organization organization, DateOnly date)
     {
         if (organization.HasVacationInChristmas) return false;
 
