@@ -1,8 +1,6 @@
 using Api.Consultants;
-using Api.Options;
 using Core.DomainModels;
 using Core.Services;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 
 namespace Tests;
@@ -114,7 +112,6 @@ public class Tests
             Country = "norway",
             NumberOfVacationDaysInYear = 25,
             HoursPerWorkday = 7.5,
-            Departments = new List<Department>(),
             HasVacationInChristmas = false,
             Customers = new List<Customer>()
         };

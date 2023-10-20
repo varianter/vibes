@@ -1,3 +1,4 @@
+using Api.Organisation;
 using Core.DomainModels;
 using Core.Services;
 
@@ -25,9 +26,11 @@ public static class ConsultantService
 
     public static double GetBookedHours(this Consultant consultant, int year, int week)
     {
-        var hoursPrWorkDay = consultant.Department.Organization.HoursPerWorkday;
+        var org = consultant.Department.Organization;
 
-        var holidayHours = consultant.GetTotalHolidaysOfWeek(year, week) * hoursPrWorkDay;
+        var hoursPrWorkDay = org.HoursPerWorkday;
+
+        var holidayHours = org.GetTotalHolidaysOfWeek(year, week) * hoursPrWorkDay;
         var vacationHours = consultant.Vacations.Count(v => DateService.DateIsInWeek(v.Date, year, week)) *
                             hoursPrWorkDay;
 
@@ -65,5 +68,5 @@ public static class ConsultantService
     private static double GetHoursPrWeek(this Consultant consultant)
     {
         return consultant.Department.Organization.HoursPerWorkday * 5;
-    }   
+    }
 }
