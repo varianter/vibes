@@ -12,7 +12,7 @@ function filterConsultants(
   var newFilteredConsultants = consultants;
   if (search && search.length > 0) {
     newFilteredConsultants = newFilteredConsultants?.filter((consultant) =>
-      consultant.name.match(new RegExp(`\\b${search}.*\\b`, "gi")),
+      consultant.name.match(new RegExp(`(?<!\\p{L})${search}.*\\b`, "giu")),
     );
   }
   if (filter && filter.length > 0) {
