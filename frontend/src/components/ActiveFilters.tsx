@@ -11,7 +11,7 @@ export default function ActiveFilters() {
       : "";
   const filteredDepartments =
     searchParams.get("filter") != ""
-      ? searchParams.get("filter")?.split(",").join(", ")
+      ? searchParams.get("filter")?.replace(",", ", ")
       : "";
   const filterSummaryText =
     filteredDepartments != "" && currentNameSearch != ""
