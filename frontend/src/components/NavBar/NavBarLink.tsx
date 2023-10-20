@@ -13,7 +13,7 @@ export default function NavBarLink(props: { text: string; path: string }) {
           ? "body-large-bold border-b-[3px] border-secondary_default"
           : "body-large opacity-70 hover:opacity-100"
       }`}
-      href={`/${orgUrl}/${props.path}`}
+      href={orgUrl != "" ? `/${orgUrl}/${props.path}` : "/"}
     >
       {props.text}
     </a>
