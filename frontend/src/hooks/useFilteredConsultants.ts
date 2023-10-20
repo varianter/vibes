@@ -76,7 +76,7 @@ export function useFilteredConsultants() {
         handleDepartmentHotkey(e.code);
       }
       if (e.code.includes("0")) {
-        clearAll();
+        clearDepartmentFilter();
       }
     }
     document.addEventListener("keydown", keyDownHandler);
