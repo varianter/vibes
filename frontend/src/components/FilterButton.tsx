@@ -1,95 +1,26 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export default function FilterButton({
-  filterName,
-  hotKey,
+  label,
+  onClick,
+  checked,
+  enabled,
 }: {
-  filterName: string;
-  hotKey?: number;
+  label: string;
+  onClick: () => void;
+  checked: boolean;
+  enabled?: boolean;
 }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const [isButtonActive, setIsButtonActive] = useState(checkFilterInUrl);
-  const [checkboxIsDisabled, setCheckboxIsDisabled] = useState(false);
-
-  const handleFilterClick = useCallback(() => {
-    setIsButtonActive((prevState) => !prevState);
-
-    const currentSearch = searchParams.get("search");
-    const currentFilter = searchParams.get("filter") || "";
-    const filters = currentFilter.split(",");
-    const filterIndex = filters.indexOf(filterName);
-    const newFilters = [...filters];
-    if (filterIndex === -1) {
-      newFilters.push(filterName);
-    } else {
-      newFilters.splice(filterIndex, 1);
-    }
-    const newFilterString = newFilters.join(",").replace(/^,/, "");
-
-    router.push(
-      `${pathname}?search=${currentSearch}&filter=${newFilterString}`,
-    );
-  }, [filterName, pathname, router, searchParams]);
-
-  function checkFilterInUrl() {
-    const currentFilter = searchParams.get("filter") || "";
-    return currentFilter.includes(filterName);
-  }
-
-  const clearFilter = useCallback(() => {
-    setIsButtonActive(false);
-    const currentSearch = searchParams.get("search");
-    router.push(`${pathname}?search=${currentSearch}&filter=`);
-  }, [pathname, router, searchParams]);
-
-  useEffect(() => {
-    function keyDownHandler(e: { code: string }) {
-      if (
-        hotKey &&
-        e.code.startsWith("Digit") &&
-        e.code.includes(hotKey.toString()) &&
-        (document.activeElement?.tagName.toLowerCase() !== "input" ||
-          document.activeElement?.id === "checkbox")
-      ) {
-        handleFilterClick();
-      }
-      if (e.code.includes("0")) {
-        clearFilter();
-      }
-    }
-    document.addEventListener("keydown", keyDownHandler);
-
-    // clean up
-    return () => {
-      document.removeEventListener("keydown", keyDownHandler);
-    };
-  }, [clearFilter, handleFilterClick, hotKey]);
-
-  function setCheckboxTimeout() {
-    setTimeout(() => {
-      setCheckboxIsDisabled(false);
-    }, 200);
-  }
+  enabled = enabled ?? true;
 
   return (
-    <div
-      className="flex items-center"
-      onClick={() => {
-        setCheckboxIsDisabled(true);
-        handleFilterClick();
-        setCheckboxTimeout();
-      }}
-    >
+    <div className="flex items-center" onClick={onClick}>
       <input
         id="checkbox"
         type="checkbox"
         className="appearance-none border flex items-center border-primary_default m-[1px] mr-2 h-4 w-4 rounded-sm hover:bg-primary_l2 hover:border-primary_l2 checked:bg-primary_default"
-        checked={isButtonActive}
-        disabled={checkboxIsDisabled}
+        checked={checked}
+        disabled={!enabled}
       />
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -98,7 +29,7 @@ export default function FilterButton({
         viewBox="0 0 12 12"
         fill="none"
         className={`absolute ml-[3px] pointer-events-none ${
-          !isButtonActive && "hidden"
+          !checked && "hidden"
         }`}
       >
         <path
@@ -108,7 +39,7 @@ export default function FilterButton({
           fill="white"
         />
       </svg>
-      <label className="body">{filterName}</label>
+      <label className="body">{label}</label>
     </div>
   );
 }

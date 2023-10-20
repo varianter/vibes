@@ -1,32 +1,10 @@
 "use client";
 import FilterButton from "./FilterButton";
-import { Department } from "@/types";
-import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
-
-async function getDepartments(setDepartments: Function, pathName: string) {
-  try {
-    const data = await fetch(
-      `${pathName}/api/departments?organisationName=${pathName.split("/")[1]}`,
-      {
-        method: "get",
-      },
-    );
-
-    const departments = await data.json();
-    setDepartments(departments);
-  } catch (e) {
-    console.error("Error fetching departments:", e);
-  }
-}
+import { useFilteredConsultants } from "@/hooks/useFilteredConsultants";
 
 export default function DepartmentFilter() {
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const pathName = usePathname();
-
-  useEffect(() => {
-    getDepartments(setDepartments, pathName);
-  }, [pathName]);
+  const { departments, filteredDepartments, toggleDepartmentFilter } =
+    useFilteredConsultants();
 
   if (departments.length > 0) {
     return (
@@ -36,9 +14,12 @@ export default function DepartmentFilter() {
           <div className="flex flex-col gap-2 w-52">
             {departments?.map((department, index) => (
               <FilterButton
-                key={index}
-                filterName={department.name}
-                hotKey={index + 1}
+                key={department.id}
+                label={department.name}
+                onClick={() => toggleDepartmentFilter(department)}
+                checked={filteredDepartments
+                  .map((d) => d.id)
+                  .includes(department.id)}
               />
             ))}
           </div>

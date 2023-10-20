@@ -30,6 +30,7 @@ export async function fetchWithToken<T>(path: string): Promise<T | undefined> {
     headers: headers,
   };
   try {
+    console.log(":)");
     const response = await fetch(`${apiBackendUrl}/${path}`, options);
     return (await response.json()) as T;
   } catch (e) {
