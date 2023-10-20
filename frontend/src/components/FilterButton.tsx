@@ -89,11 +89,6 @@ export default function FilterButton({
         type="checkbox"
         className="appearance-none border flex items-center border-primary_default m-[1px] mr-2 h-4 w-4 rounded-sm hover:bg-primary_l2 hover:border-primary_l2 checked:bg-primary_default"
         checked={isButtonActive}
-        onChange={() => {
-          setCheckboxIsDisabled(true);
-          handleFilterClick();
-          setCheckboxTimeout();
-        }}
         disabled={checkboxIsDisabled}
       />
       <svg
