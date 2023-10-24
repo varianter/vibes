@@ -8,6 +8,7 @@ export const MockConsultants: Consultant[] = [
     competences: ["Frontend"],
     department: "My Department",
     bookings: [{ year: 2023, weekNumber: 10, bookedHours: 10 }],
+    yearsOfExperience: 2023,
   },
 ];
 

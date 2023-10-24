@@ -3,6 +3,7 @@ import { useState } from "react";
 import DepartmentFilter from "./DepartmentFilter";
 import SearchBarComponent from "./SearchBarComponent";
 import { ArrowLeft, Filter } from "react-feather";
+import ExperienceFilter from "./ExperienceFilter";
 
 export default function StaffingSidebar() {
   const [isSidebarHidden, setIsSidebarHidden] = useState(false);
@@ -25,6 +26,7 @@ export default function StaffingSidebar() {
         </div>
         <SearchBarComponent />
         <DepartmentFilter />
+        <ExperienceFilter />
       </div>
       <button
         onClick={() => setIsSidebarHidden(false)}

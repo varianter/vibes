@@ -11,6 +11,7 @@ export type Consultant = {
       bookedHours: number;
     },
   ];
+  yearsOfExperience: number;
 };
 
 export type Department = {
@@ -22,4 +23,11 @@ export type Department = {
 export type Organisation = {
   name: string;
   urlKey: string;
+};
+
+export type YearRange = {
+  label: string;
+  urlString: string;
+  start: number;
+  end?: number;
 };
