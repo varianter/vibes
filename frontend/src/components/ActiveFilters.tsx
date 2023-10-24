@@ -3,17 +3,25 @@ import { Filter } from "react-feather";
 import { useFilteredConsultants } from "@/hooks/useFilteredConsultants";
 
 export default function ActiveFilters() {
-  const { filteredDepartments, currentNameSearch } = useFilteredConsultants();
+  const { filteredDepartments, currentNameSearch, filteredYears } =
+    useFilteredConsultants();
   const filterTextComponents: string[] = [];
+
+  if (currentNameSearch != "")
+    filterTextComponents.push(` "${currentNameSearch}"`);
 
   if (filteredDepartments.length > 0)
     filterTextComponents.push(
-      filteredDepartments.map((d) => d.name).join(", "),
+      ` ${filteredDepartments.map((d) => d.name).join(", ")}`,
     );
-  if (currentNameSearch != "")
-    filterTextComponents.push(`"${currentNameSearch}"`);
 
-  const filterSummaryText = filterTextComponents.join(" ");
+  if (filteredYears.length > 0) {
+    filterTextComponents.push(
+      ` ${filteredYears.map((yr) => yr.label).join(", ")}`,
+    );
+  }
+
+  const filterSummaryText = filterTextComponents.join(" | ");
 
   return (
     <>
