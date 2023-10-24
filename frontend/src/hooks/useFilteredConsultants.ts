@@ -178,30 +178,3 @@ function inYearRanges(consultant: Consultant, yearRanges: YearRange[]) {
   }
   return false;
 }
-
-/*
-
-  useEffect(() => {
-    function keyDownHandler(e: { code: string }) {
-      if (
-        (e.code.startsWith("Key") || e.code.includes("Backspace")) &&
-        inputRef &&
-        inputRef.current
-      ) {
-        inputRef.current.focus();
-      }
-      if (e.code.includes("Escape")) {
-        setSearchText("");
-      }
-      if (e.code.startsWith("Digit")) {
-        inputRef.current?.blur();
-      }
-    }
-    document.addEventListener("keydown", keyDownHandler);
-
-    // clean up
-    return () => {
-      document.removeEventListener("keydown", keyDownHandler);
-    };
-  }, []);
- */
