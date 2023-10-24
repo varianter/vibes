@@ -1,9 +1,10 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Consultant, Department } from "@/types";
+import { Consultant, Department, YearRange } from "@/types";
 import { useCallback, useContext, useEffect } from "react";
 import { FilteredContext } from "@/components/FilteredConsultantProvider";
+import { yearRanges } from "@/components/ExperienceFilter";
 
 export function useFilteredConsultants() {
   const { departments, consultants } = useContext(FilteredContext);
@@ -12,28 +13,48 @@ export function useFilteredConsultants() {
   const searchParams = useSearchParams();
 
   const currentSearch = searchParams.get("search") || "";
-  const currentFilter = searchParams.get("filter") || "";
+  const currentDepartmentFilter = searchParams.get("depFilter") || "";
+  const currentYearFilter = searchParams.get("yearFilter") || "";
 
-  const filteredDepartments = currentFilter
+  const filteredDepartments = currentDepartmentFilter
     .split(",")
     .map((id) => departments.find((d) => d.id === id))
     .filter((dept) => dept !== undefined) as Department[];
 
+  const filteredYears = currentYearFilter
+    .split(",")
+    .map((urlString) => yearRanges.find((y) => y.urlString === urlString))
+    .filter((year) => year !== undefined) as YearRange[];
+
   const filteredConsultants = filterConsultants(
     currentSearch,
-    currentFilter,
+    currentDepartmentFilter,
+    filteredYears,
     consultants,
   );
 
-  const setNameSearch = useCallback(
-    (newSearch: string) => {
-      router.push(`${pathname}?search=${newSearch}&filter=${currentFilter}`);
-    },
-    [router, pathname, currentFilter],
-  );
+  function setNameSearch(newSearch: string) {
+    const currentDepartmentFilter = searchParams.get("depFilter") || "";
+    const currentYearFilter = searchParams.get("yearFilter") || "";
+    router.push(
+      `${pathname}?search=${newSearch}&depFilter=${currentDepartmentFilter}&yearFilter=${currentYearFilter}`,
+    );
+  }
+
+  function clearNameSearch() {
+    const currentFilter = searchParams.get("depFilter") || "";
+    const currentYearFilter = searchParams.get("yearFilter") || "";
+
+    router.push(
+      `${pathname}?search=&depFilter=${currentFilter}&yearFilter=${currentYearFilter}`,
+    );
+  }
 
   const toggleDepartmentFilter = useCallback(
     (d: Department) => {
+      const currentSearch = searchParams.get("search") || "";
+      const currentFilter = searchParams.get("depFilter") || "";
+      const currentYearFilter = searchParams.get("yearFilter") || "";
       const filters = currentFilter.split(",");
       const filterIndex = filters.indexOf(d.id);
       const newFilters = [...filters];
@@ -44,18 +65,46 @@ export function useFilteredConsultants() {
       }
       const newFilterString = newFilters.join(",").replace(/^,/, "");
       router.push(
-        `${pathname}?search=${currentSearch}&filter=${newFilterString}`,
+        `${pathname}?search=${currentSearch}&depFilter=${newFilterString}&yearFilter=${currentYearFilter}`,
       );
     },
-    [currentFilter, router, pathname, currentSearch],
+    [searchParams, router, pathname],
   );
 
   const clearDepartmentFilter = useCallback(() => {
-    router.push(`${pathname}?search=${currentSearch}&filter=`);
-  }, [currentSearch, pathname, router]);
+    const currentSearch = searchParams.get("search") || "";
+    const currentYearFilter = searchParams.get("yearFilter") || "";
+
+    router.push(
+      `${pathname}?search=${currentSearch}&depFilter=&yearFilter=${currentYearFilter}`,
+    );
+  }, [pathname, router, searchParams]);
+
+  const toggleYearFilter = useCallback(
+    (y: YearRange) => {
+      const currentSearch = searchParams.get("search") || "";
+      const currentDepartmentFilter = searchParams.get("depFilter") || "";
+      const currentYearFilter = searchParams.get("yearFilter") || "";
+
+      const filters = currentYearFilter.split(",");
+      const filterIndex = filters.indexOf(y.urlString);
+      const newFilters = [...filters];
+      if (filterIndex === -1) {
+        newFilters.push(y.urlString);
+      } else {
+        newFilters.splice(filterIndex, 1);
+      }
+      const newFilterString = newFilters.join(",").replace(/^,/, "");
+
+      router.push(
+        `${pathname}?search=${currentSearch}&depFilter=${currentDepartmentFilter}&yearFilter=${newFilterString}`,
+      );
+    },
+    [pathname, router, searchParams],
+  );
 
   const clearAll = useCallback(() => {
-    router.push(`${pathname}?search=&filter=`);
+    router.push(`${pathname}?search=&depFilter=&yearFilter=`);
   }, [pathname, router]);
 
   useEffect(() => {
@@ -91,9 +140,11 @@ export function useFilteredConsultants() {
     filteredConsultants,
     departments,
     filteredDepartments,
+    filteredYears,
     currentNameSearch: currentSearch,
     setNameSearch,
     toggleDepartmentFilter,
+    toggleYearFilter,
     clearDepartmentFilter,
     clearAll,
   };
@@ -101,7 +152,8 @@ export function useFilteredConsultants() {
 
 function filterConsultants(
   search: string,
-  filter: string,
+  departmentFilter: string,
+  yearFilter: YearRange[],
   consultants: Consultant[],
 ) {
   let newFilteredConsultants = consultants;
@@ -110,10 +162,55 @@ function filterConsultants(
       consultant.name.match(new RegExp(`(?<!\\p{L})${search}.*\\b`, "giu")),
     );
   }
-  if (filter && filter.length > 0) {
+  if (departmentFilter && departmentFilter.length > 0) {
     newFilteredConsultants = newFilteredConsultants?.filter((consultant) =>
-      filter.toLowerCase().includes(consultant.department.toLowerCase()),
+      departmentFilter
+        .toLowerCase()
+        .includes(consultant.department.toLowerCase()),
+    );
+  }
+  if (yearFilter.length > 0) {
+    newFilteredConsultants = newFilteredConsultants.filter((consultant) =>
+      inYearRanges(consultant, yearFilter),
     );
   }
   return newFilteredConsultants;
 }
+
+function inYearRanges(consultant: Consultant, yearRanges: YearRange[]) {
+  for (const range of yearRanges) {
+    if (
+      consultant.yearsOfExperience > range.start &&
+      (!range.end || consultant.yearsOfExperience < range.end)
+    )
+      return true;
+  }
+  return false;
+}
+
+/*
+
+  useEffect(() => {
+    function keyDownHandler(e: { code: string }) {
+      if (
+        (e.code.startsWith("Key") || e.code.includes("Backspace")) &&
+        inputRef &&
+        inputRef.current
+      ) {
+        inputRef.current.focus();
+      }
+      if (e.code.includes("Escape")) {
+        setSearchText("");
+      }
+      if (e.code.startsWith("Digit")) {
+        inputRef.current?.blur();
+      }
+    }
+    document.addEventListener("keydown", keyDownHandler);
+
+    // clean up
+    return () => {
+      document.removeEventListener("keydown", keyDownHandler);
+    };
+  }, []);
+ */

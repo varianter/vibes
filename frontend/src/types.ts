@@ -24,3 +24,10 @@ export type Organisation = {
   name: string;
   urlKey: string;
 };
+
+export type YearRange = {
+  label: string;
+  urlString: string;
+  start: number;
+  end?: number;
+};
