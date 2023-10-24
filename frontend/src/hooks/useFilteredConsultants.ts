@@ -25,9 +25,12 @@ export function useFilteredConsultants() {
     consultants,
   );
 
-  const setNameSearch = useCallback((newSearch: string) => {
-    router.push(`${pathname}?search=${newSearch}&filter=${currentFilter}`);
-  }, [router, pathname, currentFilter])
+  const setNameSearch = useCallback(
+    (newSearch: string) => {
+      router.push(`${pathname}?search=${newSearch}&filter=${currentFilter}`);
+    },
+    [router, pathname, currentFilter],
+  );
 
   const toggleDepartmentFilter = useCallback(
     (d: Department) => {
