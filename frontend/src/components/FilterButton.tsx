@@ -19,6 +19,7 @@ export default function FilterButton({
         className="appearance-none border flex items-center border-primary_default m-[1px] mr-2 h-4 w-4 rounded-sm hover:bg-primary_l2 hover:border-primary_l2 checked:bg-primary_default"
         checked={checked}
         disabled={!enabled}
+        readOnly
       />
       <svg
         xmlns="http://www.w3.org/2000/svg"
