@@ -7,6 +7,16 @@ export default function DepartmentFilter() {
     useFilteredConsultants();
 
   if (departments.length > 0) {
+    departments.sort((a, b) => {
+      if (!(a.hotkey || b.hotkey)) {
+        return a.id.localeCompare(b.id);
+      }
+      const aHotKey = a.hotkey || 999;
+      const bHotKey = b.hotkey || 999;
+
+      return aHotKey - bHotKey;
+    });
+
     return (
       <div>
         <div className="flex flex-col gap-2">
