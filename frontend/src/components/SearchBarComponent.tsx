@@ -29,7 +29,7 @@ export default function SearchBarComponent() {
     return () => {
       document.removeEventListener("keydown", keyDownHandler);
     };
-  }, []);
+  }, [setNameSearch]);
 
   return (
     <div className="flex flex-col gap-2">

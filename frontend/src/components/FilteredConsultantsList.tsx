@@ -1,7 +1,5 @@
 "use client";
 import ConsultantListElement from "./ConsultantListElement";
-import { Consultant } from "@/types";
-import { useSearchParams } from "next/navigation";
 import ActiveFilters from "./ActiveFilters";
 import { useFilteredConsultants } from "@/hooks/useFilteredConsultants";
 
