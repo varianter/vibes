@@ -9,6 +9,9 @@ public static class ConsultantExtensions
     public static ConsultantReadModel MapConsultantToReadModel(this Consultant consultant, int weeks)
     {
         const double tolerance = 0.1;
+        var currentYear = DateTime.Now.Year;
+        var yearsOfExperience = currentYear - consultant.GraduationYear ?? currentYear;
+
         var bookedHours = GetBookedHoursForWeeks(consultant, weeks);
 
         var isOccupied = bookedHours.All(b => b.BookedHours >= GetHoursPrWeek(consultant) - tolerance);
@@ -19,6 +22,8 @@ public static class ConsultantExtensions
             consultant.Email,
             consultant.Competences.Select(comp => comp.Name).ToList(),
             consultant.Department.Name,
+            yearsOfExperience,
+            consultant.Degree ?? Degree.None,
             bookedHours,
             isOccupied
         );
