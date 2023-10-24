@@ -41,15 +41,6 @@ export function useFilteredConsultants() {
     );
   }
 
-  function clearNameSearch() {
-    const currentFilter = searchParams.get("depFilter") || "";
-    const currentYearFilter = searchParams.get("yearFilter") || "";
-
-    router.push(
-      `${pathname}?search=&depFilter=${currentFilter}&yearFilter=${currentYearFilter}`,
-    );
-  }
-
   const toggleDepartmentFilter = useCallback(
     (d: Department) => {
       const currentSearch = searchParams.get("search") || "";
@@ -180,8 +171,8 @@ function filterConsultants(
 function inYearRanges(consultant: Consultant, yearRanges: YearRange[]) {
   for (const range of yearRanges) {
     if (
-      consultant.yearsOfExperience > range.start &&
-      (!range.end || consultant.yearsOfExperience < range.end)
+      consultant.yearsOfExperience >= range.start &&
+      (!range.end || consultant.yearsOfExperience <= range.end)
     )
       return true;
   }
