@@ -1,22 +1,19 @@
 "use client";
-import { useSearchParams } from "next/navigation";
 import { Filter } from "react-feather";
+import { useFilteredConsultants } from "@/hooks/useFilteredConsultants";
 
 export default function ActiveFilters() {
-  const searchParams = useSearchParams();
+  const { filteredDepartments, currentNameSearch } = useFilteredConsultants();
+  const filterTextComponents: string[] = [];
 
-  const currentNameSearch =
-    searchParams.get("search") != ""
-      ? `"` + searchParams.get("search") + `"`
-      : "";
-  const filteredDepartments =
-    searchParams.get("filter") != ""
-      ? searchParams.get("filter")?.replace(",", ", ")
-      : "";
-  const filterSummaryText =
-    filteredDepartments != "" && currentNameSearch != ""
-      ? [filteredDepartments, currentNameSearch].join(", ").replace(/,^/, "")
-      : filteredDepartments + currentNameSearch;
+  if (filteredDepartments.length > 0)
+    filterTextComponents.push(
+      filteredDepartments.map((d) => d.name).join(", "),
+    );
+  if (currentNameSearch != "")
+    filterTextComponents.push(`"${currentNameSearch}"`);
+
+  const filterSummaryText = filterTextComponents.join(" ");
 
   return (
     <>

@@ -17,6 +17,7 @@ export type Consultant = {
 export type Department = {
   id: string;
   name: string;
+  hotkey?: number;
 };
 
 export type Organisation = {

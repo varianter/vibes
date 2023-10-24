@@ -1,22 +1,11 @@
 "use client";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Search } from "react-feather";
+import { useFilteredConsultants } from "@/hooks/useFilteredConsultants";
 
 export default function SearchBarComponent() {
+  const { currentNameSearch, setNameSearch } = useFilteredConsultants();
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const searchParams = useSearchParams();
-  const currentFilter = searchParams.get("filter") || "";
-  const pathname = usePathname();
-  const [searchText, setSearchText] = useState(
-    searchParams.get("search") || "",
-  );
-  const router = useRouter();
-
-  useEffect(() => {
-    router.push(`${pathname}?search=${searchText}&filter=${currentFilter}`);
-  }, [searchText, router, pathname, currentFilter]);
 
   useEffect(() => {
     function keyDownHandler(e: { code: string }) {
@@ -28,7 +17,7 @@ export default function SearchBarComponent() {
         inputRef.current.focus();
       }
       if (e.code.includes("Escape")) {
-        setSearchText("");
+        setNameSearch("");
       }
       if (e.code.startsWith("Digit")) {
         inputRef.current?.blur();
@@ -40,7 +29,7 @@ export default function SearchBarComponent() {
     return () => {
       document.removeEventListener("keydown", keyDownHandler);
     };
-  }, []);
+  }, [setNameSearch]);
 
   return (
     <div className="flex flex-col gap-2">
@@ -50,9 +39,9 @@ export default function SearchBarComponent() {
         <input
           placeholder="Søk etter konsulent"
           className="input w-[131px] focus:outline-none body-small "
-          onChange={(e) => setSearchText(e.target.value)}
+          onChange={(e) => setNameSearch(e.target.value)}
           ref={inputRef}
-          value={searchText}
+          value={currentNameSearch}
         ></input>
       </div>
     </div>

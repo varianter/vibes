@@ -1,7 +1,8 @@
 import StaffingSidebar from "@/components/StaffingSidebar";
 import FilteredConsultantsList from "@/components/FilteredConsultantsList";
 import { fetchWithToken } from "@/data/fetchWithToken";
-import { Consultant } from "@/types";
+import { Consultant, Department } from "@/types";
+import { ConsultantFilterProvider } from "@/components/FilteredConsultantProvider";
 
 export default async function Bemanning({
   params,
@@ -13,14 +14,24 @@ export default async function Bemanning({
       `${params.organisation}/consultants`,
     )) ?? [];
 
-  return (
-    <div className="flex flex-row">
-      <StaffingSidebar />
+  const departments =
+    (await fetchWithToken<Department[]>(
+      `organisations/${params.organisation}/departments`,
+    )) ?? [];
 
-      <div className="p-6 w-full">
-        <h1>Konsulenter</h1>
-        <FilteredConsultantsList consultants={consultants} />{" "}
+  return (
+    <ConsultantFilterProvider
+      consultants={consultants}
+      departments={departments}
+    >
+      <div className="flex flex-row">
+        <StaffingSidebar />
+
+        <div className="p-6 w-full">
+          <h1>Konsulenter</h1>
+          <FilteredConsultantsList />{" "}
+        </div>
       </div>
-    </div>
+    </ConsultantFilterProvider>
   );
 }
