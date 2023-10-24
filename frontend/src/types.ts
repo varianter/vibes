@@ -11,6 +11,7 @@ export type Consultant = {
       bookedHours: number;
     },
   ];
+  yearsOfExperience: number;
 };
 
 export type Department = {

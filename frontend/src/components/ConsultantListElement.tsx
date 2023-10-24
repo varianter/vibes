@@ -31,7 +31,9 @@ export default function ConsultantListElement({
         </div>
         <div className="flex flex-col justify-center items-start">
           <p className="body text-black text-sm"> {consultant.name}</p>
-          <p className="detail text-neutral_l1">{consultant.email}</p>
+          <p className="detail text-neutral_l1">
+            {`${consultant.yearsOfExperience} års erfaring`}
+          </p>
         </div>
       </button>
       <div className={`${!isListElementVisible && "hidden"} h-[198px] `}></div>
