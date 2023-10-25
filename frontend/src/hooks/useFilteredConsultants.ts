@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Consultant, Department, YearRange } from "@/types";
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { FilteredContext } from "@/components/FilteredConsultantProvider";
 import { yearRanges } from "@/components/ExperienceFilter";
 
@@ -11,8 +11,42 @@ export function useFilteredConsultants() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
   const currentSearch = searchParams.get("search") || "";
+
+  const [activeNameSearch, setActiveNameSearch] =
+    useState<string>(currentSearch);
+  const [lastSearchKeyStrokeTime, setLastSearchKeyStrokeTime] =
+    useState<number>();
+
+  useEffect(() => {
+    let nameSearchDebounceTimer = setTimeout(() => {
+      if (
+        lastSearchKeyStrokeTime &&
+        Date.now() - lastSearchKeyStrokeTime > 250
+      ) {
+        const currentDepartmentFilter = searchParams.get("depFilter") || "";
+        const currentYearFilter = searchParams.get("yearFilter") || "";
+
+        router.push(
+          `${pathname}?search=${activeNameSearch}&depFilter=${currentDepartmentFilter}&yearFilter=${currentYearFilter}`,
+        );
+      }
+    }, 250);
+
+    // this will clear Timeout
+    // when component unmount like in willComponentUnmount
+    // and show will not change to true
+    return () => {
+      clearTimeout(nameSearchDebounceTimer);
+    };
+  }, [
+    lastSearchKeyStrokeTime,
+    activeNameSearch,
+    searchParams,
+    router,
+    pathname,
+  ]);
+
   const currentDepartmentFilter = searchParams.get("depFilter") || "";
   const currentYearFilter = searchParams.get("yearFilter") || "";
 
@@ -34,11 +68,8 @@ export function useFilteredConsultants() {
   );
 
   function setNameSearch(newSearch: string) {
-    const currentDepartmentFilter = searchParams.get("depFilter") || "";
-    const currentYearFilter = searchParams.get("yearFilter") || "";
-    router.push(
-      `${pathname}?search=${newSearch}&depFilter=${currentDepartmentFilter}&yearFilter=${currentYearFilter}`,
-    );
+    setActiveNameSearch(newSearch);
+    setLastSearchKeyStrokeTime(Date.now());
   }
 
   const toggleDepartmentFilter = useCallback(
@@ -132,7 +163,7 @@ export function useFilteredConsultants() {
     departments,
     filteredDepartments,
     filteredYears,
-    currentNameSearch: currentSearch,
+    currentNameSearch: activeNameSearch,
     setNameSearch,
     toggleDepartmentFilter,
     toggleYearFilter,
