@@ -28,7 +28,7 @@ export default async function Bemanning({
         <StaffingSidebar />
 
         <div className="p-6 w-full">
-          <h1>Konsulenter</h1>
+          <h1>Bemanning</h1>
           <FilteredConsultantsList />{" "}
         </div>
       </div>

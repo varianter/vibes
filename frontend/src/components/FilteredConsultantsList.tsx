@@ -11,7 +11,7 @@ export default function FilteredConsultantList() {
         <ActiveFilters />
       </div>
       <div className="flex flex-row gap-3 pb-4 items-center">
-        <p className="body-large-bold ">Konsulentliste</p>
+        <p className="body-large-bold ">Konsulenter</p>
 
         <div className="rounded-full bg-black bg-opacity-5 px-2 py-1">
           <p className="text-black body-small">{consultants?.length}</p>
