@@ -22,10 +22,6 @@ export default function NavBarDropdown(props: { initials: string }) {
             !isOpen && "hidden"
           }`}
         >
-          <button className="p-2 w-[138px] flex flex-row gap-3 hover:bg-primary_default hover:text-white">
-            <User className="w-4 h-4" />
-            <p className="body">Min profil</p>
-          </button>
           <button
             className="p-2 w-[138px] rounded-b flex flex-row gap-3 hover:bg-primary_default hover:text-white"
             onClick={() => signOut()}
