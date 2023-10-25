@@ -32,7 +32,7 @@ export default function ConsultantListElement({
         <div className="flex flex-col justify-center items-start">
           <p className="body text-black text-sm"> {consultant.name}</p>
           <p className="detail text-neutral_l1">
-            {`${consultant.yearsOfExperience} års erfaring`}
+            {`${consultant.yearsOfExperience} RÅ år`}
           </p>
         </div>
       </button>
