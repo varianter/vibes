@@ -29,11 +29,16 @@ export async function fetchWithToken<T>(path: string): Promise<T | undefined> {
     method: "GET",
     headers: headers,
   };
+
+  const completeUrl = `${apiBackendUrl}/${path}`;
+
   try {
-    const response = await fetch(`${apiBackendUrl}/${path}`, options);
-    return (await response.json()) as T;
+    const response = await fetch(completeUrl, options);
+    const json = await response.json();
+    return json as T;
   } catch (e) {
     console.error(e);
+    throw new Error(`${options.method} ${completeUrl} failed`);
   }
 }
 
