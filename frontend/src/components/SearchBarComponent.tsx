@@ -6,6 +6,7 @@ import { useFilteredConsultants } from "@/hooks/useFilteredConsultants";
 export default function SearchBarComponent() {
   const { currentNameSearch, setNameSearch } = useFilteredConsultants();
   const inputRef = useRef<HTMLInputElement>(null);
+  const [searchIsActive, setIsSearchActive] = useState(false);
 
   useEffect(() => {
     function keyDownHandler(e: { code: string }) {
@@ -36,9 +37,7 @@ export default function SearchBarComponent() {
       <p className="body-small">Søk</p>
       <div
         className={`flex flex-row gap-2 rounded-lg border px-3 py-2 w-max hover:bg-primary_l4 hover:border-primary_default ${
-          document.activeElement?.id === "consultantSearch"
-            ? "border-primary_default"
-            : "border-primary_l1"
+          searchIsActive ? "border-primary_default" : "border-primary_l1"
         } `}
       >
         <Search className="text-primary_default h-4 w-4" />
@@ -49,6 +48,8 @@ export default function SearchBarComponent() {
           onChange={(e) => setNameSearch(e.target.value)}
           ref={inputRef}
           value={currentNameSearch}
+          onFocus={() => setIsSearchActive(true)}
+          onBlur={() => setIsSearchActive(false)}
         ></input>
       </div>
     </div>
