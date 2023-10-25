@@ -6,7 +6,7 @@ import { ArrowLeft, Filter } from "react-feather";
 import ExperienceFilter from "./ExperienceFilter";
 
 export default function StaffingSidebar() {
-  const [isSidebarHidden, setIsSidebarHidden] = useState(false);
+  const [isSidebarHidden, setIsSidebarHidden] = useState(true);
 
   return (
     <div>
