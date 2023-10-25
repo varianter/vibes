@@ -10,7 +10,8 @@ public static class ConsultantExtensions
     {
         const double tolerance = 0.1;
         var currentYear = DateTime.Now.Year;
-        var yearsOfExperience = currentYear - consultant.GraduationYear ?? currentYear;
+        var yearsOfExperience =
+            currentYear - (consultant.GraduationYear is null or 0 ? currentYear : consultant.GraduationYear) ?? 0;
 
         var bookedHours = GetBookedHoursForWeeks(consultant, weeks);
 
