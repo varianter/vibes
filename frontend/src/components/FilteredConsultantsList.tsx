@@ -19,9 +19,11 @@ export default function FilteredConsultantList() {
           </p>
         </div>
       </div>
-      {consultants?.map((consultant) => (
-        <ConsultantListElement key={consultant.id} consultant={consultant} />
-      ))}
+      <div className="flex flex-col gap-1">
+        {consultants?.map((consultant) => (
+          <ConsultantListElement key={consultant.id} consultant={consultant} />
+        ))}
+      </div>
     </div>
   );
 }
