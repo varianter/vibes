@@ -21,7 +21,7 @@ export default function RootLayout({
       </Head>
       <body>
         <NavBar />
-        <NextTopLoader color="#F076A6" height={3}/>
+        <NextTopLoader color="#F076A6" height={3} initialPosition={0.2}/>
         {children}
       </body>
     </html>
