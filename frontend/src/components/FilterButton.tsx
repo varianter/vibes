@@ -16,7 +16,7 @@ export default function FilterButton({
       <input
         id="checkbox"
         type="checkbox"
-        className="appearance-none border flex items-center border-primary_default m-[1px] mr-2 h-4 w-4 rounded-sm hover:bg-primary_l2 hover:border-primary_l2 checked:bg-primary_default"
+        className="appearance-none border flex items-center border-primary_default border-opacity-50 m-[1px] mr-2 h-4 w-4 rounded-sm hover:bg-primary_default hover:bg-opacity-10 hover:border-primary_default checked:bg-primary_default"
         checked={checked}
         disabled={!enabled}
         readOnly
