@@ -34,10 +34,17 @@ export default function SearchBarComponent() {
   return (
     <div className="flex flex-col gap-2">
       <p className="body-small">Søk</p>
-      <div className="flex flex-row gap-2 rounded-lg border border-primary_l1 px-3 py-2 w-max">
+      <div
+        className={`flex flex-row gap-2 rounded-lg border px-3 py-2 w-max hover:bg-primary_l4 hover:border-primary_default ${
+          document.activeElement?.id === "consultantSearch"
+            ? "border-primary_default"
+            : "border-primary_l1"
+        } `}
+      >
         <Search className="text-primary_default h-4 w-4" />
         <input
           placeholder="Søk etter konsulent"
+          id="consultantSearch"
           className="input w-[131px] focus:outline-none body-small "
           onChange={(e) => setNameSearch(e.target.value)}
           ref={inputRef}
