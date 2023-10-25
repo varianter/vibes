@@ -51,9 +51,13 @@ export default function ConsultantListElement({
             </p>
           </div>
         </div>
-        <div
-          className={`${!isListElementVisible && "hidden"} h-[198px] `}
-        ></div>
+        <div className={`${!isListElementVisible && "hidden"} h-[198px] `}>
+          <p className="raa-text py-10 ml-10 px-[2px]">
+            <span className="text-[#FF6426]">Du</span>{" "}
+            <span className="text-[#028377]">er</span>{" "}
+            <span className="text-[#534DAC]">RÅ!</span>
+          </p>
+        </div>
       </div>
     </div>
   );
