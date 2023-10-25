@@ -13,8 +13,10 @@ export default function FilteredConsultantList() {
       <div className="flex flex-row gap-3 pb-4 items-center">
         <p className="body-large-bold ">Konsulenter</p>
 
-        <div className="rounded-full bg-black bg-opacity-5 px-2 py-1">
-          <p className="text-black body-small">{consultants?.length}</p>
+        <div className="rounded-full bg-primary_l3 px-2 py-1">
+          <p className="text-primary_default body-small-bold">
+            {consultants?.length}
+          </p>
         </div>
       </div>
       {consultants?.map((consultant) => (
