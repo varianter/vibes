@@ -1,4 +1,4 @@
-import PrimaryButton from "@/components/PrimaryButton";
+import SecondaryButton from "@/components/SecondaryButton";
 import { fetchWithToken } from "@/data/fetchWithToken";
 import { Organisation } from "@/types";
 import Link from "next/link";
@@ -10,7 +10,7 @@ export default async function Root() {
       {orgs.map((o) => (
         <li key={o.urlKey}>
           <Link href={`/${o.urlKey}/bemanning`}>
-            <PrimaryButton label={o.name} />
+            <SecondaryButton label={o.name} />
           </Link>
         </li>
       ))}
