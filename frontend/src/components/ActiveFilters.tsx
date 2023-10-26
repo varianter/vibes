@@ -20,7 +20,7 @@ export default function ActiveFilters() {
     );
   }
 
-  const filterSummaryText = filterTextComponents.join(" | ");
+  const filterSummaryText = filterTextComponents.join(", ");
 
   return (
     <>
