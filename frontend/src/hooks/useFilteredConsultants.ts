@@ -12,6 +12,8 @@ export function useFilteredConsultants() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentSearch = searchParams.get("search") || "";
+  const currentDepartmentFilter = searchParams.get("depFilter") || "";
+  const currentYearFilter = searchParams.get("yearFilter") || "";
 
   const [activeNameSearch, setActiveNameSearch] =
     useState<string>(currentSearch);
@@ -24,9 +26,6 @@ export function useFilteredConsultants() {
         lastSearchKeyStrokeTime &&
         Date.now() - lastSearchKeyStrokeTime > 250
       ) {
-        const currentDepartmentFilter = searchParams.get("depFilter") || "";
-        const currentYearFilter = searchParams.get("yearFilter") || "";
-
         router.push(
           `${pathname}?search=${activeNameSearch}&depFilter=${currentDepartmentFilter}&yearFilter=${currentYearFilter}`,
         );
@@ -45,10 +44,9 @@ export function useFilteredConsultants() {
     searchParams,
     router,
     pathname,
+    currentDepartmentFilter,
+    currentYearFilter,
   ]);
-
-  const currentDepartmentFilter = searchParams.get("depFilter") || "";
-  const currentYearFilter = searchParams.get("yearFilter") || "";
 
   const filteredDepartments = currentDepartmentFilter
     .split(",")
@@ -74,55 +72,41 @@ export function useFilteredConsultants() {
 
   const toggleDepartmentFilter = useCallback(
     (d: Department) => {
-      const currentSearch = searchParams.get("search") || "";
-      const currentFilter = searchParams.get("depFilter") || "";
-      const currentYearFilter = searchParams.get("yearFilter") || "";
-      const filters = currentFilter.split(",");
-      const filterIndex = filters.indexOf(d.id);
-      const newFilters = [...filters];
-      if (filterIndex === -1) {
-        newFilters.push(d.id);
-      } else {
-        newFilters.splice(filterIndex, 1);
-      }
-      const newFilterString = newFilters.join(",").replace(/^,/, "");
+      const newDepartmentFilter = filterString(currentDepartmentFilter, d.id);
       router.push(
-        `${pathname}?search=${currentSearch}&depFilter=${newFilterString}&yearFilter=${currentYearFilter}`,
+        `${pathname}?search=${currentSearch}&depFilter=${newDepartmentFilter}&yearFilter=${currentYearFilter}`,
       );
     },
-    [searchParams, router, pathname],
+    [
+      currentDepartmentFilter,
+      router,
+      pathname,
+      currentSearch,
+      currentYearFilter,
+    ],
   );
 
   const clearDepartmentFilter = useCallback(() => {
-    const currentSearch = searchParams.get("search") || "";
-    const currentYearFilter = searchParams.get("yearFilter") || "";
-
     router.push(
       `${pathname}?search=${currentSearch}&depFilter=&yearFilter=${currentYearFilter}`,
     );
-  }, [pathname, router, searchParams]);
+  }, [currentSearch, currentYearFilter, pathname, router]);
 
   const toggleYearFilter = useCallback(
     (y: YearRange) => {
-      const currentSearch = searchParams.get("search") || "";
-      const currentDepartmentFilter = searchParams.get("depFilter") || "";
-      const currentYearFilter = searchParams.get("yearFilter") || "";
-
-      const filters = currentYearFilter.split(",");
-      const filterIndex = filters.indexOf(y.urlString);
-      const newFilters = [...filters];
-      if (filterIndex === -1) {
-        newFilters.push(y.urlString);
-      } else {
-        newFilters.splice(filterIndex, 1);
-      }
-      const newFilterString = newFilters.join(",").replace(/^,/, "");
+      const newYearFilter = filterString(currentYearFilter, y.urlString);
 
       router.push(
-        `${pathname}?search=${currentSearch}&depFilter=${currentDepartmentFilter}&yearFilter=${newFilterString}`,
+        `${pathname}?search=${currentSearch}&depFilter=${currentDepartmentFilter}&yearFilter=${newYearFilter}`,
       );
     },
-    [pathname, router, searchParams],
+    [
+      currentDepartmentFilter,
+      currentSearch,
+      currentYearFilter,
+      pathname,
+      router,
+    ],
   );
 
   const clearAll = useCallback(() => {
@@ -171,6 +155,19 @@ export function useFilteredConsultants() {
     clearDepartmentFilter,
     clearAll,
   };
+}
+
+function filterString(existingFilters: string, sortByString: string) {
+  const filters = existingFilters.split(",");
+  const filterIndex = filters.indexOf(sortByString);
+  const newFilters = [...filters];
+  if (filterIndex === -1) {
+    newFilters.push(sortByString);
+  } else {
+    newFilters.splice(filterIndex, 1);
+  }
+  const newFilterString = newFilters.join(",").replace(/^,/, "");
+  return newFilterString;
 }
 
 function filterConsultants(
