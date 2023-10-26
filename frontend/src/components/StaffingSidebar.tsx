@@ -9,7 +9,7 @@ export default function StaffingSidebar() {
   const [isSidebarHidden, setIsSidebarHidden] = useState(true);
 
   return (
-    <div className="min-h-screen fixed">
+    <div className="min-h-screen max-[720px]:fixed">
       <div
         className={`bg-primary_l4 py-6 px-4 h-full min-h-screen w-[300px]  ${
           isSidebarHidden
@@ -34,7 +34,7 @@ export default function StaffingSidebar() {
       </div>
       <button
         onClick={() => setIsSidebarHidden(false)}
-        className={`bg-primary_l3 rounded-r p-2 mt-16 hover:bg-primary_default hover:bg-opacity-20 ${
+        className={`bg-primary_l3 rounded-r p-2 mt-6 hover:bg-primary_default hover:bg-opacity-20 ${
           isSidebarHidden ? "top-[200px]" : "hidden"
         }`}
       >
