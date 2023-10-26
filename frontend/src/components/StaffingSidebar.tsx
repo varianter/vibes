@@ -34,7 +34,7 @@ export default function StaffingSidebar() {
       </div>
       <button
         onClick={() => setIsSidebarHidden(false)}
-        className={`bg-primary_l3 rounded-r p-2 mt-16 hover:bg-primary_default hover:bg-opacity-20 ${
+        className={`bg-primary_l3 rounded-r p-2 mt-6 hover:bg-primary_default hover:bg-opacity-20 ${
           isSidebarHidden ? "top-[200px]" : "hidden"
         }`}
       >
