@@ -11,13 +11,13 @@ export default function StaffingSidebar() {
   return (
     <div className="min-h-screen fixed">
       <div
-        className={`bg-primary_l4 py-6 px-4 h-full min-h-screen w-[328px]  ${
+        className={`bg-primary_l4 py-6 px-4 h-full min-h-screen w-[300px]  ${
           isSidebarHidden
             ? "absolute -left-[328px]"
             : "fixed sm:sticky top-[52px]"
         }`}
       >
-        <div className="flex flex-col gap-6 fixed w-[300px]">
+        <div className="flex flex-col gap-6 fixed w-[270px]">
           <div className="flex flex-row justify-between">
             <h3 className="">Filter</h3>
             <button
