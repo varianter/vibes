@@ -57,16 +57,7 @@ export function useFilteredConsultants() {
     return () => {
       clearTimeout(nameSearchDebounceTimer);
     };
-  }, [
-    lastSearchKeyStrokeTime,
-    activeNameSearch,
-    searchParams,
-    router,
-    pathname,
-    departmentFilter,
-    yearFilter,
-    updateRoute,
-  ]);
+  }, [activeNameSearch, lastSearchKeyStrokeTime, updateRoute]);
 
   const filteredDepartments = departmentFilter
     .split(",")
@@ -101,10 +92,6 @@ export function useFilteredConsultants() {
     [departmentFilter, updateRoute],
   );
 
-  const clearDepartmentFilter = useCallback(() => {
-    updateRoute({ departments: "" });
-  }, [updateRoute]);
-
   const toggleYearFilter = useCallback(
     (y: YearRange) => {
       const newYearFilter = toggleFilterFromString(yearFilter, y.urlString);
@@ -130,7 +117,7 @@ export function useFilteredConsultants() {
         handleDepartmentHotkey(e.code);
       }
       if (e.code.includes("0")) {
-        clearDepartmentFilter();
+        updateRoute({ departments: "" });
       }
     }
     document.addEventListener("keydown", keyDownHandler);
@@ -139,7 +126,7 @@ export function useFilteredConsultants() {
     return () => {
       document.removeEventListener("keydown", keyDownHandler);
     };
-  }, [clearDepartmentFilter, departments, toggleDepartmentFilter]);
+  }, [updateRoute, departments, toggleDepartmentFilter]);
 
   return {
     consultants,
@@ -152,7 +139,6 @@ export function useFilteredConsultants() {
     setNameSearch,
     toggleDepartmentFilter,
     toggleYearFilter,
-    clearDepartmentFilter,
   };
 }
 
