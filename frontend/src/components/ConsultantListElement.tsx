@@ -7,10 +7,6 @@ interface ConsultantListElementProps {
   consultant: Consultant;
 }
 
-function shuffle(array: string[]) {
-  return array.sort(() => Math.random() - 0.5);
-}
-
 export default function ConsultantListElement({
   consultant,
 }: ConsultantListElementProps) {
@@ -20,10 +16,6 @@ export default function ConsultantListElement({
   function toggleListElementVisibility() {
     setIsListElementVisible(!isListElementVisible);
   }
-
-  const [raaColors] = useState(
-    shuffle(["[#FF6426]", "[#028377]", "[#534DAC]"]),
-  );
 
   return (
     <div className="flex flex-row gap-2">
@@ -61,9 +53,9 @@ export default function ConsultantListElement({
         </div>
         <div className={`${!isListElementVisible && "hidden"} h-[198px] `}>
           <p className="raa-text sm:raa-text-big py-5 sm:py-10 ml-10 px-[2px] ">
-            <span className={`text-${raaColors[0]} `}>Du</span>{" "}
-            <span className={`text-${raaColors[1]} `}>er</span>{" "}
-            <span className={`text-${raaColors[2]} `}>RÅ!</span>
+            <span className={`text-[#FF6426]`}>Du</span>{" "}
+            <span className={`text-[#028377]`}>er</span>{" "}
+            <span className={`text-[#534DAC]`}>RÅ!</span>
           </p>
         </div>
       </div>
