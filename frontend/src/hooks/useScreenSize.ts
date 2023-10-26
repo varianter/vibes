@@ -6,31 +6,32 @@ interface ScreenSize {
   height: number;
 }
 
-function windowIsUp() {
-  return typeof window !== "undefined";
-}
-
 function useScreenSize(): ScreenSize {
-  const [screenSize, setScreenSize] = useState<ScreenSize>({
-    width: (windowIsUp() && window.innerWidth) || 0,
-    height: (windowIsUp() && window.innerHeight) || 0,
-  });
+  const isClient = typeof window === "object";
+
+  const [screenSize, setScreenSize] = useState<ScreenSize>(() => ({
+    width: isClient ? window.innerWidth : 0,
+    height: isClient ? window.innerHeight : 0,
+  }));
 
   useEffect(() => {
+    if (!isClient) {
+      return;
+    }
+
     function handleResize() {
       setScreenSize({
-        width: window.innerWidth ?? 0,
-        height: window.innerHeight ?? 0,
+        width: window.innerWidth,
+        height: window.innerHeight,
       });
     }
 
     window.addEventListener("resize", handleResize);
 
-    // Clean up the event listener when the component unmounts
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [isClient]);
 
   return screenSize;
 }
