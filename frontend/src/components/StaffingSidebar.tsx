@@ -11,13 +11,13 @@ export default function StaffingSidebar() {
   return (
     <div className="min-h-screen fixed">
       <div
-        className={`bg-primary_l4 py-6 px-4 h-full min-h-screen w-[211px]  ${
+        className={`bg-primary_l4 py-6 px-4 h-full min-h-screen w-[328px]  ${
           isSidebarHidden
-            ? "absolute -left-[211px]"
+            ? "absolute -left-[328px]"
             : "fixed sm:sticky top-[52px]"
         }`}
       >
-        <div className="flex flex-col gap-6 fixed w-[179px]">
+        <div className="flex flex-col gap-6 fixed w-[300px]">
           <div className="flex flex-row justify-between">
             <h3 className="">Filter</h3>
             <button
@@ -34,7 +34,7 @@ export default function StaffingSidebar() {
       </div>
       <button
         onClick={() => setIsSidebarHidden(false)}
-        className={`bg-primary_l3 rounded-r p-2 mt-6 hover:bg-primary_default hover:bg-opacity-20 ${
+        className={`bg-primary_l3 rounded-r p-2 mt-16 hover:bg-primary_default hover:bg-opacity-20 ${
           isSidebarHidden ? "top-[200px]" : "hidden"
         }`}
       >
