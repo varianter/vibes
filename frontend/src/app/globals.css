@@ -112,8 +112,14 @@
   }
 
   .raa-text {
+    font-size: 3rem;
+    font-family: "Graphik-SemiBold";
+    line-height: 4rem;
+  }
+
+  .raa-text-big {
     font-size: 5rem;
     font-family: "Graphik-SemiBold";
-    line-height: 1rem;
+    line-height: 6rem;
   }
 }
