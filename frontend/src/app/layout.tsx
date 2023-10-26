@@ -1,4 +1,7 @@
 import Head from "next/head";
+
+import NextTopLoader from "nextjs-toploader";
+
 import "./globals.css";
 import NavBar from "@/components/NavBar/NavBar";
 
@@ -18,6 +21,7 @@ export default function RootLayout({
       </Head>
       <body>
         <NavBar />
+        <NextTopLoader color="#F076A6" height={3} initialPosition={0.2} />
         {children}
       </body>
     </html>
