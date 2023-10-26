@@ -164,6 +164,7 @@ export function useFilteredConsultants() {
     filteredDepartments,
     filteredYears,
     currentNameSearch: activeNameSearch,
+    currentSearch,
     setNameSearch,
     toggleDepartmentFilter,
     toggleYearFilter,
