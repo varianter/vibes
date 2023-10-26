@@ -9,13 +9,15 @@ export default function StaffingSidebar() {
   const [isSidebarHidden, setIsSidebarHidden] = useState(true);
 
   return (
-    <div>
+    <div className="min-h-screen fixed">
       <div
-        className={`bg-primary_l4 py-6 px-4 h-full min-h-screen w-[211px]  ${
-          isSidebarHidden ? "absolute -left-[211px]" : "sticky top-[52px]"
+        className={`bg-primary_l4 py-6 px-4 h-full min-h-screen w-[300px]  ${
+          isSidebarHidden
+            ? "absolute -left-[328px]"
+            : "fixed sm:sticky top-[52px]"
         }`}
       >
-        <div className="flex flex-col gap-6 fixed w-[179px]">
+        <div className="flex flex-col gap-6 fixed w-[270px]">
           <div className="flex flex-row justify-between">
             <h3 className="">Filter</h3>
             <button
@@ -32,8 +34,8 @@ export default function StaffingSidebar() {
       </div>
       <button
         onClick={() => setIsSidebarHidden(false)}
-        className={`bg-primary_l3 rounded-r p-2 mt-6 hover:bg-primary_default hover:bg-opacity-20 ${
-          !isSidebarHidden ? "hidden" : "sticky top-[76px]"
+        className={`bg-primary_l3 rounded-r p-2 mt-16 hover:bg-primary_default hover:bg-opacity-20 ${
+          isSidebarHidden ? "top-[200px]" : "hidden"
         }`}
       >
         <Filter className="text-primary_default" size="20" />
