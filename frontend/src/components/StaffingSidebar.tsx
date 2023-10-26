@@ -13,7 +13,7 @@ export default function StaffingSidebar() {
 
   const sidebarRef = useRef(null);
 
-  const { width, height } = useScreenSize();
+  const { width } = useScreenSize();
 
   useOutsideClick(sidebarRef, () => {
     if (!isSidebarHidden && width <= windowWidth.sm) setIsSidebarHidden(true);

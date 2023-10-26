@@ -6,17 +6,21 @@ interface ScreenSize {
   height: number;
 }
 
+function windowIsUp() {
+  return typeof window !== "undefined";
+}
+
 function useScreenSize(): ScreenSize {
   const [screenSize, setScreenSize] = useState<ScreenSize>({
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: (windowIsUp() && window.innerWidth) || 0,
+    height: (windowIsUp() && window.innerHeight) || 0,
   });
 
   useEffect(() => {
     function handleResize() {
       setScreenSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
+        width: window.innerWidth ?? 0,
+        height: window.innerHeight ?? 0,
       });
     }
 
