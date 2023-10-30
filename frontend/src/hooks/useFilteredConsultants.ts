@@ -83,10 +83,7 @@ export function useFilteredConsultants() {
 
   const toggleDepartmentFilter = useCallback(
     (d: Department) => {
-      const newDepartmentFilter = toggleFilterFromString(
-        departmentFilter,
-        d.id,
-      );
+      const newDepartmentFilter = toggleValueFromFilter(departmentFilter, d.id);
       updateRoute({ departments: newDepartmentFilter });
     },
     [departmentFilter, updateRoute],
@@ -94,7 +91,7 @@ export function useFilteredConsultants() {
 
   const toggleYearFilter = useCallback(
     (y: YearRange) => {
-      const newYearFilter = toggleFilterFromString(yearFilter, y.urlString);
+      const newYearFilter = toggleValueFromFilter(yearFilter, y.urlString);
       updateRoute({ years: newYearFilter });
     },
     [updateRoute, yearFilter],
@@ -142,17 +139,42 @@ export function useFilteredConsultants() {
   };
 }
 
-function toggleFilterFromString(stringFilter: string, id: string) {
-  const filters = stringFilter.split(",");
-  const filterIndex = filters.indexOf(id);
-  const newFilters = [...filters];
-  if (filterIndex === -1) {
-    newFilters.push(id);
-  } else {
-    newFilters.splice(filterIndex, 1);
+class UrlStringFilter {
+  stringFilter: string;
+  arrayFilter: string[];
+  index: number;
+  valueAlreadyExist: boolean;
+  value: string;
+
+  constructor(stringFilter: string, value: string) {
+    this.stringFilter = stringFilter;
+    this.arrayFilter = this.stringFilter.split(",");
+    this.index = this.arrayFilter.indexOf(value);
+    this.valueAlreadyExist = this.index !== -1;
+    this.value = value;
   }
-  const newFilterString = newFilters.join(",").replace(/^,/, "");
-  return newFilterString;
+
+  removeFromFilter() {
+    this.arrayFilter.splice(this.index, 1);
+    return this.asJoinToString();
+  }
+
+  addToFilter() {
+    this.arrayFilter.push(this.value);
+    return this.asJoinToString();
+  }
+
+  asJoinToString() {
+    return this.arrayFilter.join(",").replace(/^,/, "");
+  }
+}
+
+function toggleValueFromFilter(stringFilters: string, value: string) {
+  const filter = new UrlStringFilter(stringFilters, value);
+
+  return filter.valueAlreadyExist
+    ? filter.removeFromFilter()
+    : filter.addToFilter();
 }
 
 function filterConsultants(
