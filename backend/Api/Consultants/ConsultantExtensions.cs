@@ -52,26 +52,29 @@ public static class ConsultantExtensions
         var offers = consultant.Staffings
             .Where(s => s.Year == year && s.Week == week && s.Project.State.Equals(ProjectState.Offer))
             .Select(s => new ProjectModel(s.Project.Customer.Name, s.Hours, BookingType.Offer)).ToList();
-        
+
         var plannedAbsences = consultant.PlannedAbsences
             .Where(s => s.Year == year && s.WeekNumber == week)
             .Select(s => new ProjectModel(s.Absence.Name, s.Hours, BookingType.PlannedAbsence)).ToList();
 
         var combinedList = staffings.Concat(offers).Concat(plannedAbsences).ToList();
 
-        if (vacationHours > 0) {
+        if (vacationHours > 0)
+        {
             var vacation = new ProjectModel("Ferie", vacationHours, BookingType.Vacation);
             combinedList = combinedList.Append(vacation).ToList();
         }
 
         var billableHours = staffings.Select(s => s.Hours).Sum();
-        var offeredHours = offers.Select(s=> s.Hours).Sum();
+        var offeredHours = offers.Select(s => s.Hours).Sum();
 
 
-        var totalFreeTime = hoursPrWorkDay*5 - billableHours - plannedAbsenceHours - vacationHours - holidayHours;
+        var totalFreeTime =
+            Math.Max(hoursPrWorkDay * 5 - billableHours - plannedAbsenceHours - vacationHours - holidayHours, 0);
 
 
-        return new BookedModel(billableHours, offeredHours, plannedAbsenceHours, totalFreeTime, holidayHours, combinedList);
+        return new BookedModel(billableHours, offeredHours, plannedAbsenceHours, totalFreeTime, holidayHours,
+            combinedList);
     }
 
     private static List<BookedHoursPerWeek> GetBookedHoursForWeeks(this Consultant consultant, int weeksAhead)
