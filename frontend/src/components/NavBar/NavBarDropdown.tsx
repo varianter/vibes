@@ -1,14 +1,21 @@
 "use client";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { signOut } from "next-auth/react";
-import { LogOut, User } from "react-feather";
+import { LogOut } from "react-feather";
+import { useOutsideClick } from "@/hooks/useOutsideClick";
 
 export default function NavBarDropdown(props: { initials: string }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
+  const menuRef = useRef(null);
+
+  useOutsideClick(menuRef, () => {
+    if (isOpen) setIsOpen(false);
+  });
+
   return (
     <>
-      <div className="relative">
+      <div className="relative" ref={menuRef}>
         <button
           className={`flex rounded-full border border-white h-9 min-w-[36px] justify-center items-center ${
             props.initials.length > 3 && "px-1"

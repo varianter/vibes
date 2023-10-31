@@ -3,11 +3,11 @@ import { Filter } from "react-feather";
 import { useFilteredConsultants } from "@/hooks/useFilteredConsultants";
 
 export default function ActiveFilters() {
-  const { filteredDepartments, currentSearch, filteredYears } =
+  const { filteredDepartments, searchFilter, filteredYears } =
     useFilteredConsultants();
   const filterTextComponents: string[] = [];
 
-  if (currentSearch != "") filterTextComponents.push(` "${currentSearch}"`);
+  if (searchFilter != "") filterTextComponents.push(` "${searchFilter}"`);
 
   if (filteredDepartments.length > 0)
     filterTextComponents.push(

@@ -1,5 +1,7 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+import type { Config } from "tailwindcss";
+import { screens } from "./src/screens.config";
+
+export default {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     colors: {
@@ -15,16 +17,10 @@ module.exports = {
       transparent: "transparent",
     },
     extend: {},
-    screens: {
-      xs: "640px",
-      sm: "768px",
-      md: "1024px",
-      lg: "1280px",
-      xl: "1400px",
-    },
+    screens,
     boxShadow: {
       md: "0 4px 4px 0 rgba(66, 61, 137, 0.10)",
     },
   },
   plugins: [],
-};
+} satisfies Config;

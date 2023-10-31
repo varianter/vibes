@@ -6,17 +6,40 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { FilteredContext } from "@/components/FilteredConsultantProvider";
 import { yearRanges } from "@/components/ExperienceFilter";
 
+interface UpdateFilterParams {
+  search?: string;
+  departments?: string;
+  years?: string;
+}
+
 export function useFilteredConsultants() {
   const { departments, consultants } = useContext(FilteredContext);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const currentSearch = searchParams.get("search") || "";
+
+  const searchFilter = searchParams.get("search") || "";
+  const departmentFilter = searchParams.get("depFilter") || "";
+  const yearFilter = searchParams.get("yearFilter") || "";
 
   const [activeNameSearch, setActiveNameSearch] =
-    useState<string>(currentSearch);
+    useState<string>(searchFilter);
   const [lastSearchKeyStrokeTime, setLastSearchKeyStrokeTime] =
     useState<number>();
+
+  const updateRoute = useCallback(
+    (updateParams: UpdateFilterParams) => {
+      // If not defined, defaults to current value:
+      const { search = searchFilter } = updateParams;
+      const { departments = departmentFilter } = updateParams;
+      const { years = yearFilter } = updateParams;
+
+      router.push(
+        `${pathname}?search=${search}&depFilter=${departments}&yearFilter=${years}`,
+      );
+    },
+    [departmentFilter, pathname, router, searchFilter, yearFilter],
+  );
 
   useEffect(() => {
     let nameSearchDebounceTimer = setTimeout(() => {
@@ -24,12 +47,7 @@ export function useFilteredConsultants() {
         lastSearchKeyStrokeTime &&
         Date.now() - lastSearchKeyStrokeTime > 250
       ) {
-        const currentDepartmentFilter = searchParams.get("depFilter") || "";
-        const currentYearFilter = searchParams.get("yearFilter") || "";
-
-        router.push(
-          `${pathname}?search=${activeNameSearch}&depFilter=${currentDepartmentFilter}&yearFilter=${currentYearFilter}`,
-        );
+        updateRoute({ search: activeNameSearch });
       }
     }, 250);
 
@@ -39,30 +57,21 @@ export function useFilteredConsultants() {
     return () => {
       clearTimeout(nameSearchDebounceTimer);
     };
-  }, [
-    lastSearchKeyStrokeTime,
-    activeNameSearch,
-    searchParams,
-    router,
-    pathname,
-  ]);
+  }, [activeNameSearch, lastSearchKeyStrokeTime, updateRoute]);
 
-  const currentDepartmentFilter = searchParams.get("depFilter") || "";
-  const currentYearFilter = searchParams.get("yearFilter") || "";
-
-  const filteredDepartments = currentDepartmentFilter
+  const filteredDepartments = departmentFilter
     .split(",")
     .map((id) => departments.find((d) => d.id === id))
     .filter((dept) => dept !== undefined) as Department[];
 
-  const filteredYears = currentYearFilter
+  const filteredYears = yearFilter
     .split(",")
     .map((urlString) => yearRanges.find((y) => y.urlString === urlString))
     .filter((year) => year !== undefined) as YearRange[];
 
   const filteredConsultants = filterConsultants(
-    currentSearch,
-    currentDepartmentFilter,
+    searchFilter,
+    departmentFilter,
     filteredYears,
     consultants,
   );
@@ -74,60 +83,19 @@ export function useFilteredConsultants() {
 
   const toggleDepartmentFilter = useCallback(
     (d: Department) => {
-      const currentSearch = searchParams.get("search") || "";
-      const currentFilter = searchParams.get("depFilter") || "";
-      const currentYearFilter = searchParams.get("yearFilter") || "";
-      const filters = currentFilter.split(",");
-      const filterIndex = filters.indexOf(d.id);
-      const newFilters = [...filters];
-      if (filterIndex === -1) {
-        newFilters.push(d.id);
-      } else {
-        newFilters.splice(filterIndex, 1);
-      }
-      const newFilterString = newFilters.join(",").replace(/^,/, "");
-      router.push(
-        `${pathname}?search=${currentSearch}&depFilter=${newFilterString}&yearFilter=${currentYearFilter}`,
-      );
+      const newDepartmentFilter = toggleValueFromFilter(departmentFilter, d.id);
+      updateRoute({ departments: newDepartmentFilter });
     },
-    [searchParams, router, pathname],
+    [departmentFilter, updateRoute],
   );
-
-  const clearDepartmentFilter = useCallback(() => {
-    const currentSearch = searchParams.get("search") || "";
-    const currentYearFilter = searchParams.get("yearFilter") || "";
-
-    router.push(
-      `${pathname}?search=${currentSearch}&depFilter=&yearFilter=${currentYearFilter}`,
-    );
-  }, [pathname, router, searchParams]);
 
   const toggleYearFilter = useCallback(
     (y: YearRange) => {
-      const currentSearch = searchParams.get("search") || "";
-      const currentDepartmentFilter = searchParams.get("depFilter") || "";
-      const currentYearFilter = searchParams.get("yearFilter") || "";
-
-      const filters = currentYearFilter.split(",");
-      const filterIndex = filters.indexOf(y.urlString);
-      const newFilters = [...filters];
-      if (filterIndex === -1) {
-        newFilters.push(y.urlString);
-      } else {
-        newFilters.splice(filterIndex, 1);
-      }
-      const newFilterString = newFilters.join(",").replace(/^,/, "");
-
-      router.push(
-        `${pathname}?search=${currentSearch}&depFilter=${currentDepartmentFilter}&yearFilter=${newFilterString}`,
-      );
+      const newYearFilter = toggleValueFromFilter(yearFilter, y.urlString);
+      updateRoute({ years: newYearFilter });
     },
-    [pathname, router, searchParams],
+    [updateRoute, yearFilter],
   );
-
-  const clearAll = useCallback(() => {
-    router.push(`${pathname}?search=&depFilter=&yearFilter=`);
-  }, [pathname, router]);
 
   useEffect(() => {
     function handleDepartmentHotkey(keyCode: string) {
@@ -146,7 +114,7 @@ export function useFilteredConsultants() {
         handleDepartmentHotkey(e.code);
       }
       if (e.code.includes("0")) {
-        clearDepartmentFilter();
+        updateRoute({ departments: "" });
       }
     }
     document.addEventListener("keydown", keyDownHandler);
@@ -155,7 +123,7 @@ export function useFilteredConsultants() {
     return () => {
       document.removeEventListener("keydown", keyDownHandler);
     };
-  }, [clearAll, clearDepartmentFilter, departments, toggleDepartmentFilter]);
+  }, [updateRoute, departments, toggleDepartmentFilter]);
 
   return {
     consultants,
@@ -164,13 +132,49 @@ export function useFilteredConsultants() {
     filteredDepartments,
     filteredYears,
     currentNameSearch: activeNameSearch,
-    currentSearch,
+    searchFilter,
     setNameSearch,
     toggleDepartmentFilter,
     toggleYearFilter,
-    clearDepartmentFilter,
-    clearAll,
   };
+}
+
+class UrlStringFilter {
+  stringFilter: string;
+  arrayFilter: string[];
+  index: number;
+  valueAlreadyExist: boolean;
+  value: string;
+
+  constructor(stringFilter: string, value: string) {
+    this.stringFilter = stringFilter;
+    this.arrayFilter = this.stringFilter.split(",");
+    this.index = this.arrayFilter.indexOf(value);
+    this.valueAlreadyExist = this.index !== -1;
+    this.value = value;
+  }
+
+  removeFromFilter() {
+    this.arrayFilter.splice(this.index, 1);
+    return this.asJoinToString();
+  }
+
+  addToFilter() {
+    this.arrayFilter.push(this.value);
+    return this.asJoinToString();
+  }
+
+  asJoinToString() {
+    return this.arrayFilter.join(",").replace(/^,/, "");
+  }
+}
+
+function toggleValueFromFilter(stringFilters: string, value: string) {
+  const filter = new UrlStringFilter(stringFilters, value);
+
+  return filter.valueAlreadyExist
+    ? filter.removeFromFilter()
+    : filter.addToFilter();
 }
 
 function filterConsultants(
