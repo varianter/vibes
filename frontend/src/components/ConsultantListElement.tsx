@@ -47,17 +47,13 @@ export default function ConsultantListElement({
               {consultant.name}
             </p>
             <p className="detail text-neutral_l1 text-start">
-              {`${consultant.yearsOfExperience} RÅ år`}
+              {`${consultant.yearsOfExperience} år erfaring`}
             </p>
           </div>
         </div>
-        <div className={`${!isListElementVisible && "hidden"} h-[198px] `}>
-          <p className="raa-text sm:raa-text-big py-5 sm:py-10 ml-10 px-[2px] ">
-            <span className={`text-[#FF6426]`}>Du</span>{" "}
-            <span className={`text-[#028377]`}>er</span>{" "}
-            <span className={`text-[#534DAC]`}>RÅ!</span>
-          </p>
-        </div>
+        <div
+          className={`${!isListElementVisible && "hidden"} h-[198px] `}
+        ></div>
       </div>
     </div>
   );
