@@ -103,24 +103,24 @@ public class Tests
                 Hours = staffedHours
             });
 
-        var bookedHours = consultant.GetBookedHours(year, week);
+        var bookingModel = consultant.GetBookingModelForWeek(year, week);
         Assert.Multiple(() =>
         {
-            Assert.That(bookedHours.TotalBillable, Is.EqualTo(staffedHours));
-            Assert.That(bookedHours.TotalPlannedAbstences, Is.EqualTo(plannedAbsenceHours));
-            Assert.That(bookedHours.TotalHolidayHours, Is.EqualTo(numberOfHolidays * 7.5));
-            Assert.That(bookedHours.TotalSellableTime, Is.EqualTo(expectedSellableHours));
+            Assert.That(bookingModel.TotalBillable, Is.EqualTo(staffedHours));
+            Assert.That(bookingModel.TotalPlannedAbstences, Is.EqualTo(plannedAbsenceHours));
+            Assert.That(bookingModel.TotalHolidayHours, Is.EqualTo(numberOfHolidays * 7.5));
+            Assert.That(bookingModel.TotalSellableTime, Is.EqualTo(expectedSellableHours));
         });
 
         if (staffedHours > 0)
         {
-            var staffing = bookedHours.Bookings.Single(b => b.Name == "TestCustomer");
+            var staffing = bookingModel.Bookings.Single(b => b.Name == "TestCustomer");
             Assert.That(staffing.Hours, Is.EqualTo(staffedHours));
         }
 
         if (vacationDays > 0)
         {
-            var vacation = bookedHours.Bookings.Single(b => b.Name == "Ferie");
+            var vacation = bookingModel.Bookings.Single(b => b.Name == "Ferie");
             Assert.That(vacation.Hours, Is.EqualTo(vacationDays * 7.5));
         }
     }
@@ -184,7 +184,7 @@ public class Tests
         });
 
         var bookedHours =
-            consultant.GetBookedHours(year, week);
+            consultant.GetBookingModelForWeek(year, week);
 
         Assert.That(bookedHours.TotalPlannedAbstences, Is.EqualTo(30));
     }
