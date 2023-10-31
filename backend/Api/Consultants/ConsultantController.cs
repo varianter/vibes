@@ -119,12 +119,15 @@ public class ConsultantController : ControllerBase
             .Include(c => c.PlannedAbsences.Where(pa =>
                 (pa.Year <= yearA && minWeekA <= pa.WeekNumber && pa.WeekNumber <= maxWeekA)
                 || (yearB <= pa.Year && minWeekB <= pa.WeekNumber && pa.WeekNumber <= maxWeekB)))
+                .ThenInclude(pa => pa.Absence)
             .Include(c => c.Department)
-            .ThenInclude(d => d.Organization)
+                .ThenInclude(d => d.Organization)
             .Where(c => c.Department.Organization.UrlKey == orgUrlKey)
             .Include(c => c.Staffings.Where(s =>
                 (s.Year <= yearA && minWeekA <= s.Week && s.Week <= maxWeekA)
                 || (yearB <= s.Year && minWeekB <= s.Week && s.Week <= maxWeekB)))
+                .ThenInclude(s => s.Project)
+                .ThenInclude(p => p.Customer)
             .OrderBy(c => c.Name)
             .ToList();
     }
