@@ -3,7 +3,11 @@ import { useEffect, useRef, useState } from "react";
 import { Search } from "react-feather";
 import { useFilteredConsultants } from "@/hooks/useFilteredConsultants";
 
-export default function SearchBarComponent() {
+export default function SearchBarComponent({
+  hidden = false,
+}: {
+  hidden?: boolean;
+}) {
   const { currentNameSearch, setNameSearch } = useFilteredConsultants();
   const inputRef = useRef<HTMLInputElement>(null);
   const [searchIsActive, setIsSearchActive] = useState(false);
@@ -33,25 +37,41 @@ export default function SearchBarComponent() {
   }, [setNameSearch]);
 
   return (
-    <div className="flex flex-col gap-2">
-      <p className="body-small">Søk</p>
-      <div
-        className={`flex flex-row gap-2 rounded-lg border px-3 py-2 w-full hover:bg-primary_l4 hover:border-primary_default ${
-          searchIsActive ? "border-primary_default" : "border-primary_l1"
-        } `}
-      >
-        <Search className="text-primary_default h-4 w-4" />
+    <>
+      {hidden ? (
         <input
-          placeholder="Søk etter konsulent"
-          id="consultantSearch"
-          className="input w-[131px] focus:outline-none body-small "
+          placeholder=""
+          id="hiddenSearch"
+          className="input invisible-input"
           onChange={(e) => setNameSearch(e.target.value)}
           ref={inputRef}
           value={currentNameSearch}
-          onFocus={() => setIsSearchActive(true)}
-          onBlur={() => setIsSearchActive(false)}
-        ></input>
-      </div>
-    </div>
+          onFocus={() => console.log("F")}
+        />
+      ) : (
+        <div className={`flex flex-col gap-2 rounded-lg`}>
+          <p className="body-small">Søk</p>
+          <div
+            className={`flex flex-row gap-2 border
+            px-3 py-2 w-full hover:bg-primary_l4 hover:border-primary_default ${
+              searchIsActive ? "border-primary_default" : "border-primary_l1"
+            } `}
+          >
+            <Search className="text-primary_default h-4 w-4" />
+
+            <input
+              placeholder="Søk etter konsulent"
+              id="consultantSearch"
+              className="input w-[131px] focus:outline-none body-small"
+              onChange={(e) => setNameSearch(e.target.value)}
+              ref={inputRef}
+              value={currentNameSearch}
+              onFocus={() => setIsSearchActive(true)}
+              onBlur={() => setIsSearchActive(false)}
+            ></input>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

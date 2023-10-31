@@ -4,7 +4,7 @@ import NavBarUserIcon from "./NavBarUserIcon";
 
 export default function NavBar() {
   return (
-    <div className="bg-primary_default w-full h-[52px] flex flex-row justify-between sticky top-0 px-4 z-50">
+    <div className="bg-primary_default w-full flex flex-row justify-between header">
       <div className="flex flex-row">
         <NavBarLink text="Bemanning" path={`bemanning`} />
       </div>
