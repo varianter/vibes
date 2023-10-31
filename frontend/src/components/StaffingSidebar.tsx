@@ -1,26 +1,15 @@
 "use client";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import DepartmentFilter from "./DepartmentFilter";
 import SearchBarComponent from "./SearchBarComponent";
 import { ArrowLeft, Filter } from "react-feather";
 import ExperienceFilter from "./ExperienceFilter";
-import { useOutsideClick } from "@/hooks/useOutsideClick";
-import useScreenSize from "@/hooks/useScreenSize";
-import { windowWidth } from "@/screens.config";
 
 export default function StaffingSidebar() {
   const [isSidebarHidden, setIsSidebarHidden] = useState(true);
 
-  const sidebarRef = useRef(null);
-
-  const { width } = useScreenSize();
-
-  useOutsideClick(sidebarRef, () => {
-    if (!isSidebarHidden && width <= windowWidth.sm) setIsSidebarHidden(true);
-  });
-
   return (
-    <div className="min-h-screen max-[720px]:fixed z-10" ref={sidebarRef}>
+    <div className="min-h-screen max-[720px]:fixed z-10">
       <div
         className={`bg-primary_l4 py-6 px-4 h-full min-h-screen w-[300px]  ${
           isSidebarHidden
