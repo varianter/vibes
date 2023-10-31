@@ -7,22 +7,22 @@ namespace Tests;
 
 public class Tests
 {
-    [TestCase(2, 15, 0, 0, 30)]
-    [TestCase(0, 7.5, 0, 0, 7.5)]
-    [TestCase(5, 37.5, 0, 0, 37.5)]
-    [TestCase(0, 0, 0, 0, 0)]
-    [TestCase(5, 30, 0, 0, 37.5)]
-    [TestCase(5, 0, 0, 0, 37.5)]
-    [TestCase(5, 37.5, 0, 0, 37.5)]
-    [TestCase(0, 0, 1, 0, 7.5)]
-    [TestCase(0, 0, 2, 0, 15)]
-    [TestCase(0, 0, 5, 0, 37.5)]
-    [TestCase(0, 0, 0, 37.5, 37.5)]
-    [TestCase(0, 0, 0, 30, 30)]
-    [TestCase(0, 7.5, 0, 22.5, 30)]
+    [TestCase(2, 15, 0, 0, 7.5)]
+    [TestCase(0, 7.5, 0, 0, 30)]
+    [TestCase(5, 37.5, 0, 0, 0)]
+    [TestCase(0, 0, 0, 0, 37.5)]
+    [TestCase(5, 30, 0, 0, 0)]
+    [TestCase(5, 0, 0, 0, 0)]
+    [TestCase(5, 37.5, 0, 0, 0)]
+    [TestCase(0, 0, 1, 0, 30)]
+    [TestCase(0, 0, 2, 0, 22.5)]
+    [TestCase(0, 0, 5, 0, 0)]
+    [TestCase(0, 0, 0, 37.5, 0)]
+    [TestCase(0, 0, 0, 30, 7.5)]
+    [TestCase(0, 7.5, 0, 22.5, 7.5)]
     public void AvailabilityCalculation(int vacationDays, double plannedAbsenceHours, int numberOfHolidays,
         double staffedHours,
-        double expectedBookedHours)
+        double expectedSellableHours)
     {
         var org = new Organization
         {
@@ -47,7 +47,7 @@ public class Tests
         };
 
 
-        var consultant = new Consultant
+        Consultant consultant = new()
         {
             Id = 1,
             Name = "Test Variant",
@@ -68,6 +68,11 @@ public class Tests
         var month = mondayDateOnly.Month;
         var monday = mondayDateOnly.Day;
         var week = DateService.GetWeekNumber(mondayDateOnly.ToDateTime(TimeOnly.Parse("12:00")));
+        var project = Substitute.For<Project>();
+        var customer = Substitute.For<Customer>();
+        customer.Name = "TestCustomer";
+        project.Customer = customer;
+        project.State = ProjectState.Active;
 
         if (vacationDays > 0)
             for (var i = 0; i < vacationDays; i++)
@@ -81,6 +86,7 @@ public class Tests
         if (plannedAbsenceHours > 0)
             consultant.PlannedAbsences.Add(new PlannedAbsence
             {
+                Absence = Substitute.For<Absence>(),
                 Consultant = consultant,
                 Year = year,
                 WeekNumber = week,
@@ -90,15 +96,33 @@ public class Tests
         if (staffedHours > 0)
             consultant.Staffings.Add(new Staffing
             {
-                Project = Substitute.For<Project>(),
+                Project = project,
                 Consultant = consultant,
                 Year = year,
                 Week = week,
                 Hours = staffedHours
             });
 
-        var bookedHours = consultant.GetBookedHours(year, week);
-        Assert.That(bookedHours, Is.EqualTo(expectedBookedHours));
+        var bookingModel = consultant.GetBookingModelForWeek(year, week);
+        Assert.Multiple(() =>
+        {
+            Assert.That(bookingModel.TotalBillable, Is.EqualTo(staffedHours));
+            Assert.That(bookingModel.TotalPlannedAbstences, Is.EqualTo(plannedAbsenceHours));
+            Assert.That(bookingModel.TotalHolidayHours, Is.EqualTo(numberOfHolidays * 7.5));
+            Assert.That(bookingModel.TotalSellableTime, Is.EqualTo(expectedSellableHours));
+        });
+
+        if (staffedHours > 0)
+        {
+            var staffing = bookingModel.Bookings.Single(b => b.Name == "TestCustomer");
+            Assert.That(staffing.Hours, Is.EqualTo(staffedHours));
+        }
+
+        if (vacationDays > 0)
+        {
+            var vacation = bookingModel.Bookings.Single(b => b.Name == "Ferie");
+            Assert.That(vacation.Hours, Is.EqualTo(vacationDays * 7.5));
+        }
     }
 
     [Test]
@@ -125,6 +149,10 @@ public class Tests
             Consultants = Substitute.For<List<Consultant>>()
         };
 
+        var leaveA = Substitute.For<Absence>();
+        var leaveB = Substitute.For<Absence>();
+
+
         var consultant = new Consultant
         {
             Id = 1,
@@ -139,6 +167,7 @@ public class Tests
 
         consultant.PlannedAbsences.Add(new PlannedAbsence
         {
+            Absence = leaveA,
             Consultant = consultant,
             Year = year,
             WeekNumber = week,
@@ -147,6 +176,7 @@ public class Tests
 
         consultant.PlannedAbsences.Add(new PlannedAbsence
         {
+            Absence = leaveB,
             Consultant = consultant,
             Year = year,
             WeekNumber = week,
@@ -154,8 +184,8 @@ public class Tests
         });
 
         var bookedHours =
-            consultant.GetBookedHours(year, week);
+            consultant.GetBookingModelForWeek(year, week);
 
-        Assert.That(bookedHours, Is.EqualTo(30));
+        Assert.That(bookedHours.TotalPlannedAbstences, Is.EqualTo(30));
     }
 }

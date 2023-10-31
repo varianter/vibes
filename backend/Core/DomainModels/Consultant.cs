@@ -43,5 +43,3 @@ public enum Degree
     Bachelor,
     None
 }
-
-public record BookedHoursPerWeek(int Year, int WeekNumber, double BookedHours);

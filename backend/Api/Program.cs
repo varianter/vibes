@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Api.BuildHelpers;
 using Api.Options;
 using Database.DatabaseContext;
@@ -20,7 +21,9 @@ builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServe
 
 builder.Services.AddMemoryCache();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+        { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 builder.Services.AddEndpointsApiExplorer();
 
 
