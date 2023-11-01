@@ -6,14 +6,14 @@ namespace Api.Consultants;
 
 public static class ConsultantExtensions
 {
-    public static ConsultantReadModel MapConsultantToReadModel(this Consultant consultant, int weeks)
+    public static ConsultantReadModel MapConsultantToReadModel(this Consultant consultant, Week firstWeek, int weeks)
     {
         const double tolerance = 0.1;
         var currentYear = DateTime.Now.Year;
         var yearsOfExperience =
             currentYear - (consultant.GraduationYear is null or 0 ? currentYear : consultant.GraduationYear) ?? 0;
 
-        var bookedHours = GetBookedHoursForWeeks(consultant, weeks);
+        var bookedHours = GetBookedHoursForWeeks(consultant, firstWeek, weeks);
 
         var isOccupied = bookedHours.All(b => b.BookingModel.TotalSellableTime <= 0 + tolerance);
 
@@ -77,23 +77,20 @@ public static class ConsultantExtensions
             bookingList);
     }
 
-    private static List<BookedHoursPerWeek> GetBookedHoursForWeeks(this Consultant consultant, int weeksAhead)
+    private static List<BookedHoursPerWeek> GetBookedHoursForWeeks(this Consultant consultant, Week firstWeek,
+        int weeksAhead)
     {
-        return Enumerable.Range(0, weeksAhead)
-            .Select(offset =>
-            {
-                var year = DateTime.Today.AddDays(7 * offset).Year;
-                var week = DateService.GetWeekAhead(offset);
-                var datestring = DateService.GetDatesInWorkWeek(year, week)[0].ToString("dd.MM") + "-" + DateService
-                    .GetDatesInWorkWeek(year, week)[^1].ToString("dd.MM");
+        var nextWeeks = DateService.GetNextWeeks(firstWeek, weeksAhead);
+        var datestring = DateService.GetDatesInWorkWeek(firstWeek.Year, firstWeek.WeekNumber)[0].ToString("dd.MM") +
+                         "-" + DateService
+                             .GetDatesInWorkWeek(firstWeek.Year, firstWeek.WeekNumber)[^1].ToString("dd.MM");
 
-                return new BookedHoursPerWeek(
-                    year,
-                    week,
-                    datestring,
-                    GetBookingModelForWeek(consultant, year, week)
-                );
-            })
+        return nextWeeks
+            .Select(week => new BookedHoursPerWeek(
+                week.Year,
+                week.WeekNumber,
+                datestring,
+                GetBookingModelForWeek(consultant, week.Year, week.WeekNumber)))
             .ToList();
     }
 }

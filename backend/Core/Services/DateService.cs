@@ -1,4 +1,5 @@
 using System.Globalization;
+using Core.DomainModels;
 
 namespace Core.Services;
 
@@ -34,15 +35,16 @@ public class DateService
         return day.Year == year && GetWeekNumber(day.ToDateTime(TimeOnly.MinValue)) == week;
     }
 
-    public static List<(int year, int week)> GetNextWeeks(int weeksAhead)
+    public static List<Week> GetNextWeeks(Week firstWeek, int weeksAhead)
     {
+        var a = FirstWorkDayOfWeek(firstWeek.Year, firstWeek.WeekNumber);
         return Enumerable.Range(0, weeksAhead)
             .Select(offset =>
             {
-                var year = DateTime.Today.AddDays(7 * offset).Year;
-                var week = GetWeekAhead(offset);
+                var year = a.AddDays(7 * offset).Year;
+                var week = GetWeekNumber(a.AddDays(7 * offset));
 
-                return (year, week);
+                return new Week(year, week);
             }).ToList();
     }
 
