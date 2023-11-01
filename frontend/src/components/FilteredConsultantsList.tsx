@@ -2,6 +2,7 @@
 import ConsultantRows from "./ConsultantRows";
 import ActiveFilters from "./ActiveFilters";
 import { useFilteredConsultants } from "@/hooks/useFilteredConsultants";
+import WeekSelection from "@/components/WeekSelection";
 
 export default function FilteredConsultantList() {
   const { filteredConsultants: consultants } = useFilteredConsultants();
@@ -10,6 +11,7 @@ export default function FilteredConsultantList() {
     <div>
       <div>
         <ActiveFilters />
+        <WeekSelection />
       </div>
       <table className="w-full table-auto border-separate border-spacing-1">
         <thead>

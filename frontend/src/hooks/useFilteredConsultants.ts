@@ -1,15 +1,18 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Consultant, Department, YearRange } from "@/types";
+import { Consultant, Department, Week, YearRange } from "@/types";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { FilteredContext } from "@/components/FilteredConsultantProvider";
 import { yearRanges } from "@/components/ExperienceFilter";
+import arg from "arg";
+import { stringToWeek, weekToString } from "@/data/tmp-utils";
 
 interface UpdateFilterParams {
   search?: string;
   departments?: string;
   years?: string;
+  week?: Week;
 }
 
 export function useFilteredConsultants() {
@@ -21,6 +24,9 @@ export function useFilteredConsultants() {
   const searchFilter = searchParams.get("search") || "";
   const departmentFilter = searchParams.get("depFilter") || "";
   const yearFilter = searchParams.get("yearFilter") || "";
+  const selectedWeek = stringToWeek(
+    searchParams.get("selectedWeek") || undefined,
+  );
 
   const [activeNameSearch, setActiveNameSearch] =
     useState<string>(searchFilter);
@@ -33,13 +39,31 @@ export function useFilteredConsultants() {
       const { search = searchFilter } = updateParams;
       const { departments = departmentFilter } = updateParams;
       const { years = yearFilter } = updateParams;
+      const { week = selectedWeek } = updateParams;
 
       router.push(
-        `${pathname}?search=${search}&depFilter=${departments}&yearFilter=${years}`,
+        `${pathname}?search=${search}&depFilter=${departments}&yearFilter=${years}${
+          week ? `&selectedWeek=${weekToString(week)}` : ""
+        }`,
       );
     },
-    [departmentFilter, pathname, router, searchFilter, yearFilter],
+    [
+      departmentFilter,
+      pathname,
+      router,
+      searchFilter,
+      selectedWeek,
+      yearFilter,
+    ],
   );
+
+  function setSelectedWeek(week: Week) {
+    updateRoute({ week });
+  }
+
+  function resetSelectedWeek() {
+    updateRoute({ week: undefined });
+  }
 
   useEffect(() => {
     let nameSearchDebounceTimer = setTimeout(() => {
@@ -136,6 +160,9 @@ export function useFilteredConsultants() {
     setNameSearch,
     toggleDepartmentFilter,
     toggleYearFilter,
+    selectedWeek,
+    setSelectedWeek,
+    resetSelectedWeek,
   };
 }
 
