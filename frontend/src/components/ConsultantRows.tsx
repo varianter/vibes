@@ -7,7 +7,7 @@ interface ConsultantListElementProps {
   consultant: Consultant;
 }
 
-export default function ConsultantListElement({
+export default function ConsultantRows({
   consultant,
 }: ConsultantListElementProps) {
   const [isListElementVisible, setIsListElementVisible] = useState(false);
@@ -74,7 +74,7 @@ export default function ConsultantListElement({
           </td>
         ))}
       </tr>
-      <div className={`${!isListElementVisible && "hidden"} h-[198px] `}></div>
+      <tr className={`${!isListElementVisible && "hidden"} h-[198px] `}></tr>
     </>
   );
 }
