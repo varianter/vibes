@@ -1,17 +1,40 @@
+export interface BookedHoursPerWeek {
+  year: number;
+  weekNumber: number;
+  bookingModel: WeeklyBookingReadModel;
+  dateString: string;
+}
+
+export interface WeeklyBookingReadModel {
+  totalBillable: number;
+  totalOffered: number;
+  totalPlannedAbstences: number;
+  totalSellableTime: number;
+  totalHolidayHours: number;
+  bookings: BookingReadModel[] | null;
+}
+
+export interface BookingReadModel {
+  name: string | null;
+  hours: number;
+  type: BookingType;
+}
+
+export enum BookingType {
+  Offer = "Offer",
+  Booking = "Booking",
+  PlannedAbsence = "PlannedAbsence",
+  Vacation = "Vacation",
+}
+
 export type Consultant = {
   id: string;
   name: string;
   email: string;
   competences: string[];
   department: string;
-  bookings: [
-    {
-      year: number;
-      weekNumber: number;
-      bookedHours: number;
-    },
-  ];
   yearsOfExperience: number;
+  bookings?: BookedHoursPerWeek[] | null;
 };
 
 export type Department = {
