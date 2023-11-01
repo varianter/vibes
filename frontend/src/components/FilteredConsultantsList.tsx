@@ -14,7 +14,7 @@ export default function FilteredConsultantList() {
       <table className="w-full table-auto border-separate border-spacing-1">
         <thead>
           <tr>
-            <td className="flex flex-row gap-3 pb-4 items-center ">
+            <th className="flex flex-row gap-3 pb-4 items-center ">
               <p className="body-large-bold ">Konsulenter</p>
 
               <div className="rounded-full bg-primary_l3 px-2 py-1">
@@ -22,16 +22,16 @@ export default function FilteredConsultantList() {
                   {consultants?.length}
                 </p>
               </div>
-            </td>
+            </th>
             {consultants.at(0)?.bookings?.map((b) => (
-              <td key={b.weekNumber} className="px-2 py-1">
+              <th key={b.weekNumber} className="px-2 py-1">
                 <div className="flex flex-col gap-1 justify-items-end">
                   <p className=" body text-right">{b.weekNumber}</p>
                 </div>
                 <p className="detail text-neutral_l1 text-right">
                   {b.dateString}
                 </p>
-              </td>
+              </th>
             ))}
           </tr>
         </thead>
