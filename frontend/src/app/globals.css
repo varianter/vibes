@@ -115,15 +115,35 @@
     line-height: 0.875rem;
   }
 
-  .raa-text {
-    font-size: 3rem;
-    font-family: "Graphik-SemiBold";
-    line-height: 4rem;
+  .layout-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "header header"
+      "sidebar main";
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
   }
 
-  .raa-text-big {
-    font-size: 5rem;
-    font-family: "Graphik-SemiBold";
-    line-height: 6rem;
+  .header {
+    grid-area: header;
+  }
+
+  .sidebar {
+    grid-area: sidebar;
+  }
+
+  .main {
+    grid-area: main;
+    overflow-y: scroll;
+    height: 100%;
+  }
+
+  .invisible-input {
+    opacity: 0;
+    height: 0;
+    width: 0;
   }
 }

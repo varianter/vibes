@@ -7,7 +7,7 @@ export default function FilteredConsultantList() {
   const { filteredConsultants: consultants } = useFilteredConsultants();
   return (
     <div>
-      <div className="my-6 min-h-[56px]">
+      <div className="">
         <ActiveFilters />
       </div>
       <table className="w-full table-auto border-separate border-spacing-1">

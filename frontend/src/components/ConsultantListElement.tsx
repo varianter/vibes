@@ -49,7 +49,7 @@ export default function ConsultantListElement({
                   {consultant.name}
                 </p>
                 <p className="detail text-neutral_l1 text-start">
-                  {`${consultant.yearsOfExperience} RÅ år`}
+                  {`${consultant.yearsOfExperience} års erfaring`}
                 </p>
               </div>
             </div>
