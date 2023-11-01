@@ -24,13 +24,11 @@ export default async function Bemanning({
       consultants={consultants}
       departments={departments}
     >
-      <div className="flex flex-row">
-        <StaffingSidebar />
+      <StaffingSidebar />
 
-        <div className="pl-12 p-6 w-full">
-          <h1>Bemanning</h1>
-          <FilteredConsultantsList />
-        </div>
+      <div className="main pl-12 p-6 w-full">
+        <h1>Bemanning</h1>
+        <FilteredConsultantsList />
       </div>
     </ConsultantFilterProvider>
   );
