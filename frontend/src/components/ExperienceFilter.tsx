@@ -18,7 +18,7 @@ export default function ExperienceFilter() {
     return (
       <div>
         <div className="flex flex-col gap-2">
-          <p className="body-small">RÅ-år</p>
+          <p className="body-small">Erfaring</p>
           <div className="flex flex-col gap-2 w-52">
             {yearRanges?.map((range, index) => (
               <FilterButton
