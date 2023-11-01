@@ -3,8 +3,7 @@ import FilteredConsultantsList from "@/components/FilteredConsultantsList";
 import { fetchWithToken } from "@/data/fetchWithToken";
 import { Consultant, Department } from "@/types";
 import { ConsultantFilterProvider } from "@/components/FilteredConsultantProvider";
-import { useSearchParams } from "next/navigation";
-import { stringToWeek } from "@/data/tmp-utils";
+import { stringToWeek } from "@/data/urlUtils";
 
 export default async function Bemanning({
   params,

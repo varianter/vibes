@@ -5,8 +5,8 @@ import { Consultant, Department, Week, YearRange } from "@/types";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { FilteredContext } from "@/components/FilteredConsultantProvider";
 import { yearRanges } from "@/components/ExperienceFilter";
-import arg from "arg";
-import { stringToWeek, weekToString } from "@/data/tmp-utils";
+import { DateTime } from "luxon";
+import { stringToWeek, weekToString } from "@/data/urlUtils";
 
 interface UpdateFilterParams {
   search?: string;
@@ -57,12 +57,38 @@ export function useFilteredConsultants() {
     ],
   );
 
-  function setSelectedWeek(week: Week) {
-    updateRoute({ week });
+  function incrementSelectedWeek() {
+    let date = selectedWeek
+      ? DateTime.now().set({
+          weekYear: selectedWeek.year,
+          weekNumber: selectedWeek.weekNumber,
+        })
+      : DateTime.now();
+
+    let newDate = date.plus({ week: 1 });
+    updateRoute({
+      week: { year: newDate.year, weekNumber: newDate.weekNumber },
+    });
+  }
+
+  function decrementSelectedWeek() {
+    let date = selectedWeek
+      ? DateTime.now().set({
+          weekYear: selectedWeek.year,
+          weekNumber: selectedWeek.weekNumber,
+        })
+      : DateTime.now();
+
+    let newDate = date.plus({ week: -1 });
+    updateRoute({
+      week: { year: newDate.year, weekNumber: newDate.weekNumber },
+    });
   }
 
   function resetSelectedWeek() {
-    updateRoute({ week: undefined });
+    router.push(
+      `${pathname}?search=${searchFilter}&depFilter=${departmentFilter}&yearFilter=${yearFilter}`,
+    );
   }
 
   useEffect(() => {
@@ -161,7 +187,8 @@ export function useFilteredConsultants() {
     toggleDepartmentFilter,
     toggleYearFilter,
     selectedWeek,
-    setSelectedWeek,
+    incrementSelectedWeek,
+    decrementSelectedWeek,
     resetSelectedWeek,
   };
 }

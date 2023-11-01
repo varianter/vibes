@@ -17,6 +17,7 @@
     "autoprefixer": "^10.4.16",
     "eslint": "8.48.0",
     "eslint-config-next": "^13.5.2",
+    "luxon": "^3.4.3",
     "next": "^13.5.2",
     "next-auth": "^4.23.2",
     "nextjs-toploader": "^1.5.3",
@@ -30,6 +31,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.38.1",
+    "@types/luxon": "^3.3.3",
     "eslint-config-prettier": "^9.0.0",
     "prettier": "3.0.3"
   }
