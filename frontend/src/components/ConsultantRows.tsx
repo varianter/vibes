@@ -1,7 +1,14 @@
 "use client";
 import { Consultant } from "@/types";
 import { useState } from "react";
-import { ChevronDown } from "react-feather";
+import {
+  AlertTriangle,
+  ChevronDown,
+  Coffee,
+  FileText,
+  Sun,
+} from "react-feather";
+import HourInfoPill from "./HourInfoPill";
 
 interface ConsultantListElementProps {
   consultant: Consultant;
@@ -58,19 +65,54 @@ export default function ConsultantRows({
         {consultant.bookings?.map((b) => (
           <td
             key={b.weekNumber}
-            className={`px-2 py-1 rounded ${
-              b.bookingModel.totalSellableTime > 0
+            className={`px-2 py-1 rounded  ${
+              b.bookingModel.totalOverbooking > 0
+                ? `bg-black text-white`
+                : b.bookingModel.totalSellableTime > 0
                 ? `bg-semantic_4_l1`
                 : `bg-primary_l5`
             }`}
           >
-            <p
-              className={`text-right ${
-                isListElementVisible ? "body-bold" : "body"
-              }`}
-            >
-              {b.bookingModel.totalBillable}
-            </p>
+            <div className="flex flex-col gap-1">
+              <div className="flex flex-row justify-end gap-1">
+                {b.bookingModel.totalOffered > 0 && (
+                  <HourInfoPill
+                    hours={b.bookingModel.totalOffered}
+                    colors="bg-offer_light text-offer_dark"
+                    icon={<FileText size="12" />}
+                  />
+                )}
+                {b.bookingModel.totalSellableTime > 0 && (
+                  <HourInfoPill
+                    hours={b.bookingModel.totalSellableTime}
+                    colors="bg-free_light text-free_dark"
+                    icon={<Coffee size="12" />}
+                  />
+                )}
+                {b.bookingModel.totalVacationHours > 0 && (
+                  <HourInfoPill
+                    hours={b.bookingModel.totalVacationHours}
+                    colors="bg-vacation_light text-vacation_dark"
+                    icon={<Sun size="12" />}
+                  />
+                )}
+                {b.bookingModel.totalOverbooking > 0 && (
+                  <HourInfoPill
+                    hours={b.bookingModel.totalOverbooking}
+                    colors="bg-overbooking_dark text-overbooking_light"
+                    icon={<AlertTriangle size="12" />}
+                  />
+                )}
+              </div>
+
+              <p
+                className={`text-right ${
+                  isListElementVisible ? "body-bold" : "body"
+                }`}
+              >
+                {b.bookingModel.totalBillable}
+              </p>
+            </div>
           </td>
         ))}
       </tr>

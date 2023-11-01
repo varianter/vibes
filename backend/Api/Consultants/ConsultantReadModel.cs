@@ -9,7 +9,7 @@ public record ConsultantReadModel(int Id, string Name, string Email, List<string
 
 public record BookedHoursPerWeek(int Year, int WeekNumber, string DateString, WeeklyBookingReadModel BookingModel);
 
-public record WeeklyBookingReadModel(double TotalBillable, double TotalOffered, double TotalPlannedAbstences, double TotalSellableTime, double TotalHolidayHours, List<BookingReadModel> Bookings);
+public record WeeklyBookingReadModel(double TotalBillable, double TotalOffered, double TotalPlannedAbstences, double TotalSellableTime, double TotalHolidayHours, double TotalVacationHours, double TotalOverbooking, List<BookingReadModel> Bookings);
 
 public record BookingReadModel(string Name, double Hours, BookingType Type);
 
