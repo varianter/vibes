@@ -84,10 +84,13 @@ public static class ConsultantExtensions
             {
                 var year = DateTime.Today.AddDays(7 * offset).Year;
                 var week = DateService.GetWeekAhead(offset);
+                var datestring = DateService.GetDatesInWorkWeek(year, week)[0].ToString("dd.MM") + "-" + DateService
+                    .GetDatesInWorkWeek(year, week)[^1].ToString("dd.MM");
 
                 return new BookedHoursPerWeek(
                     year,
                     week,
+                    datestring,
                     GetBookingModelForWeek(consultant, year, week)
                 );
             })

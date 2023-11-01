@@ -7,7 +7,7 @@ public record ConsultantReadModel(int Id, string Name, string Email, List<string
     List<BookedHoursPerWeek> Bookings, bool IsOccupied);
 
 
-public record BookedHoursPerWeek(int Year, int WeekNumber, WeeklyBookingReadModel BookingModel);
+public record BookedHoursPerWeek(int Year, int WeekNumber, string DateString, WeeklyBookingReadModel BookingModel);
 
 public record WeeklyBookingReadModel(double TotalBillable, double TotalOffered, double TotalPlannedAbstences, double TotalSellableTime, double TotalHolidayHours, List<BookingReadModel> Bookings);
 

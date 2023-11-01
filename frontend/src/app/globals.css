@@ -105,6 +105,10 @@
     background-color: transparent;
   }
 
+  th {
+    font-weight: normal;
+  }
+
   .interaction-chip {
     font-size: 0.75rem;
     font-family: "Graphik-SemiBold";
