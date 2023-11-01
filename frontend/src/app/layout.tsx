@@ -19,7 +19,7 @@ export default function RootLayout({
           content="minimum-scale=1, initial-scale=1, width=device-width"
         />
       </Head>
-      <body>
+      <body className="layout-grid">
         <NavBar />
         <NextTopLoader color="#F076A6" height={3} initialPosition={0.2} />
         {children}
