@@ -8,7 +8,7 @@ import {
   FileText,
   Sun,
 } from "react-feather";
-import HourInfoPill from "./HourInfoPill";
+import InfoPill from "./InfoPill";
 
 interface ConsultantListElementProps {
   consultant: Consultant;
@@ -76,29 +76,29 @@ export default function ConsultantRows({
             <div className="flex flex-col gap-1">
               <div className="flex flex-row justify-end gap-1">
                 {b.bookingModel.totalOffered > 0 && (
-                  <HourInfoPill
-                    hours={b.bookingModel.totalOffered}
+                  <InfoPill
+                    text={b.bookingModel.totalOffered.toFixed(1)}
                     colors="bg-offer_light text-offer_dark"
                     icon={<FileText size="12" />}
                   />
                 )}
                 {b.bookingModel.totalSellableTime > 0 && (
-                  <HourInfoPill
-                    hours={b.bookingModel.totalSellableTime}
+                  <InfoPill
+                    text={b.bookingModel.totalSellableTime.toFixed(1)}
                     colors="bg-free_light text-free_dark"
                     icon={<Coffee size="12" />}
                   />
                 )}
                 {b.bookingModel.totalVacationHours > 0 && (
-                  <HourInfoPill
-                    hours={b.bookingModel.totalVacationHours}
+                  <InfoPill
+                    text={b.bookingModel.totalVacationHours.toFixed(1)}
                     colors="bg-vacation_light text-vacation_dark"
                     icon={<Sun size="12" />}
                   />
                 )}
                 {b.bookingModel.totalOverbooking > 0 && (
-                  <HourInfoPill
-                    hours={b.bookingModel.totalOverbooking}
+                  <InfoPill
+                    text={b.bookingModel.totalOverbooking.toFixed(1)}
                     colors="bg-overbooking_dark text-overbooking_light"
                     icon={<AlertTriangle size="12" />}
                   />
