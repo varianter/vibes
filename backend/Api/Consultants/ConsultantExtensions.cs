@@ -68,13 +68,18 @@ public static class ConsultantExtensions
         var billableHours = staffings.Select(s => s.Hours).Sum();
         var offeredHours = offers.Select(s => s.Hours).Sum();
 
+        var bookedTime = billableHours + plannedAbsenceHours + vacationHours + holidayHours;
+
 
         var totalFreeTime =
-            Math.Max(hoursPrWorkDay * 5 - billableHours - plannedAbsenceHours - vacationHours - holidayHours, 0);
+            Math.Max(hoursPrWorkDay * 5 - bookedTime, 0);
+
+        var totalOverbooked =
+            Math.Max(bookedTime - hoursPrWorkDay * 5, 0);
 
 
-        return new WeeklyBookingReadModel(billableHours, offeredHours, plannedAbsenceHours, totalFreeTime, holidayHours,
-            bookingList);
+        return new WeeklyBookingReadModel(billableHours, offeredHours, plannedAbsenceHours, totalFreeTime, holidayHours, vacationHours, 
+           totalOverbooked, bookingList);
     }
 
     private static List<BookedHoursPerWeek> GetBookedHoursForWeeks(this Consultant consultant, Week firstWeek,

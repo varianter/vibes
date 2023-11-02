@@ -11,6 +11,8 @@ export interface WeeklyBookingReadModel {
   totalPlannedAbstences: number;
   totalSellableTime: number;
   totalHolidayHours: number;
+  totalOverbooking: number;
+  totalVacationHours: number;
   bookings: BookingReadModel[] | null;
 }
 
