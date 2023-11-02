@@ -37,6 +37,7 @@ export type Consultant = {
   department: string;
   yearsOfExperience: number;
   bookings?: BookedHoursPerWeek[] | null;
+  isOccupied: Boolean;
 };
 
 export type Department = {
