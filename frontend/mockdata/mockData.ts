@@ -32,6 +32,7 @@ export const MockConsultants: Consultant[] = [
       },
     ],
     yearsOfExperience: 23,
+    isOccupied: true,
   },
 ];
 
