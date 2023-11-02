@@ -14,6 +14,7 @@ public static class ConsultantExtensions
             currentYear - (consultant.GraduationYear is null or 0 ? currentYear : consultant.GraduationYear) ?? 0;
 
         var bookedHours = GetBookedHoursForWeeks(consultant, firstWeek, weeks);
+        var detailedBooking = GetDetailedBooking(consultant, firstWeek, weeks);
 
         var isOccupied = bookedHours.All(b => b.BookingModel.TotalSellableTime <= 0 + tolerance);
 
@@ -26,8 +27,55 @@ public static class ConsultantExtensions
             yearsOfExperience,
             consultant.Degree ?? Degree.None,
             bookedHours,
+            detailedBooking,
             isOccupied
         );
+    }
+
+    private static List<DetailedBooking> GetDetailedBooking(Consultant consultant, Week firstWeek, int weeks)
+    {
+        var org = consultant.Department.Organization;
+
+        var hoursPrWorkDay = org.HoursPerWorkday;
+
+        var weeksInSet = DateService.GetNextWeeks(firstWeek, weeks);
+
+        var dictionary = weeksInSet.ToDictionary(w => w, w => 3);
+
+        var offers = consultant.Staffings
+            .Where(s => s.Project.State.Equals(ProjectState.Offer))
+            .Where(s => weeksInSet.Contains(new Week(s.Year, s.Week)))
+            .GroupBy(s => s.Project.Customer.Name)
+            .Select(grouping => new DetailedBooking(
+                new BookingDetails(grouping.Key, BookingType.Offer),
+                weeksInSet.Select(w => new WeeklyHours(
+                    int.Parse($"{w.Year}{w.WeekNumber}"),
+                    grouping
+                        .Where(staffing => w.Equals(new Week(staffing.Year, staffing.Week)))
+                        .Select(staffing => staffing.Hours)
+                        .Sum()
+                )).ToList()
+            ))
+            .ToList();
+
+        var projects = consultant.Staffings
+            .Where(s => s.Project.State.Equals(ProjectState.Active))
+            .Where(s => weeksInSet.Exists(w => w.Equals(new Week(s.Year, s.Week))))
+            .GroupBy(s => s.Project.Customer.Name)
+            .Select(grouping => new DetailedBooking(
+                new BookingDetails(grouping.Key, BookingType.Booking),
+                weeksInSet.Select(w => new WeeklyHours(
+                    int.Parse($"{w.Year}{w.WeekNumber}"),
+                    grouping
+                        .Where(staffing => w.Equals(new Week(staffing.Year, staffing.Week)))
+                        .Select(staffing => staffing.Hours)
+                        .Sum()
+                )).ToList()
+            ))
+            .ToList();
+
+        var detailedBookings = offers.Concat(projects);
+        return detailedBookings.ToList();
     }
 
     public static WeeklyBookingReadModel GetBookingModelForWeek(this Consultant consultant, int year, int week)
@@ -78,8 +126,9 @@ public static class ConsultantExtensions
             Math.Max(bookedTime - hoursPrWorkDay * 5, 0);
 
 
-        return new WeeklyBookingReadModel(billableHours, offeredHours, plannedAbsenceHours, totalFreeTime, holidayHours, vacationHours, 
-           totalOverbooked, bookingList);
+        return new WeeklyBookingReadModel(billableHours, offeredHours, plannedAbsenceHours, totalFreeTime, holidayHours,
+            vacationHours,
+            totalOverbooked);
     }
 
     private static List<BookedHoursPerWeek> GetBookedHoursForWeeks(this Consultant consultant, Week firstWeek,
@@ -87,13 +136,14 @@ public static class ConsultantExtensions
     {
         var nextWeeks = DateService.GetNextWeeks(firstWeek, weeksAhead);
         var datestring = DateService.GetDatesInWorkWeek(firstWeek.Year, firstWeek.WeekNumber)[0].ToString("dd.MM") +
-                         "-" + DateService
+                         " - " + DateService
                              .GetDatesInWorkWeek(firstWeek.Year, firstWeek.WeekNumber)[^1].ToString("dd.MM");
 
         return nextWeeks
             .Select(week => new BookedHoursPerWeek(
                 week.Year,
                 week.WeekNumber,
+                int.Parse($"{week.Year}{week.WeekNumber}"),
                 datestring,
                 GetBookingModelForWeek(consultant, week.Year, week.WeekNumber)))
             .ToList();
