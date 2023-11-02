@@ -54,3 +54,8 @@ export type YearRange = {
   start: number;
   end?: number;
 };
+
+export type Week = {
+  year: number;
+  weekNumber: number;
+};
