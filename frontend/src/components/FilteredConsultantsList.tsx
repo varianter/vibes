@@ -3,9 +3,15 @@ import ConsultantRows from "./ConsultantRows";
 import ActiveFilters from "./ActiveFilters";
 import { useFilteredConsultants } from "@/hooks/useFilteredConsultants";
 import WeekSelection from "@/components/WeekSelection";
+import { DateTime } from "luxon";
 
 export default function FilteredConsultantList() {
   const { filteredConsultants: consultants } = useFilteredConsultants();
+
+  function isCurrentWeek(weekNumber: number, year: number) {
+    const today = DateTime.now();
+    return today.weekNumber == weekNumber && today.year == year;
+  }
 
   return (
     <div>
@@ -28,11 +34,19 @@ export default function FilteredConsultantList() {
             {consultants.at(0)?.bookings?.map((b) => (
               <th key={b.weekNumber} className="px-2 py-1">
                 <div className="flex flex-col gap-1 justify-items-end">
-                  <p className=" body text-right">{b.weekNumber}</p>
+                  {isCurrentWeek(b.weekNumber, b.year) ? (
+                    <div className="flex flex-row gap-2 items-center justify-end">
+                      <div className="h-2 w-2 rounded-full bg-primary_default" />
+                      <p className="body-bold text-right">{b.weekNumber}</p>
+                    </div>
+                  ) : (
+                    <p className="body text-right">{b.weekNumber}</p>
+                  )}
+
+                  <p className="detail text-neutral_l1 text-right">
+                    {b.dateString}
+                  </p>
                 </div>
-                <p className="detail text-neutral_l1 text-right">
-                  {b.dateString}
-                </p>
               </th>
             ))}
           </tr>
