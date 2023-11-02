@@ -144,12 +144,13 @@ export default function ConsultantRows({
               .map((h) => (
                 <td
                   key={`${consultant.id}-details-${db.bookingDetails.name}-${h.week}`}
-                  className="h-8 p-1"
+                  className="h-8 p-0.5"
                 >
                   <p
-                    className={`text-right body-small-bold px-2 py-1 rounded ${getColorByStaffingType(
-                      db.bookingDetails.type ?? BookingType.Offer,
-                    )}`}
+                    className={`text-right body-small-bold px-2 py-1 rounded h-full
+             ${getColorByStaffingType(
+               db.bookingDetails.type ?? BookingType.Offer,
+             )}`}
                   >
                     {h.hours}
                   </p>
@@ -185,7 +186,7 @@ function getColorByStaffingType(type: BookingType): string {
     case BookingType.Booking:
       return "bg-primary_l5";
     case BookingType.Vacation:
-      return "bg-free_light";
+      return "bg-vacation_light";
     case BookingType.PlannedAbsence:
       return "bg-absence_light";
     default:
