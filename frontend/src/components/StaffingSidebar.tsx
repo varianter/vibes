@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import DepartmentFilter from "./DepartmentFilter";
+import AvailabilityFilter from "./AvailabilityFilter";
 import SearchBarComponent from "./SearchBarComponent";
 import { ArrowLeft, Filter } from "react-feather";
 import ExperienceFilter from "./ExperienceFilter";
@@ -22,6 +23,7 @@ export default function StaffingSidebar() {
             </button>
           </div>
           <SearchBarComponent />
+          <AvailabilityFilter />
           <DepartmentFilter />
           <ExperienceFilter />
         </div>
