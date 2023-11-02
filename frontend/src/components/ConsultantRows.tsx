@@ -116,6 +116,7 @@ export default function ConsultantRows({
           </td>
         ))}
       </tr>
+      {!isListElementVisible && consultant.detailedBookings.map()}
       <tr className={`${!isListElementVisible && "hidden"} h-[198px] `}></tr>
     </>
   );
