@@ -20,6 +20,8 @@ export default {
       offer_dark: "#35316E",
       free_light: "#FFE5B5",
       free_dark: "#573900",
+      holiday_light: "#FAD2E2",
+      holiday_dark: "#6C002B",
       vacation_light: "#C8EEFB",
       vacation_dark: "#00445B",
       overbooking_light: "#FFFFFF",

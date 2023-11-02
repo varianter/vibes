@@ -4,6 +4,7 @@ import { fetchWithToken } from "@/data/fetchWithToken";
 import { Consultant, Department } from "@/types";
 import { ConsultantFilterProvider } from "@/components/FilteredConsultantProvider";
 import { stringToWeek } from "@/data/urlUtils";
+import InfoPillDescriptions from "@/components/InfoPillDescriptions";
 
 export default async function Bemanning({
   params,
@@ -38,6 +39,7 @@ export default async function Bemanning({
       <div className="main pl-12 p-6 w-full">
         <h1>Bemanning</h1>
         <FilteredConsultantsList />
+        <InfoPillDescriptions />
       </div>
     </ConsultantFilterProvider>
   );
