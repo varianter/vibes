@@ -19,9 +19,10 @@ export default function FilteredConsultantList() {
         <ActiveFilters />
         <WeekSelection />
       </div>
-      <table className="w-full table-auto border-separate border-spacing-1">
+      <table className="w-full table-auto">
         <thead>
           <tr>
+            <th></th>
             <th className="flex flex-row gap-3 pb-4 items-center ">
               <p className="body-large-bold ">Konsulenter</p>
 
