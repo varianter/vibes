@@ -34,7 +34,7 @@ export default function ConsultantRows({
         onMouseLeave={() => setIsButtonHovered(false)}
       >
         <td
-          className={`rounded-lg border-l-2 w-[10%] ${
+          className={`border-l-2 w-[10%] ${
             isListElementVisible
               ? "border-l-secondary_default"
               : isButtonHovered
@@ -183,6 +183,7 @@ export default function ConsultantRows({
           </td>
         </tr>
       )}
+      <tr className="h-1" />
     </>
   );
 }
