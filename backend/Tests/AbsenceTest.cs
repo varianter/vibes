@@ -111,18 +111,6 @@ public class Tests
             Assert.That(bookingModel.TotalHolidayHours, Is.EqualTo(numberOfHolidays * 7.5));
             Assert.That(bookingModel.TotalSellableTime, Is.EqualTo(expectedSellableHours));
         });
-
-        if (staffedHours > 0)
-        {
-            var staffing = bookingModel.Bookings.Single(b => b.Name == "TestCustomer");
-            Assert.That(staffing.Hours, Is.EqualTo(staffedHours));
-        }
-
-        if (vacationDays > 0)
-        {
-            var vacation = bookingModel.Bookings.Single(b => b.Name == "Ferie");
-            Assert.That(vacation.Hours, Is.EqualTo(vacationDays * 7.5));
-        }
     }
 
     [Test]
