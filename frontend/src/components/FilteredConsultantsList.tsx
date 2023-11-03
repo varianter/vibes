@@ -19,17 +19,25 @@ export default function FilteredConsultantList() {
         <ActiveFilters />
         <WeekSelection />
       </div>
-      <table className="w-full table-auto">
+      <table className="w-full table-fixed">
+        <colgroup>
+          <col span={1} className="w-14" />
+          <col span={1} className="w-[190px]" />
+          {consultants
+            .at(0)
+            ?.bookings?.map((booking, index) => <col key={index} span={1} />)}
+        </colgroup>
         <thead>
           <tr>
-            <th></th>
-            <th className="flex flex-row gap-3 pb-4 items-center ">
-              <p className="body-large-bold ">Konsulenter</p>
+            <th colSpan={2}>
+              <div className="flex flex-row gap-3 pb-4 items-center">
+                <p className="body-large-bold ">Konsulenter</p>
 
-              <div className="rounded-full bg-primary_l3 px-2 py-1">
-                <p className="text-primary_default body-small-bold">
-                  {consultants?.length}
-                </p>
+                <div className="rounded-full bg-primary_l3 px-2 py-1">
+                  <p className="text-primary_default body-small-bold">
+                    {consultants?.length}
+                  </p>
+                </div>
               </div>
             </th>
             {consultants.at(0)?.bookings?.map((booking) => (

@@ -28,14 +28,22 @@ export default function ConsultantRows({
 
   return (
     <>
-      <tr className="h-[52px]">
+      <tr
+        className="h-[52px]"
+        onMouseEnter={() => setIsButtonHovered(true)}
+        onMouseLeave={() => setIsButtonHovered(false)}
+      >
         <td
-          className={`${
-            isListElementVisible && "border-l-secondary_default border-l-2"
-          }`}
+          className={`rounded-lg border-l-2 w-[10%] ${
+            isListElementVisible
+              ? "border-l-secondary_default"
+              : isButtonHovered
+              ? "border-l-primary_default"
+              : "border-l-primary_l4"
+          } `}
         >
           <button
-            className={`p-2 rounded-lg hover:bg-primary_default hover:bg-opacity-10 ${
+            className={`p-2 rounded-lg ml-2 hover:bg-primary_default hover:bg-opacity-10 ${
               isListElementVisible && "rotate-180"
             }`}
             onClick={toggleListElementVisibility}
@@ -122,7 +130,7 @@ export default function ConsultantRows({
                 isListElementVisible && "border-l-secondary_default border-l-2"
               }`}
             ></td>
-            <td className="flex flex-row justify-between h-[32px] w-[232px]">
+            <td className="flex flex-row gap-2 justify-start h-[32px]">
               <div
                 className={`h-[32px] w-[32px] flex justify-center align-middle items-center rounded ${getColorByStaffingType(
                   db.bookingDetails.type,
@@ -130,7 +138,7 @@ export default function ConsultantRows({
               >
                 {getIconByBookingType(db.bookingDetails.type)}
               </div>
-              <div className="flex flex-col justify-between items-start w-[192px]">
+              <div className="flex flex-col justify-between items-start">
                 <p className="detail text-neutral_l1 text-right">
                   {db.bookingDetails.type}
                 </p>
