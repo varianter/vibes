@@ -112,28 +112,14 @@ public static class ConsultantExtensions
             .Select(pa => pa.Hours)
             .Sum();
 
-        var staffings = consultant.Staffings
+        var billableHours = consultant.Staffings
             .Where(s => s.Year == year && s.Week == week && s.Project.State.Equals(ProjectState.Active))
-            .Select(s => new BookingReadModel(s.Project.Customer.Name, s.Hours, BookingType.Booking)).ToList();
+            .Select(s => s.Hours).Sum();
 
-        var offers = consultant.Staffings
+        var offeredHours = consultant.Staffings
             .Where(s => s.Year == year && s.Week == week && s.Project.State.Equals(ProjectState.Offer))
-            .Select(s => new BookingReadModel(s.Project.Customer.Name, s.Hours, BookingType.Offer)).ToList();
-
-        var plannedAbsences = consultant.PlannedAbsences
-            .Where(s => s.Year == year && s.WeekNumber == week)
-            .Select(s => new BookingReadModel(s.Absence.Name, s.Hours, BookingType.PlannedAbsence)).ToList();
-
-        var bookingList = staffings.Concat(offers).Concat(plannedAbsences).ToList();
-
-        if (vacationHours > 0)
-        {
-            var vacation = new BookingReadModel("Ferie", vacationHours, BookingType.Vacation);
-            bookingList = bookingList.Append(vacation).ToList();
-        }
-
-        var billableHours = staffings.Select(s => s.Hours).Sum();
-        var offeredHours = offers.Select(s => s.Hours).Sum();
+            .Select(s => s.Hours).Sum();
+        
 
         var bookedTime = billableHours + plannedAbsenceHours + vacationHours + holidayHours;
 
