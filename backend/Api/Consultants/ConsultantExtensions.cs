@@ -86,16 +86,20 @@ public static class ConsultantExtensions
         int weeksAhead)
     {
         var nextWeeks = DateService.GetNextWeeks(firstWeek, weeksAhead);
-        var datestring = DateService.GetDatesInWorkWeek(firstWeek.Year, firstWeek.WeekNumber)[0].ToString("dd.MM") +
-                         "-" + DateService
-                             .GetDatesInWorkWeek(firstWeek.Year, firstWeek.WeekNumber)[^1].ToString("dd.MM");
 
         return nextWeeks
             .Select(week => new BookedHoursPerWeek(
                 week.Year,
                 week.WeekNumber,
-                datestring,
+                GetDatesForWeek(week),
                 GetBookingModelForWeek(consultant, week.Year, week.WeekNumber)))
             .ToList();
+    }
+
+    private static string GetDatesForWeek(Week week)
+    {
+        return DateService.GetDatesInWorkWeek(week.Year, week.WeekNumber)[0].ToString("dd.MM") +
+               "-" + DateService
+                   .GetDatesInWorkWeek(week.Year, week.WeekNumber)[^1].ToString("dd.MM");
     }
 }
