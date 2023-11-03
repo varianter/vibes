@@ -13,6 +13,7 @@ interface UpdateFilterParams {
   departments?: string;
   years?: string;
   week?: Week;
+  numWeeks?: number;
 }
 
 export function useFilteredConsultants() {
@@ -27,6 +28,7 @@ export function useFilteredConsultants() {
   const selectedWeek = stringToWeek(
     searchParams.get("selectedWeek") || undefined,
   );
+  const weekSpan = searchParams.get("weekSpan") || undefined;
 
   const [activeNameSearch, setActiveNameSearch] =
     useState<string>(searchFilter);
@@ -40,11 +42,13 @@ export function useFilteredConsultants() {
       const { departments = departmentFilter } = updateParams;
       const { years = yearFilter } = updateParams;
       const { week = selectedWeek } = updateParams;
+      const { numWeeks = weekSpan } = updateParams;
 
+      console.log("Update route with numWeeks = " + numWeeks);
       router.push(
         `${pathname}?search=${search}&depFilter=${departments}&yearFilter=${years}${
           week ? `&selectedWeek=${weekToString(week)}` : ""
-        }`,
+        }${numWeeks ? `&weekSpan=${numWeeks}` : ""}`,
       );
     },
     [
@@ -53,6 +57,7 @@ export function useFilteredConsultants() {
       router,
       searchFilter,
       selectedWeek,
+      weekSpan,
       yearFilter,
     ],
   );
@@ -89,6 +94,11 @@ export function useFilteredConsultants() {
     router.push(
       `${pathname}?search=${searchFilter}&depFilter=${departmentFilter}&yearFilter=${yearFilter}`,
     );
+  }
+
+  function setWeekSpan(weekSpanString: string) {
+    const weekSpanNum = parseInt(weekSpanString.split(" ")[0]);
+    updateRoute({ numWeeks: weekSpanNum });
   }
 
   useEffect(() => {
@@ -190,6 +200,8 @@ export function useFilteredConsultants() {
     incrementSelectedWeek,
     decrementSelectedWeek,
     resetSelectedWeek,
+    weekSpan,
+    setWeekSpan,
   };
 }
 
