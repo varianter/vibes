@@ -14,8 +14,8 @@ export default function FilteredConsultantList() {
   }
 
   return (
-    <div>
-      <div>
+    <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-4">
         <ActiveFilters />
         <WeekSelection />
       </div>

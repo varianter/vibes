@@ -36,7 +36,7 @@ export default async function Bemanning({
     >
       <StaffingSidebar />
 
-      <div className="main pl-12 p-6 w-full">
+      <div className="main pl-12 p-6 w-full flex flex-col gap-8">
         <h1>Bemanning</h1>
         <FilteredConsultantsList />
         <InfoPillDescriptions />

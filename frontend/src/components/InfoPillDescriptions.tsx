@@ -3,7 +3,7 @@ import { AlertTriangle, Calendar, Coffee, FileText, Sun } from "react-feather";
 
 export default function InfoPillDescriptions() {
   return (
-    <div className="mt-8 flex flex-row gap-2">
+    <div className="flex flex-row gap-2">
       <InfoPill
         text={"Ledig tid"}
         colors="bg-free_light text-free_dark"
