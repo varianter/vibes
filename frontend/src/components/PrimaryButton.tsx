@@ -7,10 +7,10 @@ export default function PrimaryButton({
 }) {
   return (
     <button
-      className="h-10 p-3 bg-primary_default rounded-lg justify-center items-center gap-2 inline-flex"
+      className="h-10 p-3 bg-primary_default rounded-lg justify-center items-center gap-2 inline-flex text-white text-sm leading-none"
       onClick={onClick}
     >
-      <div className="text-white text-sm leading-none">{label}</div>
+      {label}
     </button>
   );
 }

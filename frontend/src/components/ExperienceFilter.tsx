@@ -16,21 +16,19 @@ export default function ExperienceFilter() {
 
   if (yearRanges.length > 0) {
     return (
-      <div>
-        <div className="flex flex-col gap-2">
-          <p className="body-small">Erfaring</p>
-          <div className="flex flex-col gap-2 w-52">
-            {yearRanges?.map((range, index) => (
-              <FilterButton
-                key={range.label}
-                label={range.label}
-                onClick={() => toggleYearFilter(range)}
-                checked={filteredYears
-                  .map((y) => y.urlString)
-                  .includes(range.urlString)}
-              />
-            ))}
-          </div>
+      <div className="flex flex-col gap-2">
+        <p className="body-small">Erfaring</p>
+        <div className="flex flex-col gap-2 w-52">
+          {yearRanges?.map((range, index) => (
+            <FilterButton
+              key={range.label}
+              label={range.label}
+              onClick={() => toggleYearFilter(range)}
+              checked={filteredYears
+                .map((y) => y.urlString)
+                .includes(range.urlString)}
+            />
+          ))}
         </div>
       </div>
     );

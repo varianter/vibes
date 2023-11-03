@@ -24,12 +24,9 @@ export default function FilteredConsultantList() {
           <tr>
             <th className="flex flex-row gap-3 pb-4 items-center ">
               <p className="body-large-bold ">Konsulenter</p>
-
-              <div className="rounded-full bg-primary_l3 px-2 py-1">
-                <p className="text-primary_default body-small-bold">
-                  {consultants?.length}
-                </p>
-              </div>
+              <p className="text-primary_default body-small-bold rounded-full bg-primary_l3 px-2 py-1">
+                {consultants?.length}
+              </p>
             </th>
             {consultants.at(0)?.bookings?.map((booking) => (
               <th key={booking.weekNumber} className="px-2 py-1">

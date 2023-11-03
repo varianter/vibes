@@ -18,21 +18,19 @@ export default function DepartmentFilter() {
     });
 
     return (
-      <div>
-        <div className="flex flex-col gap-2">
-          <p className="body-small">Avdeling</p>
-          <div className="flex flex-col gap-2 w-52">
-            {departments?.map((department, index) => (
-              <FilterButton
-                key={department.id}
-                label={department.name}
-                onClick={() => toggleDepartmentFilter(department)}
-                checked={filteredDepartments
-                  .map((d) => d.id)
-                  .includes(department.id)}
-              />
-            ))}
-          </div>
+      <div className="flex flex-col gap-2">
+        <p className="body-small">Avdeling</p>
+        <div className="flex flex-col gap-2 w-52">
+          {departments?.map((department, index) => (
+            <FilterButton
+              key={department.id}
+              label={department.name}
+              onClick={() => toggleDepartmentFilter(department)}
+              checked={filteredDepartments
+                .map((d) => d.id)
+                .includes(department.id)}
+            />
+          ))}
         </div>
       </div>
     );

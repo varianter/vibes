@@ -68,7 +68,7 @@ export default function SearchBarComponent({
               value={currentNameSearch}
               onFocus={() => setIsSearchActive(true)}
               onBlur={() => setIsSearchActive(false)}
-            ></input>
+            />
           </div>
         </div>
       )}
