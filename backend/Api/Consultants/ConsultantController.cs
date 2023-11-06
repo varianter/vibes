@@ -68,7 +68,6 @@ public class ConsultantController : ControllerBase
         var minWeek = weeks.Select(w => w.WeekNumber).Min();
         var maxWeek = weeks.Select(w => w.WeekNumber).Max();
 
-
         return _context.Staffing
             .Where(staffing => staffing.Year == year && minWeek <= staffing.Week && staffing.Week <= maxWeek)
             .Where(staffing =>
@@ -138,6 +137,11 @@ public class ConsultantController : ControllerBase
         return consultantReadModels;
     }
 
+
+    /// <summary>
+    ///     Takes in many data points collected from the DB, and joins them into a set of DetailedBookings
+    ///     for a given consultant and set of weeks
+    /// </summary>
     private static List<DetailedBooking> DetailedBookings(Consultant consultant,
         Dictionary<int, Project> projects, Dictionary<int, Absence> absences,
         IEnumerable<IGrouping<StaffingGroupKey, Staffing>> billableStaffings,
