@@ -9,7 +9,22 @@ public record ConsultantReadModel(int Id, string Name, string Email, List<string
 public record BookedHoursPerWeek(int Year, int WeekNumber, int SortableWeek, string DateString,
     WeeklyBookingReadModel BookingModel);
 
-public record DetailedBooking(BookingDetails BookingDetails, List<WeeklyHours> Hours);
+public record DetailedBooking(BookingDetails BookingDetails, List<WeeklyHours> Hours)
+{
+    public double TotalHoursForWeek(Week week)
+    {
+        return Hours.Where(weeklySum => weeklySum.Week == week.ToSortableInt()).Sum(weeklyHours => weeklyHours.Hours);
+    }
+
+    internal static double GetTotalHoursPrBookingTypeAndWeek(IEnumerable<DetailedBooking> list, BookingType type,
+        Week week)
+    {
+        return list
+            .Where(s => s.BookingDetails.Type == type)
+            .Select(wh => wh.TotalHoursForWeek(week))
+            .Sum();
+    }
+}
 
 public record WeeklyBookingReadModel(double TotalBillable, double TotalOffered, double TotalPlannedAbstences,
     double TotalSellableTime, double TotalHolidayHours, double TotalVacationHours, double TotalOverbooking);

@@ -94,4 +94,14 @@ public class DateService
         // Subtract 3 days from Thursday to get Monday, which is the first weekday in ISO8601
         return result.AddDays(-3);
     }
+
+    public static DateOnly FirstDayOfWorkWeek(Week week)
+    {
+        return DateOnly.FromDateTime(FirstWorkDayOfWeek(week.Year, week.WeekNumber));
+    }
+
+    public static DateOnly LastWorkDayOfWeek(Week week)
+    {
+        return FirstDayOfWorkWeek(week).AddDays(5);
+    }
 }
