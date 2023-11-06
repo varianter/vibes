@@ -128,9 +128,6 @@ public class ConsultantController : ControllerBase
             var consultantVacations = vacations.Where(g => g.Key == c.Id).Aggregate(new List<Vacation>(),
                 (list, grouping) => list.Concat(grouping.Select(v => v)).ToList());
 
-            if (c.Id == 33)
-                Console.Out.Write("Her");
-
             var detailedBookings =
                 DetailedBookings(c, projects, absences, billableSet, offeredSet, absenceSet, consultantVacations,
                     weekSet);
