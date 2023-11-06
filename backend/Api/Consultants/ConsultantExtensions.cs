@@ -14,6 +14,7 @@ public static class ConsultantExtensions
             currentYear - (consultant.GraduationYear is null or 0 ? currentYear : consultant.GraduationYear) ?? 0;
 
         var bookedHours = GetBookedHoursForWeeks(consultant, firstWeek, weeks);
+        var detailedBooking = GetDetailedBooking(consultant, firstWeek, weeks);
 
         var isOccupied = bookedHours.All(b => b.BookingModel.TotalSellableTime <= 0 + tolerance);
 
@@ -26,8 +27,74 @@ public static class ConsultantExtensions
             yearsOfExperience,
             consultant.Degree ?? Degree.None,
             bookedHours,
+            detailedBooking,
             isOccupied
         );
+    }
+
+    private static List<DetailedBooking> GetDetailedBooking(Consultant consultant, Week firstWeek, int weeks)
+    {
+        var org = consultant.Department.Organization;
+
+        var hoursPrWorkDay = org.HoursPerWorkday;
+
+        var weeksInSet = DateService.GetNextWeeks(firstWeek, weeks);
+        
+        var projects = consultant.Staffings
+            .Where(s => weeksInSet.Contains(new Week(s.Year, s.Week)))
+            .Where(s=> s.Project.State == ProjectState.Active || s.Project.State == ProjectState.Offer)
+            .GroupBy(s => s.Project.Customer.Name)
+            .Select(grouping => new DetailedBooking(
+                new BookingDetails(grouping.Key, grouping.First().Project.State==ProjectState.Active ? BookingType.Booking : BookingType.Offer),
+                weeksInSet.Select(w => new WeeklyHours(
+                    int.Parse($"{w.Year}{w.WeekNumber}"),
+                    grouping
+                        .Where(staffing => w.Equals(new Week(staffing.Year, staffing.Week)))
+                        .Select(staffing => staffing.Hours)
+                        .Sum()
+                )).ToList()
+            ))
+            .ToList();
+        
+        var plannedAbsences = consultant.PlannedAbsences
+            .Where(pa => weeksInSet.Contains(new Week(pa.Year, pa.WeekNumber)))
+            .GroupBy(pa=> pa.Absence.Name)
+            .Select(grouping => new DetailedBooking(
+                new BookingDetails(grouping.Key, BookingType.PlannedAbsence),
+                weeksInSet.Select(w => new WeeklyHours(
+                    int.Parse($"{w.Year}{w.WeekNumber}"),
+                    grouping
+                        .Where(plannedAbsence => w.Equals(new Week(plannedAbsence.Year, plannedAbsence.WeekNumber)))
+                        .Select(plannedAbsence => plannedAbsence.Hours)
+                        .Sum()
+                )).ToList()
+            ))
+            .ToList();
+        
+        var detailedBookings = projects.Concat(plannedAbsences);
+
+        var firstDay = DateService.GetDatesInWorkWeek(firstWeek.Year, firstWeek.WeekNumber).First();
+        var lastDay = DateService.GetDatesInWorkWeek(weeksInSet.Last().Year, weeksInSet.Last().WeekNumber).Last();
+        
+        if (consultant.Vacations.Exists(v => v.Date >= firstDay && v.Date <= lastDay))
+        {
+            var vacationList = weeksInSet
+                .Aggregate(new List<WeeklyHours>(), (list, week) => 
+                    list.Append(new WeeklyHours(
+                        int.Parse($"{week.Year}{week.WeekNumber}"), 
+                        consultant.Vacations.Count(v => 
+                            DateService.DateIsInWeek(v.Date, week.Year, week.WeekNumber)) 
+                        * hoursPrWorkDay)).ToList());
+            
+            var vacations = new DetailedBooking(
+                new BookingDetails("Ferie", BookingType.Vacation), 
+                new List<WeeklyHours>(vacationList));
+            
+            detailedBookings = detailedBookings.Append(vacations).ToList();
+
+        }
+        
+        return detailedBookings.ToList();
     }
 
     public static WeeklyBookingReadModel GetBookingModelForWeek(this Consultant consultant, int year, int week)
@@ -45,28 +112,14 @@ public static class ConsultantExtensions
             .Select(pa => pa.Hours)
             .Sum();
 
-        var staffings = consultant.Staffings
+        var billableHours = consultant.Staffings
             .Where(s => s.Year == year && s.Week == week && s.Project.State.Equals(ProjectState.Active))
-            .Select(s => new BookingReadModel(s.Project.Customer.Name, s.Hours, BookingType.Booking)).ToList();
+            .Select(s => s.Hours).Sum();
 
-        var offers = consultant.Staffings
+        var offeredHours = consultant.Staffings
             .Where(s => s.Year == year && s.Week == week && s.Project.State.Equals(ProjectState.Offer))
-            .Select(s => new BookingReadModel(s.Project.Customer.Name, s.Hours, BookingType.Offer)).ToList();
-
-        var plannedAbsences = consultant.PlannedAbsences
-            .Where(s => s.Year == year && s.WeekNumber == week)
-            .Select(s => new BookingReadModel(s.Absence.Name, s.Hours, BookingType.PlannedAbsence)).ToList();
-
-        var bookingList = staffings.Concat(offers).Concat(plannedAbsences).ToList();
-
-        if (vacationHours > 0)
-        {
-            var vacation = new BookingReadModel("Ferie", vacationHours, BookingType.Vacation);
-            bookingList = bookingList.Append(vacation).ToList();
-        }
-
-        var billableHours = staffings.Select(s => s.Hours).Sum();
-        var offeredHours = offers.Select(s => s.Hours).Sum();
+            .Select(s => s.Hours).Sum();
+        
 
         var bookedTime = billableHours + plannedAbsenceHours + vacationHours + holidayHours;
 
@@ -78,24 +131,31 @@ public static class ConsultantExtensions
             Math.Max(bookedTime - hoursPrWorkDay * 5, 0);
 
 
-        return new WeeklyBookingReadModel(billableHours, offeredHours, plannedAbsenceHours, totalFreeTime, holidayHours, vacationHours, 
-           totalOverbooked, bookingList);
+        return new WeeklyBookingReadModel(billableHours, offeredHours, plannedAbsenceHours, totalFreeTime, holidayHours,
+            vacationHours,
+            totalOverbooked);
     }
 
     private static List<BookedHoursPerWeek> GetBookedHoursForWeeks(this Consultant consultant, Week firstWeek,
         int weeksAhead)
     {
         var nextWeeks = DateService.GetNextWeeks(firstWeek, weeksAhead);
-        var datestring = DateService.GetDatesInWorkWeek(firstWeek.Year, firstWeek.WeekNumber)[0].ToString("dd.MM") +
-                         "-" + DateService
-                             .GetDatesInWorkWeek(firstWeek.Year, firstWeek.WeekNumber)[^1].ToString("dd.MM");
 
         return nextWeeks
             .Select(week => new BookedHoursPerWeek(
                 week.Year,
                 week.WeekNumber,
-                datestring,
+                int.Parse($"{week.Year}{week.WeekNumber}"),
+                GetDatesForWeek(week),
                 GetBookingModelForWeek(consultant, week.Year, week.WeekNumber)))
             .ToList();
     }
+
+    private static string GetDatesForWeek(Week week)
+    {
+        return DateService.GetDatesInWorkWeek(week.Year, week.WeekNumber)[0].ToString("dd.MM") +
+               " - " + DateService
+                   .GetDatesInWorkWeek(week.Year, week.WeekNumber)[^1].ToString("dd.MM");
+    }
+
 }
