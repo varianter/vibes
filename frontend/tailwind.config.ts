@@ -26,6 +26,8 @@ export default {
       vacation_dark: "#00445B",
       overbooking_light: "#FFFFFF",
       overbooking_dark: "#B91456",
+      absence_light: "#9FDFD9",
+      absence_dark: "#004C46",
       transparent: "transparent",
     },
     extend: {},
