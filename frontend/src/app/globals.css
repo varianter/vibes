@@ -115,6 +115,12 @@
     line-height: 0.875rem;
   }
 
+  .interaction-button {
+    font-size: 0.9rem;
+    font-family: "Graphik-SemiBold";
+    line-height: 1rem;
+  }
+
   .detail-pill-text {
     font-size: 0.652rem;
     font-family: "Graphik-Regular";

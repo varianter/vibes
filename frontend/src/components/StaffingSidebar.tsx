@@ -13,7 +13,7 @@ export default function StaffingSidebar() {
     <div className="sidebar z-10">
       {!isSidebarHidden ? (
         <div className=" bg-primary_l4 h-full flex flex-col gap-6 p-8 w-[300px]">
-          <div className="flex flex-row justify-between">
+          <div className="flex flex-row justify-between items-center">
             <h3 className="">Filter</h3>
             <button
               onClick={() => setIsSidebarHidden(true)}

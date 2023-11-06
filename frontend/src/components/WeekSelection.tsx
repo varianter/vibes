@@ -1,6 +1,8 @@
 "use client";
 import { useFilteredConsultants } from "@/hooks/useFilteredConsultants";
 import SecondaryButton from "@/components/SecondaryButton";
+import { ArrowLeft, ArrowRight } from "react-feather";
+import IconSecondaryButton from "./IconSecondaryButton";
 
 export default function WeekSelection() {
   const { incrementSelectedWeek, resetSelectedWeek, decrementSelectedWeek } =
@@ -8,9 +10,15 @@ export default function WeekSelection() {
 
   return (
     <div className="flex flex-row gap-1">
-      <SecondaryButton label={"<"} onClick={decrementSelectedWeek} />
       <SecondaryButton label={"Denne uka"} onClick={resetSelectedWeek} />
-      <SecondaryButton label={">"} onClick={incrementSelectedWeek} />
+      <IconSecondaryButton
+        icon={<ArrowLeft size={24} />}
+        onClick={decrementSelectedWeek}
+      />
+      <IconSecondaryButton
+        icon={<ArrowRight size={24} />}
+        onClick={incrementSelectedWeek}
+      />
     </div>
   );
 }

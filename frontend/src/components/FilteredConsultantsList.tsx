@@ -14,8 +14,8 @@ export default function FilteredConsultantList() {
   }
 
   return (
-    <div>
-      <div>
+    <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-4">
         <ActiveFilters />
         <WeekSelection />
       </div>
@@ -32,12 +32,9 @@ export default function FilteredConsultantList() {
             <th colSpan={2}>
               <div className="flex flex-row gap-3 pb-4 items-center">
                 <p className="body-large-bold ">Konsulenter</p>
-
-                <div className="rounded-full bg-primary_l3 px-2 py-1">
-                  <p className="text-primary_default body-small-bold">
-                    {consultants?.length}
-                  </p>
-                </div>
+                <p className="text-primary_default body-small-bold rounded-full bg-primary_l3 px-2 py-1">
+                  {consultants?.length}
+                </p>
               </div>
             </th>
             {consultants.at(0)?.bookings?.map((booking) => (

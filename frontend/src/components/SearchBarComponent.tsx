@@ -49,10 +49,10 @@ export default function SearchBarComponent({
           onFocus={() => console.log("F")}
         />
       ) : (
-        <div className={`flex flex-col gap-2 rounded-lg`}>
+        <div className={`flex flex-col gap-2`}>
           <p className="body-small">Søk</p>
           <div
-            className={`flex flex-row gap-2 border
+            className={`flex flex-row gap-2 border rounded-lg
             px-3 py-2 w-full hover:bg-primary_l4 hover:border-primary_default ${
               searchIsActive ? "border-primary_default" : "border-primary_l1"
             } `}
@@ -68,7 +68,7 @@ export default function SearchBarComponent({
               value={currentNameSearch}
               onFocus={() => setIsSearchActive(true)}
               onBlur={() => setIsSearchActive(false)}
-            ></input>
+            />
           </div>
         </div>
       )}
