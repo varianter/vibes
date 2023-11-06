@@ -7,7 +7,7 @@ export default function PrimaryButton({
 }) {
   return (
     <button
-      className="h-10 p-3 bg-primary_default rounded-lg justify-center items-center gap-2 inline-flex text-white text-sm leading-none"
+      className="interaction-button px-2 py-3 bg-primary_default rounded-lg text-white "
       onClick={onClick}
     >
       {label}

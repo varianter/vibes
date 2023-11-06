@@ -12,11 +12,11 @@ export default function WeekSelection() {
     <div className="flex flex-row gap-1">
       <SecondaryButton label={"Denne uka"} onClick={resetSelectedWeek} />
       <IconSecondaryButton
-        label={<ArrowLeft size={24} />}
+        icon={<ArrowLeft size={24} />}
         onClick={decrementSelectedWeek}
       />
       <IconSecondaryButton
-        label={<ArrowRight size={24} />}
+        icon={<ArrowRight size={24} />}
         onClick={incrementSelectedWeek}
       />
     </div>
