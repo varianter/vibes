@@ -61,7 +61,7 @@ public class ConsultantController : ControllerBase
     }
 
 
-    private List<IGrouping<StaffingGroupKey, Staffing>> LoadStaffingByProjectTypeForWeeks(List<Week> weeks,
+    private Dictionary<StaffingGroupKey, double> LoadStaffingByProjectTypeForWeeks(List<Week> weeks,
         ProjectState state)
     {
         var year = weeks[0].Year;
@@ -74,8 +74,9 @@ public class ConsultantController : ControllerBase
                 staffing.Project.State == state)
             .Include(s => s.Consultant)
             .Include(staffing => staffing.Project)
-            .GroupBy(s => new StaffingGroupKey(s.Consultant.Id, s.Project.Id, s.Year, s.Week))
-            .ToList();
+            .GroupBy(staffing =>
+                new StaffingGroupKey(staffing.Consultant.Id, staffing.Project.Id, staffing.Year, staffing.Week))
+            .ToDictionary(grouping => grouping.Key, g => g.Sum(staffing => staffing.Hours));
     }
 
     private List<ConsultantReadModel> LoadReadModelFromDb(string orgUrlKey, List<Week> weekSet)
@@ -109,7 +110,9 @@ public class ConsultantController : ControllerBase
             .GroupBy(plannedAbsence =>
                 new StaffingGroupKey(plannedAbsence.Consultant.Id, plannedAbsence.Absence.Id, plannedAbsence.Year,
                     plannedAbsence.WeekNumber))
-            .ToList();
+            .ToDictionary(
+                grouping => grouping.Key,
+                grouping => grouping.Sum(plannedAbsence => plannedAbsence.Hours));
 
 
         var vacations = _context.Vacation
@@ -120,9 +123,12 @@ public class ConsultantController : ControllerBase
 
         var consultantReadModels = consultants.Select(c =>
         {
-            var billableSet = billableStaffing.Where(g => g.Key.ConsultantId == c.Id);
-            var offeredSet = offeredStaffing.Where(g => g.Key.ConsultantId == c.Id);
-            var absenceSet = plannedAbsences.Where(g => g.Key.ConsultantId == c.Id);
+            var billableSet = billableStaffing.Where(g => g.Key.ConsultantId == c.Id)
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
+            var offeredSet = offeredStaffing.Where(g => g.Key.ConsultantId == c.Id)
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
+            var absenceSet = plannedAbsences.Where(g => g.Key.ConsultantId == c.Id)
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
 
             var consultantVacations = vacations.Where(g => g.Key == c.Id).Aggregate(new List<Vacation>(),
                 (list, grouping) => list.Concat(grouping.Select(v => v)).ToList());
@@ -144,69 +150,34 @@ public class ConsultantController : ControllerBase
     /// </summary>
     private static List<DetailedBooking> DetailedBookings(Consultant consultant,
         Dictionary<int, Project> projects, Dictionary<int, Absence> absences,
-        IEnumerable<IGrouping<StaffingGroupKey, Staffing>> billableStaffings,
-        IEnumerable<IGrouping<StaffingGroupKey, Staffing>> offeredStaffings,
-        IEnumerable<IGrouping<StaffingGroupKey, PlannedAbsence>> plannedAbsences,
+        Dictionary<StaffingGroupKey, double> billableStaffing,
+        Dictionary<StaffingGroupKey, double> offeredStaffing,
+        Dictionary<StaffingGroupKey, double> plannedAbsences,
         List<Vacation> vacations,
         List<Week> weekSet)
     {
         weekSet.Sort();
 
-        var billableArray = billableStaffings as IGrouping<StaffingGroupKey, Staffing>[] ?? billableStaffings.ToArray();
-        var billableProjects = billableArray.Select(a => a.Key.WorkTypeId).Distinct().Select(id => projects[id]);
-        var offeredArray = offeredStaffings as IGrouping<StaffingGroupKey, Staffing>[] ?? offeredStaffings.ToArray();
-        var offeredProjects = offeredArray.Select(a => a.Key.WorkTypeId).Distinct().Select(id => projects[id])
+        var billableProjects = UniqueWorkTypes(projects, billableStaffing);
+        var offeredProjects = UniqueWorkTypes(projects, offeredStaffing);
+        var plannedAbsenceTypes = UniqueWorkTypes(absences, plannedAbsences);
+
+        var billableBookings = billableProjects.Select(project => new DetailedBooking(project.Customer.Name,
+                BookingType.Booking,
+                WeeklyHoursList(billableStaffing, project.Id)))
             .ToList();
 
-        var absenceArray = plannedAbsences as IGrouping<StaffingGroupKey, PlannedAbsence>[] ??
-                           plannedAbsences.ToArray();
-        var plannedAbsenceTypes =
-            absenceArray.Select(a => a.Key.WorkTypeId).Distinct().Select(id => absences[id]).ToList();
+        var offeredBookings = offeredProjects.Select(project => new DetailedBooking(project.Customer.Name,
+                BookingType.Offer,
+                WeeklyHoursList(billableStaffing, project.Id)))
+            .ToList();
 
-
-        // TODO: These can probably be made smaller
-        var billableBookings = billableProjects.Select(project =>
-        {
-            var bookings = weekSet.Select(week => new WeeklyHours(week.ToSortableInt(), billableArray
-                .Where(g => g.Key.ConsultantId == consultant.Id && g.Key.WorkTypeId == project.Id &&
-                            g.Key.Year == week.Year &&
-                            g.Key.Week == week.WeekNumber)
-                .Select(g => g.Select(staffing => staffing.Hours).Sum())
-                .Sum()
-            )).ToList();
-
-            return new DetailedBooking(new BookingDetails(project.Customer.Name, BookingType.Booking), bookings);
-        }).ToList();
-
-        var offeredBookings = offeredProjects.Select(project =>
-        {
-            var bookings = weekSet.Select(week => new WeeklyHours(week.ToSortableInt(), offeredArray
-                .Where(g => g.Key.ConsultantId == consultant.Id && g.Key.WorkTypeId == project.Id &&
-                            g.Key.Year == week.Year &&
-                            g.Key.Week == week.WeekNumber)
-                .Select(g => g.Select(staffing => staffing.Hours).Sum())
-                .Sum()
-            )).ToList();
-
-            return new DetailedBooking(new BookingDetails(project.Customer.Name, BookingType.Offer), bookings);
-        }).ToList();
-
-        var plannedAbsencesPrWeek = plannedAbsenceTypes.Select(absenceType =>
-        {
-            var bookings = weekSet.Select(week => new WeeklyHours(week.ToSortableInt(), absenceArray
-                .Where(g => g.Key.ConsultantId == consultant.Id && g.Key.WorkTypeId == absenceType.Id &&
-                            g.Key.Year == week.Year &&
-                            g.Key.Week == week.WeekNumber)
-                .Select(g => g.Select(staffing => staffing.Hours).Sum())
-                .Sum()
-            )).ToList();
-
-            return new DetailedBooking(new BookingDetails(absenceType.Name, BookingType.PlannedAbsence), bookings);
-        }).ToList();
-
+        var plannedAbsencesPrWeek = plannedAbsenceTypes.Select(absence => new DetailedBooking(absence.Name,
+                BookingType.PlannedAbsence,
+                WeeklyHoursList(billableStaffing, absence.Id)))
+            .ToList();
 
         var detailedBookings = billableBookings.Concat(offeredBookings).Concat(plannedAbsencesPrWeek);
-
 
         if (vacations.Count > 0)
         {
@@ -221,6 +192,26 @@ public class ConsultantController : ControllerBase
         }
 
         return detailedBookings.ToList();
+    }
+
+    private static List<T> UniqueWorkTypes<T>(Dictionary<int, T> workTypes,
+        Dictionary<StaffingGroupKey, double> billableStaffing)
+    {
+        return billableStaffing.Keys
+            .Select(key => key.WorkTypeId)
+            .Distinct()
+            .Select(id => workTypes[id])
+            .ToList();
+    }
+
+    private static List<WeeklyHours> WeeklyHoursList(Dictionary<StaffingGroupKey, double> staffingDictionary,
+        int workTypeId)
+    {
+        return staffingDictionary
+            .Where(kvPair => kvPair.Key.WorkTypeId == workTypeId)
+            .Select(a => new WeeklyHours(new Week(a.Key.Year, a.Key.Week)
+                .ToSortableInt(), a.Value))
+            .ToList();
     }
 }
 

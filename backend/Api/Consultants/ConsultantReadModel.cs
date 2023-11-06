@@ -11,6 +11,11 @@ public record BookedHoursPerWeek(int Year, int WeekNumber, int SortableWeek, str
 
 public record DetailedBooking(BookingDetails BookingDetails, List<WeeklyHours> Hours)
 {
+    public DetailedBooking(string name, BookingType type, List<WeeklyHours> bookings) : this(
+        new BookingDetails(name, type), bookings)
+    {
+    }
+
     private double TotalHoursForWeek(Week week)
     {
         return Hours.Where(weeklySum => weeklySum.Week == week.ToSortableInt()).Sum(weeklyHours => weeklyHours.Hours);
