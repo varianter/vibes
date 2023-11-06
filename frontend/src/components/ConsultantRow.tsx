@@ -18,7 +18,9 @@ interface ConsultantListElementProps {
 
 export default function ConsultantRows({
   consultant,
-}: ConsultantListElementProps) {
+}: {
+  consultant: Consultant;
+}) {
   const [isListElementVisible, setIsListElementVisible] = useState(false);
   const [isButtonHovered, setIsButtonHovered] = useState(false);
 
@@ -34,7 +36,7 @@ export default function ConsultantRows({
         onMouseLeave={() => setIsButtonHovered(false)}
       >
         <td
-          className={`border-l-2 w-[10%] ${
+          className={`border-l-2 ${
             isListElementVisible
               ? "border-l-secondary_default"
               : isButtonHovered

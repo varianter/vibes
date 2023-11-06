@@ -1,5 +1,5 @@
 "use client";
-import ConsultantRows from "./ConsultantRows";
+import ConsultantRows from "./ConsultantRow";
 import ActiveFilters from "./ActiveFilters";
 import { useFilteredConsultants } from "@/hooks/useFilteredConsultants";
 import WeekSelection from "@/components/WeekSelection";
