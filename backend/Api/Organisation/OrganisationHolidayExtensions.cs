@@ -27,7 +27,7 @@ public static class OrganisationHolidayExtensions
     {
         var publicHoliday = organization.GetPublicHoliday();
         var isPublicHoliday = publicHoliday.IsPublicHoliday(day.ToDateTime(TimeOnly.MinValue));
-        return isPublicHoliday || organization.IsChristmasHoliday(day);
+        return isPublicHoliday;
     }
 
     private static PublicHolidayBase GetPublicHoliday(this Organization organization)
@@ -44,7 +44,7 @@ public static class OrganisationHolidayExtensions
 
     private static bool IsChristmasHoliday(this Organization organization, DateOnly date)
     {
-        if (organization.HasVacationInChristmas) return false;
+        if (!organization.HasVacationInChristmas) return false;
 
         var startDate = new DateOnly(date.Year, 12, 24);
         var endDate = new DateOnly(date.Year, 12, 31);

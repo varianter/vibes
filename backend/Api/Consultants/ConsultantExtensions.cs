@@ -211,22 +211,23 @@ public static class ConsultantExtensions
             BookingType.Vacation,
             week);
 
+        var bookedTime = totalBillable + totalAbsence + totalVacations + totalHolidayHours;
+        var hoursPrWorkDay = consultant.Department.Organization.HoursPerWorkday;
 
-        var rawSellableTime = consultant.Department.Organization.HoursPerWorkday * 5 - totalBillable -
-                              totalOffered -
-                              totalVacations - totalVacations - totalHolidayHours;
+        var totalFreeTime =
+            Math.Max(hoursPrWorkDay * 5 - bookedTime, 0);
 
-        var totalSellableTime = Math.Max(rawSellableTime, 0);
-        var totalOverBooked = Math.Min(rawSellableTime, 0);
+        var totalOverbooked =
+            Math.Max(bookedTime - hoursPrWorkDay * 5, 0);
 
         return new BookedHoursPerWeek(
             week.Year,
             week.WeekNumber,
             week.ToSortableInt(),
-            week.ToString(),
-            new WeeklyBookingReadModel(totalBillable, totalOffered, totalAbsence, totalSellableTime,
+            GetDatesForWeek(week),
+            new WeeklyBookingReadModel(totalBillable, totalOffered, totalAbsence, totalFreeTime,
                 totalHolidayHours, totalVacations,
-                totalOverBooked)
+                totalOverbooked)
         );
     }
 }
