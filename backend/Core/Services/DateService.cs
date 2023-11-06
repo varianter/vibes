@@ -25,14 +25,20 @@ public class DateService
             DayOfWeek.Monday);
     }
 
+    public static Week GetWeek(DateOnly date)
+    {
+        var weekNum = GetWeekNumber(date.ToDateTime(TimeOnly.MinValue));
+        return new Week(date.Year, weekNum);
+    }
+
     public static int GetWeekAhead(int offset)
     {
         return GetWeekNumber(DateTime.Today.AddDays(7 * offset));
     }
 
-    public static bool DateIsInWeek(DateOnly day, int year, int week)
+    public static bool DateIsInWeek(DateOnly day, Week week)
     {
-        return day.Year == year && GetWeekNumber(day.ToDateTime(TimeOnly.MinValue)) == week;
+        return day.Year == week.Year && GetWeekNumber(day.ToDateTime(TimeOnly.MinValue)) == week.WeekNumber;
     }
 
     public static List<Week> GetNextWeeks(Week firstWeek, int weeksAhead)

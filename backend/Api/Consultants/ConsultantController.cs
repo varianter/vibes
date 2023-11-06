@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Api.Cache;
 using Core.DomainModels;
 using Core.Services;
@@ -31,6 +32,8 @@ public class ConsultantController : ControllerBase
         [FromQuery(Name = "weeks")] int numberOfWeeks = 8,
         [FromQuery(Name = "includeOccupied")] bool includeOccupied = true)
     {
+        var watch = Stopwatch.StartNew();
+
         var selectedYear = selectedYearParam ?? DateTime.Now.Year;
         var selectedWeekNumber = selectedWeekParam ?? DateService.GetWeekNumber(DateTime.Now);
         var selectedWeek = new Week(selectedYear, selectedWeekNumber);
@@ -41,14 +44,76 @@ public class ConsultantController : ControllerBase
             )
             .ToList();
 
-        return Ok(consultants);
+        watch.Stop();
+
+        return Ok(new { Time = watch.ElapsedMilliseconds, Data = consultants });
+    }
+
+    [HttpGet("perf")]
+    public ActionResult<List<ConsultantReadModel>> GetFast()
+    {
+        var watch = Stopwatch.StartNew();
+
+        var weekSet = DateService.GetNextWeeks(new Week(2023, 44), 8);
+
+        var minDate = new DateOnly(2023, 11, 1);
+        var maxDate = new DateOnly(2023, 12, 1);
+
+        var year = weekSet[0].Year;
+        var minWeek = weekSet.Select(w => w.WeekNumber).Min();
+        var maxWeek = weekSet.Select(w => w.WeekNumber).Min();
+
+
+        var consultants = _context.Consultant.Include(consultant => consultant.Department)
+            .ThenInclude(department => department.Organization).ToList();
+
+        var projects = _context.Project.Include(p => p.Customer)
+            .ToDictionary(project => project.Id, project => project);
+        var absences = _context.Absence.ToDictionary(absence => absence.Id, absence => absence);
+
+        var billableStaffings = LoadStaffingByProjectTypeForWeeks(weekSet, ProjectState.Active);
+        var offeredStaffings = LoadStaffingByProjectTypeForWeeks(weekSet, ProjectState.Offer);
+
+        var plannedAbsences = _context.PlannedAbsence
+            .Include(plannedAbsence => plannedAbsence.Consultant)
+            .Include(plannedAbsence => plannedAbsence.Absence)
+            .Where(absence => absence.Year == year && minWeek <= absence.WeekNumber && absence.WeekNumber <= maxWeek)
+            .GroupBy(plannedAbsence =>
+                new StaffingGroupKey(plannedAbsence.Consultant.Id, plannedAbsence.Absence.Id, plannedAbsence.Year,
+                    plannedAbsence.WeekNumber))
+            .ToList();
+
+
+        var vacations = _context.Vacation
+            .Where(vacation => minDate <= vacation.Date && vacation.Date <= maxDate)
+            .Include(vacation => vacation.Consultant)
+            .GroupBy(vacation => vacation.Consultant.Id)
+            .ToList();
+
+        var a = consultants.Select(c =>
+        {
+            var billableSet = billableStaffings.Where(g =>
+                g.Key.ConsultantId == c.Id);
+            var offeredSet = offeredStaffings
+                .Where(g => g.Key.ConsultantId == c.Id);
+            var absenceSet = plannedAbsences.Where(g => g.Key.ConsultantId == c.Id);
+
+            var consultantVacations = vacations.Where(g => g.Key == c.Id).Aggregate(new List<Vacation>(),
+                (list, grouping) => list.Concat(grouping.Select(v => v)).ToList());
+
+            return ConsultantReadModel.FromController(c, projects, absences, billableSet, offeredSet, absenceSet,
+                consultantVacations, weekSet);
+        }).ToList();
+        watch.Stop();
+
+        return Ok(new { Time = watch.ElapsedMilliseconds, Data = a });
     }
 
 
     private List<ConsultantReadModel> GetConsultantsWithAvailability(string orgUrlKey, Week initialWeekNumber,
         int numberOfWeeks)
     {
-        if (numberOfWeeks == 8)
+        if (numberOfWeeks == 8 && false)
         {
             _cache.TryGetValue(
                 $"{orgUrlKey}/{initialWeekNumber}/{CacheKeys.ConsultantAvailability8Weeks}",
@@ -62,6 +127,25 @@ public class ConsultantController : ControllerBase
         _cache.Set($"{orgUrlKey}/{initialWeekNumber}/{CacheKeys.ConsultantAvailability8Weeks}", consultants);
         return consultants;
     }
+
+    private List<IGrouping<StaffingGroupKey, Staffing>> LoadStaffingByProjectTypeForWeeks(List<Week> weeks,
+        ProjectState state)
+    {
+        var year = weeks[0].Year;
+        var minWeek = weeks.Select(w => w.WeekNumber).Min();
+        var maxWeek = weeks.Select(w => w.WeekNumber).Min();
+
+
+        return _context.Staffing
+            .Where(staffing => staffing.Year == year && minWeek <= staffing.Week && staffing.Week <= maxWeek)
+            .Where(staffing =>
+                staffing.Project.State == state)
+            .Include(s => s.Consultant)
+            .Include(staffing => staffing.Project)
+            .GroupBy(s => new StaffingGroupKey(s.Consultant.Id, s.Project.Id, s.Year, s.Week))
+            .ToList();
+    }
+
 
     private List<Consultant> LoadConsultantAvailability(string orgUrlKey, Week selectedWeek, int numberOfWeeks)
     {
@@ -110,3 +194,7 @@ public class ConsultantController : ControllerBase
             .ToList();
     }
 }
+
+public record StaffingGroupKey(int ConsultantId, int WorkTypeId, int Year, int Week);
+
+public record WeeklyBooking(int YearWeek, double TotalBillable, double TotalOffered);

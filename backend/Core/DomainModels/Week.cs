@@ -11,12 +11,7 @@ public class Week : IComparable<Week>, IEquatable<Week>
 
     public int Year { get; set; }
     public int WeekNumber { get; set; }
-    
-    public override string ToString()
-    {
-        return ($"{Year}{WeekNumber}");
-    }
-    
+
 
     public int CompareTo(Week? other)
     {
@@ -34,5 +29,15 @@ public class Week : IComparable<Week>, IEquatable<Week>
     {
         if (other is null) return false;
         return Year == other.Year && WeekNumber == other.WeekNumber;
+    }
+
+    public override string ToString()
+    {
+        return $"{Year}{WeekNumber}";
+    }
+
+    public int ToSortableInt()
+    {
+        return int.Parse($"{Year}{WeekNumber}");
     }
 }
