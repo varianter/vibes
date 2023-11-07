@@ -43,21 +43,15 @@ public class DateService
 
     public static List<Week> GetNextWeeks(Week firstWeek, int weeksAhead)
     {
-        var a = FirstWorkDayOfWeek(firstWeek.Year, firstWeek.WeekNumber);
-        var secondA = LastWorkDayOfWeek(firstWeek);
+        /*Calculate weeks and years based on thursday, as this is the day that is used to figure out weeknumbers
+         at year´s end*/
+        var thrusday = FirstWorkDayOfWeek(firstWeek.Year, firstWeek.WeekNumber).AddDays(3);
         
-
         return Enumerable.Range(0, weeksAhead)
             .Select(offset =>
             {
-                var year = a.AddDays(7 * offset).Year;
-                var week = GetWeekNumber(a.AddDays(7 * offset));
-                var secondYear = secondA.AddDays(1 + 7 * offset).Year;
-                if (year < secondYear)
-                {
-                    year = secondYear;
-                }
-
+                var year = thrusday.AddDays(7 * offset).Year;
+                var week = GetWeekNumber(thrusday.AddDays(7 * offset));
                 return new Week(year, week);
             }).ToList();
     }
