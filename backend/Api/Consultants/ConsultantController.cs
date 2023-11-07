@@ -164,17 +164,17 @@ public class ConsultantController : ControllerBase
 
         var billableBookings = billableProjects.Select(project => new DetailedBooking(project.Customer.Name,
                 BookingType.Booking,
-                WeeklyHoursList(billableStaffing, project.Id)))
+                WeeklyHoursList(weekSet, billableStaffing, project.Id)))
             .ToList();
 
         var offeredBookings = offeredProjects.Select(project => new DetailedBooking(project.Customer.Name,
                 BookingType.Offer,
-                WeeklyHoursList(billableStaffing, project.Id)))
+                WeeklyHoursList(weekSet, billableStaffing, project.Id)))
             .ToList();
 
         var plannedAbsencesPrWeek = plannedAbsenceTypes.Select(absence => new DetailedBooking(absence.Name,
                 BookingType.PlannedAbsence,
-                WeeklyHoursList(billableStaffing, absence.Id)))
+                WeeklyHoursList(weekSet, billableStaffing, absence.Id)))
             .ToList();
 
         var detailedBookings = billableBookings.Concat(offeredBookings).Concat(plannedAbsencesPrWeek);
@@ -191,7 +191,12 @@ public class ConsultantController : ControllerBase
                 vacationsPrWeek));
         }
 
-        return detailedBookings.ToList();
+        var detailedBookingList = detailedBookings.ToList();
+
+        // Remove empty rows
+        detailedBookingList.RemoveAll(detailedBooking => detailedBooking.Hours.Sum(hours => hours.Hours) == 0);
+
+        return detailedBookingList;
     }
 
     private static List<T> UniqueWorkTypes<T>(Dictionary<int, T> workTypes,
@@ -204,14 +209,19 @@ public class ConsultantController : ControllerBase
             .ToList();
     }
 
-    private static List<WeeklyHours> WeeklyHoursList(Dictionary<StaffingGroupKey, double> staffingDictionary,
+    private static List<WeeklyHours> WeeklyHoursList(List<Week> weeks,
+        Dictionary<StaffingGroupKey, double> staffingDictionary,
         int workTypeId)
     {
-        return staffingDictionary
-            .Where(kvPair => kvPair.Key.WorkTypeId == workTypeId)
-            .Select(a => new WeeklyHours(new Week(a.Key.Year, a.Key.Week)
-                .ToSortableInt(), a.Value))
-            .ToList();
+        return weeks.Select(week => new WeeklyHours(
+            week.ToSortableInt(),
+            staffingDictionary
+                .Where(staffing =>
+                    staffing.Key.WorkTypeId == workTypeId
+                    && staffing.Key.Year == week.Year
+                    && staffing.Key.Week == week.WeekNumber)
+                .Sum(kvPair => kvPair.Value)
+        )).ToList();
     }
 }
 
