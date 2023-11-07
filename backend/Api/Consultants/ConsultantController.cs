@@ -64,12 +64,11 @@ public class ConsultantController : ControllerBase
     private Dictionary<StaffingGroupKey, double> LoadStaffingByProjectTypeForWeeks(List<Week> weeks,
         ProjectState state)
     {
-        var year = weeks[0].Year;
-        var minWeek = weeks.Select(w => w.WeekNumber).Min();
-        var maxWeek = weeks.Select(w => w.WeekNumber).Max();
-
+        var firstWeek = weeks.First().ToSortableInt();
+        var lastWeek = weeks.Last().ToSortableInt();
+        
         return _context.Staffing
-            .Where(staffing => staffing.Year == year && minWeek <= staffing.Week && staffing.Week <= maxWeek)
+            .Where(staffing => firstWeek <= (staffing.Year * 100 + staffing.Week) && (staffing.Year * 100 + staffing.Week) <= lastWeek) //Compare weeks by using the format yyyyww, for example 202352 and 202401
             .Where(staffing =>
                 staffing.Project.State == state)
             .Include(s => s.Consultant)
@@ -81,10 +80,10 @@ public class ConsultantController : ControllerBase
 
     private List<ConsultantReadModel> LoadReadModelFromDb(string orgUrlKey, List<Week> weekSet)
     {
-        var year = weekSet[0].Year;
-        var minWeek = weekSet.Select(w => w.WeekNumber).Min();
-        var maxWeek = weekSet.Select(w => w.WeekNumber).Min();
-
+        weekSet.Sort();
+        var firstWeek = weekSet.First().ToSortableInt();
+        var lastWeek = weekSet.Last().ToSortableInt();
+        
         var firstDayInScope = DateService.FirstDayOfWorkWeek(weekSet.First());
         var firstWorkDayOutOfScope = DateService.LastWorkDayOfWeek(weekSet.Last()).AddDays(1);
 
@@ -106,7 +105,7 @@ public class ConsultantController : ControllerBase
         var plannedAbsences = _context.PlannedAbsence
             .Include(plannedAbsence => plannedAbsence.Consultant)
             .Include(plannedAbsence => plannedAbsence.Absence)
-            .Where(absence => absence.Year == year && minWeek <= absence.WeekNumber && absence.WeekNumber <= maxWeek)
+            .Where(absence => firstWeek <= (absence.Year * 100 + absence.WeekNumber) && (absence.Year * 100 + absence.WeekNumber) <= lastWeek) //Compare weeks by using the format yyyyww, for example 202352 and 202401
             .GroupBy(plannedAbsence =>
                 new StaffingGroupKey(plannedAbsence.Consultant.Id, plannedAbsence.Absence.Id, plannedAbsence.Year,
                     plannedAbsence.WeekNumber))

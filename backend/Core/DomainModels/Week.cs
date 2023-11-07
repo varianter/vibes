@@ -31,13 +31,21 @@ public class Week : IComparable<Week>, IEquatable<Week>
         return Year == other.Year && WeekNumber == other.WeekNumber;
     }
 
+    /// <summary>
+    ///     Returns a string in the format yyyyww where y is year and w is week
+    ///     Example: 202352 or 202401 
+    /// </summary>
     public override string ToString()
     {
-        return $"{Year}{WeekNumber}";
+        return $"{ToSortableInt()}";
     }
 
+    /// <summary>
+    ///     Returns an int in the format yyyyww where y is year and w is week
+    ///     Example: 202352 or 202401 
+    /// </summary>
     public int ToSortableInt()
     {
-        return int.Parse($"{Year}{WeekNumber}");
+        return (Year * 100) + WeekNumber;
     }
 }
