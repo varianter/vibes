@@ -64,12 +64,16 @@ public class ConsultantController : ControllerBase
     private Dictionary<StaffingGroupKey, double> LoadStaffingByProjectTypeForWeeks(List<Week> weeks,
         ProjectState state)
     {
-        var year = weeks[0].Year;
-        var minWeek = weeks.Select(w => w.WeekNumber).Min();
-        var maxWeek = weeks.Select(w => w.WeekNumber).Max();
+        var year = weeks.First().Year;
+        var minWeek = weeks.First();
+        var maxWeek = weeks.Last();
+        var secondYear = weeks.Last().Year;
 
         return _context.Staffing
-            .Where(staffing => staffing.Year == year && minWeek <= staffing.Week && staffing.Week <= maxWeek)
+            .Where(staffing => staffing.Year == year && minWeek.WeekNumber <= staffing.Week && staffing.Week <= maxWeek.WeekNumber 
+                               || (year != secondYear 
+                                   && ((staffing.Year == year && minWeek.WeekNumber <= staffing.Week && staffing.Week <= 53) 
+                                       || (staffing.Year == secondYear && 1 <= staffing.Week && staffing.Week <= maxWeek.WeekNumber))))
             .Where(staffing =>
                 staffing.Project.State == state)
             .Include(s => s.Consultant)
@@ -81,9 +85,11 @@ public class ConsultantController : ControllerBase
 
     private List<ConsultantReadModel> LoadReadModelFromDb(string orgUrlKey, List<Week> weekSet)
     {
-        var year = weekSet[0].Year;
-        var minWeek = weekSet.Select(w => w.WeekNumber).Min();
-        var maxWeek = weekSet.Select(w => w.WeekNumber).Min();
+        weekSet.Sort();
+        var year = weekSet.First().Year;
+        var minWeek = weekSet.First();
+        var maxWeek = weekSet.Last();
+        var secondYear = weekSet.Last().Year;
 
         var firstDayInScope = DateService.FirstDayOfWorkWeek(weekSet.First());
         var firstWorkDayOutOfScope = DateService.LastWorkDayOfWeek(weekSet.Last()).AddDays(1);
@@ -106,7 +112,8 @@ public class ConsultantController : ControllerBase
         var plannedAbsences = _context.PlannedAbsence
             .Include(plannedAbsence => plannedAbsence.Consultant)
             .Include(plannedAbsence => plannedAbsence.Absence)
-            .Where(absence => absence.Year == year && minWeek <= absence.WeekNumber && absence.WeekNumber <= maxWeek)
+            .Where(absence => absence.Year == year && minWeek.WeekNumber <= absence.WeekNumber && absence.WeekNumber <= maxWeek.WeekNumber 
+                              || (year != secondYear && (year == absence.Year && minWeek.WeekNumber <= absence.WeekNumber && absence.WeekNumber <= 53 || secondYear == absence.Year && 1 <= absence.WeekNumber && absence.WeekNumber <= maxWeek.WeekNumber)) )
             .GroupBy(plannedAbsence =>
                 new StaffingGroupKey(plannedAbsence.Consultant.Id, plannedAbsence.Absence.Id, plannedAbsence.Year,
                     plannedAbsence.WeekNumber))

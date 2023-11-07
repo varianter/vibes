@@ -33,11 +33,14 @@ public class Week : IComparable<Week>, IEquatable<Week>
 
     public override string ToString()
     {
+        if (WeekNumber < 10) return $"{Year}0{WeekNumber}";
         return $"{Year}{WeekNumber}";
     }
 
     public int ToSortableInt()
     {
+        if (WeekNumber < 10) return int.Parse(($"{Year}0{WeekNumber}"));
+
         return int.Parse($"{Year}{WeekNumber}");
     }
 }
