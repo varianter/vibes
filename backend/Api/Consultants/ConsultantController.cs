@@ -68,7 +68,7 @@ public class ConsultantController : ControllerBase
         var lastWeek = weeks.Last().ToSortableInt();
         
         return _context.Staffing
-            .Where(staffing => firstWeek <= (staffing.Year * 100 + staffing.Week) && (staffing.Year * 100 + staffing.Week) <= lastWeek)
+            .Where(staffing => firstWeek <= (staffing.Year * 100 + staffing.Week) && (staffing.Year * 100 + staffing.Week) <= lastWeek) //Compare weeks by using the format yyyyww, for example 202352 and 202401
             .Where(staffing =>
                 staffing.Project.State == state)
             .Include(s => s.Consultant)
@@ -105,7 +105,7 @@ public class ConsultantController : ControllerBase
         var plannedAbsences = _context.PlannedAbsence
             .Include(plannedAbsence => plannedAbsence.Consultant)
             .Include(plannedAbsence => plannedAbsence.Absence)
-            .Where(absence => firstWeek <= (absence.Year * 100 + absence.WeekNumber) && (absence.Year * 100 + absence.WeekNumber) <= lastWeek)
+            .Where(absence => firstWeek <= (absence.Year * 100 + absence.WeekNumber) && (absence.Year * 100 + absence.WeekNumber) <= lastWeek) //Compare weeks by using the format yyyyww, for example 202352 and 202401
             .GroupBy(plannedAbsence =>
                 new StaffingGroupKey(plannedAbsence.Consultant.Id, plannedAbsence.Absence.Id, plannedAbsence.Year,
                     plannedAbsence.WeekNumber))
