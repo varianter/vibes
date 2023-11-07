@@ -45,13 +45,13 @@ public class DateService
     {
         /*Calculate weeks and years based on thursday, as this is the day that is used to figure out weeknumbers
          at year´s end*/
-        var thrusday = FirstWorkDayOfWeek(firstWeek.Year, firstWeek.WeekNumber).AddDays(3);
+        var firstThursday = FirstWorkDayOfWeek(firstWeek.Year, firstWeek.WeekNumber).AddDays(3);
         
         return Enumerable.Range(0, weeksAhead)
             .Select(offset =>
             {
-                var year = thrusday.AddDays(7 * offset).Year;
-                var week = GetWeekNumber(thrusday.AddDays(7 * offset));
+                var year = firstThursday.AddDays(7 * offset).Year;
+                var week = GetWeekNumber(firstThursday.AddDays(7 * offset));
                 return new Week(year, week);
             }).ToList();
     }
