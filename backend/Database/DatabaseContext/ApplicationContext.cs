@@ -14,6 +14,8 @@ public class ApplicationContext : DbContext
     public DbSet<Competence> Competence { get; set; } = null!;
     public DbSet<Department> Department { get; set; } = null!;
     public DbSet<Organization> Organization { get; set; } = null!;
+    public DbSet<Absence> Absence { get; set; } = null!;
+
     public DbSet<PlannedAbsence> PlannedAbsence { get; set; } = null!;
     public DbSet<Vacation> Vacation { get; set; } = null!;
     public DbSet<Customer> Customer { get; set; } = null!;

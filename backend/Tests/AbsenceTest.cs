@@ -33,7 +33,7 @@ public class Tests
             NumberOfVacationDaysInYear = 25,
             HoursPerWorkday = 7.5,
             Departments = new List<Department>(),
-            HasVacationInChristmas = false,
+            HasVacationInChristmas = true,
             Customers = new List<Customer>()
         };
 
@@ -67,43 +67,32 @@ public class Tests
         var year = mondayDateOnly.Year;
         var month = mondayDateOnly.Month;
         var monday = mondayDateOnly.Day;
-        var week = DateService.GetWeekNumber(mondayDateOnly.ToDateTime(TimeOnly.Parse("12:00")));
+        var weekNumber = DateService.GetWeekNumber(mondayDateOnly.ToDateTime(TimeOnly.Parse("12:00")));
+        var week = new Week(year, weekNumber);
         var project = Substitute.For<Project>();
         var customer = Substitute.For<Customer>();
         customer.Name = "TestCustomer";
         project.Customer = customer;
         project.State = ProjectState.Active;
 
+        var detailedBookings = new List<DetailedBooking>();
+
         if (vacationDays > 0)
-            for (var i = 0; i < vacationDays; i++)
-                consultant.Vacations.Add(new Vacation
-                {
-                    Consultant = consultant,
-                    // Note that this calculation is not taking into account WHICH day, but estimated weekSummary
-                    Date = new DateOnly(year, month, monday + i)
-                });
+            detailedBookings.Add(new DetailedBooking(new BookingDetails("Ferie", BookingType.Vacation),
+                new List<WeeklyHours> { new(week.ToSortableInt(), vacationDays * 7.5) }));
 
         if (plannedAbsenceHours > 0)
-            consultant.PlannedAbsences.Add(new PlannedAbsence
-            {
-                Absence = Substitute.For<Absence>(),
-                Consultant = consultant,
-                Year = year,
-                WeekNumber = week,
-                Hours = plannedAbsenceHours
-            });
+            detailedBookings.Add(new DetailedBooking(new BookingDetails("Perm", BookingType.PlannedAbsence),
+                new List<WeeklyHours> { new(week.ToSortableInt(), plannedAbsenceHours) }));
 
         if (staffedHours > 0)
-            consultant.Staffings.Add(new Staffing
-            {
-                Project = project,
-                Consultant = consultant,
-                Year = year,
-                Week = week,
-                Hours = staffedHours
-            });
+            detailedBookings.Add(new DetailedBooking(new BookingDetails("Kundenavn", BookingType.Booking),
+                new List<WeeklyHours> { new(week.ToSortableInt(), staffedHours) }));
 
-        var bookingModel = consultant.GetBookingModelForWeek(year, week);
+        var bookingModel = consultant.MapToReadModelList(detailedBookings, new List<Week> { week }).Bookings.First()
+            .BookingModel;
+
+
         Assert.Multiple(() =>
         {
             Assert.That(bookingModel.TotalBillable, Is.EqualTo(staffedHours));

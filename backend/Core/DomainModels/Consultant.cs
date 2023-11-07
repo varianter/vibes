@@ -27,6 +27,17 @@ public class Consultant
     public List<Project> Projects { get; set; } = new();
 
     public List<Staffing> Staffings { get; set; } = new();
+
+    public int YearsOfExperience
+    {
+        get
+        {
+            var augustThisYear = new DateTime(DateTime.Now.Year, 9, 20);
+            var currentAcademicYear =
+                (DateTime.Now - augustThisYear).Seconds > 0 ? DateTime.Now.Year : DateTime.Now.Year - 1;
+            return currentAcademicYear - GraduationYear ?? currentAcademicYear;
+        }
+    }
 }
 
 public class Competence
