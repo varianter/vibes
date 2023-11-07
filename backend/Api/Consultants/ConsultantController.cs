@@ -168,12 +168,12 @@ public class ConsultantController : ControllerBase
 
         var offeredBookings = offeredProjects.Select(project => new DetailedBooking(project.Customer.Name,
                 BookingType.Offer,
-                WeeklyHoursList(weekSet, billableStaffing, project.Id)))
+                WeeklyHoursList(weekSet, offeredStaffing, project.Id)))
             .ToList();
 
         var plannedAbsencesPrWeek = plannedAbsenceTypes.Select(absence => new DetailedBooking(absence.Name,
                 BookingType.PlannedAbsence,
-                WeeklyHoursList(weekSet, billableStaffing, absence.Id)))
+                WeeklyHoursList(weekSet, plannedAbsences, absence.Id)))
             .ToList();
 
         var detailedBookings = billableBookings.Concat(offeredBookings).Concat(plannedAbsencesPrWeek);
