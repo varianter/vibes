@@ -152,7 +152,7 @@
 
   .main {
     grid-area: main;
-    overflow-y: scroll;
+    overflow: scroll;
     height: 100%;
   }
 
