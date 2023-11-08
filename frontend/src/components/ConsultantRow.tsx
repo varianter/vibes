@@ -10,7 +10,7 @@ import {
   Moon,
   Sun,
 } from "react-feather";
-import InfoPill from "./InfoPill";
+import InfoPill, { InfoPillProps, InfoPillVariant } from "./InfoPill";
 
 export default function ConsultantRows({
   consultant,
@@ -20,6 +20,8 @@ export default function ConsultantRows({
   const [isListElementVisible, setIsListElementVisible] = useState(false);
   const [isRowHovered, setIsRowHovered] = useState(false);
   const [hoveredRowWeek, setHoveredRowWeek] = useState(-1);
+
+  const columnCount = consultant.bookings.length ?? 0;
 
   function toggleListElementVisibility() {
     setIsListElementVisible(!isListElementVisible);
@@ -65,7 +67,7 @@ export default function ConsultantRows({
           </div>
         </td>
         {consultant.bookings?.map((b) => (
-          <td key={b.weekNumber} className="h-[52px] p-0.5">
+          <td key={b.weekNumber} className="h-[52px] p-0.5 min-w-fit">
             <div
               className={`flex flex-col gap-1 p-2 justify-end rounded w-full h-full relative ${
                 b.bookingModel.totalOverbooking > 0
@@ -141,20 +143,24 @@ export default function ConsultantRows({
                     text={b.bookingModel.totalOffered.toFixed(1)}
                     colors="bg-offer_light text-offer_dark"
                     icon={<FileText size="12" />}
+                    variant={getInfopillVariantByColumnCount(columnCount)}
                   />
                 )}
-                {b.bookingModel.totalSellableTime > 0 && (
-                  <InfoPill
-                    text={b.bookingModel.totalSellableTime.toFixed(1)}
-                    colors="bg-free_light text-free_dark"
-                    icon={<Coffee size="12" />}
-                  />
-                )}
+                {b.bookingModel.totalSellableTime > 0 &&
+                  getInfopillVariantByColumnCount(columnCount) !== "narrow" && (
+                    <InfoPill
+                      text={b.bookingModel.totalSellableTime.toFixed(1)}
+                      colors="bg-free_light text-free_dark"
+                      icon={<Coffee size="12" />}
+                      variant={getInfopillVariantByColumnCount(columnCount)}
+                    />
+                  )}
                 {b.bookingModel.totalVacationHours > 0 && (
                   <InfoPill
                     text={b.bookingModel.totalVacationHours.toFixed(1)}
                     colors="bg-vacation_light text-vacation_dark"
                     icon={<Sun size="12" />}
+                    variant={getInfopillVariantByColumnCount(columnCount)}
                   />
                 )}
                 {b.bookingModel.totalOverbooking > 0 && (
@@ -162,6 +168,7 @@ export default function ConsultantRows({
                     text={b.bookingModel.totalOverbooking.toFixed(1)}
                     colors="bg-overbooking_dark text-overbooking_light"
                     icon={<AlertTriangle size="12" />}
+                    variant={getInfopillVariantByColumnCount(columnCount)}
                   />
                 )}
               </div>
@@ -273,5 +280,18 @@ function getIconByBookingType(type: BookingType): ReactElement {
       return <Moon size={16} className="text-absence_dark" />;
     default:
       return <></>;
+  }
+}
+
+function getInfopillVariantByColumnCount(count: number): InfoPillVariant {
+  switch (true) {
+    case 26 <= count:
+      return "narrow";
+    case 12 <= count && count < 26:
+      return "medium";
+    case count < 12:
+      return "wide";
+    default:
+      return "wide";
   }
 }

@@ -13,6 +13,7 @@ interface UpdateFilterParams {
   departments?: string;
   years?: string;
   week?: Week;
+  numWeeks?: number;
   availability?: Boolean;
 }
 
@@ -29,6 +30,7 @@ export function useFilteredConsultants() {
   const selectedWeek = stringToWeek(
     searchParams.get("selectedWeek") || undefined,
   );
+  const weekSpan = Number.parseInt(searchParams.get("weekSpan") ?? "8");
 
   const [activeNameSearch, setActiveNameSearch] =
     useState<string>(searchFilter);
@@ -42,12 +44,16 @@ export function useFilteredConsultants() {
       const { departments = departmentFilter } = updateParams;
       const { years = yearFilter } = updateParams;
       const { week = selectedWeek } = updateParams;
+      const { numWeeks = weekSpan } = updateParams;
       const { availability = availabilityFilter } = updateParams;
 
+      console.log("Update route with numWeeks = " + numWeeks);
       router.push(
         `${pathname}?search=${search}&depFilter=${departments}&yearFilter=${years}${
           week ? `&selectedWeek=${weekToString(week)}` : ""
-        }&availabilityFilter=${availability}`,
+        }&availabilityFilter=${availability}&${
+          numWeeks ? `&weekSpan=${numWeeks}` : ""
+        }`,
       );
     },
     [
@@ -56,6 +62,7 @@ export function useFilteredConsultants() {
       router,
       searchFilter,
       selectedWeek,
+      weekSpan,
       yearFilter,
       availabilityFilter,
     ],
@@ -69,7 +76,7 @@ export function useFilteredConsultants() {
         })
       : DateTime.now();
 
-    let newDate = date.plus({ week: 7 }); //TODO: change to shownWeeks when week filter is added
+    let newDate = date.plus({ week: weekSpan - 1 });
     updateRoute({
       week: { year: newDate.year, weekNumber: newDate.weekNumber },
     });
@@ -83,7 +90,7 @@ export function useFilteredConsultants() {
         })
       : DateTime.now();
 
-    let newDate = date.plus({ week: -7 });
+    let newDate = date.plus({ week: weekSpan - 1 });
     updateRoute({
       week: { year: newDate.year, weekNumber: newDate.weekNumber },
     });
@@ -93,6 +100,11 @@ export function useFilteredConsultants() {
     router.push(
       `${pathname}?search=${searchFilter}&depFilter=${departmentFilter}&yearFilter=${yearFilter}&availabilityFilter=${availabilityFilter}`,
     );
+  }
+
+  function setWeekSpan(weekSpanString: string) {
+    const weekSpanNum = parseInt(weekSpanString.split(" ")[0]);
+    updateRoute({ numWeeks: weekSpanNum });
   }
 
   useEffect(() => {
@@ -219,6 +231,8 @@ export function useFilteredConsultants() {
     incrementSelectedWeek,
     decrementSelectedWeek,
     resetSelectedWeek,
+    weekSpan,
+    setWeekSpan,
   };
 }
 
