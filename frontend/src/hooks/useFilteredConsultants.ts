@@ -14,6 +14,7 @@ interface UpdateFilterParams {
   years?: string;
   week?: Week;
   numWeeks?: number;
+  availability?: Boolean;
 }
 
 export function useFilteredConsultants() {
@@ -25,6 +26,7 @@ export function useFilteredConsultants() {
   const searchFilter = searchParams.get("search") || "";
   const departmentFilter = searchParams.get("depFilter") || "";
   const yearFilter = searchParams.get("yearFilter") || "";
+  const availabilityFilter = searchParams.get("availabilityFilter") || "";
   const selectedWeek = stringToWeek(
     searchParams.get("selectedWeek") || undefined,
   );
@@ -43,10 +45,11 @@ export function useFilteredConsultants() {
       const { years = yearFilter } = updateParams;
       const { week = selectedWeek } = updateParams;
       const { numWeeks = weekSpan } = updateParams;
+      const { availability = availabilityFilter } = updateParams;
 
       console.log("Update route with numWeeks = " + numWeeks);
       router.push(
-        `${pathname}?search=${search}&depFilter=${departments}&yearFilter=${years}${
+        `${pathname}?search=${search}&depFilter=${departments}&yearFilter=${years}&availabilityFilter=${availability}${
           week ? `&selectedWeek=${weekToString(week)}` : ""
         }${numWeeks ? `&weekSpan=${numWeeks}` : ""}`,
       );
@@ -59,6 +62,7 @@ export function useFilteredConsultants() {
       selectedWeek,
       weekSpan,
       yearFilter,
+      availabilityFilter,
     ],
   );
 
@@ -70,7 +74,7 @@ export function useFilteredConsultants() {
         })
       : DateTime.now();
 
-    let newDate = date.plus({ week: 1 });
+    let newDate = date.plus({ week: 7 }); //TODO: change to shownWeeks when week filter is added
     updateRoute({
       week: { year: newDate.year, weekNumber: newDate.weekNumber },
     });
@@ -84,7 +88,7 @@ export function useFilteredConsultants() {
         })
       : DateTime.now();
 
-    let newDate = date.plus({ week: -1 });
+    let newDate = date.plus({ week: -7 });
     updateRoute({
       week: { year: newDate.year, weekNumber: newDate.weekNumber },
     });
@@ -92,7 +96,7 @@ export function useFilteredConsultants() {
 
   function resetSelectedWeek() {
     router.push(
-      `${pathname}?search=${searchFilter}&depFilter=${departmentFilter}&yearFilter=${yearFilter}`,
+      `${pathname}?search=${searchFilter}&depFilter=${departmentFilter}&yearFilter=${yearFilter}&availabilityFilter=${availabilityFilter}`,
     );
   }
 
@@ -129,11 +133,14 @@ export function useFilteredConsultants() {
     .map((urlString) => yearRanges.find((y) => y.urlString === urlString))
     .filter((year) => year !== undefined) as YearRange[];
 
+  const availabilityFilterOn = availabilityFilter === "true";
+
   const filteredConsultants = filterConsultants(
     searchFilter,
     departmentFilter,
     filteredYears,
     consultants,
+    availabilityFilterOn,
   );
 
   function setNameSearch(newSearch: string) {
@@ -155,6 +162,13 @@ export function useFilteredConsultants() {
       updateRoute({ years: newYearFilter });
     },
     [updateRoute, yearFilter],
+  );
+
+  const toggleAvailabilityFilter = useCallback(
+    (availabelFilterOn: Boolean) => {
+      updateRoute({ availability: availabelFilterOn });
+    },
+    [updateRoute],
   );
 
   useEffect(() => {
@@ -191,11 +205,13 @@ export function useFilteredConsultants() {
     departments,
     filteredDepartments,
     filteredYears,
+    availabilityFilterOn,
     currentNameSearch: activeNameSearch,
     searchFilter,
     setNameSearch,
     toggleDepartmentFilter,
     toggleYearFilter,
+    toggleAvailabilityFilter,
     selectedWeek,
     incrementSelectedWeek,
     decrementSelectedWeek,
@@ -248,6 +264,7 @@ function filterConsultants(
   departmentFilter: string,
   yearFilter: YearRange[],
   consultants: Consultant[],
+  availabilityFilterOn: Boolean,
 ) {
   let newFilteredConsultants = consultants;
   if (search && search.length > 0) {
@@ -265,6 +282,11 @@ function filterConsultants(
   if (yearFilter.length > 0) {
     newFilteredConsultants = newFilteredConsultants.filter((consultant) =>
       inYearRanges(consultant, yearFilter),
+    );
+  }
+  if (availabilityFilterOn) {
+    newFilteredConsultants = newFilteredConsultants.filter(
+      (consultant) => !consultant.isOccupied,
     );
   }
   return newFilteredConsultants;

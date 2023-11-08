@@ -11,7 +11,6 @@ const MockWeeklyBookingReadModel: WeeklyBookingReadModel = {
   totalPlannedAbstences: 0,
   totalSellableTime: 0,
   totalHolidayHours: 0,
-  bookings: [],
   totalOverbooking: 0,
   totalVacationHours: 0,
 };
@@ -32,6 +31,8 @@ export const MockConsultants: Consultant[] = [
       },
     ],
     yearsOfExperience: 23,
+    detailedBooking: [],
+    isOccupied: true,
   },
 ];
 

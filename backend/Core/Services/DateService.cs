@@ -25,25 +25,33 @@ public class DateService
             DayOfWeek.Monday);
     }
 
+    public static Week GetWeek(DateOnly date)
+    {
+        var weekNum = GetWeekNumber(date.ToDateTime(TimeOnly.MinValue));
+        return new Week(date.Year, weekNum);
+    }
+
     public static int GetWeekAhead(int offset)
     {
         return GetWeekNumber(DateTime.Today.AddDays(7 * offset));
     }
 
-    public static bool DateIsInWeek(DateOnly day, int year, int week)
+    public static bool DateIsInWeek(DateOnly day, Week week)
     {
-        return day.Year == year && GetWeekNumber(day.ToDateTime(TimeOnly.MinValue)) == week;
+        return day.Year == week.Year && GetWeekNumber(day.ToDateTime(TimeOnly.MinValue)) == week.WeekNumber;
     }
 
     public static List<Week> GetNextWeeks(Week firstWeek, int weeksAhead)
     {
-        var a = FirstWorkDayOfWeek(firstWeek.Year, firstWeek.WeekNumber);
+        /*Calculate weeks and years based on thursday, as this is the day that is used to figure out weeknumbers
+         at year´s end*/
+        var firstThursday = FirstWorkDayOfWeek(firstWeek.Year, firstWeek.WeekNumber).AddDays(3);
+        
         return Enumerable.Range(0, weeksAhead)
             .Select(offset =>
             {
-                var year = a.AddDays(7 * offset).Year;
-                var week = GetWeekNumber(a.AddDays(7 * offset));
-
+                var year = firstThursday.AddDays(7 * offset).Year;
+                var week = GetWeekNumber(firstThursday.AddDays(7 * offset));
                 return new Week(year, week);
             }).ToList();
     }
@@ -87,5 +95,15 @@ public class DateService
 
         // Subtract 3 days from Thursday to get Monday, which is the first weekday in ISO8601
         return result.AddDays(-3);
+    }
+
+    public static DateOnly FirstDayOfWorkWeek(Week week)
+    {
+        return DateOnly.FromDateTime(FirstWorkDayOfWeek(week.Year, week.WeekNumber));
+    }
+
+    public static DateOnly LastWorkDayOfWeek(Week week)
+    {
+        return FirstDayOfWorkWeek(week).AddDays(5);
     }
 }

@@ -34,7 +34,9 @@ public class ConsultantController : ControllerBase
         var selectedYear = selectedYearParam ?? DateTime.Now.Year;
         var selectedWeekNumber = selectedWeekParam ?? DateService.GetWeekNumber(DateTime.Now);
         var selectedWeek = new Week(selectedYear, selectedWeekNumber);
-        var consultants = GetConsultantsWithAvailability(orgUrlKey, selectedWeek, numberOfWeeks)
+        var weekSet = DateService.GetNextWeeks(selectedWeek, numberOfWeeks);
+
+        var consultants = GetConsultantReadModels(orgUrlKey, weekSet)
             .Where(c =>
                 includeOccupied
                 || c.IsOccupied
@@ -44,69 +46,182 @@ public class ConsultantController : ControllerBase
         return Ok(consultants);
     }
 
-
-    private List<ConsultantReadModel> GetConsultantsWithAvailability(string orgUrlKey, Week initialWeekNumber,
-        int numberOfWeeks)
+    private List<ConsultantReadModel> GetConsultantReadModels(string orgUrlKey, List<Week> weeks)
     {
-        if (numberOfWeeks == 8)
-        {
-            _cache.TryGetValue(
-                $"{orgUrlKey}/{initialWeekNumber}/{CacheKeys.ConsultantAvailability8Weeks}",
-                out List<ConsultantReadModel>? cachedConsultants);
-            if (cachedConsultants != null) return cachedConsultants;
-        }
+        var initialWeekKey = weeks.First().ToSortableInt();
+        var cacheKey = $"{orgUrlKey}/{weeks.Count}/{initialWeekKey}/{CacheKeys.ConsultantReadModels}";
+        var cacheHadReadModel = _cache.TryGetValue(cacheKey,
+            out List<ConsultantReadModel>? consultantReadModels);
 
-        var consultants = LoadConsultantAvailability(orgUrlKey, initialWeekNumber, numberOfWeeks)
-            .Select(c => c.MapConsultantToReadModel(initialWeekNumber, numberOfWeeks)).ToList();
+        if (cacheHadReadModel && consultantReadModels is not null) return consultantReadModels;
 
-        _cache.Set($"{orgUrlKey}/{initialWeekNumber}/{CacheKeys.ConsultantAvailability8Weeks}", consultants);
-        return consultants;
+        var loadedReadModels = LoadReadModelFromDb(orgUrlKey, weeks);
+        _cache.Set(cacheKey, loadedReadModels);
+        return loadedReadModels;
     }
 
-    private List<Consultant> LoadConsultantAvailability(string orgUrlKey, Week selectedWeek, int numberOfWeeks)
+
+    private Dictionary<StaffingGroupKey, double> LoadStaffingByProjectTypeForWeeks(List<Week> weeks,
+        ProjectState state)
     {
-        var applicableWeeks = DateService.GetNextWeeks(selectedWeek, numberOfWeeks);
-        var firstDayOfCurrentWeek = DateService.GetFirstDayOfWeekContainingDate(DateTime.Now);
-        var firstWorkDayOutOfScope =
-            DateService.GetFirstDayOfWeekContainingDate(DateTime.Now.AddDays(numberOfWeeks * 7));
+        var firstWeek = weeks.First().ToSortableInt();
+        var lastWeek = weeks.Last().ToSortableInt();
+        
+        return _context.Staffing
+            .Where(staffing => firstWeek <= (staffing.Year * 100 + staffing.Week) && (staffing.Year * 100 + staffing.Week) <= lastWeek) //Compare weeks by using the format yyyyww, for example 202352 and 202401
+            .Where(staffing =>
+                staffing.Project.State == state)
+            .Include(s => s.Consultant)
+            .Include(staffing => staffing.Project)
+            .GroupBy(staffing =>
+                new StaffingGroupKey(staffing.Consultant.Id, staffing.Project.Id, staffing.Year, staffing.Week))
+            .ToDictionary(grouping => grouping.Key, g => g.Sum(staffing => staffing.Hours));
+    }
 
-        // Needed to filter planned absence and staffing.
-        // From november, we will span two years. 
-        // Given a 5-week span, the set of weeks can look like this: (2022) 51, 52, 53, 1, 2 (2023)
-        // Then we can filter as follows: Either the staffing has year 2022 and a week between 51 and 53, or year 2023 with weeks 1 and 2. 
-        var minWeekNum = applicableWeeks.Select(w => w.WeekNumber).Min();
+    private List<ConsultantReadModel> LoadReadModelFromDb(string orgUrlKey, List<Week> weekSet)
+    {
+        weekSet.Sort();
+        var firstWeek = weekSet.First().ToSortableInt();
+        var lastWeek = weekSet.Last().ToSortableInt();
+        
+        var firstDayInScope = DateService.FirstDayOfWorkWeek(weekSet.First());
+        var firstWorkDayOutOfScope = DateService.LastWorkDayOfWeek(weekSet.Last()).AddDays(1);
 
-        // Set A will be either the weeks in the next year (2023 in the above example), or have all the weeks in a mid-year case
-        var yearA = applicableWeeks.Select(w => w.Year).Max();
-        var weeksInA = applicableWeeks.Select(w => w.WeekNumber).Where(w => w < minWeekNum + numberOfWeeks).ToList();
-        var minWeekA = weeksInA.Min();
-        var maxWeekA = weeksInA.Max();
-
-        // Set B will be either the weeks in the current year (2022 in the above example), or and empty set in a mid-year case. 
-        var yearB = applicableWeeks.Select(w => w.Year).Min();
-        var weeksInB = applicableWeeks.Select(w => w.WeekNumber).Where(w => w < minWeekNum + numberOfWeeks).ToList();
-        var minWeekB = weeksInB.Min();
-        var maxWeekB = weeksInB.Max();
-
-
-        return _context.Consultant
-            .Where(c => c.EndDate == null || c.EndDate > firstDayOfCurrentWeek)
+        var consultants = _context.Consultant.Include(consultant => consultant.Department)
+            .ThenInclude(department => department.Organization)
+            .Where(c => c.EndDate == null || c.EndDate > firstDayInScope)
             .Where(c => c.StartDate == null || c.StartDate <= firstWorkDayOutOfScope)
-            .Include(c => c.Vacations)
-            .Include(c => c.Competences)
-            .Include(c => c.PlannedAbsences.Where(pa =>
-                (pa.Year <= yearA && minWeekA <= pa.WeekNumber && pa.WeekNumber <= maxWeekA)
-                || (yearB <= pa.Year && minWeekB <= pa.WeekNumber && pa.WeekNumber <= maxWeekB)))
-            .ThenInclude(pa => pa.Absence)
-            .Include(c => c.Department)
-            .ThenInclude(d => d.Organization)
             .Where(c => c.Department.Organization.UrlKey == orgUrlKey)
-            .Include(c => c.Staffings.Where(s =>
-                (s.Year <= yearA && minWeekA <= s.Week && s.Week <= maxWeekA)
-                || (yearB <= s.Year && minWeekB <= s.Week && s.Week <= maxWeekB)))
-            .ThenInclude(s => s.Project)
-            .ThenInclude(p => p.Customer)
             .OrderBy(c => c.Name)
             .ToList();
+
+        var projects = _context.Project.Include(p => p.Customer)
+            .ToDictionary(project => project.Id, project => project);
+        var absences = _context.Absence.ToDictionary(absence => absence.Id, absence => absence);
+
+        var billableStaffing = LoadStaffingByProjectTypeForWeeks(weekSet, ProjectState.Active);
+        var offeredStaffing = LoadStaffingByProjectTypeForWeeks(weekSet, ProjectState.Offer);
+
+        var plannedAbsences = _context.PlannedAbsence
+            .Include(plannedAbsence => plannedAbsence.Consultant)
+            .Include(plannedAbsence => plannedAbsence.Absence)
+            .Where(absence => firstWeek <= (absence.Year * 100 + absence.WeekNumber) && (absence.Year * 100 + absence.WeekNumber) <= lastWeek) //Compare weeks by using the format yyyyww, for example 202352 and 202401
+            .GroupBy(plannedAbsence =>
+                new StaffingGroupKey(plannedAbsence.Consultant.Id, plannedAbsence.Absence.Id, plannedAbsence.Year,
+                    plannedAbsence.WeekNumber))
+            .ToDictionary(
+                grouping => grouping.Key,
+                grouping => grouping.Sum(plannedAbsence => plannedAbsence.Hours));
+
+
+        var vacations = _context.Vacation
+            .Where(vacation => firstDayInScope <= vacation.Date && vacation.Date <= firstWorkDayOutOfScope)
+            .Include(vacation => vacation.Consultant)
+            .GroupBy(vacation => vacation.Consultant.Id)
+            .ToList();
+
+        var consultantReadModels = consultants.Select(c =>
+        {
+            var billableSet = billableStaffing.Where(g => g.Key.ConsultantId == c.Id)
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
+            var offeredSet = offeredStaffing.Where(g => g.Key.ConsultantId == c.Id)
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
+            var absenceSet = plannedAbsences.Where(g => g.Key.ConsultantId == c.Id)
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
+
+            var consultantVacations = vacations.Where(g => g.Key == c.Id).Aggregate(new List<Vacation>(),
+                (list, grouping) => list.Concat(grouping.Select(v => v)).ToList());
+
+            var detailedBookings =
+                DetailedBookings(c, projects, absences, billableSet, offeredSet, absenceSet, consultantVacations,
+                    weekSet);
+
+            return c.MapToReadModelList(detailedBookings, weekSet);
+        }).ToList();
+
+        return consultantReadModels;
+    }
+
+
+    /// <summary>
+    ///     Takes in many data points collected from the DB, and joins them into a set of DetailedBookings
+    ///     for a given consultant and set of weeks
+    /// </summary>
+    private static List<DetailedBooking> DetailedBookings(Consultant consultant,
+        Dictionary<int, Project> projects, Dictionary<int, Absence> absences,
+        Dictionary<StaffingGroupKey, double> billableStaffing,
+        Dictionary<StaffingGroupKey, double> offeredStaffing,
+        Dictionary<StaffingGroupKey, double> plannedAbsences,
+        List<Vacation> vacations,
+        List<Week> weekSet)
+    {
+        weekSet.Sort();
+
+        var billableProjects = UniqueWorkTypes(projects, billableStaffing);
+        var offeredProjects = UniqueWorkTypes(projects, offeredStaffing);
+        var plannedAbsenceTypes = UniqueWorkTypes(absences, plannedAbsences);
+
+        var billableBookings = billableProjects.Select(project => new DetailedBooking(project.Customer.Name,
+                BookingType.Booking,
+                WeeklyHoursList(weekSet, billableStaffing, project.Id)))
+            .ToList();
+
+        var offeredBookings = offeredProjects.Select(project => new DetailedBooking(project.Customer.Name,
+                BookingType.Offer,
+                WeeklyHoursList(weekSet, offeredStaffing, project.Id)))
+            .ToList();
+
+        var plannedAbsencesPrWeek = plannedAbsenceTypes.Select(absence => new DetailedBooking(absence.Name,
+                BookingType.PlannedAbsence,
+                WeeklyHoursList(weekSet, plannedAbsences, absence.Id)))
+            .ToList();
+
+        var detailedBookings = billableBookings.Concat(offeredBookings).Concat(plannedAbsencesPrWeek);
+
+        if (vacations.Count > 0)
+        {
+            var vacationsPrWeek = weekSet.Select(week => new WeeklyHours(
+                week.ToSortableInt(),
+                vacations.Count(vacation => DateService.DateIsInWeek(vacation.Date, week)) *
+                consultant.Department.Organization.HoursPerWorkday
+            )).ToList();
+            detailedBookings = detailedBookings.Append(new DetailedBooking(
+                new BookingDetails("Ferie", BookingType.Vacation),
+                vacationsPrWeek));
+        }
+
+        var detailedBookingList = detailedBookings.ToList();
+
+        // Remove empty rows
+        detailedBookingList.RemoveAll(detailedBooking => detailedBooking.Hours.Sum(hours => hours.Hours) == 0);
+
+        return detailedBookingList;
+    }
+
+    private static List<T> UniqueWorkTypes<T>(Dictionary<int, T> workTypes,
+        Dictionary<StaffingGroupKey, double> billableStaffing)
+    {
+        return billableStaffing.Keys
+            .Select(key => key.WorkTypeId)
+            .Distinct()
+            .Select(id => workTypes[id])
+            .ToList();
+    }
+
+    private static List<WeeklyHours> WeeklyHoursList(List<Week> weeks,
+        Dictionary<StaffingGroupKey, double> staffingDictionary,
+        int workTypeId)
+    {
+        return weeks.Select(week => new WeeklyHours(
+            week.ToSortableInt(),
+            staffingDictionary
+                .Where(staffing =>
+                    staffing.Key.WorkTypeId == workTypeId
+                    && staffing.Key.Year == week.Year
+                    && staffing.Key.Week == week.WeekNumber)
+                .Sum(kvPair => kvPair.Value)
+        )).ToList();
     }
 }
+
+public record StaffingGroupKey(int ConsultantId, int WorkTypeId, int Year, int Week);

@@ -23,13 +23,13 @@ export default function ActiveFilters() {
   const filterSummaryText = filterTextComponents.join(", ");
 
   return (
-    <>
+    <div className="h-4">
       {filterSummaryText != "" && (
         <div className="flex flex-row gap-[5px] text-primary_default items-center">
           <Filter size="12" />{" "}
           <p className="body-small-bold"> {filterSummaryText} </p>
         </div>
       )}
-    </>
+    </div>
   );
 }

@@ -6,10 +6,16 @@ namespace Api.Organisation;
 
 public static class OrganisationHolidayExtensions
 {
-    public static int GetTotalHolidaysOfWeek(this Organization organization, int year, int week)
+    public static int GetTotalHolidaysOfWeek(this Organization organization, Week week)
     {
-        var datesOfThisWeek = DateService.GetDatesInWorkWeek(year, week);
+        var datesOfThisWeek = DateService.GetDatesInWorkWeek(week.Year, week.WeekNumber);
         return datesOfThisWeek.Count(organization.IsHoliday);
+    }
+
+    public static double GetTotalHolidayHoursOfWeek(this Organization organization, Week week)
+    {
+        var holidayDays = organization.GetTotalHolidaysOfWeek(week);
+        return holidayDays * organization.HoursPerWorkday;
     }
 
     private static bool IsHoliday(this Organization organization, DateOnly day)
@@ -21,7 +27,7 @@ public static class OrganisationHolidayExtensions
     {
         var publicHoliday = organization.GetPublicHoliday();
         var isPublicHoliday = publicHoliday.IsPublicHoliday(day.ToDateTime(TimeOnly.MinValue));
-        return isPublicHoliday || organization.IsChristmasHoliday(day);
+        return isPublicHoliday;
     }
 
     private static PublicHolidayBase GetPublicHoliday(this Organization organization)
@@ -38,7 +44,7 @@ public static class OrganisationHolidayExtensions
 
     private static bool IsChristmasHoliday(this Organization organization, DateOnly date)
     {
-        if (organization.HasVacationInChristmas) return false;
+        if (!organization.HasVacationInChristmas) return false;
 
         var startDate = new DateOnly(date.Year, 12, 24);
         var endDate = new DateOnly(date.Year, 12, 31);

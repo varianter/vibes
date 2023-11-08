@@ -6,14 +6,20 @@ export interface BookedHoursPerWeek {
 }
 
 export interface WeeklyBookingReadModel {
+  /** @format double */
   totalBillable: number;
+  /** @format double */
   totalOffered: number;
+  /** @format double */
   totalPlannedAbstences: number;
+  /** @format double */
   totalSellableTime: number;
+  /** @format double */
   totalHolidayHours: number;
-  totalOverbooking: number;
+  /** @format double */
   totalVacationHours: number;
-  bookings: BookingReadModel[] | null;
+  /** @format double */
+  totalOverbooking: number;
 }
 
 export interface BookingReadModel {
@@ -36,8 +42,27 @@ export type Consultant = {
   competences: string[];
   department: string;
   yearsOfExperience: number;
-  bookings?: BookedHoursPerWeek[] | null;
+  isOccupied: Boolean;
+  bookings: BookedHoursPerWeek[];
+  detailedBooking: DetailedBooking[];
 };
+
+export interface DetailedBooking {
+  bookingDetails: BookingDetails;
+  hours: WeeklyHours[];
+}
+
+export interface WeeklyHours {
+  /** @format int32 */
+  week: number;
+  /** @format double */
+  hours: number;
+}
+
+export interface BookingDetails {
+  name: string | null;
+  type: BookingType;
+}
 
 export type Department = {
   id: string;

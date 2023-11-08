@@ -2,6 +2,8 @@
 import { useFilteredConsultants } from "@/hooks/useFilteredConsultants";
 import SecondaryButton from "@/components/SecondaryButton";
 import DropDown from "./DropDown";
+import { ArrowLeft, ArrowRight } from "react-feather";
+import IconSecondaryButton from "./IconSecondaryButton";
 
 const weekSpanOptions = ["8 uker", "12 uker", "26 uker"];
 
@@ -21,9 +23,15 @@ export default function WeekSelection() {
         dropDownOptions={weekSpanOptions}
         dropDownFunction={setWeekSpan}
       />
-      <SecondaryButton label={"<"} onClick={decrementSelectedWeek} />
       <SecondaryButton label={"Denne uka"} onClick={resetSelectedWeek} />
-      <SecondaryButton label={">"} onClick={incrementSelectedWeek} />
+      <IconSecondaryButton
+        icon={<ArrowLeft size={24} />}
+        onClick={decrementSelectedWeek}
+      />
+      <IconSecondaryButton
+        icon={<ArrowRight size={24} />}
+        onClick={incrementSelectedWeek}
+      />
     </div>
   );
 }
