@@ -154,11 +154,16 @@ export function useFilteredConsultants() {
     [updateRoute, yearFilter],
   );
 
-  const toggleAvailabilityFilter = useCallback(
+  const setAvailabilityFilter = useCallback(
     (availabelFilterOn: Boolean) => {
       updateRoute({ availability: availabelFilterOn });
     },
     [updateRoute],
+  );
+
+  const toggleAvailabilityFilter = useCallback(
+    () => setAvailabilityFilter(!availabilityFilterOn),
+    [availabilityFilterOn, setAvailabilityFilter],
   );
 
   useEffect(() => {
@@ -180,6 +185,9 @@ export function useFilteredConsultants() {
       if (e.code.includes("0")) {
         updateRoute({ departments: "" });
       }
+      if (e.code.includes("Period")) {
+        toggleAvailabilityFilter();
+      }
     }
     document.addEventListener("keydown", keyDownHandler);
 
@@ -187,7 +195,12 @@ export function useFilteredConsultants() {
     return () => {
       document.removeEventListener("keydown", keyDownHandler);
     };
-  }, [updateRoute, departments, toggleDepartmentFilter]);
+  }, [
+    updateRoute,
+    departments,
+    toggleDepartmentFilter,
+    toggleAvailabilityFilter,
+  ]);
 
   return {
     consultants,
@@ -201,7 +214,7 @@ export function useFilteredConsultants() {
     setNameSearch,
     toggleDepartmentFilter,
     toggleYearFilter,
-    toggleAvailabilityFilter,
+    toggleAvailabilityFilter: setAvailabilityFilter,
     selectedWeek,
     incrementSelectedWeek,
     decrementSelectedWeek,
