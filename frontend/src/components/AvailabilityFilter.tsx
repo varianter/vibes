@@ -11,7 +11,7 @@ export default function AvailabilityFilter() {
       <p className="body-small">Status</p>
       <FilterButton
         label={"Ledig tid"}
-        onClick={() => toggleAvailabilityFilter(!availabilityFilterOn)}
+        onClick={() => toggleAvailabilityFilter()}
         checked={availabilityFilterOn}
       />
     </div>
