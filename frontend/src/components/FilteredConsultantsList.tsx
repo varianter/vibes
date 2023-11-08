@@ -2,7 +2,7 @@
 import ConsultantRows from "./ConsultantRow";
 import ActiveFilters from "./ActiveFilters";
 import WeekSelection from "@/components/WeekSelection";
-import { isCurrentWeek } from "@/hooks/dateTools";
+import { isCurrentWeek } from "@/hooks/staffing/dateTools";
 import { useConsultantsFilter } from "@/hooks/staffing/useConsultantsFilter";
 
 export default function FilteredConsultantList() {
