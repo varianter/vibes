@@ -30,7 +30,7 @@ export function useFilteredConsultants() {
   const selectedWeek = stringToWeek(
     searchParams.get("selectedWeek") || undefined,
   );
-  const weekSpan = searchParams.get("weekSpan") || undefined;
+  const weekSpan = Number.parseInt(searchParams.get("weekSpan") ?? "8");
 
   const [activeNameSearch, setActiveNameSearch] =
     useState<string>(searchFilter);
@@ -51,7 +51,9 @@ export function useFilteredConsultants() {
       router.push(
         `${pathname}?search=${search}&depFilter=${departments}&yearFilter=${years}${
           week ? `&selectedWeek=${weekToString(week)}` : ""
-        }&availabilityFilter=${availability}&${numWeeks ? `&weekSpan=${numWeeks}` : ""}`,
+        }&availabilityFilter=${availability}&${
+          numWeeks ? `&weekSpan=${numWeeks}` : ""
+        }`,
       );
     },
     [
@@ -74,7 +76,7 @@ export function useFilteredConsultants() {
         })
       : DateTime.now();
 
-    let newDate = date.plus({ week: 7 }); //TODO: change to shownWeeks when week filter is added
+    let newDate = date.plus({ week: weekSpan - 1 }); //TODO: change to shownWeeks when week filter is added
     updateRoute({
       week: { year: newDate.year, weekNumber: newDate.weekNumber },
     });
