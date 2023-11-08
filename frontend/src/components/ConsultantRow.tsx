@@ -1,5 +1,5 @@
 "use client";
-import { BookingType, Consultant } from "@/types";
+import { BookingType, Consultant, DetailedBooking } from "@/types";
 import { ReactElement, useState } from "react";
 import {
   AlertTriangle,
@@ -80,39 +80,57 @@ export default function ConsultantRows({
               <div
                 className={`absolute bottom-full left-1/2 -translate-x-1/2 flex flex-col items-center ${
                   (hoveredRowWeek != b.weekNumber ||
-                    consultant.detailedBooking.length == 0) &&
+                    consultant.detailedBooking
+                      .map((d) =>
+                        d.hours
+                          .filter((h) => h.week % 100 == b.weekNumber)
+                          .reduce((sum, h) => sum + h.hours, 0),
+                      )
+                      .reduce((a, b) => a + b, 0) == 0) &&
                   "hidden"
                 }`}
               >
                 <div className="rounded-lg bg-white flex flex-col gap-2 min-w-[222px] p-3 shadow-xl">
                   {consultant.detailedBooking.map((db, index) => (
-                    <div
-                      key={index}
-                      className={`flex flex-row gap-2 justify-between items-center ${
-                        index < consultant.detailedBooking.length - 1 &&
-                        "border-b pb-2 border-hover_background"
-                      }`}
-                    >
-                      <div className="flex flex-row gap-2 items-center">
+                    <>
+                      {db.hours.find((hour) => hour.week % 100 == b.weekNumber)
+                        ?.hours != 0 && (
                         <div
-                          className={`h-8 w-8 flex justify-center align-middle items-center rounded ${getColorByStaffingType(
-                            db.bookingDetails.type,
-                          )}`}
+                          key={index}
+                          className={`flex flex-row gap-2 justify-between items-center
+                      ${
+                        index <
+                          consultant.detailedBooking.filter(
+                            (db) =>
+                              db.hours.find(
+                                (hour) => hour.week % 100 == b.weekNumber,
+                              )?.hours != 0,
+                          ).length -
+                            1 && "border-b pb-2 border-hover_background"
+                      }`}
                         >
-                          {getIconByBookingType(db.bookingDetails.type)}
+                          <div className="flex flex-row gap-2 items-center">
+                            <div
+                              className={`h-8 w-8 flex justify-center align-middle items-center rounded ${getColorByStaffingType(
+                                db.bookingDetails.type,
+                              )}`}
+                            >
+                              {getIconByBookingType(db.bookingDetails.type)}
+                            </div>
+                            <p className="text-black whitespace-nowrap">
+                              {db.bookingDetails.name}
+                            </p>
+                          </div>
+                          <p className="text-black text-opacity-60">
+                            {
+                              db.hours.find(
+                                (hour) => hour.week % 100 == b.weekNumber,
+                              )?.hours
+                            }
+                          </p>
                         </div>
-                        <p className="text-black whitespace-nowrap">
-                          {db.bookingDetails.name}
-                        </p>
-                      </div>
-                      <p className="text-black text-opacity-60">
-                        {
-                          db.hours.find((hour) =>
-                            String(hour.week).includes(String(b.weekNumber)),
-                          )?.hours
-                        }
-                      </p>
-                    </div>
+                      )}
+                    </>
                   ))}
                 </div>
                 <div className="w-0 h-0 border-l-[12px] border-l-transparent border-t-[16px] border-t-white border-r-[12px] border-r-transparent"></div>
