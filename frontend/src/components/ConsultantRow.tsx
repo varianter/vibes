@@ -1,5 +1,12 @@
 "use client";
-import { BookingType, Consultant } from "@/types";
+import {
+  BookedHoursPerWeek,
+  BookingDetails,
+  BookingReadModel,
+  BookingType,
+  Consultant,
+  DetailedBooking,
+} from "@/types";
 import { ReactElement, useState } from "react";
 import {
   AlertTriangle,
@@ -67,57 +74,12 @@ export default function ConsultantRows({
             </p>
           </div>
         </td>
-        {consultant.bookings?.map((b) => (
-          <td key={b.weekNumber} className="h-[52px] p-0.5">
-            <div
-              className={`flex flex-col gap-1 p-2 justify-end rounded w-full h-full  ${
-                b.bookingModel.totalOverbooking > 0
-                  ? `bg-black text-white`
-                  : b.bookingModel.totalSellableTime > 0
-                  ? `bg-semantic_4_l1`
-                  : `bg-primary_l5`
-              }`}
-            >
-              <div className="flex flex-row justify-end gap-1">
-                {b.bookingModel.totalOffered > 0 && (
-                  <InfoPill
-                    text={b.bookingModel.totalOffered.toFixed(1)}
-                    colors="bg-offer_light text-offer_dark"
-                    icon={<FileText size="12" />}
-                  />
-                )}
-                {b.bookingModel.totalSellableTime > 0 && (
-                  <InfoPill
-                    text={b.bookingModel.totalSellableTime.toFixed(1)}
-                    colors="bg-free_light text-free_dark"
-                    icon={<Coffee size="12" />}
-                  />
-                )}
-                {b.bookingModel.totalVacationHours > 0 && (
-                  <InfoPill
-                    text={b.bookingModel.totalVacationHours.toFixed(1)}
-                    colors="bg-vacation_light text-vacation_dark"
-                    icon={<Sun size="12" />}
-                  />
-                )}
-                {b.bookingModel.totalOverbooking > 0 && (
-                  <InfoPill
-                    text={b.bookingModel.totalOverbooking.toFixed(1)}
-                    colors="bg-overbooking_dark text-overbooking_light"
-                    icon={<AlertTriangle size="12" />}
-                  />
-                )}
-              </div>
-
-              <p
-                className={`text-right ${
-                  isListElementVisible ? "body-bold" : "body"
-                }`}
-              >
-                {b.bookingModel.totalBillable}
-              </p>
-            </div>
-          </td>
+        {consultant.bookings?.map((b, index) => (
+          <WeekCell
+            key={index}
+            b={b}
+            isListElementVisible={isListElementVisible}
+          />
         ))}
       </tr>
       {isListElementVisible &&
@@ -218,4 +180,63 @@ function getIconByBookingType(type: BookingType): ReactElement {
     default:
       return <></>;
   }
+}
+
+function WeekCell(props: {
+  b: BookedHoursPerWeek;
+  isListElementVisible: boolean;
+}) {
+  const { b, isListElementVisible } = props;
+  return (
+    <td key={b.weekNumber} className="h-[52px] p-0.5">
+      <div
+        className={`flex flex-col gap-1 p-2 justify-end rounded w-full h-full  ${
+          b.bookingModel.totalOverbooking > 0
+            ? `bg-black text-white`
+            : b.bookingModel.totalSellableTime > 0
+            ? `bg-semantic_4_l1`
+            : `bg-primary_l5`
+        }`}
+      >
+        <div className="flex flex-row justify-end gap-1">
+          {b.bookingModel.totalOffered > 0 && (
+            <InfoPill
+              text={b.bookingModel.totalOffered.toFixed(1)}
+              colors="bg-offer_light text-offer_dark"
+              icon={<FileText size="12" />}
+            />
+          )}
+          {b.bookingModel.totalSellableTime > 0 && (
+            <InfoPill
+              text={b.bookingModel.totalSellableTime.toFixed(1)}
+              colors="bg-free_light text-free_dark"
+              icon={<Coffee size="12" />}
+            />
+          )}
+          {b.bookingModel.totalVacationHours > 0 && (
+            <InfoPill
+              text={b.bookingModel.totalVacationHours.toFixed(1)}
+              colors="bg-vacation_light text-vacation_dark"
+              icon={<Sun size="12" />}
+            />
+          )}
+          {b.bookingModel.totalOverbooking > 0 && (
+            <InfoPill
+              text={b.bookingModel.totalOverbooking.toFixed(1)}
+              colors="bg-overbooking_dark text-overbooking_light"
+              icon={<AlertTriangle size="12" />}
+            />
+          )}
+        </div>
+
+        <p
+          className={`text-right ${
+            isListElementVisible ? "body-bold" : "body"
+          }`}
+        >
+          {b.bookingModel.totalBillable}
+        </p>
+      </div>
+    </td>
+  );
 }
