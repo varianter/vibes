@@ -1,12 +1,5 @@
 "use client";
-import {
-  BookedHoursPerWeek,
-  BookingDetails,
-  BookingReadModel,
-  BookingType,
-  Consultant,
-  DetailedBooking,
-} from "@/types";
+import { BookedHoursPerWeek, BookingType, Consultant } from "@/types";
 import { ReactElement, useState } from "react";
 import {
   AlertTriangle,
@@ -19,17 +12,14 @@ import {
 } from "react-feather";
 import InfoPill from "./InfoPill";
 
-interface ConsultantListElementProps {
-  consultant: Consultant;
-}
-
 export default function ConsultantRows({
   consultant,
 }: {
   consultant: Consultant;
 }) {
   const [isListElementVisible, setIsListElementVisible] = useState(false);
-  const [isButtonHovered, setIsButtonHovered] = useState(false);
+  const [isRowHovered, setIsRowHovered] = useState(false);
+  const [hoveredRowWeek, setHoveredRowWeek] = useState(-1);
 
   function toggleListElementVisibility() {
     setIsListElementVisible(!isListElementVisible);
@@ -39,14 +29,14 @@ export default function ConsultantRows({
     <>
       <tr
         className="h-[52px]"
-        onMouseEnter={() => setIsButtonHovered(true)}
-        onMouseLeave={() => setIsButtonHovered(false)}
+        onMouseEnter={() => setIsRowHovered(true)}
+        onMouseLeave={() => setIsRowHovered(false)}
       >
         <td
           className={`border-l-2 ${
             isListElementVisible
               ? "border-l-secondary_default"
-              : isButtonHovered
+              : isRowHovered
               ? "border-l-primary_default"
               : "border-l-primary_l4"
           } `}
@@ -79,6 +69,9 @@ export default function ConsultantRows({
             key={index}
             b={b}
             isListElementVisible={isListElementVisible}
+            consultant={consultant}
+            setHoveredRowWeek={setHoveredRowWeek}
+            hoveredRowWeek={hoveredRowWeek}
           />
         ))}
       </tr>
@@ -94,9 +87,9 @@ export default function ConsultantRows({
                 isListElementVisible && "border-l-secondary_default border-l-2"
               }`}
             ></td>
-            <td className="flex flex-row gap-2 justify-start h-[32px]">
+            <td className="flex flex-row gap-2 justify-start h-8">
               <div
-                className={`h-[32px] w-[32px] flex justify-center align-middle items-center rounded ${getColorByStaffingType(
+                className={`h-8 w-8 flex justify-center align-middle items-center rounded ${getColorByStaffingType(
                   db.bookingDetails.type,
                 )}`}
               >
@@ -170,13 +163,13 @@ function getColorByStaffingType(type: BookingType): string {
 function getIconByBookingType(type: BookingType): ReactElement {
   switch (type) {
     case BookingType.Offer:
-      return <FileText size={16} />;
+      return <FileText size={16} className="text-offer_dark" />;
     case BookingType.Booking:
-      return <Briefcase size={16} />;
+      return <Briefcase size={16} className="text-black" />;
     case BookingType.Vacation:
-      return <Sun size={16} />;
+      return <Sun size={16} className="text-vacation_dark" />;
     case BookingType.PlannedAbsence:
-      return <Moon size={16} />;
+      return <Moon size={16} className="text-absence_dark" />;
     default:
       return <></>;
   }
@@ -185,19 +178,88 @@ function getIconByBookingType(type: BookingType): ReactElement {
 function WeekCell(props: {
   b: BookedHoursPerWeek;
   isListElementVisible: boolean;
+  consultant: Consultant;
+  setHoveredRowWeek: (number: number) => void;
+  hoveredRowWeek: number;
 }) {
-  const { b, isListElementVisible } = props;
+  const {
+    b,
+    isListElementVisible,
+    consultant,
+    setHoveredRowWeek,
+    hoveredRowWeek,
+  } = props;
+
   return (
     <td key={b.weekNumber} className="h-[52px] p-0.5">
       <div
-        className={`flex flex-col gap-1 p-2 justify-end rounded w-full h-full  ${
+        className={`flex flex-col gap-1 p-2 justify-end rounded w-full h-full relative ${
           b.bookingModel.totalOverbooking > 0
             ? `bg-black text-white`
             : b.bookingModel.totalSellableTime > 0
             ? `bg-semantic_4_l1`
             : `bg-primary_l5`
         }`}
+        onMouseEnter={() => setHoveredRowWeek(b.weekNumber)}
+        onMouseLeave={() => setHoveredRowWeek(-1)}
       >
+        <div
+          className={`absolute bottom-full left-1/2 -translate-x-1/2 flex flex-col items-center ${
+            (hoveredRowWeek != b.weekNumber ||
+              consultant.detailedBooking
+                .map((d) =>
+                  d.hours
+                    .filter((h) => h.week % 100 == b.weekNumber)
+                    .reduce((sum, h) => sum + h.hours, 0),
+                )
+                .reduce((a, b) => a + b, 0) == 0) &&
+            "hidden"
+          }`}
+        >
+          <div className="rounded-lg bg-white flex flex-col gap-2 min-w-[222px] p-3 shadow-xl">
+            {consultant.detailedBooking.map((db, index) => (
+              <>
+                {db.hours.find((hour) => hour.week % 100 == b.weekNumber)
+                  ?.hours != 0 && (
+                  <div
+                    key={index}
+                    className={`flex flex-row gap-2 justify-between items-center
+                      ${
+                        index <
+                          consultant.detailedBooking.filter(
+                            (db) =>
+                              db.hours.find(
+                                (hour) => hour.week % 100 == b.weekNumber,
+                              )?.hours != 0,
+                          ).length -
+                            1 && "border-b pb-2 border-hover_background"
+                      }`}
+                  >
+                    <div className="flex flex-row gap-2 items-center">
+                      <div
+                        className={`h-8 w-8 flex justify-center align-middle items-center rounded ${getColorByStaffingType(
+                          db.bookingDetails.type,
+                        )}`}
+                      >
+                        {getIconByBookingType(db.bookingDetails.type)}
+                      </div>
+                      <p className="text-black whitespace-nowrap">
+                        {db.bookingDetails.name}
+                      </p>
+                    </div>
+                    <p className="text-black text-opacity-60">
+                      {
+                        db.hours.find((hour) => hour.week % 100 == b.weekNumber)
+                          ?.hours
+                      }
+                    </p>
+                  </div>
+                )}
+              </>
+            ))}
+          </div>
+          <div className="w-0 h-0 border-l-[12px] border-l-transparent border-t-[16px] border-t-white border-r-[12px] border-r-transparent"></div>
+        </div>
         <div className="flex flex-row justify-end gap-1">
           {b.bookingModel.totalOffered > 0 && (
             <InfoPill
@@ -228,7 +290,6 @@ function WeekCell(props: {
             />
           )}
         </div>
-
         <p
           className={`text-right ${
             isListElementVisible ? "body-bold" : "body"
