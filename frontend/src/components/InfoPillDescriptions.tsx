@@ -16,6 +16,7 @@ export default function InfoPillDescriptions() {
         text={"Booking"}
         colors="bg-primary_l5 text-black"
         icon={<Briefcase size="12" />}
+        variant={"wide"}
       />
       <InfoPill
         text={"Ledig tid"}
@@ -51,6 +52,7 @@ export default function InfoPillDescriptions() {
         text={"Fravær"}
         colors="bg-absence_light text-absence_dark"
         icon={<Moon size="12" />}
+        variant={"wide"}
       />
     </div>
   );

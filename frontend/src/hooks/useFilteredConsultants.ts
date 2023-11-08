@@ -90,7 +90,7 @@ export function useFilteredConsultants() {
         })
       : DateTime.now();
 
-    let newDate = date.plus({ week: weekSpan - 1 });
+    let newDate = date.minus({ week: weekSpan - 1 });
     updateRoute({
       week: { year: newDate.year, weekNumber: newDate.weekNumber },
     });
