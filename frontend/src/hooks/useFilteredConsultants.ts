@@ -76,7 +76,7 @@ export function useFilteredConsultants() {
         })
       : DateTime.now();
 
-    let newDate = date.plus({ week: weekSpan - 1 }); //TODO: change to shownWeeks when week filter is added
+    let newDate = date.plus({ week: weekSpan - 1 });
     updateRoute({
       week: { year: newDate.year, weekNumber: newDate.weekNumber },
     });
@@ -90,7 +90,7 @@ export function useFilteredConsultants() {
         })
       : DateTime.now();
 
-    let newDate = date.plus({ week: -7 });
+    let newDate = date.plus({ week: weekSpan - 1 });
     updateRoute({
       week: { year: newDate.year, weekNumber: newDate.weekNumber },
     });
