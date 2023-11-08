@@ -1,11 +1,15 @@
 "use client";
 import { Filter } from "react-feather";
-import { useFilteredConsultants } from "@/hooks/useFilteredConsultants";
+import { useUrlRouteFilter } from "@/hooks/staffing/useUrlRouteFilter";
+import { useDepartmentFilter } from "@/hooks/staffing/useDepartmentFilter";
+import { useYearFilter } from "@/hooks/staffing/useYearFilter";
 
 export default function ActiveFilters() {
-  const { filteredDepartments, searchFilter, filteredYears } =
-    useFilteredConsultants();
   const filterTextComponents: string[] = [];
+
+  const { searchFilter } = useUrlRouteFilter();
+  const { filteredDepartments } = useDepartmentFilter();
+  const { filteredYears } = useYearFilter();
 
   if (searchFilter != "") filterTextComponents.push(` "${searchFilter}"`);
 

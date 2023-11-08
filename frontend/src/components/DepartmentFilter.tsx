@@ -1,10 +1,10 @@
 "use client";
+import { useDepartmentFilter } from "@/hooks/staffing/useDepartmentFilter";
 import FilterButton from "./FilterButton";
-import { useFilteredConsultants } from "@/hooks/useFilteredConsultants";
 
 export default function DepartmentFilter() {
   const { departments, filteredDepartments, toggleDepartmentFilter } =
-    useFilteredConsultants();
+    useDepartmentFilter();
 
   if (departments.length > 0) {
     departments.sort((a, b) => {

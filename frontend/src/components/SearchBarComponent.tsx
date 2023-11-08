@@ -1,14 +1,14 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { Search } from "react-feather";
-import { useFilteredConsultants } from "@/hooks/useFilteredConsultants";
+import { useNameSearch } from "@/hooks/staffing/useNameSearch";
 
 export default function SearchBarComponent({
   hidden = false,
 }: {
   hidden?: boolean;
 }) {
-  const { currentNameSearch, setNameSearch } = useFilteredConsultants();
+  const { setNameSearch, activeNameSearch } = useNameSearch();
   const inputRef = useRef<HTMLInputElement>(null);
   const [searchIsActive, setIsSearchActive] = useState(false);
 
@@ -45,7 +45,7 @@ export default function SearchBarComponent({
           className="input invisible-input"
           onChange={(e) => setNameSearch(e.target.value)}
           ref={inputRef}
-          value={currentNameSearch}
+          value={activeNameSearch}
           onFocus={() => console.log("F")}
         />
       ) : (
@@ -65,7 +65,7 @@ export default function SearchBarComponent({
               className="input w-[131px] focus:outline-none body-small"
               onChange={(e) => setNameSearch(e.target.value)}
               ref={inputRef}
-              value={currentNameSearch}
+              value={activeNameSearch}
               onFocus={() => setIsSearchActive(true)}
               onBlur={() => setIsSearchActive(false)}
             />

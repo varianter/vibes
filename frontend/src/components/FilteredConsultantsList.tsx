@@ -1,17 +1,12 @@
 "use client";
 import ConsultantRows from "./ConsultantRow";
 import ActiveFilters from "./ActiveFilters";
-import { useFilteredConsultants } from "@/hooks/useFilteredConsultants";
 import WeekSelection from "@/components/WeekSelection";
-import { DateTime } from "luxon";
+import { isCurrentWeek } from "@/hooks/dateTools";
+import { useConsultantsFilter } from "@/hooks/staffing/useConsultantsFilter";
 
 export default function FilteredConsultantList() {
-  const { filteredConsultants: consultants } = useFilteredConsultants();
-
-  function isCurrentWeek(weekNumber: number, year: number) {
-    const today = DateTime.now();
-    return today.weekNumber == weekNumber && today.year == year;
-  }
+  const { filteredConsultants: consultants } = useConsultantsFilter();
 
   return (
     <div className="flex flex-col gap-8">
