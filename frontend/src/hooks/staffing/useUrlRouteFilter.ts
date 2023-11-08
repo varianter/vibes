@@ -56,7 +56,7 @@ export function useUrlRouteFilter() {
     departmentFilter,
     yearFilter,
     availabilityFilter,
-    selectedWeek,
+    selectedWeekFilter: selectedWeek,
     updateRoute,
   };
 }

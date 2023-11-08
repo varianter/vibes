@@ -2,13 +2,13 @@ import { DateTime } from "luxon";
 import { useUrlRouteFilter } from "./useUrlRouteFilter";
 
 export function useSelectedWeek() {
-  const { updateRoute, selectedWeek } = useUrlRouteFilter();
+  const { updateRoute, selectedWeekFilter } = useUrlRouteFilter();
 
   function changeSelectedWeek(numberOfWeeks: number) {
-    const date = selectedWeek
+    const date = selectedWeekFilter
       ? DateTime.now().set({
-          weekYear: selectedWeek.year,
-          weekNumber: selectedWeek.weekNumber,
+          weekYear: selectedWeekFilter.year,
+          weekNumber: selectedWeekFilter.weekNumber,
         })
       : DateTime.now();
 
@@ -19,5 +19,13 @@ export function useSelectedWeek() {
     });
   }
 
-  return { selectedWeek, changeSelectedWeek };
+  function resetSelectedWeek() {
+    updateRoute({});
+  }
+
+  return {
+    selectedWeek: selectedWeekFilter,
+    changeSelectedWeek,
+    resetSelectedWeek,
+  };
 }

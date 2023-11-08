@@ -2,7 +2,7 @@ import { YearRange, Consultant } from "@/types";
 import { useUrlRouteFilter } from "./useUrlRouteFilter";
 import { FilteredContext } from "@/components/FilteredConsultantProvider";
 import { useContext } from "react";
-import { useYearFilter } from "./useYearFilter";
+import { useYearsXpFilter } from "./useYearsXpFilter";
 import { useAvailabilityFilter } from "./useAvailabilityFilter";
 
 export function useConsultantsFilter() {
@@ -10,7 +10,7 @@ export function useConsultantsFilter() {
 
   const { departmentFilter, searchFilter } = useUrlRouteFilter();
 
-  const { filteredYears } = useYearFilter();
+  const { filteredYears } = useYearsXpFilter();
   const { availabilityFilterOn } = useAvailabilityFilter();
 
   const filteredConsultants = filterConsultants(

@@ -2,14 +2,14 @@
 import { Filter } from "react-feather";
 import { useUrlRouteFilter } from "@/hooks/staffing/useUrlRouteFilter";
 import { useDepartmentFilter } from "@/hooks/staffing/useDepartmentFilter";
-import { useYearFilter } from "@/hooks/staffing/useYearFilter";
+import { useYearsXpFilter } from "@/hooks/staffing/useYearsXpFilter";
 
 export default function ActiveFilters() {
   const filterTextComponents: string[] = [];
 
   const { searchFilter } = useUrlRouteFilter();
   const { filteredDepartments } = useDepartmentFilter();
-  const { filteredYears } = useYearFilter();
+  const { filteredYears } = useYearsXpFilter();
 
   if (searchFilter != "") filterTextComponents.push(` "${searchFilter}"`);
 

@@ -6,7 +6,7 @@ import { toggleValueFromFilter } from "./UrlStringFilter";
 import { useUrlRouteFilter } from "./useUrlRouteFilter";
 import { yearRanges } from "@/components/ExperienceFilter";
 
-export function useYearFilter() {
+export function useYearsXpFilter() {
   const { yearFilter, updateRoute } = useUrlRouteFilter();
 
   const filteredYears = yearFilter
