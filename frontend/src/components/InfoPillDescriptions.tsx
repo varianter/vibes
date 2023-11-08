@@ -1,9 +1,22 @@
 import InfoPill from "@/components/InfoPill";
-import { AlertTriangle, Calendar, Coffee, FileText, Sun } from "react-feather";
+import {
+  AlertTriangle,
+  Briefcase,
+  Calendar,
+  Coffee,
+  FileText,
+  Moon,
+  Sun,
+} from "react-feather";
 
 export default function InfoPillDescriptions() {
   return (
     <div className="mt-8 flex flex-row gap-2">
+      <InfoPill
+        text={"Booking"}
+        colors="bg-primary_l5 text-black"
+        icon={<Briefcase size="12" />}
+      />
       <InfoPill
         text={"Ledig tid"}
         colors="bg-free_light text-free_dark"
@@ -28,6 +41,11 @@ export default function InfoPillDescriptions() {
         text={"Overbooket"}
         colors="bg-overbooking_dark text-overbooking_light"
         icon={<AlertTriangle size="12" />}
+      />
+      <InfoPill
+        text={"Fravær"}
+        colors="bg-absence_light text-absence_dark"
+        icon={<Moon size="12" />}
       />
     </div>
   );
