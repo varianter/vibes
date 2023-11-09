@@ -15,7 +15,7 @@ import {
   Moon,
   Sun,
 } from "react-feather";
-import InfoPill, { InfoPillProps, InfoPillVariant } from "./InfoPill";
+import InfoPill, { InfoPillVariant } from "./InfoPill";
 
 export default function ConsultantRows({
   consultant,
@@ -79,6 +79,7 @@ export default function ConsultantRows({
             consultant={consultant}
             setHoveredRowWeek={setHoveredRowWeek}
             hoveredRowWeek={hoveredRowWeek}
+            columnCount={columnCount}
           />
         ))}
       </tr>
@@ -88,7 +89,7 @@ export default function ConsultantRows({
           <DetailedBookingRows
             key={index}
             consultant={consultant}
-            db={db}
+            detailedBooking={db}
             isListElementVisible={isListElementVisible}
           />
         ))}
@@ -146,6 +147,7 @@ function WeekCell(props: {
   consultant: Consultant;
   setHoveredRowWeek: (number: number) => void;
   hoveredRowWeek: number;
+  columnCount: number;
 }) {
   const {
     bookedHoursPerWeek: bookedHoursPerWeek,
@@ -153,6 +155,7 @@ function WeekCell(props: {
     consultant,
     setHoveredRowWeek,
     hoveredRowWeek,
+    columnCount,
   } = props;
 
   return (
@@ -179,19 +182,20 @@ function WeekCell(props: {
               text={bookedHoursPerWeek.bookingModel.totalOffered.toFixed(1)}
               colors="bg-offer_light text-offer_dark"
               icon={<FileText size="12" />}
-              variant={"wide"}
+              variant={getInfopillVariantByColumnCount(columnCount)}
             />
           )}
-          {bookedHoursPerWeek.bookingModel.totalSellableTime > 0 && (
-            <InfoPill
-              text={bookedHoursPerWeek.bookingModel.totalSellableTime.toFixed(
-                1,
-              )}
-              colors="bg-free_light text-free_dark"
-              icon={<Coffee size="12" />}
-              variant={"wide"}
-            />
-          )}
+          {bookedHoursPerWeek.bookingModel.totalSellableTime > 0 &&
+            getInfopillVariantByColumnCount(columnCount) !== "narrow" && (
+              <InfoPill
+                text={bookedHoursPerWeek.bookingModel.totalSellableTime.toFixed(
+                  1,
+                )}
+                colors="bg-free_light text-free_dark"
+                icon={<Coffee size="12" />}
+                variant={getInfopillVariantByColumnCount(columnCount)}
+              />
+            )}
           {bookedHoursPerWeek.bookingModel.totalVacationHours > 0 && (
             <InfoPill
               text={bookedHoursPerWeek.bookingModel.totalVacationHours.toFixed(
@@ -199,7 +203,7 @@ function WeekCell(props: {
               )}
               colors="bg-vacation_light text-vacation_dark"
               icon={<Sun size="12" />}
-              variant={"wide"}
+              variant={getInfopillVariantByColumnCount(columnCount)}
             />
           )}
           {bookedHoursPerWeek.bookingModel.totalOverbooking > 0 && (
@@ -207,7 +211,7 @@ function WeekCell(props: {
               text={bookedHoursPerWeek.bookingModel.totalOverbooking.toFixed(1)}
               colors="bg-overbooking_dark text-overbooking_light"
               icon={<AlertTriangle size="12" />}
-              variant={"wide"}
+              variant={getInfopillVariantByColumnCount(columnCount)}
             />
           )}
         </div>
@@ -244,9 +248,9 @@ function HoveredWeek(props: {
       }`}
     >
       <div className="rounded-lg bg-white flex flex-col gap-2 min-w-[222px] p-3 shadow-xl">
-        {consultant.detailedBooking.map((db, index) => (
+        {consultant.detailedBooking.map((detailedBooking, index) => (
           <div key={index}>
-            {db.hours.find(
+            {detailedBooking.hours.find(
               (hour) => hour.week % 100 == bookedHoursPerWeek.weekNumber,
             )?.hours != 0 && (
               <div
@@ -267,18 +271,18 @@ function HoveredWeek(props: {
                 <div className="flex flex-row gap-2 items-center">
                   <div
                     className={`h-8 w-8 flex justify-center align-middle items-center rounded ${getColorByStaffingType(
-                      db.bookingDetails.type,
+                      detailedBooking.bookingDetails.type,
                     )}`}
                   >
-                    {getIconByBookingType(db.bookingDetails.type)}
+                    {getIconByBookingType(detailedBooking.bookingDetails.type)}
                   </div>
                   <p className="text-black whitespace-nowrap">
-                    {db.bookingDetails.name}
+                    {detailedBooking.bookingDetails.name}
                   </p>
                 </div>
                 <p className="text-black text-opacity-60">
                   {
-                    db.hours.find(
+                    detailedBooking.hours.find(
                       (hour) =>
                         hour.week % 100 == bookedHoursPerWeek.weekNumber,
                     )?.hours
@@ -296,13 +300,13 @@ function HoveredWeek(props: {
 
 function DetailedBookingRows(props: {
   consultant: Consultant;
-  db: DetailedBooking;
+  detailedBooking: DetailedBooking;
   isListElementVisible: true;
 }) {
-  const { consultant, db, isListElementVisible } = props;
+  const { consultant, detailedBooking, isListElementVisible } = props;
   return (
     <tr
-      key={`${consultant.id}-details-${db.bookingDetails.name}`}
+      key={`${consultant.id}-details-${detailedBooking.bookingDetails.name}`}
       className="h-fit"
     >
       <td
@@ -313,38 +317,41 @@ function DetailedBookingRows(props: {
       <td className="flex flex-row gap-2 justify-start h-8">
         <div
           className={`h-8 w-8 flex justify-center align-middle items-center rounded ${getColorByStaffingType(
-            db.bookingDetails.type,
+            detailedBooking.bookingDetails.type,
           )}`}
         >
-          {getIconByBookingType(db.bookingDetails.type)}
+          {getIconByBookingType(detailedBooking.bookingDetails.type)}
         </div>
         <div className="flex flex-col justify-between items-start">
           <p className="detail text-neutral_l1 text-right">
-            {db.bookingDetails.type}
+            {detailedBooking.bookingDetails.type}
           </p>
           <p className="text-black text-start body-small">
-            {db.bookingDetails.name}
+            {detailedBooking.bookingDetails.name}
           </p>
         </div>
       </td>
-      {db.hours
+      {detailedBooking.hours
         .sort((a, b) => a.week - b.week)
-        .map((h) => (
+        .map((hours) => (
           <td
-            key={`${consultant.id}-details-${db.bookingDetails.name}-${h.week}`}
+            key={`${consultant.id}-details-${detailedBooking.bookingDetails.name}-${hours.week}`}
             className="h-8 p-0.5"
           >
             <p
               className={`text-right body-small-bold px-2 py-1 rounded h-full
-     ${getColorByStaffingType(db.bookingDetails.type ?? BookingType.Offer)}`}
+     ${getColorByStaffingType(
+       detailedBooking.bookingDetails.type ?? BookingType.Offer,
+     )}`}
             >
-              {h.hours}
+              {hours.hours}
             </p>
           </td>
         ))}
     </tr>
   );
 }
+
 function getInfopillVariantByColumnCount(count: number): InfoPillVariant {
   switch (true) {
     case 26 <= count:
