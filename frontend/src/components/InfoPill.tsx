@@ -1,18 +1,28 @@
 import { ReactElement } from "react";
 
-interface InfoPill {
+export type InfoPillProps = {
   text: string;
   icon: ReactElement;
   colors: string;
-}
+  variant: InfoPillVariant;
+};
 
-export default function InfoPill({ text, icon, colors }: InfoPill) {
-  return (
+export type InfoPillVariant = "wide" | "medium" | "narrow" | "none";
+
+export default function InfoPill({
+  text,
+  icon,
+  colors,
+  variant,
+}: InfoPillProps) {
+  return variant == "none" ? (
+    <></>
+  ) : (
     <div
       className={`flex flex-row gap-0.5 detail-pill-text p-0.5 items-center w-fit h-4 rounded-sm ${colors}`}
     >
-      {icon}
-      <p>{text}</p>
+      {(variant == "wide" || variant == "narrow") && icon}
+      {(variant == "wide" || variant == "medium") && <p>{text}</p>}
     </div>
   );
 }
