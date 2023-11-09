@@ -25,7 +25,12 @@ export function useSelectedWeek() {
   }
 
   function resetSelectedWeek() {
-    updateRoute({});
+    updateRoute({
+      week: {
+        year: DateTime.now().year,
+        weekNumber: DateTime.now().weekNumber,
+      },
+    });
   }
 
   function incrementSelectedWeek() {
