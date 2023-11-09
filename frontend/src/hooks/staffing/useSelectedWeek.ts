@@ -19,13 +19,29 @@ export function useSelectedWeek() {
     });
   }
 
+  function setWeekSpan(weekSpanString: string) {
+    const weekSpanNum = parseInt(weekSpanString.split(" ")[0]);
+    updateRoute({ numWeeks: weekSpanNum });
+  }
+
   function resetSelectedWeek() {
     updateRoute({});
+  }
+
+  function incrementSelectedWeek() {
+    changeSelectedWeek(6);
+  }
+
+  function decrementSelectedWeek() {
+    changeSelectedWeek(-6);
   }
 
   return {
     selectedWeek: selectedWeekFilter,
     changeSelectedWeek,
     resetSelectedWeek,
+    incrementSelectedWeek,
+    decrementSelectedWeek,
+    setWeekSpan,
   };
 }

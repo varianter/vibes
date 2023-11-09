@@ -9,6 +9,7 @@ interface UpdateFilterParams {
   departments?: string;
   years?: string;
   week?: Week;
+  numWeeks?: number;
   availability?: Boolean;
 }
 
@@ -24,6 +25,7 @@ export function useUrlRouteFilter() {
   const selectedWeek = stringToWeek(
     searchParams.get("selectedWeek") || undefined,
   );
+  const weekSpan = Number.parseInt(searchParams.get("weekSpan") ?? "8");
 
   const updateRoute = useCallback(
     (updateParams: UpdateFilterParams) => {
@@ -32,12 +34,17 @@ export function useUrlRouteFilter() {
       const { departments = departmentFilter } = updateParams;
       const { years = yearFilter } = updateParams;
       const { week = selectedWeek } = updateParams;
+      const { numWeeks = weekSpan } = updateParams;
       const { availability = availabilityFilter } = updateParams;
+
+      console.log("Update route with numWeeks = " + numWeeks);
 
       router.push(
         `${pathname}?search=${search}&depFilter=${departments}&yearFilter=${years}${
           week ? `&selectedWeek=${weekToString(week)}` : ""
-        }&availabilityFilter=${availability}`,
+        }&availabilityFilter=${availability}&${
+          numWeeks ? `&weekSpan=${numWeeks}` : ""
+        }`,
       );
     },
     [
@@ -45,6 +52,7 @@ export function useUrlRouteFilter() {
       router,
       departmentFilter,
       selectedWeek,
+      weekSpan,
       searchFilter,
       yearFilter,
       availabilityFilter,
@@ -58,5 +66,6 @@ export function useUrlRouteFilter() {
     availabilityFilter,
     selectedWeekFilter: selectedWeek,
     updateRoute,
+    weekSpan,
   };
 }
