@@ -67,7 +67,7 @@ export default function ConsultantRows({
           </div>
         </td>
         {consultant.bookings?.map((b) => (
-          <td key={b.weekNumber} className="h-[52px] p-0.5 min-w-fit">
+          <td key={b.weekNumber} className="h-[52px] p-0.5">
             <div
               className={`flex flex-col gap-1 p-2 justify-end rounded w-full h-full relative ${
                 b.bookingModel.totalOverbooking > 0

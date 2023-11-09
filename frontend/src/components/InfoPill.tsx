@@ -22,7 +22,9 @@ export default function InfoPill({
       className={`flex flex-row gap-0.5 detail-pill-text p-0.5 items-center w-fit h-4 rounded-sm ${colors}`}
     >
       {(variant == "wide" || variant == "narrow") && icon}
-      {(variant == "wide" || variant == "medium") && <p>{text}</p>}
+      {(variant == "wide" || variant == "medium") && (
+        <p className="hidden lg:flex">{text}</p>
+      )}
     </div>
   );
 }

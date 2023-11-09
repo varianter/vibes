@@ -19,7 +19,7 @@ export default function FilteredConsultantList() {
         <ActiveFilters />
         <WeekSelection />
       </div>
-      <table className="min-w-full table-fixed">
+      <table className="w-full min-w-[1000px] table-fixed">
         <colgroup>
           <col span={1} className="w-14" />
           <col span={1} className="w-[190px]" />
