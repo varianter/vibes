@@ -37,8 +37,6 @@ export function useUrlRouteFilter() {
       const { numWeeks = weekSpan } = updateParams;
       const { availability = availabilityFilter } = updateParams;
 
-      console.log("Update route with numWeeks = " + numWeeks);
-
       router.push(
         `${pathname}?search=${search}&depFilter=${departments}&yearFilter=${years}${
           week ? `&selectedWeek=${weekToString(week)}` : ""
