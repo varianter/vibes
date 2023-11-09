@@ -24,7 +24,7 @@ export default function SearchBarComponent({
       if (e.code.includes("Escape")) {
         setNameSearch("");
       }
-      if (e.code.startsWith("Digit")) {
+      if (e.code.startsWith("Digit") || e.code.includes("Period")) {
         inputRef.current?.blur();
       }
     }
