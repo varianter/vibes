@@ -1,7 +1,7 @@
 "use client";
 import { YearRange } from "@/types";
 import FilterButton from "./FilterButton";
-import { useFilteredConsultants } from "@/hooks/useFilteredConsultants";
+import { useYearsXpFilter } from "@/hooks/staffing/useYearsXpFilter";
 
 export const yearRanges: YearRange[] = [
   { label: "0-2", urlString: "0-2", start: 0, end: 2 },
@@ -12,7 +12,7 @@ export const yearRanges: YearRange[] = [
 ];
 
 export default function ExperienceFilter() {
-  const { filteredYears, toggleYearFilter } = useFilteredConsultants();
+  const { toggleYearFilter, filteredYears } = useYearsXpFilter();
 
   if (yearRanges.length > 0) {
     return (
