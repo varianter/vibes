@@ -15,7 +15,7 @@ import {
   Moon,
   Sun,
 } from "react-feather";
-import InfoPill from "./InfoPill";
+import InfoPill, { InfoPillProps, InfoPillVariant } from "./InfoPill";
 
 export default function ConsultantRows({
   consultant,
@@ -25,6 +25,8 @@ export default function ConsultantRows({
   const [isListElementVisible, setIsListElementVisible] = useState(false);
   const [isRowHovered, setIsRowHovered] = useState(false);
   const [hoveredRowWeek, setHoveredRowWeek] = useState(-1);
+
+  const columnCount = consultant.bookings.length ?? 0;
 
   function toggleListElementVisibility() {
     setIsListElementVisible(!isListElementVisible);
@@ -177,6 +179,7 @@ function WeekCell(props: {
               text={bookedHoursPerWeek.bookingModel.totalOffered.toFixed(1)}
               colors="bg-offer_light text-offer_dark"
               icon={<FileText size="12" />}
+              variant={"wide"}
             />
           )}
           {bookedHoursPerWeek.bookingModel.totalSellableTime > 0 && (
@@ -186,6 +189,7 @@ function WeekCell(props: {
               )}
               colors="bg-free_light text-free_dark"
               icon={<Coffee size="12" />}
+              variant={"wide"}
             />
           )}
           {bookedHoursPerWeek.bookingModel.totalVacationHours > 0 && (
@@ -195,6 +199,7 @@ function WeekCell(props: {
               )}
               colors="bg-vacation_light text-vacation_dark"
               icon={<Sun size="12" />}
+              variant={"wide"}
             />
           )}
           {bookedHoursPerWeek.bookingModel.totalOverbooking > 0 && (
@@ -202,6 +207,7 @@ function WeekCell(props: {
               text={bookedHoursPerWeek.bookingModel.totalOverbooking.toFixed(1)}
               colors="bg-overbooking_dark text-overbooking_light"
               icon={<AlertTriangle size="12" />}
+              variant={"wide"}
             />
           )}
         </div>
@@ -338,4 +344,16 @@ function DetailedBookingRows(props: {
         ))}
     </tr>
   );
+}
+function getInfopillVariantByColumnCount(count: number): InfoPillVariant {
+  switch (true) {
+    case 26 <= count:
+      return "narrow";
+    case 12 <= count && count < 26:
+      return "medium";
+    case count < 12:
+      return "wide";
+    default:
+      return "wide";
+  }
 }

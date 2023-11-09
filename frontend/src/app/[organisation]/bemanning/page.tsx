@@ -11,9 +11,10 @@ export default async function Bemanning({
   searchParams,
 }: {
   params: { organisation: string };
-  searchParams: { selectedWeek?: string };
+  searchParams: { selectedWeek?: string; weekSpan?: string };
 }) {
   const selectedWeek = stringToWeek(searchParams.selectedWeek || undefined);
+  const weekSpan = searchParams.weekSpan || undefined;
 
   const consultants =
     (await fetchWithToken<Consultant[]>(
@@ -21,7 +22,7 @@ export default async function Bemanning({
         selectedWeek
           ? `?Year=${selectedWeek.year}&Week=${selectedWeek.weekNumber}`
           : ""
-      }`,
+      }${weekSpan ? `${selectedWeek ? "&" : "?"}WeekSpan=${weekSpan}` : ""}`,
     )) ?? [];
 
   const departments =
@@ -36,7 +37,7 @@ export default async function Bemanning({
     >
       <StaffingSidebar />
 
-      <div className="main pl-12 p-6 w-full flex flex-col gap-8">
+      <div className="main p-6 w-full flex flex-col gap-8">
         <h1>Bemanning</h1>
         <FilteredConsultantsList />
         <InfoPillDescriptions />

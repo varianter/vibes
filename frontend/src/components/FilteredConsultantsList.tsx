@@ -1,17 +1,12 @@
 "use client";
 import ConsultantRows from "./ConsultantRow";
 import ActiveFilters from "./ActiveFilters";
-import { useFilteredConsultants } from "@/hooks/useFilteredConsultants";
 import WeekSelection from "@/components/WeekSelection";
-import { DateTime } from "luxon";
+import { isCurrentWeek } from "@/hooks/staffing/dateTools";
+import { useConsultantsFilter } from "@/hooks/staffing/useConsultantsFilter";
 
 export default function FilteredConsultantList() {
-  const { filteredConsultants: consultants } = useFilteredConsultants();
-
-  function isCurrentWeek(weekNumber: number, year: number) {
-    const today = DateTime.now();
-    return today.weekNumber == weekNumber && today.year == year;
-  }
+  const { filteredConsultants } = useConsultantsFilter();
 
   return (
     <div className="flex flex-col gap-8">
@@ -19,11 +14,11 @@ export default function FilteredConsultantList() {
         <ActiveFilters />
         <WeekSelection />
       </div>
-      <table className="w-full table-fixed">
+      <table className="min-w-full table-fixed">
         <colgroup>
           <col span={1} className="w-14" />
           <col span={1} className="w-[190px]" />
-          {consultants
+          {filteredConsultants
             .at(0)
             ?.bookings?.map((booking, index) => <col key={index} span={1} />)}
         </colgroup>
@@ -33,11 +28,11 @@ export default function FilteredConsultantList() {
               <div className="flex flex-row gap-3 pb-4 items-center">
                 <p className="body-large-bold ">Konsulenter</p>
                 <p className="text-primary_default body-small-bold rounded-full bg-primary_l3 px-2 py-1">
-                  {consultants?.length}
+                  {filteredConsultants?.length}
                 </p>
               </div>
             </th>
-            {consultants.at(0)?.bookings?.map((booking) => (
+            {filteredConsultants.at(0)?.bookings?.map((booking) => (
               <th
                 key={booking.weekNumber}
                 className="m-2 px-2 py-1 gap-1 justify-items-end"
@@ -59,7 +54,7 @@ export default function FilteredConsultantList() {
           </tr>
         </thead>
         <tbody>
-          {consultants?.map((consultant) => (
+          {filteredConsultants?.map((consultant) => (
             <ConsultantRows key={consultant.id} consultant={consultant} />
           ))}
         </tbody>

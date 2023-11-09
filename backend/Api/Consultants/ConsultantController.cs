@@ -28,7 +28,7 @@ public class ConsultantController : ControllerBase
         [FromRoute] string orgUrlKey,
         [FromQuery(Name = "Year")] int? selectedYearParam = null,
         [FromQuery(Name = "Week")] int? selectedWeekParam = null,
-        [FromQuery(Name = "weeks")] int numberOfWeeks = 8,
+        [FromQuery(Name = "WeekSpan")] int numberOfWeeks = 8,
         [FromQuery(Name = "includeOccupied")] bool includeOccupied = true)
     {
         var selectedYear = selectedYearParam ?? DateTime.Now.Year;
