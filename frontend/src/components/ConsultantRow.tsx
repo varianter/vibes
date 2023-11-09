@@ -239,7 +239,7 @@ function HoveredWeek(props: {
     >
       <div className="rounded-lg bg-white flex flex-col gap-2 min-w-[222px] p-3 shadow-xl">
         {consultant.detailedBooking.map((db, index) => (
-          <>
+          <div key={index}>
             {db.hours.find(
               (hour) => hour.week % 100 == bookedHoursPerWeek.weekNumber,
             )?.hours != 0 && (
@@ -280,7 +280,7 @@ function HoveredWeek(props: {
                 </p>
               </div>
             )}
-          </>
+          </div>
         ))}
       </div>
       <div className="w-0 h-0 border-l-[12px] border-l-transparent border-t-[16px] border-t-white border-r-[12px] border-r-transparent"></div>
