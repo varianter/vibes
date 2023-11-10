@@ -23,8 +23,8 @@ export default function FilteredConsultantList() {
             ?.bookings?.map((booking, index) => <col key={index} span={1} />)}
         </colgroup>
         <thead>
-          <tr>
-            <th colSpan={2}>
+          <tr className="sticky -top-6 bg-white z-50">
+            <th colSpan={2} className="pt-3 pl-2 -left-2 relative bg-white">
               <div className="flex flex-row gap-3 pb-4 items-center">
                 <p className="body-large-bold ">Konsulenter</p>
                 <p className="text-primary_default body-small-bold rounded-full bg-primary_l3 px-2 py-1">
@@ -35,7 +35,7 @@ export default function FilteredConsultantList() {
             {filteredConsultants.at(0)?.bookings?.map((booking) => (
               <th
                 key={booking.weekNumber}
-                className="m-2 px-2 py-1 gap-1 justify-items-end"
+                className="m-2 px-2 py-1 pt-3 gap-1 justify-items-end"
               >
                 {isCurrentWeek(booking.weekNumber, booking.year) ? (
                   <div className="flex flex-row gap-2 items-center justify-end">

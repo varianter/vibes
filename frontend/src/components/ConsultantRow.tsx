@@ -295,3 +295,19 @@ function getInfopillVariantByColumnCount(count: number): InfoPillVariant {
       return "wide";
   }
 }
+
+function getInfopillVariantByColumnAndPillCount(
+  count: number,
+  pills: number,
+): InfoPillVariant {
+  switch (true) {
+    case 26 <= count:
+      return "narrow";
+    case 12 <= count && count < 26:
+      return "medium";
+    case count < 12 && pills < 3:
+      return "wide";
+    default:
+      return "narrow";
+  }
+}
