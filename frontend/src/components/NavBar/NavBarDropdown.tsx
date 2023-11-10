@@ -15,7 +15,7 @@ export default function NavBarDropdown(props: { initials: string }) {
 
   return (
     <>
-      <div className="relative" ref={menuRef}>
+      <div className="relative p-2" ref={menuRef}>
         <button
           className={`flex rounded-full border border-white h-9 min-w-[36px] justify-center items-center ${
             props.initials.length > 3 && "px-1"

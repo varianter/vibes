@@ -3,7 +3,9 @@ import {
   getCustomServerSession,
 } from "@/app/api/auth/[...nextauth]/route";
 import {
-  MockConsultants,
+  MockConsultants12,
+  MockConsultants26,
+  MockConsultants8,
   MockDepartments,
   MockOrganisations,
 } from "../../mockdata/mockData";
@@ -45,7 +47,9 @@ export async function fetchWithToken<T>(path: string): Promise<T | undefined> {
 function mockedCall<T>(path: string): Promise<T> {
   return new Promise((resolve) => {
     if (path.includes("consultants")) {
-      resolve(MockConsultants as T);
+      if (path.includes("12")) resolve(MockConsultants12 as T);
+      if (path.includes("26")) resolve(MockConsultants26 as T);
+      resolve(MockConsultants8 as T);
     }
     if (path.includes("departments")) {
       resolve(MockDepartments as T);

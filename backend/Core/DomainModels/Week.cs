@@ -1,7 +1,6 @@
 namespace Core.DomainModels;
 
 public class Week : IComparable<Week>, IEquatable<Week>
-
 {
     public Week(int year, int weekNumber)
     {
@@ -33,7 +32,7 @@ public class Week : IComparable<Week>, IEquatable<Week>
 
     /// <summary>
     ///     Returns a string in the format yyyyww where y is year and w is week
-    ///     Example: 202352 or 202401 
+    ///     Example: 202352 or 202401
     /// </summary>
     public override string ToString()
     {
@@ -42,10 +41,10 @@ public class Week : IComparable<Week>, IEquatable<Week>
 
     /// <summary>
     ///     Returns an int in the format yyyyww where y is year and w is week
-    ///     Example: 202352 or 202401 
+    ///     Example: 202352 or 202401
     /// </summary>
     public int ToSortableInt()
     {
-        return (Year * 100) + WeekNumber;
+        return Year * 100 + WeekNumber;
     }
 }

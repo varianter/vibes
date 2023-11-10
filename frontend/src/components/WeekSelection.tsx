@@ -19,7 +19,7 @@ export default function WeekSelection() {
   } = useSelectedWeek();
 
   return (
-    <div className="flex flex-row gap-1">
+    <div className="flex flex-row gap-2">
       <DropDown
         startingOption={weekSpan ? weekSpan + " uker" : weekSpanOptions[0]}
         dropDownOptions={weekSpanOptions}

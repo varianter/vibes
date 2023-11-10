@@ -45,13 +45,14 @@
 
   h1 {
     font-size: 2rem;
-    font-family: "Recoleta-Regular";
+    font-family: "Graphik-Regular", sans-serif;
+    font-weight: normal;
     line-height: 2.5rem;
   }
 
   h2 {
     font-size: 1.625rem;
-    font-family: "Graphik-Regular";
+    font-family: "Graphik-Regular", sans-serif;
     line-height: 2.5rem;
   }
 
