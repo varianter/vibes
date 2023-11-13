@@ -158,6 +158,24 @@ function WeekCell(props: {
     columnCount,
   } = props;
 
+  let pillNumber = 0;
+
+  if (bookedHoursPerWeek.bookingModel.totalOffered > 0) {
+    pillNumber++;
+  }
+  if (bookedHoursPerWeek.bookingModel.totalOverbooking > 0) {
+    pillNumber++;
+  }
+  if (bookedHoursPerWeek.bookingModel.totalPlannedAbstences > 0) {
+    pillNumber++;
+  }
+  if (bookedHoursPerWeek.bookingModel.totalVacationHours > 0) {
+    pillNumber++;
+  }
+  if (bookedHoursPerWeek.bookingModel.totalSellableTime > 0) {
+    pillNumber++;
+  }
+
   return (
     <td key={bookedHoursPerWeek.weekNumber} className="h-[52px] p-0.5">
       <div
@@ -180,7 +198,7 @@ function WeekCell(props: {
           {bookedHoursPerWeek.bookingModel.totalOffered > 0 && (
             <InfoPill
               text={bookedHoursPerWeek.bookingModel.totalOffered.toFixed(1)}
-              colors="bg-offer_light text-offer_dark"
+              colors="bg-offer_light text-offer_dark border-offer_dark"
               icon={<FileText size="12" />}
               variant={getInfopillVariantByColumnCount(columnCount)}
             />
@@ -191,7 +209,7 @@ function WeekCell(props: {
                 text={bookedHoursPerWeek.bookingModel.totalSellableTime.toFixed(
                   1,
                 )}
-                colors="bg-free_light text-free_dark"
+                colors="bg-free_light text-free_dark border-free_dark"
                 icon={<Coffee size="12" />}
                 variant={getInfopillVariantByColumnCount(columnCount)}
               />
@@ -201,7 +219,7 @@ function WeekCell(props: {
               text={bookedHoursPerWeek.bookingModel.totalVacationHours.toFixed(
                 1,
               )}
-              colors="bg-vacation_light text-vacation_dark"
+              colors="bg-vacation_light text-vacation_dark border-vacation_dark"
               icon={<Sun size="12" />}
               variant={getInfopillVariantByColumnCount(columnCount)}
             />
@@ -209,7 +227,7 @@ function WeekCell(props: {
           {bookedHoursPerWeek.bookingModel.totalOverbooking > 0 && (
             <InfoPill
               text={bookedHoursPerWeek.bookingModel.totalOverbooking.toFixed(1)}
-              colors="bg-overbooking_dark text-overbooking_light"
+              colors="bg-overbooking_dark text-overbooking_light border-overbooking_light"
               icon={<AlertTriangle size="12" />}
               variant={getInfopillVariantByColumnCount(columnCount)}
             />
@@ -235,7 +253,7 @@ function HoveredWeek(props: {
   const { hoveredRowWeek, bookedHoursPerWeek, consultant } = props;
   return (
     <div
-      className={`absolute bottom-full left-1/2 -translate-x-1/2 flex flex-col items-center ${
+      className={`absolute bottom-full left-1/2 -translate-x-1/2 flex flex-col items-center z-20 ${
         (hoveredRowWeek != bookedHoursPerWeek.weekNumber ||
           consultant.detailedBooking
             .map((d) =>
@@ -362,21 +380,5 @@ function getInfopillVariantByColumnCount(count: number): InfoPillVariant {
       return "wide";
     default:
       return "wide";
-  }
-}
-
-function getInfopillVariantByColumnAndPillCount(
-  count: number,
-  pills: number,
-): InfoPillVariant {
-  switch (true) {
-    case 26 <= count:
-      return "narrow";
-    case 12 <= count && count < 26:
-      return "medium";
-    case count < 12 && pills < 3:
-      return "wide";
-    default:
-      return "narrow";
   }
 }

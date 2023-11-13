@@ -4,9 +4,12 @@ import ActiveFilters from "./ActiveFilters";
 import WeekSelection from "@/components/WeekSelection";
 import { isCurrentWeek } from "@/hooks/staffing/dateTools";
 import { useConsultantsFilter } from "@/hooks/staffing/useConsultantsFilter";
+import { useUrlRouteFilter } from "@/hooks/staffing/useUrlRouteFilter";
 
 export default function FilteredConsultantList() {
   const { filteredConsultants } = useConsultantsFilter();
+
+  const { weekSpan } = useUrlRouteFilter();
 
   return (
     <div className="flex flex-col gap-8">
@@ -14,7 +17,15 @@ export default function FilteredConsultantList() {
         <ActiveFilters />
         <WeekSelection />
       </div>
-      <table className="w-full min-w-[1000px] table-fixed">
+      <table
+        className={`w-full ${
+          weekSpan > 23
+            ? "min-w-[1400px]"
+            : weekSpan > 11
+            ? "min-w-[850px]"
+            : "min-w-[700px]"
+        } table-fixed`}
+      >
         <colgroup>
           <col span={1} className="w-14" />
           <col span={1} className="w-[190px]" />
@@ -23,7 +34,7 @@ export default function FilteredConsultantList() {
             ?.bookings?.map((booking, index) => <col key={index} span={1} />)}
         </colgroup>
         <thead>
-          <tr className="sticky -top-6 bg-white z-50">
+          <tr className="sticky -top-6 bg-white z-10">
             <th colSpan={2} className="pt-3 pl-2 -left-2 relative bg-white">
               <div className="flex flex-row gap-3 pb-4 items-center">
                 <p className="body-large-bold ">Konsulenter</p>
