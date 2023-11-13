@@ -5,6 +5,7 @@ export default {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     colors: {
+      transparent: "transparent",
       black: "#333333",
       white: "#FFFFFF",
       primary: "#423D89",
@@ -20,7 +21,6 @@ export default {
       overbooked_darker: "#B91456",
       absence: "#9FDFD9",
       absence_darker: "#004C46",
-      transparent: "transparent",
     },
     extend: {},
     screens,
