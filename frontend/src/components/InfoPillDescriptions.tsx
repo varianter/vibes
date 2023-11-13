@@ -20,7 +20,7 @@ export default function InfoPillDescriptions() {
       />
       <InfoPill
         text={"Ledig tid"}
-        colors="bg-available text-free_dark"
+        colors="bg-available text-available_darker"
         icon={<Coffee size="12" />}
         variant={"wide"}
       />
