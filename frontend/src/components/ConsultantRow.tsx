@@ -45,7 +45,7 @@ export default function ConsultantRows({
               ? "border-l-secondary_default"
               : isRowHovered
               ? "border-l-primary"
-              : "border-l-primary_l4"
+              : "border-l-primary/5"
           } `}
         >
           <button

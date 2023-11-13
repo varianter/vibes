@@ -12,7 +12,7 @@ export default function StaffingSidebar() {
   return (
     <div className="sidebar z-10">
       {!isSidebarHidden ? (
-        <div className=" bg-primary_l4 h-full flex flex-col gap-6 p-4 w-[300px]">
+        <div className=" bg-primary/5 h-full flex flex-col gap-6 p-4 w-[300px]">
           <div className="flex flex-row justify-between items-center">
             <h1 className="">Filter</h1>
             <button
