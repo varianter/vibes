@@ -129,7 +129,7 @@ function getColorByStaffingType(type: BookingType): string {
 function getIconByBookingType(type: BookingType): ReactElement {
   switch (type) {
     case BookingType.Offer:
-      return <FileText size={16} className="text-offer_dark" />;
+      return <FileText size={16} className="text-primary_darker" />;
     case BookingType.Booking:
       return <Briefcase size={16} className="text-black" />;
     case BookingType.Vacation:
@@ -198,7 +198,7 @@ function WeekCell(props: {
           {bookedHoursPerWeek.bookingModel.totalOffered > 0 && (
             <InfoPill
               text={bookedHoursPerWeek.bookingModel.totalOffered.toFixed(1)}
-              colors="bg-offer text-offer_dark border-offer_dark"
+              colors="bg-offer text-primary_darker border-primary_darker"
               icon={<FileText size="12" />}
               variant={getInfopillVariantByColumnCount(columnCount)}
             />
