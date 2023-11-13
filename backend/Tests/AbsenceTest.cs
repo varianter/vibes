@@ -77,6 +77,7 @@ public class Tests
 
         var detailedBookings = new List<DetailedBooking>();
 
+        // TODO: Change this to update consultant data
         if (vacationDays > 0)
             detailedBookings.Add(new DetailedBooking(new BookingDetails("Ferie", BookingType.Vacation),
                 new List<WeeklyHours> { new(week.ToSortableInt(), vacationDays * 7.5) }));
