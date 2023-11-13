@@ -26,7 +26,7 @@ export default function InfoPillDescriptions() {
       />
       <InfoPill
         text={"Tilbud"}
-        colors="bg-offer text-offer_dark"
+        colors="bg-offer text-primary_darker"
         icon={<FileText size="12" />}
         variant={"wide"}
       />
@@ -38,7 +38,7 @@ export default function InfoPillDescriptions() {
       />
       <InfoPill
         text={"Helligdag"}
-        colors="bg-holiday_light text-holiday_dark"
+        colors="bg-holiday text-holiday_darker"
         icon={<Calendar size="12" />}
         variant={"wide"}
       />
