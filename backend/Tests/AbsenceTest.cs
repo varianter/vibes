@@ -89,9 +89,8 @@ public class Tests
             detailedBookings.Add(new DetailedBooking(new BookingDetails("Kundenavn", BookingType.Booking),
                 new List<WeeklyHours> { new(week.ToSortableInt(), staffedHours) }));
 
-        var bookingModel = consultant.MapToReadModelList(detailedBookings, new List<Week> { week }).Bookings.First()
+        var bookingModel = ReadModelFactory.MapToReadModelList(consultant, new List<Week> { week }).Bookings.First()
             .BookingModel;
-
 
         Assert.Multiple(() =>
         {
@@ -138,16 +137,14 @@ public class Tests
             Department = department
         };
 
-
-        const int year = 2000;
-        const int week = 1;
+        var week = new Week(2000, 1);
 
         consultant.PlannedAbsences.Add(new PlannedAbsence
         {
             Absence = leaveA,
             Consultant = consultant,
-            Year = year,
-            WeekNumber = week,
+            Year = week.Year,
+            WeekNumber = week.WeekNumber,
             Hours = 15
         });
 
@@ -155,13 +152,13 @@ public class Tests
         {
             Absence = leaveB,
             Consultant = consultant,
-            Year = year,
-            WeekNumber = week,
+            Year = week.Year,
+            WeekNumber = week.WeekNumber,
             Hours = 15
         });
 
-        var bookedHours =
-            consultant.GetBookingModelForWeek(year, week);
+        var bookedHours = ReadModelFactory.MapToReadModelList(consultant, new List<Week> { week }).Bookings.First()
+            .BookingModel;
 
         Assert.That(bookedHours.TotalPlannedAbstences, Is.EqualTo(30));
     }

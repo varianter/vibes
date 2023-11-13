@@ -26,7 +26,7 @@ public class ReadModelFactory
             .ToList();
     }
 
-    private static ConsultantReadModel MapToReadModelList(
+    public static ConsultantReadModel MapToReadModelList(
         Consultant consultant,
         List<Week> weekSet)
     {
