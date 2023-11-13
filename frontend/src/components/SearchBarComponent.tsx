@@ -53,11 +53,11 @@ export default function SearchBarComponent({
           <p className="body-small">Søk</p>
           <div
             className={`flex flex-row gap-2 border rounded-lg
-            px-3 py-2 w-full hover:bg-primary_l4 hover:border-primary_default ${
-              searchIsActive ? "border-primary_default" : "border-primary_l1"
+            px-3 py-2 w-full hover:bg-primary_l4 hover:border-primary ${
+              searchIsActive ? "border-primary" : "border-primary_l1"
             } `}
           >
-            <Search className="text-primary_default h-6 w-6" />
+            <Search className="text-primary h-6 w-6" />
 
             <input
               placeholder="Søk etter konsulent"

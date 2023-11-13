@@ -7,7 +7,7 @@ export default function SecondaryButton({
 }) {
   return (
     <button
-      className="interaction-button p-3 rounded-lg border border-primary_l1  hover:bg-primary_default hover:border-primary_default hover:bg-opacity-10 text-primary_default"
+      className="interaction-button p-3 rounded-lg border border-primary_l1  hover:bg-primary hover:border-primary hover:bg-opacity-10 text-primary"
       onClick={onClick}
     >
       {label}

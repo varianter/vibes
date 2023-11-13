@@ -38,7 +38,7 @@ export default function FilteredConsultantList() {
             <th colSpan={2} className="pt-3 pl-2 -left-2 relative bg-white">
               <div className="flex flex-row gap-3 pb-4 items-center">
                 <p className="body-large-bold ">Konsulenter</p>
-                <p className="text-primary_default body-small-bold rounded-full bg-primary_l3 px-2 py-1">
+                <p className="text-primary body-small-bold rounded-full bg-primary_l3 px-2 py-1">
                   {filteredConsultants?.length}
                 </p>
               </div>
@@ -50,7 +50,7 @@ export default function FilteredConsultantList() {
               >
                 {isCurrentWeek(booking.weekNumber, booking.year) ? (
                   <div className="flex flex-row gap-2 items-center justify-end">
-                    <div className="h-2 w-2 rounded-full bg-primary_default" />
+                    <div className="h-2 w-2 rounded-full bg-primary" />
                     <p className="body-bold text-right">{booking.weekNumber}</p>
                   </div>
                 ) : (

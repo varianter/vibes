@@ -44,17 +44,17 @@ export default function ConsultantRows({
             isListElementVisible
               ? "border-l-secondary_default"
               : isRowHovered
-              ? "border-l-primary_default"
+              ? "border-l-primary"
               : "border-l-primary_l4"
           } `}
         >
           <button
-            className={`p-2 rounded-lg ml-2 hover:bg-primary_default hover:bg-opacity-10 ${
+            className={`p-2 rounded-lg ml-2 hover:bg-primary hover:bg-opacity-10 ${
               isListElementVisible && "rotate-180"
             }`}
             onClick={toggleListElementVisibility}
           >
-            <ChevronDown className={`text-primary_default w-6 h-6`} />
+            <ChevronDown className={`text-primary w-6 h-6`} />
           </button>
         </td>
         <td>
