@@ -32,7 +32,7 @@ export default function InfoPillDescriptions() {
       />
       <InfoPill
         text={"Ferie"}
-        colors="bg-vacation_light text-vacation_dark"
+        colors="bg-vacation text-vacation_darker"
         icon={<Sun size="12" />}
         variant={"wide"}
       />

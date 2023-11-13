@@ -118,7 +118,7 @@ function getColorByStaffingType(type: BookingType): string {
     case BookingType.Booking:
       return "bg-primary/[3%]";
     case BookingType.Vacation:
-      return "bg-vacation_light";
+      return "bg-vacation";
     case BookingType.PlannedAbsence:
       return "bg-absence_light";
     default:
@@ -133,7 +133,7 @@ function getIconByBookingType(type: BookingType): ReactElement {
     case BookingType.Booking:
       return <Briefcase size={16} className="text-black" />;
     case BookingType.Vacation:
-      return <Sun size={16} className="text-vacation_dark" />;
+      return <Sun size={16} className="text-vacation_darker" />;
     case BookingType.PlannedAbsence:
       return <Moon size={16} className="text-absence_dark" />;
     default:
@@ -219,7 +219,7 @@ function WeekCell(props: {
               text={bookedHoursPerWeek.bookingModel.totalVacationHours.toFixed(
                 1,
               )}
-              colors="bg-vacation_light text-vacation_dark border-vacation_dark"
+              colors="bg-vacation text-vacation_darker border-vacation_darker"
               icon={<Sun size="12" />}
               variant={getInfopillVariantByColumnCount(columnCount)}
             />
