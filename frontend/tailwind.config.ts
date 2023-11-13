@@ -8,7 +8,6 @@ export default {
       black: "#333333",
       white: "#FFFFFF",
       primary: "#423D89",
-      primary_l1: "#A09EC4",
       primary_l2: "#C6C5DC",
       primary_l4: "#F6F5F9",
       primary_l5: "#F9F9FB",

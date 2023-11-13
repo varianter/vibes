@@ -9,7 +9,7 @@ export default function IconSecondaryButton({
 }) {
   return (
     <button
-      className="p-2 text-primary rounded-lg border border-primary_l1 hover:bg-primary hover:border-primary hover:bg-opacity-10"
+      className="p-2 text-primary rounded-lg border border-primary/50 hover:bg-primary hover:border-primary hover:bg-opacity-10"
       onClick={onClick}
     >
       {icon}

@@ -54,7 +54,7 @@ export default function SearchBarComponent({
           <div
             className={`flex flex-row gap-2 border rounded-lg
             px-3 py-2 w-full hover:bg-primary_l4 hover:border-primary ${
-              searchIsActive ? "border-primary" : "border-primary_l1"
+              searchIsActive ? "border-primary" : "border-primary/50"
             } `}
           >
             <Search className="text-primary h-6 w-6" />

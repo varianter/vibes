@@ -19,7 +19,7 @@ export default function DropDown({
     <div className="relative">
       <button
         className={`w-[120px] py-2 px-3 flex flex-row justify-between items-center rounded-lg hover:bg-primary hover:bg-opacity-10 border hover:border-primary ${
-          isDropDownOpen ? "border-primary" : "border-primary_l1"
+          isDropDownOpen ? "border-primary" : "border-primary/50"
         }`}
         onClick={() => setIsDropDownOpen(!isDropDownOpen)}
       >
