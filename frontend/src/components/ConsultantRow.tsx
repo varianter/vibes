@@ -42,7 +42,7 @@ export default function ConsultantRows({
         <td
           className={`border-l-2 ${
             isListElementVisible
-              ? "border-l-secondary_default"
+              ? "border-l-secondary"
               : isRowHovered
               ? "border-l-primary"
               : "border-l-primary/5"
@@ -95,7 +95,7 @@ export default function ConsultantRows({
         ))}
       {isListElementVisible && (
         <tr>
-          <td className={`${"border-l-secondary_default border-l-2"}`}></td>
+          <td className={`${"border-l-secondary border-l-2"}`}></td>
           <td>
             <button
               disabled
@@ -328,9 +328,7 @@ function DetailedBookingRows(props: {
       className="h-fit"
     >
       <td
-        className={`${
-          isListElementVisible && "border-l-secondary_default border-l-2"
-        }`}
+        className={`${isListElementVisible && "border-l-secondary border-l-2"}`}
       ></td>
       <td className="flex flex-row gap-2 justify-start h-8">
         <div
