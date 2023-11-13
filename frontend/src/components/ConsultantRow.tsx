@@ -209,7 +209,7 @@ function WeekCell(props: {
                 text={bookedHoursPerWeek.bookingModel.totalSellableTime.toFixed(
                   1,
                 )}
-                colors="bg-free_light text-free_dark border-free_dark"
+                colors="bg-available text-free_dark border-free_dark"
                 icon={<Coffee size="12" />}
                 variant={getInfopillVariantByColumnCount(columnCount)}
               />

@@ -14,7 +14,7 @@ export default {
       neutral_l1: "#858585",
       offer_light: "#E4DBFB",
       offer_dark: "#35316E",
-      free_light: "#FFE5B5",
+
       free_dark: "#573900",
       holiday_light: "#FAD2E2",
       holiday_dark: "#6C002B",
