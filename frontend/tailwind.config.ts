@@ -10,12 +10,10 @@ export default {
       primary: "#423D89",
       secondary: "#F076A6",
       available: "#FFE5B5",
+      available_darker: "#573900",
 
-      neutral_l1: "#858585",
       offer_light: "#E4DBFB",
       offer_dark: "#35316E",
-
-      free_dark: "#573900",
       holiday_light: "#FAD2E2",
       holiday_dark: "#6C002B",
       vacation_light: "#C8EEFB",

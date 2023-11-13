@@ -57,7 +57,7 @@ export default function FilteredConsultantList() {
                   <p className="body text-right">{booking.weekNumber}</p>
                 )}
 
-                <p className="detail text-neutral_l1 text-right">
+                <p className="detail text-black/75 text-right">
                   {booking.dateString}
                 </p>
               </th>
