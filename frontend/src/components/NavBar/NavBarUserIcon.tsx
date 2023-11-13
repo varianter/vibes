@@ -15,9 +15,7 @@ export default async function NavBarUserIcon() {
           .split(" ")
           .map((name) => name.charAt(0).toUpperCase())
           .join("")
-      : "";
+      : "NN";
 
-  if (session) {
-    return <NavBarDropdown initials={initials} />;
-  }
+  return <NavBarDropdown initials={initials} />;
 }

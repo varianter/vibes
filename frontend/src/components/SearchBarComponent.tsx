@@ -57,7 +57,7 @@ export default function SearchBarComponent({
               searchIsActive ? "border-primary_default" : "border-primary_l1"
             } `}
           >
-            <Search className="text-primary_default h-4 w-4" />
+            <Search className="text-primary_default h-6 w-6" />
 
             <input
               placeholder="Søk etter konsulent"

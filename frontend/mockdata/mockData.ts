@@ -6,12 +6,12 @@ import {
 } from "@/types";
 
 const MockWeeklyBookingReadModel: WeeklyBookingReadModel = {
-  totalBillable: 0,
-  totalOffered: 0,
-  totalPlannedAbstences: 0,
-  totalSellableTime: 0,
   totalHolidayHours: 0,
   totalOverbooking: 0,
+  totalPlannedAbstences: 0,
+  totalSellableTime: 0,
+  totalBillable: 0,
+  totalOffered: 0,
   totalVacationHours: 0,
 };
 
