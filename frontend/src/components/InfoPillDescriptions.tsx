@@ -26,7 +26,7 @@ export default function InfoPillDescriptions() {
       />
       <InfoPill
         text={"Tilbud"}
-        colors="bg-offer_light text-offer_dark"
+        colors="bg-offer text-offer_dark"
         icon={<FileText size="12" />}
         variant={"wide"}
       />

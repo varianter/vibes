@@ -114,7 +114,7 @@ export default function ConsultantRows({
 function getColorByStaffingType(type: BookingType): string {
   switch (type) {
     case BookingType.Offer:
-      return "bg-offer_light";
+      return "bg-offer";
     case BookingType.Booking:
       return "bg-primary/[3%]";
     case BookingType.Vacation:
@@ -198,7 +198,7 @@ function WeekCell(props: {
           {bookedHoursPerWeek.bookingModel.totalOffered > 0 && (
             <InfoPill
               text={bookedHoursPerWeek.bookingModel.totalOffered.toFixed(1)}
-              colors="bg-offer_light text-offer_dark border-offer_dark"
+              colors="bg-offer text-offer_dark border-offer_dark"
               icon={<FileText size="12" />}
               variant={getInfopillVariantByColumnCount(columnCount)}
             />

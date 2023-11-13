@@ -11,8 +11,8 @@ export default {
       secondary: "#F076A6",
       available: "#FFE5B5",
       available_darker: "#573900",
+      offer: "#E4DBFB",
 
-      offer_light: "#E4DBFB",
       offer_dark: "#35316E",
       holiday_light: "#FAD2E2",
       holiday_dark: "#6C002B",
