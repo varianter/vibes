@@ -116,7 +116,7 @@ function getColorByStaffingType(type: BookingType): string {
     case BookingType.Offer:
       return "bg-offer_light";
     case BookingType.Booking:
-      return "bg-primary_l5";
+      return "bg-primary/[3%]";
     case BookingType.Vacation:
       return "bg-vacation_light";
     case BookingType.PlannedAbsence:
@@ -184,7 +184,7 @@ function WeekCell(props: {
             ? `bg-black text-white`
             : bookedHoursPerWeek.bookingModel.totalSellableTime > 0
             ? `bg-semantic_4_l1`
-            : `bg-primary_l5`
+            : `bg-primary/[3%]`
         }`}
         onMouseEnter={() => setHoveredRowWeek(bookedHoursPerWeek.weekNumber)}
         onMouseLeave={() => setHoveredRowWeek(-1)}

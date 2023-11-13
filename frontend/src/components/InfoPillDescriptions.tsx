@@ -14,7 +14,7 @@ export default function InfoPillDescriptions() {
     <div className="flex flex-row gap-2">
       <InfoPill
         text={"Booking"}
-        colors="bg-primary_l5 text-black"
+        colors="bg-primary/[3%] text-black"
         icon={<Briefcase size="12" />}
         variant={"wide"}
       />
