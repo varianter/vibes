@@ -38,7 +38,7 @@ export default function FilteredConsultantList() {
             <th colSpan={2} className="pt-3 pl-2 -left-2 relative bg-white">
               <div className="flex flex-row gap-3 pb-4 items-center">
                 <p className="body-large-bold ">Konsulenter</p>
-                <p className="text-primary body-small-bold rounded-full bg-primary_l3 px-2 py-1">
+                <p className="text-primary body-small-bold rounded-full bg-primary/5 px-2 py-1">
                   {filteredConsultants?.length}
                 </p>
               </div>

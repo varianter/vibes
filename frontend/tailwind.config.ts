@@ -10,7 +10,6 @@ export default {
       primary: "#423D89",
       primary_l1: "#A09EC4",
       primary_l2: "#C6C5DC",
-      primary_l3: "#ECECF3",
       primary_l4: "#F6F5F9",
       primary_l5: "#F9F9FB",
       secondary_default: "#F076A6",

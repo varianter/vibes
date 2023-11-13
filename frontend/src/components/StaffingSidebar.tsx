@@ -31,7 +31,7 @@ export default function StaffingSidebar() {
         <>
           <button
             onClick={() => setIsSidebarHidden(false)}
-            className="bg-primary_l3 rounded-r p-2 mt-16 hover:bg-primary hover:bg-opacity-20"
+            className="bg-primary/5 rounded-r p-2 mt-16 hover:bg-primary hover:bg-opacity-20"
           >
             <Filter className="text-primary" size="20" />
           </button>
