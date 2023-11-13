@@ -65,8 +65,6 @@ public class Tests
         };
 
         var year = mondayDateOnly.Year;
-        var month = mondayDateOnly.Month;
-        var monday = mondayDateOnly.Day;
         var weekNumber = DateService.GetWeekNumber(mondayDateOnly.ToDateTime(TimeOnly.Parse("12:00")));
         var week = new Week(year, weekNumber);
         var project = Substitute.For<Project>();
@@ -75,20 +73,35 @@ public class Tests
         project.Customer = customer;
         project.State = ProjectState.Active;
 
-        var detailedBookings = new List<DetailedBooking>();
 
         // TODO: Change this to update consultant data
-        if (vacationDays > 0)
-            detailedBookings.Add(new DetailedBooking(new BookingDetails("Ferie", BookingType.Vacation),
-                new List<WeeklyHours> { new(week.ToSortableInt(), vacationDays * 7.5) }));
+        for (var i = 0; i < vacationDays; i++)
+            consultant.Vacations.Add(new Vacation
+            {
+                Consultant = consultant,
+                Date = mondayDateOnly.AddDays(i)
+            });
+
 
         if (plannedAbsenceHours > 0)
-            detailedBookings.Add(new DetailedBooking(new BookingDetails("Perm", BookingType.PlannedAbsence),
-                new List<WeeklyHours> { new(week.ToSortableInt(), plannedAbsenceHours) }));
+            consultant.PlannedAbsences.Add(new PlannedAbsence
+            {
+                Absence = Substitute.For<Absence>(),
+                Consultant = consultant,
+                Hours = plannedAbsenceHours,
+                Year = year,
+                WeekNumber = weekNumber
+            });
 
         if (staffedHours > 0)
-            detailedBookings.Add(new DetailedBooking(new BookingDetails("Kundenavn", BookingType.Booking),
-                new List<WeeklyHours> { new(week.ToSortableInt(), staffedHours) }));
+            consultant.Staffings.Add(new Staffing
+            {
+                Project = project,
+                Consultant = consultant,
+                Year = year,
+                Week = weekNumber,
+                Hours = staffedHours
+            });
 
         var bookingModel = ReadModelFactory.MapToReadModelList(consultant, new List<Week> { week }).Bookings.First()
             .BookingModel;
