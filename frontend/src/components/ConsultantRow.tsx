@@ -183,7 +183,7 @@ function WeekCell(props: {
           bookedHoursPerWeek.bookingModel.totalOverbooking > 0
             ? `bg-black text-white`
             : bookedHoursPerWeek.bookingModel.totalSellableTime > 0
-            ? `bg-semantic_4_l1`
+            ? `bg-available/50`
             : `bg-primary/[3%]`
         }`}
         onMouseEnter={() => setHoveredRowWeek(bookedHoursPerWeek.weekNumber)}
