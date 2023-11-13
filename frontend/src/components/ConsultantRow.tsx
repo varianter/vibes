@@ -120,7 +120,7 @@ function getColorByStaffingType(type: BookingType): string {
     case BookingType.Vacation:
       return "bg-vacation";
     case BookingType.PlannedAbsence:
-      return "bg-absence_light";
+      return "bg-absence";
     default:
       return "";
   }
@@ -135,7 +135,7 @@ function getIconByBookingType(type: BookingType): ReactElement {
     case BookingType.Vacation:
       return <Sun size={16} className="text-vacation_darker" />;
     case BookingType.PlannedAbsence:
-      return <Moon size={16} className="text-absence_dark" />;
+      return <Moon size={16} className="text-absence_darker" />;
     default:
       return <></>;
   }

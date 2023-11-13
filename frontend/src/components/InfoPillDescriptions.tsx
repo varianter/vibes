@@ -50,7 +50,7 @@ export default function InfoPillDescriptions() {
       />
       <InfoPill
         text={"Fravær"}
-        colors="bg-absence_light text-absence_dark"
+        colors="bg-absence text-absence_darker"
         icon={<Moon size="12" />}
         variant={"wide"}
       />
