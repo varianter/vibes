@@ -7,6 +7,7 @@ namespace Api.Common;
 
 public class StorageService
 {
+    private const string ConsultantCacheKey = "consultantCacheKey";
     private readonly IMemoryCache _cache;
     private readonly ApplicationContext _dbContext;
 
@@ -18,12 +19,12 @@ public class StorageService
 
     public List<Consultant> LoadConsultants(string orgUrlKey)
     {
-        if (_cache.TryGetValue<List<Consultant>>("asdf", out var consultants))
+        if (_cache.TryGetValue<List<Consultant>>(ConsultantCacheKey, out var consultants))
             if (consultants != null)
                 return consultants;
 
         var loadedConsultants = LoadConsultantsFromDb(orgUrlKey);
-        _cache.Set("asdf", loadedConsultants);
+        _cache.Set(ConsultantCacheKey, loadedConsultants);
         return loadedConsultants;
     }
 
