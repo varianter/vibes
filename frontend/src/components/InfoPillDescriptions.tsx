@@ -44,7 +44,7 @@ export default function InfoPillDescriptions() {
       />
       <InfoPill
         text={"Overbooket"}
-        colors="bg-overbooking_dark text-white"
+        colors="bg-overbooked_darker text-white"
         icon={<AlertTriangle size="12" />}
         variant={"wide"}
       />

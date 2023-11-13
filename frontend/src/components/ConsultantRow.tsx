@@ -227,7 +227,7 @@ function WeekCell(props: {
           {bookedHoursPerWeek.bookingModel.totalOverbooking > 0 && (
             <InfoPill
               text={bookedHoursPerWeek.bookingModel.totalOverbooking.toFixed(1)}
-              colors="bg-overbooking_dark text-white border-white"
+              colors="bg-overbooked_darker text-white border-white"
               icon={<AlertTriangle size="12" />}
               variant={getInfopillVariantByColumnCount(columnCount)}
             />
