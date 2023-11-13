@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using Core.Services;
 
 namespace Core.DomainModels;
 
@@ -37,6 +38,36 @@ public class Consultant
                 (DateTime.Now - augustThisYear).Seconds > 0 ? DateTime.Now.Year : DateTime.Now.Year - 1;
             return currentAcademicYear - GraduationYear ?? currentAcademicYear;
         }
+    }
+
+    public double HoursPrWorkDay => Department.Organization.HoursPerWorkday;
+
+    public double GetVacationHoursForWeek(Week week)
+    {
+        return Vacations.Count(v => DateService.DateIsInWeek(v.Date, week)) *
+               HoursPrWorkDay;
+    }
+
+    public double GetAbsenceHoursForWeek(Week week)
+    {
+        return PlannedAbsences
+            .Where(pa => pa.Year == week.Year && pa.WeekNumber == week.WeekNumber)
+            .Select(pa => pa.Hours)
+            .Sum();
+    }
+
+    public double GetBillableHoursForWeek(Week week)
+    {
+        return Staffings
+            .Where(s => s.Year == week.Year && s.Week == week.WeekNumber && s.Project.State.Equals(ProjectState.Active))
+            .Select(s => s.Hours).Sum();
+    }
+
+    public double GetOfferedHoursForWeek(Week week)
+    {
+        return Staffings
+            .Where(s => s.Year == week.Year && s.Week == week.WeekNumber && s.Project.State.Equals(ProjectState.Offer))
+            .Select(s => s.Hours).Sum();
     }
 }
 

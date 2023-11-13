@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using Api.Cache;
+using Api.Common;
 using Core.DomainModels;
 using Core.Services;
 using Database.DatabaseContext;
@@ -7,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Api.Consultants;
+namespace Api.Staffing;
 
 [Authorize]
 [Route("/v0/{orgUrlKey}/consultants")]
@@ -31,6 +33,7 @@ public class ConsultantController : ControllerBase
         [FromQuery(Name = "WeekSpan")] int numberOfWeeks = 8,
         [FromQuery(Name = "includeOccupied")] bool includeOccupied = true)
     {
+        var timer = Stopwatch.StartNew();
         var selectedYear = selectedYearParam ?? DateTime.Now.Year;
         var selectedWeekNumber = selectedWeekParam ?? DateService.GetWeekNumber(DateTime.Now);
         var selectedWeek = new Week(selectedYear, selectedWeekNumber);
@@ -42,8 +45,24 @@ public class ConsultantController : ControllerBase
                 || c.IsOccupied
             )
             .ToList();
+        var elapsed = timer.ElapsedMilliseconds;
+        return Ok(new { Time = elapsed, Data = consultants });
+    }
 
-        return Ok(consultants);
+    [HttpGet("test")]
+    public ActionResult GetRefactored()
+    {
+        var timer = Stopwatch.StartNew();
+        const string orlUrlKey = "variant-norge";
+        var selectedYear = DateTime.Now.Year;
+        var selectedWeekNumber = DateService.GetWeekNumber(DateTime.Now);
+        var selectedWeek = new Week(selectedYear, selectedWeekNumber);
+        var weekSet = DateService.GetNextWeeks(selectedWeek, 8);
+
+        var service = new StorageService(_cache, _context);
+        var readModels = new ReadModelFactory(service).GetConsultantReadModelsForWeeks(orlUrlKey, weekSet);
+        var elapsed = timer.ElapsedMilliseconds;
+        return Ok(new { Time = elapsed, Data = readModels });
     }
 
     private List<ConsultantReadModel> GetConsultantReadModels(string orgUrlKey, List<Week> weeks)
@@ -66,9 +85,11 @@ public class ConsultantController : ControllerBase
     {
         var firstWeek = weeks.First().ToSortableInt();
         var lastWeek = weeks.Last().ToSortableInt();
-        
+
         return _context.Staffing
-            .Where(staffing => firstWeek <= (staffing.Year * 100 + staffing.Week) && (staffing.Year * 100 + staffing.Week) <= lastWeek) //Compare weeks by using the format yyyyww, for example 202352 and 202401
+            .Where(staffing => firstWeek <= staffing.Year * 100 + staffing.Week &&
+                               staffing.Year * 100 + staffing.Week <=
+                               lastWeek) //Compare weeks by using the format yyyyww, for example 202352 and 202401
             .Where(staffing =>
                 staffing.Project.State == state)
             .Include(s => s.Consultant)
@@ -83,7 +104,7 @@ public class ConsultantController : ControllerBase
         weekSet.Sort();
         var firstWeek = weekSet.First().ToSortableInt();
         var lastWeek = weekSet.Last().ToSortableInt();
-        
+
         var firstDayInScope = DateService.FirstDayOfWorkWeek(weekSet.First());
         var firstWorkDayOutOfScope = DateService.LastWorkDayOfWeek(weekSet.Last()).AddDays(1);
 
@@ -105,7 +126,9 @@ public class ConsultantController : ControllerBase
         var plannedAbsences = _context.PlannedAbsence
             .Include(plannedAbsence => plannedAbsence.Consultant)
             .Include(plannedAbsence => plannedAbsence.Absence)
-            .Where(absence => firstWeek <= (absence.Year * 100 + absence.WeekNumber) && (absence.Year * 100 + absence.WeekNumber) <= lastWeek) //Compare weeks by using the format yyyyww, for example 202352 and 202401
+            .Where(absence => firstWeek <= absence.Year * 100 + absence.WeekNumber &&
+                              absence.Year * 100 + absence.WeekNumber <=
+                              lastWeek) //Compare weeks by using the format yyyyww, for example 202352 and 202401
             .GroupBy(plannedAbsence =>
                 new StaffingGroupKey(plannedAbsence.Consultant.Id, plannedAbsence.Absence.Id, plannedAbsence.Year,
                     plannedAbsence.WeekNumber))

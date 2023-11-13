@@ -2,7 +2,7 @@ using Api.Organisation;
 using Core.DomainModels;
 using Core.Services;
 
-namespace Api.Consultants;
+namespace Api.Staffing;
 
 public static class ConsultantExtensions
 {
@@ -37,32 +37,22 @@ public static class ConsultantExtensions
             isOccupied);
     }
 
-    public static WeeklyBookingReadModel GetBookingModelForWeek(this Consultant consultant, int year, int week)
+    public static WeeklyBookingReadModel GetBookingModelForWeek(this Consultant consultant, int year, int weekNumber)
     {
         var org = consultant.Department.Organization;
 
         var hoursPrWorkDay = org.HoursPerWorkday;
 
-        var holidayHours = org.GetTotalHolidaysOfWeek(new Week(year, week)) * hoursPrWorkDay;
-        var vacationHours = consultant.Vacations.Count(v => DateService.DateIsInWeek(v.Date, new Week(year, week))) *
-                            hoursPrWorkDay;
+        var week = new Week(year, weekNumber);
 
-        var plannedAbsenceHours = consultant.PlannedAbsences
-            .Where(pa => pa.Year == year && pa.WeekNumber == week)
-            .Select(pa => pa.Hours)
-            .Sum();
+        var holidayHours = org.GetTotalHolidayHoursOfWeek(week);
 
-        var billableHours = consultant.Staffings
-            .Where(s => s.Year == year && s.Week == week && s.Project.State.Equals(ProjectState.Active))
-            .Select(s => s.Hours).Sum();
-
-        var offeredHours = consultant.Staffings
-            .Where(s => s.Year == year && s.Week == week && s.Project.State.Equals(ProjectState.Offer))
-            .Select(s => s.Hours).Sum();
-
+        var vacationHours = consultant.GetVacationHoursForWeek(week);
+        var plannedAbsenceHours = consultant.GetAbsenceHoursForWeek(week);
+        var billableHours = consultant.GetBillableHoursForWeek(week);
+        var offeredHours = consultant.GetOfferedHoursForWeek(week);
 
         var bookedTime = billableHours + plannedAbsenceHours + vacationHours + holidayHours;
-
 
         var totalFreeTime =
             Math.Max(hoursPrWorkDay * 5 - bookedTime, 0);
