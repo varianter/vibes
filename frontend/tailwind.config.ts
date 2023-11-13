@@ -20,8 +20,6 @@ export default {
       overbooked_darker: "#B91456",
       absence: "#9FDFD9",
       absence_darker: "#004C46",
-
-      hover_background: "#F0EFEF",
       transparent: "transparent",
     },
     extend: {},

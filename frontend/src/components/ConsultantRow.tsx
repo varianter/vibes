@@ -283,7 +283,7 @@ function HoveredWeek(props: {
                             hour.week % 100 == bookedHoursPerWeek.weekNumber,
                         )?.hours != 0,
                     ).length -
-                      1 && "border-b pb-2 border-hover_background"
+                      1 && "border-b pb-2 border-black/10"
                 }`}
               >
                 <div className="flex flex-row gap-2 items-center">
