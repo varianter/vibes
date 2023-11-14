@@ -48,11 +48,7 @@ public class ReadModelFactory
             b.BookingModel.TotalHolidayHours >= hoursPrWeek);
 
         return new ConsultantReadModel(
-            consultant.Id, consultant.Name, consultant.Email,
-            consultant.Competences.Select(competence => competence.Name).ToList(),
-            consultant.Department.Name,
-            consultant.YearsOfExperience,
-            consultant.Degree ?? Degree.Master,
+            consultant,
             bookingSummary,
             detailedBookings.ToList(),
             isOccupied);

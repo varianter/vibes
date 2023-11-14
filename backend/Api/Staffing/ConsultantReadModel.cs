@@ -4,7 +4,25 @@ namespace Api.Staffing;
 
 public record ConsultantReadModel(int Id, string Name, string Email, List<string> Competences, string Department,
     int YearsOfExperience, Degree Degree,
-    List<BookedHoursPerWeek> Bookings, List<DetailedBooking> DetailedBooking, bool IsOccupied);
+    List<BookedHoursPerWeek> Bookings, List<DetailedBooking> DetailedBooking, bool IsOccupied)
+{
+    public ConsultantReadModel(Consultant consultant, List<BookedHoursPerWeek> bookings,
+        List<DetailedBooking> detailedBookings, bool IsOccupied)
+        : this(
+            consultant.Id,
+            consultant.Name,
+            consultant.Email,
+            consultant.Competences.Select(c => c.Name).ToList(),
+            consultant.Department.Name,
+            consultant.YearsOfExperience,
+            consultant.Degree ?? Degree.Master,
+            bookings,
+            detailedBookings,
+            IsOccupied
+        )
+    {
+    }
+}
 
 public record BookedHoursPerWeek(int Year, int WeekNumber, int SortableWeek, string DateString,
     WeeklyBookingReadModel BookingModel);
