@@ -57,6 +57,12 @@
     line-height: 1rem;
   }
 
+  .normal-semibold {
+    font-size: 0.875rem;
+    font-family: "Graphik-SemiBold";
+    line-height: 1rem;
+  }
+
   .small {
     font-size: 0.75rem;
     font-family: "Graphik-Regular";
@@ -94,18 +100,6 @@
 
   th {
     font-weight: normal;
-  }
-
-  .interaction-chip {
-    font-size: 0.75rem;
-    font-family: "Graphik-SemiBold";
-    line-height: 0.875rem;
-  }
-
-  .interaction-button {
-    font-size: 0.9rem;
-    font-family: "Graphik-SemiBold";
-    line-height: 1rem;
   }
 
   .layout-grid {

@@ -23,7 +23,7 @@ export default function DropDown({
         }`}
         onClick={() => setIsDropDownOpen(!isDropDownOpen)}
       >
-        <p className="text-primary interaction-button">{chosenOption}</p>
+        <p className="text-primary normal-semibold">{chosenOption}</p>
         {isDropDownOpen ? (
           <ChevronUp className="text-primary w-6 h-6" />
         ) : (
@@ -45,7 +45,7 @@ export default function DropDown({
             }}
             className="hover:bg-primary px-3 py-2 rounded-md hover:bg-opacity-10 flex flex-row justify-between items-center"
           >
-            <p className="h-6 flex items-center interaction-button text-primary">
+            <p className="h-6 flex items-center normal-semibold text-primary">
               {option}
             </p>
             {option == chosenOption && (
