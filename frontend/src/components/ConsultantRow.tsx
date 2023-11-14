@@ -61,7 +61,7 @@ export default function ConsultantRows({
           <div className="flex flex-col gap-1 ">
             <p
               className={`text-black text-start ${
-                isListElementVisible ? "body-bold" : "body"
+                isListElementVisible ? "body-bold" : "normal"
               }`}
             >
               {consultant.name}
@@ -235,7 +235,7 @@ function WeekCell(props: {
         </div>
         <p
           className={`text-right ${
-            isListElementVisible ? "body-bold" : "body"
+            isListElementVisible ? "body-bold" : "normal"
           }`}
         >
           {bookedHoursPerWeek.bookingModel.totalBillable}

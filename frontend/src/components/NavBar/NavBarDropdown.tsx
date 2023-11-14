@@ -34,7 +34,7 @@ export default function NavBarDropdown(props: { initials: string }) {
             onClick={() => signOut()}
           >
             <LogOut className="w-4 h-4" />
-            <p className="body">Logg ut</p>
+            <p className="normal">Logg ut</p>
           </button>
         </div>
       </div>

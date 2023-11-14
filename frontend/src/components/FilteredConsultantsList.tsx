@@ -54,7 +54,7 @@ export default function FilteredConsultantList() {
                     <p className="body-bold text-right">{booking.weekNumber}</p>
                   </div>
                 ) : (
-                  <p className="body text-right">{booking.weekNumber}</p>
+                  <p className="normal text-right">{booking.weekNumber}</p>
                 )}
 
                 <p className="detail text-black/75 text-right">

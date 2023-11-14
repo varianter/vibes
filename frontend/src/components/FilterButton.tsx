@@ -44,7 +44,7 @@ export default function FilterButton({
           fill="white"
         />
       </svg>
-      <label className="body">{label}</label>
+      <label className="normal">{label}</label>
     </div>
   );
 }
