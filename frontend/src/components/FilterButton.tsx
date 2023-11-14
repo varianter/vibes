@@ -18,10 +18,10 @@ export default function FilterButton({
       <input
         id="checkbox"
         type="checkbox"
-        className={`appearance-none border flex items-center border-primary_default border-opacity-50 m-[1px] mr-2 h-4 w-4 rounded-sm   hover:border-primary_default checked:bg-primary_default ${
+        className={`appearance-none border flex items-center border-primary border-opacity-50 m-[1px] mr-2 h-4 w-4 rounded-sm   hover:border-primary checked:bg-primary ${
           checked
-            ? "hover:bg-primary_default hover:brightness-[1.5]"
-            : "hover:bg-primary_default hover:bg-opacity-10"
+            ? "hover:bg-primary hover:brightness-[1.5]"
+            : "hover:bg-primary hover:bg-opacity-10"
         }`}
         checked={checked}
         disabled={!enabled}
@@ -44,7 +44,7 @@ export default function FilterButton({
           fill="white"
         />
       </svg>
-      <label className="body">{label}</label>
+      <label className="normal">{label}</label>
     </div>
   );
 }

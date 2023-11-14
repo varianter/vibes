@@ -19,7 +19,7 @@ export default function DepartmentFilter() {
 
     return (
       <div className="flex flex-col gap-2">
-        <p className="body-small">Avdeling</p>
+        <p className="small">Avdeling</p>
         <div className="flex flex-col gap-2 w-52">
           {departments?.map((department, index) => (
             <FilterButton

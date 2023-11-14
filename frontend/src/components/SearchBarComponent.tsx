@@ -50,19 +50,19 @@ export default function SearchBarComponent({
         />
       ) : (
         <div className={`flex flex-col gap-2`}>
-          <p className="body-small">Søk</p>
+          <p className="small">Søk</p>
           <div
             className={`flex flex-row gap-2 border rounded-lg
-            px-3 py-2 w-full hover:bg-primary_l4 hover:border-primary_default ${
-              searchIsActive ? "border-primary_default" : "border-primary_l1"
+            px-3 py-2 w-full hover:bg-primary/10 hover:border-primary ${
+              searchIsActive ? "border-primary" : "border-primary/50"
             } `}
           >
-            <Search className="text-primary_default h-6 w-6" />
+            <Search className="text-primary h-6 w-6" />
 
             <input
               placeholder="Søk etter konsulent"
               id="consultantSearch"
-              className="input w-[131px] focus:outline-none body-small"
+              className="input w-[131px] focus:outline-none small"
               onChange={(e) => setNameSearch(e.target.value)}
               ref={inputRef}
               value={activeNameSearch}

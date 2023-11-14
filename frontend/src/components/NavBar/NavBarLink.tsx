@@ -10,8 +10,8 @@ export default function NavBarLink(props: { text: string; path: string }) {
     <a
       className={`p-4 flex justify-center items-center text-white ${
         isCurrentPath
-          ? "body-large-bold border-b-[3px] border-secondary_default"
-          : "body-large opacity-70 hover:opacity-100"
+          ? "large-medium border-b-[3px] border-secondary"
+          : "large opacity-70 hover:opacity-100"
       }`}
       href={orgUrl != "" ? `/${orgUrl}/${props.path}` : "/"}
     >

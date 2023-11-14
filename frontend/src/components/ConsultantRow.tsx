@@ -42,31 +42,31 @@ export default function ConsultantRows({
         <td
           className={`border-l-2 ${
             isListElementVisible
-              ? "border-l-secondary_default"
+              ? "border-l-secondary"
               : isRowHovered
-              ? "border-l-primary_default"
-              : "border-l-primary_l4"
+              ? "border-l-primary"
+              : "border-l-primary/5"
           } `}
         >
           <button
-            className={`p-2 rounded-lg ml-2 hover:bg-primary_default hover:bg-opacity-10 ${
+            className={`p-2 rounded-lg ml-2 hover:bg-primary hover:bg-opacity-10 ${
               isListElementVisible && "rotate-180"
             }`}
             onClick={toggleListElementVisibility}
           >
-            <ChevronDown className={`text-primary_default w-6 h-6`} />
+            <ChevronDown className={`text-primary w-6 h-6`} />
           </button>
         </td>
         <td>
           <div className="flex flex-col gap-1 ">
             <p
               className={`text-black text-start ${
-                isListElementVisible ? "body-bold" : "body"
+                isListElementVisible ? "normal-medium" : "normal"
               }`}
             >
               {consultant.name}
             </p>
-            <p className="detail text-neutral_l1 text-start">
+            <p className="xsmall text-black/75 text-start">
               {`${consultant.yearsOfExperience} års erfaring`}
             </p>
           </div>
@@ -95,11 +95,11 @@ export default function ConsultantRows({
         ))}
       {isListElementVisible && (
         <tr>
-          <td className={`${"border-l-secondary_default border-l-2"}`}></td>
+          <td className={`${"border-l-secondary border-l-2"}`}></td>
           <td>
             <button
               disabled
-              className="detail text-neutral_l1 text-sm font-semibold leading-none"
+              className="xsmall text-black/75 text-sm font-semibold leading-none"
             >
               + Legg til bemanning
             </button>
@@ -114,13 +114,13 @@ export default function ConsultantRows({
 function getColorByStaffingType(type: BookingType): string {
   switch (type) {
     case BookingType.Offer:
-      return "bg-offer_light";
+      return "bg-offer";
     case BookingType.Booking:
-      return "bg-primary_l5";
+      return "bg-primary/[3%]";
     case BookingType.Vacation:
-      return "bg-vacation_light";
+      return "bg-vacation";
     case BookingType.PlannedAbsence:
-      return "bg-absence_light";
+      return "bg-absence";
     default:
       return "";
   }
@@ -129,13 +129,13 @@ function getColorByStaffingType(type: BookingType): string {
 function getIconByBookingType(type: BookingType): ReactElement {
   switch (type) {
     case BookingType.Offer:
-      return <FileText size={16} className="text-offer_dark" />;
+      return <FileText size={16} className="text-primary_darker" />;
     case BookingType.Booking:
       return <Briefcase size={16} className="text-black" />;
     case BookingType.Vacation:
-      return <Sun size={16} className="text-vacation_dark" />;
+      return <Sun size={16} className="text-vacation_darker" />;
     case BookingType.PlannedAbsence:
-      return <Moon size={16} className="text-absence_dark" />;
+      return <Moon size={16} className="text-absence_darker" />;
     default:
       return <></>;
   }
@@ -183,8 +183,8 @@ function WeekCell(props: {
           bookedHoursPerWeek.bookingModel.totalOverbooking > 0
             ? `bg-black text-white`
             : bookedHoursPerWeek.bookingModel.totalSellableTime > 0
-            ? `bg-semantic_4_l1`
-            : `bg-primary_l5`
+            ? `bg-available/50`
+            : `bg-primary/[3%]`
         }`}
         onMouseEnter={() => setHoveredRowWeek(bookedHoursPerWeek.weekNumber)}
         onMouseLeave={() => setHoveredRowWeek(-1)}
@@ -198,7 +198,7 @@ function WeekCell(props: {
           {bookedHoursPerWeek.bookingModel.totalOffered > 0 && (
             <InfoPill
               text={bookedHoursPerWeek.bookingModel.totalOffered.toFixed(1)}
-              colors="bg-offer_light text-offer_dark border-offer_dark"
+              colors="bg-offer text-primary_darker border-primary_darker"
               icon={<FileText size="12" />}
               variant={getInfopillVariantByColumnCount(columnCount)}
             />
@@ -209,7 +209,7 @@ function WeekCell(props: {
                 text={bookedHoursPerWeek.bookingModel.totalSellableTime.toFixed(
                   1,
                 )}
-                colors="bg-free_light text-free_dark border-free_dark"
+                colors="bg-available text-available_darker border-available_darker"
                 icon={<Coffee size="12" />}
                 variant={getInfopillVariantByColumnCount(columnCount)}
               />
@@ -219,7 +219,7 @@ function WeekCell(props: {
               text={bookedHoursPerWeek.bookingModel.totalVacationHours.toFixed(
                 1,
               )}
-              colors="bg-vacation_light text-vacation_dark border-vacation_dark"
+              colors="bg-vacation text-vacation_darker border-vacation_darker"
               icon={<Sun size="12" />}
               variant={getInfopillVariantByColumnCount(columnCount)}
             />
@@ -227,7 +227,7 @@ function WeekCell(props: {
           {bookedHoursPerWeek.bookingModel.totalOverbooking > 0 && (
             <InfoPill
               text={bookedHoursPerWeek.bookingModel.totalOverbooking.toFixed(1)}
-              colors="bg-overbooking_dark text-overbooking_light border-overbooking_light"
+              colors="bg-overbooked_darker text-white border-white"
               icon={<AlertTriangle size="12" />}
               variant={getInfopillVariantByColumnCount(columnCount)}
             />
@@ -235,7 +235,7 @@ function WeekCell(props: {
         </div>
         <p
           className={`text-right ${
-            isListElementVisible ? "body-bold" : "body"
+            isListElementVisible ? "normal-medium" : "normal"
           }`}
         >
           {bookedHoursPerWeek.bookingModel.totalBillable}
@@ -283,7 +283,7 @@ function HoveredWeek(props: {
                             hour.week % 100 == bookedHoursPerWeek.weekNumber,
                         )?.hours != 0,
                     ).length -
-                      1 && "border-b pb-2 border-hover_background"
+                      1 && "border-b pb-2 border-black/10"
                 }`}
               >
                 <div className="flex flex-row gap-2 items-center">
@@ -328,9 +328,7 @@ function DetailedBookingRows(props: {
       className="h-fit"
     >
       <td
-        className={`${
-          isListElementVisible && "border-l-secondary_default border-l-2"
-        }`}
+        className={`${isListElementVisible && "border-l-secondary border-l-2"}`}
       ></td>
       <td className="flex flex-row gap-2 justify-start h-8">
         <div
@@ -341,10 +339,10 @@ function DetailedBookingRows(props: {
           {getIconByBookingType(detailedBooking.bookingDetails.type)}
         </div>
         <div className="flex flex-col justify-between items-start">
-          <p className="detail text-neutral_l1 text-right">
+          <p className="xsmall text-black/75 text-right">
             {detailedBooking.bookingDetails.type}
           </p>
-          <p className="text-black text-start body-small">
+          <p className="text-black text-start small">
             {detailedBooking.bookingDetails.name}
           </p>
         </div>
@@ -357,7 +355,7 @@ function DetailedBookingRows(props: {
             className="h-8 p-0.5"
           >
             <p
-              className={`text-right body-small-bold px-2 py-1 rounded h-full
+              className={`text-right small-medium px-2 py-1 rounded h-full
      ${getColorByStaffingType(
        detailedBooking.bookingDetails.type ?? BookingType.Offer,
      )}`}

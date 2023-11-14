@@ -17,7 +17,7 @@ export default function ExperienceFilter() {
   if (yearRanges.length > 0) {
     return (
       <div className="flex flex-col gap-2">
-        <p className="body-small">Erfaring</p>
+        <p className="small">Erfaring</p>
         <div className="flex flex-col gap-2 w-52">
           {yearRanges?.map((range, index) => (
             <FilterButton

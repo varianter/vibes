@@ -3,16 +3,6 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: "Recoleta-Regular";
-  src: url(../../public/fonts/recoleta-regular.woff) format("truetype");
-}
-
-@font-face {
-  font-family: "Recoleta-Medium";
-  src: url(../../public/fonts/recoleta-medium.woff) format("truetype");
-}
-
-@font-face {
   font-family: "Graphik-Regular";
   src: url(../../public/fonts/Graphik-Regular-Web.woff2) format("truetype");
 }
@@ -44,61 +34,60 @@
   }
 
   h1 {
-    font-size: 2rem;
-    font-family: "Graphik-Regular", sans-serif;
-    font-weight: normal;
-    line-height: 2.5rem;
-  }
-
-  h2 {
     font-size: 1.625rem;
     font-family: "Graphik-Regular", sans-serif;
     line-height: 2.5rem;
   }
 
-  h3 {
+  h2 {
     font-size: 1.25rem;
-    font-family: "Graphik-Regular";
-    line-height: 2.5rem;
+    font-family: "Graphik-Regular", sans-serif;
+    line-height: 1.5rem;
   }
 
-  .body {
-    font-size: 0.9rem;
+  .normal {
+    font-size: 0.875rem;
     font-family: "Graphik-Regular";
     line-height: 1rem;
   }
 
-  .body-bold {
-    font-size: 0.9rem;
+  .normal-medium {
+    font-size: 0.875rem;
     font-family: "Graphik-Medium";
     line-height: 1rem;
   }
 
-  .body-small {
+  .normal-semibold {
+    font-size: 0.875rem;
+    font-family: "Graphik-SemiBold";
+    line-height: 1rem;
+  }
+
+  .small {
     font-size: 0.75rem;
     font-family: "Graphik-Regular";
     line-height: 1rem;
   }
 
-  .body-small-bold {
+  .small-medium {
     font-size: 0.75rem;
     font-family: "Graphik-Medium";
     line-height: 1rem;
   }
 
-  .detail {
+  .xsmall {
     font-size: 0.625rem;
     font-family: "Graphik-Regular";
     line-height: 1rem;
   }
 
-  .body-large {
+  .large {
     font-size: 1rem;
     font-family: "Graphik-Regular";
     line-height: 1.25rem;
   }
 
-  .body-large-bold {
+  .large-medium {
     font-size: 1rem;
     font-family: "Graphik-Medium";
     line-height: 1.25rem;
@@ -111,24 +100,6 @@
 
   th {
     font-weight: normal;
-  }
-
-  .interaction-chip {
-    font-size: 0.75rem;
-    font-family: "Graphik-SemiBold";
-    line-height: 0.875rem;
-  }
-
-  .interaction-button {
-    font-size: 0.9rem;
-    font-family: "Graphik-SemiBold";
-    line-height: 1rem;
-  }
-
-  .detail-pill-text {
-    font-size: 0.652rem;
-    font-family: "Graphik-Regular";
-    line-height: 1rem;
   }
 
   .layout-grid {

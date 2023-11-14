@@ -25,7 +25,7 @@ export default function InfoPill({
         }`}
       />
       <div
-        className={`flex flex-row gap-0.5 detail-pill-text p-0.5 items-center h-4 rounded-sm ${colors} ${
+        className={`flex flex-row gap-0.5 xsmall p-0.5 items-center h-4 rounded-sm ${colors} ${
           variant == "circle" && "hidden"
         }`}
       >

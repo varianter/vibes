@@ -8,7 +8,7 @@ export default function AvailabilityFilter() {
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="body-small">Status</p>
+      <p className="small">Status</p>
       <FilterButton
         label={"Ledig tid"}
         onClick={() => toggleAvailabilityFilter()}

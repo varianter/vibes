@@ -12,14 +12,14 @@ export default function StaffingSidebar() {
   return (
     <div className="sidebar z-10">
       {!isSidebarHidden ? (
-        <div className=" bg-primary_l4 h-full flex flex-col gap-6 p-4 w-[300px]">
+        <div className=" bg-primary/5 h-full flex flex-col gap-6 p-4 w-[300px]">
           <div className="flex flex-row justify-between items-center">
             <h1 className="">Filter</h1>
             <button
               onClick={() => setIsSidebarHidden(true)}
-              className="p-2 text-primary_default rounded-lg hover:bg-primary_default hover:bg-opacity-10"
+              className="p-2 text-primary rounded-lg hover:bg-primary hover:bg-opacity-10"
             >
-              <ArrowLeft className="text-primary_default" size="24" />
+              <ArrowLeft className="text-primary" size="24" />
             </button>
           </div>
           <SearchBarComponent />
@@ -31,9 +31,9 @@ export default function StaffingSidebar() {
         <>
           <button
             onClick={() => setIsSidebarHidden(false)}
-            className="bg-primary_l3 rounded-r p-2 mt-16 hover:bg-primary_default hover:bg-opacity-20"
+            className="bg-primary/5 rounded-r p-2 mt-16 hover:bg-primary hover:bg-opacity-20"
           >
-            <Filter className="text-primary_default" size="20" />
+            <Filter className="text-primary" size="20" />
           </button>
           <div style={{ width: "0px", height: "0px" }}>
             <SearchBarComponent hidden />

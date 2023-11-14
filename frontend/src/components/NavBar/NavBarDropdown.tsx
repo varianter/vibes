@@ -22,19 +22,19 @@ export default function NavBarDropdown(props: { initials: string }) {
           }`}
           onClick={() => setIsOpen(!isOpen)}
         >
-          <p className="text-white body-small">{props.initials}</p>
+          <p className="text-white small">{props.initials}</p>
         </button>
         <div
-          className={`absolute right-0 top-11 rounded-b text-primary_default bg-white flex flex-col w-[138px] shadow-md ${
+          className={`absolute right-0 top-11 rounded-b text-primary bg-white flex flex-col w-[138px] shadow-md ${
             !isOpen && "hidden"
           }`}
         >
           <button
-            className="p-2 w-[138px] rounded-b flex flex-row gap-3 hover:bg-primary_default hover:text-white"
+            className="p-2 w-[138px] rounded-b flex flex-row gap-3 hover:bg-primary hover:text-white"
             onClick={() => signOut()}
           >
             <LogOut className="w-4 h-4" />
-            <p className="body">Logg ut</p>
+            <p className="normal">Logg ut</p>
           </button>
         </div>
       </div>

@@ -14,43 +14,43 @@ export default function InfoPillDescriptions() {
     <div className="flex flex-row gap-2">
       <InfoPill
         text={"Booking"}
-        colors="bg-primary_l5 text-black"
+        colors="bg-primary/[3%] text-black"
         icon={<Briefcase size="12" />}
         variant={"wide"}
       />
       <InfoPill
         text={"Ledig tid"}
-        colors="bg-free_light text-free_dark"
+        colors="bg-available text-available_darker"
         icon={<Coffee size="12" />}
         variant={"wide"}
       />
       <InfoPill
         text={"Tilbud"}
-        colors="bg-offer_light text-offer_dark"
+        colors="bg-offer text-primary_darker"
         icon={<FileText size="12" />}
         variant={"wide"}
       />
       <InfoPill
         text={"Ferie"}
-        colors="bg-vacation_light text-vacation_dark"
+        colors="bg-vacation text-vacation_darker"
         icon={<Sun size="12" />}
         variant={"wide"}
       />
       <InfoPill
         text={"Helligdag"}
-        colors="bg-holiday_light text-holiday_dark"
+        colors="bg-holiday text-holiday_darker"
         icon={<Calendar size="12" />}
         variant={"wide"}
       />
       <InfoPill
         text={"Overbooket"}
-        colors="bg-overbooking_dark text-overbooking_light"
+        colors="bg-overbooked_darker text-white"
         icon={<AlertTriangle size="12" />}
         variant={"wide"}
       />
       <InfoPill
         text={"Fravær"}
-        colors="bg-absence_light text-absence_dark"
+        colors="bg-absence text-absence_darker"
         icon={<Moon size="12" />}
         variant={"wide"}
       />
