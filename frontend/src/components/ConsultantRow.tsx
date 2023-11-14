@@ -80,6 +80,7 @@ export default function ConsultantRows({
             setHoveredRowWeek={setHoveredRowWeek}
             hoveredRowWeek={hoveredRowWeek}
             columnCount={columnCount}
+            isLastCol={index == consultant.bookings.length - 1}
           />
         ))}
       </tr>
@@ -106,7 +107,6 @@ export default function ConsultantRows({
           </td>
         </tr>
       )}
-      <tr className="h-1" />
     </>
   );
 }
@@ -148,6 +148,7 @@ function WeekCell(props: {
   setHoveredRowWeek: (number: number) => void;
   hoveredRowWeek: number;
   columnCount: number;
+  isLastCol: boolean;
 }) {
   const {
     bookedHoursPerWeek: bookedHoursPerWeek,
@@ -156,6 +157,7 @@ function WeekCell(props: {
     setHoveredRowWeek,
     hoveredRowWeek,
     columnCount,
+    isLastCol,
   } = props;
 
   let pillNumber = 0;
@@ -177,7 +179,10 @@ function WeekCell(props: {
   }
 
   return (
-    <td key={bookedHoursPerWeek.weekNumber} className="h-[52px] px-0.5">
+    <td
+      key={bookedHoursPerWeek.weekNumber}
+      className={`h-[52px] ${isLastCol ? "py-0.5 pl-0.5" : "p-0.5"}`}
+    >
       <div
         className={`flex flex-col gap-1 p-2 justify-end rounded w-full h-full relative ${
           bookedHoursPerWeek.bookingModel.totalOverbooking > 0
