@@ -253,7 +253,7 @@ function HoveredWeek(props: {
   const { hoveredRowWeek, bookedHoursPerWeek, consultant } = props;
   return (
     <div
-      className={`absolute bottom-full left-1/2 -translate-x-1/2 flex flex-col items-center z-20 ${
+      className={`absolute bottom-full left-1/2 -translate-x-1/2 flex flex-col items-center z-20 pointer-events-none ${
         (hoveredRowWeek != bookedHoursPerWeek.weekNumber ||
           consultant.detailedBooking
             .map((d) =>
