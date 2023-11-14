@@ -66,7 +66,7 @@ export default function ConsultantRows({
             >
               {consultant.name}
             </p>
-            <p className="detail text-black/75 text-start">
+            <p className="xsmall text-black/75 text-start">
               {`${consultant.yearsOfExperience} års erfaring`}
             </p>
           </div>
@@ -99,7 +99,7 @@ export default function ConsultantRows({
           <td>
             <button
               disabled
-              className="detail text-black/75 text-sm font-semibold leading-none"
+              className="xsmall text-black/75 text-sm font-semibold leading-none"
             >
               + Legg til bemanning
             </button>
@@ -339,7 +339,7 @@ function DetailedBookingRows(props: {
           {getIconByBookingType(detailedBooking.bookingDetails.type)}
         </div>
         <div className="flex flex-col justify-between items-start">
-          <p className="detail text-black/75 text-right">
+          <p className="xsmall text-black/75 text-right">
             {detailedBooking.bookingDetails.type}
           </p>
           <p className="text-black text-start small">
