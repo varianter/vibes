@@ -4,7 +4,7 @@ import { signOut } from "next-auth/react";
 import { LogOut } from "react-feather";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
 
-export default function NavBarDropdown(props: { initials: string }) {
+export default function NavBarDropdown(props: { initial: string }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const menuRef = useRef(null);
@@ -15,14 +15,16 @@ export default function NavBarDropdown(props: { initials: string }) {
 
   return (
     <>
-      <div className="relative p-2" ref={menuRef}>
+      <div className="relative" ref={menuRef}>
         <button
-          className={`flex rounded-full border border-white h-9 min-w-[36px] justify-center items-center ${
-            props.initials.length > 3 && "px-1"
+          className={`flex rounded-full border border-white/50 h-8 w-8 justify-center items-center  ${
+            isOpen ? "bg-white" : "hover:bg-white/10 hover:border-white"
           }`}
           onClick={() => setIsOpen(!isOpen)}
         >
-          <p className="text-white small">{props.initials}</p>
+          <p className={`large ${isOpen ? "text-primary" : "text-white"}`}>
+            {props.initial}
+          </p>
         </button>
         <div
           className={`absolute right-0 top-11 rounded-b text-primary bg-white flex flex-col w-[138px] shadow-md ${

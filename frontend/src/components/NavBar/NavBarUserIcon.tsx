@@ -9,13 +9,8 @@ export default async function NavBarUserIcon() {
     !process.env.NEXT_PUBLIC_NO_AUTH &&
     (await getCustomServerSession(authOptions));
 
-  const initials =
-    session && session.user && session.user.name
-      ? session.user.name
-          .split(" ")
-          .map((name) => name.charAt(0).toUpperCase())
-          .join("")
-      : "NN";
+  const initial =
+    session && session.user && session.user.name ? session.user.name[0] : "N";
 
-  return <NavBarDropdown initials={initials} />;
+  return <NavBarDropdown initial={initial} />;
 }
