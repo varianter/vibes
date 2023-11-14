@@ -61,7 +61,7 @@ export default function ConsultantRows({
           <div className="flex flex-col gap-1 ">
             <p
               className={`text-black text-start ${
-                isListElementVisible ? "body-bold" : "normal"
+                isListElementVisible ? "normal-medium" : "normal"
               }`}
             >
               {consultant.name}
@@ -235,7 +235,7 @@ function WeekCell(props: {
         </div>
         <p
           className={`text-right ${
-            isListElementVisible ? "body-bold" : "normal"
+            isListElementVisible ? "normal-medium" : "normal"
           }`}
         >
           {bookedHoursPerWeek.bookingModel.totalBillable}
@@ -342,7 +342,7 @@ function DetailedBookingRows(props: {
           <p className="detail text-black/75 text-right">
             {detailedBooking.bookingDetails.type}
           </p>
-          <p className="text-black text-start body-small">
+          <p className="text-black text-start small">
             {detailedBooking.bookingDetails.name}
           </p>
         </div>
@@ -355,7 +355,7 @@ function DetailedBookingRows(props: {
             className="h-8 p-0.5"
           >
             <p
-              className={`text-right body-small-bold px-2 py-1 rounded h-full
+              className={`text-right small-medium px-2 py-1 rounded h-full
      ${getColorByStaffingType(
        detailedBooking.bookingDetails.type ?? BookingType.Offer,
      )}`}

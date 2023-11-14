@@ -50,7 +50,7 @@ export default function SearchBarComponent({
         />
       ) : (
         <div className={`flex flex-col gap-2`}>
-          <p className="body-small">Søk</p>
+          <p className="small">Søk</p>
           <div
             className={`flex flex-row gap-2 border rounded-lg
             px-3 py-2 w-full hover:bg-primary/10 hover:border-primary ${
@@ -62,7 +62,7 @@ export default function SearchBarComponent({
             <input
               placeholder="Søk etter konsulent"
               id="consultantSearch"
-              className="input w-[131px] focus:outline-none body-small"
+              className="input w-[131px] focus:outline-none small"
               onChange={(e) => setNameSearch(e.target.value)}
               ref={inputRef}
               value={activeNameSearch}

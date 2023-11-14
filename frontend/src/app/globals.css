@@ -51,19 +51,19 @@
     line-height: 1rem;
   }
 
-  .body-bold {
-    font-size: 0.9rem;
+  .normal-medium {
+    font-size: 0.875rem;
     font-family: "Graphik-Medium";
     line-height: 1rem;
   }
 
-  .body-small {
+  .small {
     font-size: 0.75rem;
     font-family: "Graphik-Regular";
     line-height: 1rem;
   }
 
-  .body-small-bold {
+  .small-medium {
     font-size: 0.75rem;
     font-family: "Graphik-Medium";
     line-height: 1rem;

@@ -31,7 +31,7 @@ export default function ActiveFilters() {
       {filterSummaryText != "" && (
         <div className="flex flex-row gap-[5px] text-primary_default items-center">
           <Filter size="12" />{" "}
-          <p className="body-small-bold"> {filterSummaryText} </p>
+          <p className="small-medium"> {filterSummaryText} </p>
         </div>
       )}
     </div>

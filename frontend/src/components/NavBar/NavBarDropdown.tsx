@@ -22,7 +22,7 @@ export default function NavBarDropdown(props: { initials: string }) {
           }`}
           onClick={() => setIsOpen(!isOpen)}
         >
-          <p className="text-white body-small">{props.initials}</p>
+          <p className="text-white small">{props.initials}</p>
         </button>
         <div
           className={`absolute right-0 top-11 rounded-b text-primary bg-white flex flex-col w-[138px] shadow-md ${
