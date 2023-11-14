@@ -3,16 +3,6 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: "Recoleta-Regular";
-  src: url(../../public/fonts/recoleta-regular.woff) format("truetype");
-}
-
-@font-face {
-  font-family: "Recoleta-Medium";
-  src: url(../../public/fonts/recoleta-medium.woff) format("truetype");
-}
-
-@font-face {
   font-family: "Graphik-Regular";
   src: url(../../public/fonts/Graphik-Regular-Web.woff2) format("truetype");
 }
