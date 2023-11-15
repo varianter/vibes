@@ -198,8 +198,8 @@ function WeekCell(props: {
           hoveredRowWeek == bookedHoursPerWeek.weekNumber && (
             <HoveredWeek
               hoveredRowWeek={hoveredRowWeek}
-              bookedHoursPerWeek={bookedHoursPerWeek}
               consultant={consultant}
+              isLastCol={isLastCol}
             />
           )}
         <div className="flex flex-row justify-end gap-1">
@@ -267,34 +267,26 @@ function isWeekBookingZeroHours(
 
 function HoveredWeek(props: {
   hoveredRowWeek: number;
-  bookedHoursPerWeek: BookedHoursPerWeek;
   consultant: Consultant;
+  isLastCol: boolean;
 }) {
-  const { hoveredRowWeek, bookedHoursPerWeek, consultant } = props;
+  const { hoveredRowWeek, consultant, isLastCol } = props;
 
   const nonZeroHoursDetailedBookings = consultant.detailedBooking.filter(
     (d) => !isWeekBookingZeroHours(d, hoveredRowWeek),
   );
 
   return (
-    <div
-      className={`absolute bottom-full left-1/2 -translate-x-1/2 flex flex-col items-center z-20 pointer-events-none ${
-        (hoveredRowWeek != bookedHoursPerWeek.weekNumber ||
-          consultant.detailedBooking
-            .map((d) =>
-              d.hours
-                .filter((h) => h.week % 100 == bookedHoursPerWeek.weekNumber)
-                .reduce((sum, h) => sum + h.hours, 0),
-            )
-            .reduce((a, b) => a + b, 0) == 0) &&
-        "hidden"
-      }`}
-    >
-      <div className="rounded-lg bg-white flex flex-col gap-3 min-w-[222px] p-3 shadow-xl">
+    <>
+      <div
+        className={`rounded-lg bg-white gap-3 min-w-[222px] p-3 shadow-xl absolute bottom-full mb-2 flex flex-col z-20 ${
+          isLastCol ? "right-0 " : "left-1/2 -translate-x-1/2"
+        } ${nonZeroHoursDetailedBookings.length == 0 && "hidden"}`}
+      >
         {nonZeroHoursDetailedBookings.map((detailedBooking, index) => (
           <div
             key={index}
-            className={`flex flex-row gap-2 justify-between items-center 
+            className={`flex flex-row gap-2 justify-between items-center
             ${
               index < nonZeroHoursDetailedBookings.length - 1 &&
               "pb-3 border-b border-black/10"
@@ -315,15 +307,17 @@ function HoveredWeek(props: {
             <p className="text-black text-opacity-60">
               {
                 detailedBooking.hours.find(
-                  (hour) => hour.week % 100 == bookedHoursPerWeek.weekNumber,
+                  (hour) => hour.week % 100 == hoveredRowWeek,
                 )?.hours
               }
             </p>
           </div>
         ))}
       </div>
-      <div className="w-0 h-0 border-l-[8px] border-l-transparent border-t-[8px] border-t-white border-r-[8px] border-r-transparent"></div>
-    </div>
+      <div
+        className={`absolute bottom-full left-1/2 -translate-x-1/2 flex items-center z-50 w-0 h-0 border-l-2 border-l-transparent border-t-2 border-t-white border-r-2 border-r-transparent`}
+      ></div>
+    </>
   );
 }
 
