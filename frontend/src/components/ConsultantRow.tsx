@@ -329,7 +329,9 @@ function HoveredWeek(props: {
         ))}
       </div>
       <div
-        className={`absolute bottom-full left-1/2 -translate-x-1/2 flex items-center z-50 w-0 h-0 border-l-[8px] border-l-transparent border-t-[8px] border-t-white border-r-[8px] border-r-transparent`}
+        className={`absolute bottom-full left-1/2 -translate-x-1/2 flex items-center z-50 w-0 h-0 border-l-[8px] border-l-transparent border-t-[8px] border-t-white border-r-[8px] border-r-transparent ${
+          nonZeroHoursDetailedBookings.length == 0 && "hidden"
+        }`}
       ></div>
     </>
   );
