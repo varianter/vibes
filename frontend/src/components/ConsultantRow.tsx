@@ -304,11 +304,21 @@ function HoveredWeek(props: {
               >
                 {getIconByBookingType(detailedBooking.bookingDetails.type)}
               </div>
-              <p className="text-black whitespace-nowrap">
-                {detailedBooking.bookingDetails.name}
-              </p>
+              <div className="flex flex-col">
+                <p
+                  className={`xsmall text-black/75 ${
+                    detailedBooking.bookingDetails.type == "Vacation" &&
+                    "hidden"
+                  }`}
+                >
+                  {detailedBooking.bookingDetails.type}
+                </p>
+                <p className="small text-black whitespace-nowrap">
+                  {detailedBooking.bookingDetails.name}
+                </p>
+              </div>
             </div>
-            <p className="text-black text-opacity-60">
+            <p className="small text-black/75">
               {
                 detailedBooking.hours.find(
                   (hour) => hour.week % 100 == hoveredRowWeek,
