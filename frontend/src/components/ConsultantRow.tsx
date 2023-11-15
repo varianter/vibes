@@ -13,6 +13,7 @@ import {
   Coffee,
   FileText,
   Moon,
+  Plus,
   Sun,
 } from "react-feather";
 import InfoPill, { InfoPillVariant } from "./InfoPill";
@@ -97,12 +98,12 @@ export default function ConsultantRows({
         <tr>
           <td className={`${"border-l-secondary border-l-2"}`}></td>
           <td>
-            <button
-              disabled
-              className="xsmall text-black/75 text-sm font-semibold leading-none"
-            >
-              + Legg til bemanning
-            </button>
+            <div className="flex flex-row items-center gap-2">
+              <button className="w-8 h-8 flex justify-center items-center rounded bg-primary/0 hover:bg-primary/10">
+                <Plus size={16} className="text-primary" />
+              </button>
+              <p className="small text-primary">Legg til bemanning</p>
+            </div>
           </td>
         </tr>
       )}
