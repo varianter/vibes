@@ -194,11 +194,14 @@ function WeekCell(props: {
         onMouseEnter={() => setHoveredRowWeek(bookedHoursPerWeek.weekNumber)}
         onMouseLeave={() => setHoveredRowWeek(-1)}
       >
-        <HoveredWeek
-          hoveredRowWeek={hoveredRowWeek}
-          bookedHoursPerWeek={bookedHoursPerWeek}
-          consultant={consultant}
-        />
+        {hoveredRowWeek != -1 &&
+          hoveredRowWeek == bookedHoursPerWeek.weekNumber && (
+            <HoveredWeek
+              hoveredRowWeek={hoveredRowWeek}
+              bookedHoursPerWeek={bookedHoursPerWeek}
+              consultant={consultant}
+            />
+          )}
         <div className="flex flex-row justify-end gap-1">
           {bookedHoursPerWeek.bookingModel.totalOffered > 0 && (
             <InfoPill
@@ -250,12 +253,29 @@ function WeekCell(props: {
   );
 }
 
+function isWeekBookingZeroHours(
+  detailedBooking: DetailedBooking,
+  hoveredRowWeek: number,
+): boolean {
+  return (
+    detailedBooking.hours.filter(
+      (weekHours) =>
+        weekHours.week % 100 == hoveredRowWeek && weekHours.hours != 0,
+    ).length == 0
+  );
+}
+
 function HoveredWeek(props: {
   hoveredRowWeek: number;
   bookedHoursPerWeek: BookedHoursPerWeek;
   consultant: Consultant;
 }) {
   const { hoveredRowWeek, bookedHoursPerWeek, consultant } = props;
+
+  const nonZeroHoursDetailedBookings = consultant.detailedBooking.filter(
+    (d) => !isWeekBookingZeroHours(d, hoveredRowWeek),
+  );
+
   return (
     <div
       className={`absolute bottom-full left-1/2 -translate-x-1/2 flex flex-col items-center z-20 pointer-events-none ${
@@ -270,49 +290,35 @@ function HoveredWeek(props: {
         "hidden"
       }`}
     >
-      <div className="rounded-lg bg-white flex flex-col gap-2 min-w-[222px] p-3 shadow-xl">
-        {consultant.detailedBooking.map((detailedBooking, index) => (
-          <div key={index}>
-            {detailedBooking.hours.find(
-              (hour) => hour.week % 100 == bookedHoursPerWeek.weekNumber,
-            )?.hours != 0 && (
+      <div className="rounded-lg bg-white flex flex-col gap-3 min-w-[222px] p-3 shadow-xl">
+        {nonZeroHoursDetailedBookings.map((detailedBooking, index) => (
+          <div
+            key={index}
+            className={`flex flex-row gap-2 justify-between items-center 
+            ${
+              index < nonZeroHoursDetailedBookings.length - 1 &&
+              "pb-3 border-b border-black/10"
+            }`}
+          >
+            <div className="flex flex-row gap-2 items-center">
               <div
-                key={index}
-                className={`flex flex-row gap-2 justify-between items-center
-                ${
-                  index <
-                    consultant.detailedBooking.filter(
-                      (db) =>
-                        db.hours.find(
-                          (hour) =>
-                            hour.week % 100 == bookedHoursPerWeek.weekNumber,
-                        )?.hours != 0,
-                    ).length -
-                      1 && "border-b pb-2 border-black/10"
-                }`}
+                className={`h-8 w-8 flex justify-center align-middle items-center rounded ${getColorByStaffingType(
+                  detailedBooking.bookingDetails.type,
+                )}`}
               >
-                <div className="flex flex-row gap-2 items-center">
-                  <div
-                    className={`h-8 w-8 flex justify-center align-middle items-center rounded ${getColorByStaffingType(
-                      detailedBooking.bookingDetails.type,
-                    )}`}
-                  >
-                    {getIconByBookingType(detailedBooking.bookingDetails.type)}
-                  </div>
-                  <p className="text-black whitespace-nowrap">
-                    {detailedBooking.bookingDetails.name}
-                  </p>
-                </div>
-                <p className="text-black text-opacity-60">
-                  {
-                    detailedBooking.hours.find(
-                      (hour) =>
-                        hour.week % 100 == bookedHoursPerWeek.weekNumber,
-                    )?.hours
-                  }
-                </p>
+                {getIconByBookingType(detailedBooking.bookingDetails.type)}
               </div>
-            )}
+              <p className="text-black whitespace-nowrap">
+                {detailedBooking.bookingDetails.name}
+              </p>
+            </div>
+            <p className="text-black text-opacity-60">
+              {
+                detailedBooking.hours.find(
+                  (hour) => hour.week % 100 == bookedHoursPerWeek.weekNumber,
+                )?.hours
+              }
+            </p>
           </div>
         ))}
       </div>
