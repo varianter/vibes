@@ -322,7 +322,7 @@ function HoveredWeek(props: {
           </div>
         ))}
       </div>
-      <div className="w-0 h-0 border-l-[12px] border-l-transparent border-t-[16px] border-t-white border-r-[12px] border-r-transparent"></div>
+      <div className="w-0 h-0 border-l-[8px] border-l-transparent border-t-[8px] border-t-white border-r-[8px] border-r-transparent"></div>
     </div>
   );
 }
