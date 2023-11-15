@@ -77,6 +77,7 @@ export default function ConsultantRows({
             key={index}
             bookedHoursPerWeek={b}
             isListElementVisible={isListElementVisible}
+            setIsListElementVisible={setIsListElementVisible}
             consultant={consultant}
             setHoveredRowWeek={setHoveredRowWeek}
             hoveredRowWeek={hoveredRowWeek}
@@ -144,6 +145,7 @@ function getIconByBookingType(type: BookingType): ReactElement {
 function WeekCell(props: {
   bookedHoursPerWeek: BookedHoursPerWeek;
   isListElementVisible: boolean;
+  setIsListElementVisible: Function;
   consultant: Consultant;
   setHoveredRowWeek: (number: number) => void;
   hoveredRowWeek: number;
@@ -153,6 +155,7 @@ function WeekCell(props: {
   const {
     bookedHoursPerWeek: bookedHoursPerWeek,
     isListElementVisible,
+    setIsListElementVisible,
     consultant,
     setHoveredRowWeek,
     hoveredRowWeek,
@@ -184,7 +187,7 @@ function WeekCell(props: {
       className={`h-[52px] ${isLastCol ? "py-0.5 pl-0.5" : "p-0.5"}`}
     >
       <div
-        className={`flex flex-col gap-1 p-2 justify-end rounded w-full h-full relative border border-transparent hover:border-primary/50 ${
+        className={`flex flex-col gap-1 p-2 justify-end rounded w-full h-full relative border border-transparent hover:border-primary/50 hover:cursor-pointer ${
           bookedHoursPerWeek.bookingModel.totalOverbooking > 0
             ? `bg-black text-white`
             : bookedHoursPerWeek.bookingModel.totalSellableTime > 0
@@ -193,6 +196,7 @@ function WeekCell(props: {
         }`}
         onMouseEnter={() => setHoveredRowWeek(bookedHoursPerWeek.weekNumber)}
         onMouseLeave={() => setHoveredRowWeek(-1)}
+        onClick={() => setIsListElementVisible(!isListElementVisible)}
       >
         {hoveredRowWeek != -1 &&
           hoveredRowWeek == bookedHoursPerWeek.weekNumber && (
