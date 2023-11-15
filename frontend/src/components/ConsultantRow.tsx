@@ -91,7 +91,6 @@ export default function ConsultantRows({
             key={index}
             consultant={consultant}
             detailedBooking={db}
-            isListElementVisible={isListElementVisible}
           />
         ))}
       {isListElementVisible && (
@@ -184,7 +183,7 @@ function WeekCell(props: {
       className={`h-[52px] ${isLastCol ? "py-0.5 pl-0.5" : "p-0.5"}`}
     >
       <div
-        className={`flex flex-col gap-1 p-2 justify-end rounded w-full h-full relative ${
+        className={`flex flex-col gap-1 p-2 justify-end rounded w-full h-full relative border border-transparent hover:border-primary/50 ${
           bookedHoursPerWeek.bookingModel.totalOverbooking > 0
             ? `bg-black text-white`
             : bookedHoursPerWeek.bookingModel.totalSellableTime > 0
@@ -324,18 +323,15 @@ function HoveredWeek(props: {
 function DetailedBookingRows(props: {
   consultant: Consultant;
   detailedBooking: DetailedBooking;
-  isListElementVisible: true;
 }) {
-  const { consultant, detailedBooking, isListElementVisible } = props;
+  const { consultant, detailedBooking } = props;
   return (
     <tr
       key={`${consultant.id}-details-${detailedBooking.bookingDetails.name}`}
       className="h-fit"
     >
-      <td
-        className={`${isListElementVisible && "border-l-secondary border-l-2"}`}
-      ></td>
-      <td className="flex flex-row gap-2 justify-start h-8">
+      <td className="border-l-secondary border-l-2"></td>
+      <td className="flex flex-row gap-2 justify-start p-0.5">
         <div
           className={`h-8 w-8 flex justify-center align-middle items-center rounded ${getColorByStaffingType(
             detailedBooking.bookingDetails.type,
@@ -360,10 +356,10 @@ function DetailedBookingRows(props: {
             className="h-8 p-0.5"
           >
             <p
-              className={`text-right small-medium px-2 py-1 rounded h-full
+              className={`small-medium p-2 rounded h-full flex items-center justify-end
      ${getColorByStaffingType(
        detailedBooking.bookingDetails.type ?? BookingType.Offer,
-     )}`}
+     )} ${hours.hours == 0 && "bg-opacity-30"}`}
             >
               {hours.hours}
             </p>
