@@ -5,6 +5,7 @@ export type InfoPillProps = {
   icon: ReactElement;
   colors: string;
   variant: InfoPillVariant;
+  isInfoPillDesc?: boolean;
 };
 
 export type InfoPillVariant = "wide" | "medium" | "narrow" | "circle" | "none";
@@ -14,6 +15,7 @@ export default function InfoPill({
   icon,
   colors,
   variant,
+  isInfoPillDesc = false,
 }: InfoPillProps) {
   return variant == "none" ? (
     <></>
@@ -31,7 +33,7 @@ export default function InfoPill({
       >
         {(variant == "wide" || variant == "narrow") && icon}
         {(variant == "wide" || variant == "medium") && (
-          <p className="hidden lg:flex">{text}</p>
+          <p className={`${!isInfoPillDesc && "hidden"} lg:flex`}>{text}</p>
         )}
       </div>
     </>

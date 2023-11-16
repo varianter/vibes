@@ -13,6 +13,7 @@ import {
   Coffee,
   FileText,
   Moon,
+  Plus,
   Sun,
 } from "react-feather";
 import InfoPill, { InfoPillVariant } from "./InfoPill";
@@ -76,10 +77,12 @@ export default function ConsultantRows({
             key={index}
             bookedHoursPerWeek={b}
             isListElementVisible={isListElementVisible}
+            setIsListElementVisible={setIsListElementVisible}
             consultant={consultant}
             setHoveredRowWeek={setHoveredRowWeek}
             hoveredRowWeek={hoveredRowWeek}
             columnCount={columnCount}
+            isLastCol={index == consultant.bookings.length - 1}
           />
         ))}
       </tr>
@@ -90,23 +93,21 @@ export default function ConsultantRows({
             key={index}
             consultant={consultant}
             detailedBooking={db}
-            isListElementVisible={isListElementVisible}
           />
         ))}
       {isListElementVisible && (
         <tr>
           <td className={`${"border-l-secondary border-l-2"}`}></td>
           <td>
-            <button
-              disabled
-              className="xsmall text-black/75 text-sm font-semibold leading-none"
-            >
-              + Legg til bemanning
-            </button>
+            <div className="flex flex-row items-center gap-2">
+              <button className="w-8 h-8 flex justify-center items-center rounded bg-primary/0 hover:bg-primary/10">
+                <Plus size={16} className="text-primary" />
+              </button>
+              <p className="small text-primary">Legg til bemanning</p>
+            </div>
           </td>
         </tr>
       )}
-      <tr className="h-1" />
     </>
   );
 }
@@ -144,18 +145,22 @@ function getIconByBookingType(type: BookingType): ReactElement {
 function WeekCell(props: {
   bookedHoursPerWeek: BookedHoursPerWeek;
   isListElementVisible: boolean;
+  setIsListElementVisible: Function;
   consultant: Consultant;
   setHoveredRowWeek: (number: number) => void;
   hoveredRowWeek: number;
   columnCount: number;
+  isLastCol: boolean;
 }) {
   const {
     bookedHoursPerWeek: bookedHoursPerWeek,
     isListElementVisible,
+    setIsListElementVisible,
     consultant,
     setHoveredRowWeek,
     hoveredRowWeek,
     columnCount,
+    isLastCol,
   } = props;
 
   let pillNumber = 0;
@@ -177,9 +182,12 @@ function WeekCell(props: {
   }
 
   return (
-    <td key={bookedHoursPerWeek.weekNumber} className="h-[52px] px-0.5">
+    <td
+      key={bookedHoursPerWeek.weekNumber}
+      className={`h-[52px] ${isLastCol ? "py-0.5 pl-0.5" : "p-0.5"}`}
+    >
       <div
-        className={`flex flex-col gap-1 p-2 justify-end rounded w-full h-full relative ${
+        className={`flex flex-col gap-1 p-2 justify-end rounded w-full h-full relative border border-transparent hover:border-primary/50 hover:cursor-pointer ${
           bookedHoursPerWeek.bookingModel.totalOverbooking > 0
             ? `bg-black text-white`
             : bookedHoursPerWeek.bookingModel.totalSellableTime > 0
@@ -188,12 +196,16 @@ function WeekCell(props: {
         }`}
         onMouseEnter={() => setHoveredRowWeek(bookedHoursPerWeek.weekNumber)}
         onMouseLeave={() => setHoveredRowWeek(-1)}
+        onClick={() => setIsListElementVisible(!isListElementVisible)}
       >
-        <HoveredWeek
-          hoveredRowWeek={hoveredRowWeek}
-          bookedHoursPerWeek={bookedHoursPerWeek}
-          consultant={consultant}
-        />
+        {hoveredRowWeek != -1 &&
+          hoveredRowWeek == bookedHoursPerWeek.weekNumber && (
+            <HoveredWeek
+              hoveredRowWeek={hoveredRowWeek}
+              consultant={consultant}
+              isLastCol={isLastCol}
+            />
+          )}
         <div className="flex flex-row justify-end gap-1">
           {bookedHoursPerWeek.bookingModel.totalOffered > 0 && (
             <InfoPill
@@ -245,92 +257,98 @@ function WeekCell(props: {
   );
 }
 
+function isWeekBookingZeroHours(
+  detailedBooking: DetailedBooking,
+  hoveredRowWeek: number,
+): boolean {
+  return (
+    detailedBooking.hours.filter(
+      (weekHours) =>
+        weekHours.week % 100 == hoveredRowWeek && weekHours.hours != 0,
+    ).length == 0
+  );
+}
+
 function HoveredWeek(props: {
   hoveredRowWeek: number;
-  bookedHoursPerWeek: BookedHoursPerWeek;
   consultant: Consultant;
+  isLastCol: boolean;
 }) {
-  const { hoveredRowWeek, bookedHoursPerWeek, consultant } = props;
+  const { hoveredRowWeek, consultant, isLastCol } = props;
+
+  const nonZeroHoursDetailedBookings = consultant.detailedBooking.filter(
+    (d) => !isWeekBookingZeroHours(d, hoveredRowWeek),
+  );
+
   return (
-    <div
-      className={`absolute bottom-full left-1/2 -translate-x-1/2 flex flex-col items-center z-20 pointer-events-none ${
-        (hoveredRowWeek != bookedHoursPerWeek.weekNumber ||
-          consultant.detailedBooking
-            .map((d) =>
-              d.hours
-                .filter((h) => h.week % 100 == bookedHoursPerWeek.weekNumber)
-                .reduce((sum, h) => sum + h.hours, 0),
-            )
-            .reduce((a, b) => a + b, 0) == 0) &&
-        "hidden"
-      }`}
-    >
-      <div className="rounded-lg bg-white flex flex-col gap-2 min-w-[222px] p-3 shadow-xl">
-        {consultant.detailedBooking.map((detailedBooking, index) => (
-          <div key={index}>
-            {detailedBooking.hours.find(
-              (hour) => hour.week % 100 == bookedHoursPerWeek.weekNumber,
-            )?.hours != 0 && (
+    <>
+      <div
+        className={`rounded-lg bg-white gap-3 min-w-[222px] p-3 shadow-xl absolute bottom-full mb-2 flex flex-col z-20 ${
+          isLastCol ? "right-0 " : "left-1/2 -translate-x-1/2"
+        } ${nonZeroHoursDetailedBookings.length == 0 && "hidden"}`}
+      >
+        {nonZeroHoursDetailedBookings.map((detailedBooking, index) => (
+          <div
+            key={index}
+            className={`flex flex-row gap-2 justify-between items-center
+            ${
+              index < nonZeroHoursDetailedBookings.length - 1 &&
+              "pb-3 border-b border-black/10"
+            }`}
+          >
+            <div className="flex flex-row gap-2 items-center">
               <div
-                key={index}
-                className={`flex flex-row gap-2 justify-between items-center
-                ${
-                  index <
-                    consultant.detailedBooking.filter(
-                      (db) =>
-                        db.hours.find(
-                          (hour) =>
-                            hour.week % 100 == bookedHoursPerWeek.weekNumber,
-                        )?.hours != 0,
-                    ).length -
-                      1 && "border-b pb-2 border-black/10"
-                }`}
+                className={`h-8 w-8 flex justify-center align-middle items-center rounded ${getColorByStaffingType(
+                  detailedBooking.bookingDetails.type,
+                )}`}
               >
-                <div className="flex flex-row gap-2 items-center">
-                  <div
-                    className={`h-8 w-8 flex justify-center align-middle items-center rounded ${getColorByStaffingType(
-                      detailedBooking.bookingDetails.type,
-                    )}`}
-                  >
-                    {getIconByBookingType(detailedBooking.bookingDetails.type)}
-                  </div>
-                  <p className="text-black whitespace-nowrap">
-                    {detailedBooking.bookingDetails.name}
-                  </p>
-                </div>
-                <p className="text-black text-opacity-60">
-                  {
-                    detailedBooking.hours.find(
-                      (hour) =>
-                        hour.week % 100 == bookedHoursPerWeek.weekNumber,
-                    )?.hours
-                  }
+                {getIconByBookingType(detailedBooking.bookingDetails.type)}
+              </div>
+              <div className="flex flex-col">
+                <p
+                  className={`xsmall text-black/75 ${
+                    detailedBooking.bookingDetails.type == "Vacation" &&
+                    "hidden"
+                  }`}
+                >
+                  {detailedBooking.bookingDetails.type}
+                </p>
+                <p className="small text-black whitespace-nowrap">
+                  {detailedBooking.bookingDetails.name}
                 </p>
               </div>
-            )}
+            </div>
+            <p className="small text-black/75">
+              {
+                detailedBooking.hours.find(
+                  (hour) => hour.week % 100 == hoveredRowWeek,
+                )?.hours
+              }
+            </p>
           </div>
         ))}
       </div>
-      <div className="w-0 h-0 border-l-[12px] border-l-transparent border-t-[16px] border-t-white border-r-[12px] border-r-transparent"></div>
-    </div>
+      <div
+        className={`absolute bottom-full left-1/2 -translate-x-1/2 flex items-center z-50 w-0 h-0 border-l-[8px] border-l-transparent border-t-[8px] border-t-white border-r-[8px] border-r-transparent ${
+          nonZeroHoursDetailedBookings.length == 0 && "hidden"
+        }`}
+      ></div>
+    </>
   );
 }
 
 function DetailedBookingRows(props: {
   consultant: Consultant;
   detailedBooking: DetailedBooking;
-  isListElementVisible: true;
 }) {
-  const { consultant, detailedBooking, isListElementVisible } = props;
+  const { consultant, detailedBooking } = props;
   return (
     <tr
       key={`${consultant.id}-details-${detailedBooking.bookingDetails.name}`}
       className="h-fit"
     >
-      <td
-        className={`${isListElementVisible && "border-l-secondary border-l-2"}`}
-      ></td>
-      <td className="flex flex-row gap-2 justify-start h-8">
+      <td className="border-l-secondary border-l-2"></td>
+      <td className="flex flex-row gap-2 justify-start p-0.5">
         <div
           className={`h-8 w-8 flex justify-center align-middle items-center rounded ${getColorByStaffingType(
             detailedBooking.bookingDetails.type,
@@ -355,10 +373,10 @@ function DetailedBookingRows(props: {
             className="h-8 p-0.5"
           >
             <p
-              className={`text-right small-medium px-2 py-1 rounded h-full
+              className={`small-medium p-2 rounded h-full flex items-center justify-end
      ${getColorByStaffingType(
        detailedBooking.bookingDetails.type ?? BookingType.Offer,
-     )}`}
+     )} ${hours.hours == 0 && "bg-opacity-30"}`}
             >
               {hours.hours}
             </p>

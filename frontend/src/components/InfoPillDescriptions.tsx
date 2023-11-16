@@ -17,42 +17,49 @@ export default function InfoPillDescriptions() {
         colors="bg-primary/[3%] text-black"
         icon={<Briefcase size="12" />}
         variant={"wide"}
+        isInfoPillDesc={true}
       />
       <InfoPill
         text={"Ledig tid"}
         colors="bg-available text-available_darker"
         icon={<Coffee size="12" />}
         variant={"wide"}
+        isInfoPillDesc={true}
       />
       <InfoPill
         text={"Tilbud"}
         colors="bg-offer text-primary_darker"
         icon={<FileText size="12" />}
         variant={"wide"}
+        isInfoPillDesc={true}
       />
       <InfoPill
         text={"Ferie"}
         colors="bg-vacation text-vacation_darker"
         icon={<Sun size="12" />}
         variant={"wide"}
+        isInfoPillDesc={true}
       />
       <InfoPill
         text={"Helligdag"}
         colors="bg-holiday text-holiday_darker"
         icon={<Calendar size="12" />}
         variant={"wide"}
+        isInfoPillDesc={true}
       />
       <InfoPill
         text={"Overbooket"}
         colors="bg-overbooked_darker text-white"
         icon={<AlertTriangle size="12" />}
         variant={"wide"}
+        isInfoPillDesc={true}
       />
       <InfoPill
         text={"Fravær"}
         colors="bg-absence text-absence_darker"
         icon={<Moon size="12" />}
         variant={"wide"}
+        isInfoPillDesc={true}
       />
     </div>
   );

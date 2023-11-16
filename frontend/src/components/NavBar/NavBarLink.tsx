@@ -8,7 +8,7 @@ export default function NavBarLink(props: { text: string; path: string }) {
 
   return (
     <a
-      className={`p-4 flex justify-center items-center text-white ${
+      className={`py-4 flex justify-center items-center text-white ${
         isCurrentPath
           ? "large-medium border-b-[3px] border-secondary"
           : "large opacity-70 hover:opacity-100"
