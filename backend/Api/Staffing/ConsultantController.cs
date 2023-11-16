@@ -1,6 +1,5 @@
 using Api.Common;
 using Core.DomainModels;
-using Core.Services;
 using Database.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,10 +29,11 @@ public class ConsultantController : ControllerBase
         [FromQuery(Name = "WeekSpan")] int numberOfWeeks = 8,
         [FromQuery(Name = "includeOccupied")] bool includeOccupied = true)
     {
-        var selectedYear = selectedYearParam ?? DateTime.Now.Year;
-        var selectedWeekNumber = selectedWeekParam ?? DateService.GetWeekNumber(DateTime.Now);
-        var selectedWeek = new Week(selectedYear, selectedWeekNumber);
-        var weekSet = DateService.GetNextWeeks(selectedWeek, numberOfWeeks);
+        var selectedWeek = selectedYearParam is null || selectedWeekParam is null
+            ? Week.FromDateTime(DateTime.Now)
+            : new Week((int)selectedYearParam, (int)selectedWeekParam);
+
+        var weekSet = selectedWeek.GetNextWeeks(numberOfWeeks);
 
         var service = new StorageService(_cache, _context);
         var readModels = new ReadModelFactory(service).GetConsultantReadModelsForWeeks(orgUrlKey, weekSet);
