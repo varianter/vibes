@@ -1,6 +1,7 @@
 using Api.Common;
 using Api.Organisation;
 using Core.DomainModels;
+using Core.Services;
 
 namespace Api.Staffing;
 
@@ -15,8 +16,8 @@ public class ReadModelFactory
 
     public List<ConsultantReadModel> GetConsultantReadModelsForWeeks(string orgUrlKey, List<Week> weeks)
     {
-        var firstDayInScope = weeks.First().FirstDayOfWorkWeek();
-        var firstWorkDayOutOfScope = weeks.Last().LastWorkDayOfWeek().AddDays(1);
+        var firstDayInScope = DateService.FirstDayOfWorkWeek(weeks.First());
+        var firstWorkDayOutOfScope = DateService.LastWorkDayOfWeek(weeks.Last()).AddDays(1);
 
         return _storageService.LoadConsultants(orgUrlKey)
             .Where(c => c.EndDate == null || c.EndDate > firstDayInScope)
@@ -106,14 +107,14 @@ public class ReadModelFactory
         var detailedBookings = billableBookings.Concat(offeredBookings).Concat(plannedAbsencesPrWeek);
 
         var vacationsInSet =
-            consultant.Vacations.Where(v => weekSet.Any(week => week.ContainsDate(v.Date)))
+            consultant.Vacations.Where(v => weekSet.Any(week => DateService.DateIsInWeek(v.Date, week)))
                 .ToList();
 
         if (vacationsInSet.Count > 0)
         {
             var vacationsPrWeek = weekSet.Select(week => new WeeklyHours(
                 week.ToSortableInt(),
-                vacationsInSet.Count(vacation => week.ContainsDate(vacation.Date)) *
+                vacationsInSet.Count(vacation => DateService.DateIsInWeek(vacation.Date, week)) *
                 consultant.Department.Organization.HoursPerWorkday
             )).ToList();
             detailedBookings = detailedBookings.Append(new DetailedBooking(
@@ -173,8 +174,8 @@ public class ReadModelFactory
 
     private static string GetDatesForWeek(Week week)
     {
-        return week.GetDatesInWorkWeek()[0].ToString("dd.MM") +
-               " - " + week
-                   .GetDatesInWorkWeek()[^1].ToString("dd.MM");
+        return DateService.GetDatesInWorkWeek(week.Year, week.WeekNumber)[0].ToString("dd.MM") +
+               " - " + DateService
+                   .GetDatesInWorkWeek(week.Year, week.WeekNumber)[^1].ToString("dd.MM");
     }
 }

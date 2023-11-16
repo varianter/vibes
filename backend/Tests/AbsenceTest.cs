@@ -1,5 +1,6 @@
 using Api.Staffing;
 using Core.DomainModels;
+using Core.Services;
 using NSubstitute;
 
 namespace Tests;
@@ -63,7 +64,9 @@ public class Tests
             _ => throw new Exception("Number of holidays can only be set to 0,1,2 or 5")
         };
 
-        var week = Week.FromDateOnly(mondayDateOnly);
+        var year = mondayDateOnly.Year;
+        var weekNumber = DateService.GetWeekNumber(mondayDateOnly.ToDateTime(TimeOnly.Parse("12:00")));
+        var week = new Week(year, weekNumber);
         var project = Substitute.For<Project>();
         var customer = Substitute.For<Customer>();
         customer.Name = "TestCustomer";
@@ -86,8 +89,8 @@ public class Tests
                 Absence = Substitute.For<Absence>(),
                 Consultant = consultant,
                 Hours = plannedAbsenceHours,
-                Year = week.Year,
-                WeekNumber = week.WeekNumber
+                Year = year,
+                WeekNumber = weekNumber
             });
 
         if (staffedHours > 0)
@@ -95,8 +98,8 @@ public class Tests
             {
                 Project = project,
                 Consultant = consultant,
-                Year = week.Year,
-                Week = week.WeekNumber,
+                Year = year,
+                Week = weekNumber,
                 Hours = staffedHours
             });
 

@@ -1,4 +1,5 @@
 using Core.DomainModels;
+using Core.Services;
 using PublicHoliday;
 
 namespace Api.Organisation;
@@ -7,7 +8,7 @@ public static class OrganisationHolidayExtensions
 {
     public static int GetTotalHolidaysOfWeek(this Organization organization, Week week)
     {
-        var datesOfThisWeek = week.GetDatesInWorkWeek();
+        var datesOfThisWeek = DateService.GetDatesInWorkWeek(week.Year, week.WeekNumber);
         return datesOfThisWeek.Count(organization.IsHoliday);
     }
 
