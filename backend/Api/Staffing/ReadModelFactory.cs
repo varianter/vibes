@@ -72,7 +72,7 @@ public class ReadModelFactory
                 weekSet.Select(week => new WeeklyHours(
                     week.ToSortableInt(), grouping
                         .Where(staffing =>
-                            new Week(staffing.Year, staffing.Week).ToSortableInt() == week.ToSortableInt())
+                            new Week(staffing.Year, staffing.Week).Equals(week))
                         .Sum(staffing => staffing.Hours))).ToList()
             ));
 
@@ -84,7 +84,7 @@ public class ReadModelFactory
                 weekSet.Select(week => new WeeklyHours(
                     week.ToSortableInt(), grouping
                         .Where(staffing =>
-                            new Week(staffing.Year, staffing.Week).ToSortableInt() == week.ToSortableInt())
+                            new Week(staffing.Year, staffing.Week).Equals(week))
                         .Sum(staffing => staffing.Hours))).ToList()
             ));
 
@@ -97,7 +97,7 @@ public class ReadModelFactory
                     week.ToSortableInt(),
                     grouping
                         .Where(absence =>
-                            new Week(absence.Year, absence.WeekNumber).ToSortableInt() == week.ToSortableInt())
+                            new Week(absence.Year, absence.WeekNumber).Equals(week))
                         .Sum(absence => absence.Hours)
                 )).ToList()
             ));
