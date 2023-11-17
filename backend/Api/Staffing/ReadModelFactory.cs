@@ -68,8 +68,8 @@ public class ReadModelFactory
         var billableBookings = consultant.Staffings
             .Where(staffing => staffing.Project.State == ProjectState.Active)
             .Where(staffing => weekSet.Contains(new Week(staffing.Year, staffing.Week)))
-            .GroupBy(staffing => staffing.Project.Customer.Name)
-            .Select(grouping => new DetailedBooking(new BookingDetails(grouping.Key, BookingType.Booking),
+            .GroupBy(staffing => staffing.Project.Name)
+            .Select(grouping => new DetailedBooking(new BookingDetails(grouping.Key, BookingType.Booking, grouping.First().Project.Customer.Name),
                 weekSet.Select(week => new WeeklyHours(
                     week.ToSortableInt(), grouping
                         .Where(staffing =>
@@ -80,8 +80,8 @@ public class ReadModelFactory
         var offeredBookings = consultant.Staffings
             .Where(staffing => staffing.Project.State == ProjectState.Offer)
             .Where(staffing => weekSet.Contains(new Week(staffing.Year, staffing.Week)))
-            .GroupBy(staffing => staffing.Project.Customer.Name)
-            .Select(grouping => new DetailedBooking(new BookingDetails(grouping.Key, BookingType.Offer),
+            .GroupBy(staffing => staffing.Project.Name)
+            .Select(grouping => new DetailedBooking(new BookingDetails(grouping.Key, BookingType.Offer, grouping.First().Project.Customer.Name),
                 weekSet.Select(week => new WeeklyHours(
                     week.ToSortableInt(), grouping
                         .Where(staffing =>
@@ -93,7 +93,7 @@ public class ReadModelFactory
             .Where(absence => weekSet.Contains(new Week(absence.Year, absence.WeekNumber)))
             .GroupBy(absence => absence.Absence.Name)
             .Select(grouping => new DetailedBooking(
-                new BookingDetails(grouping.Key, BookingType.PlannedAbsence),
+                new BookingDetails(grouping.Key, BookingType.PlannedAbsence, grouping.Key),
                 weekSet.Select(week => new WeeklyHours(
                     week.ToSortableInt(),
                     grouping
@@ -118,7 +118,7 @@ public class ReadModelFactory
                 consultant.Department.Organization.HoursPerWorkday
             )).ToList();
             detailedBookings = detailedBookings.Append(new DetailedBooking(
-                new BookingDetails("Ferie", BookingType.Vacation),
+                new BookingDetails("Ferie", BookingType.Vacation, "Ferie"),
                 vacationsPrWeek));
         }
 
