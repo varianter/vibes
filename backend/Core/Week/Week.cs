@@ -4,14 +4,15 @@ namespace Core.DomainModels;
 
 public class Week : IComparable<Week>, IEquatable<Week>
 {
+    public readonly int WeekNumber;
+
+    public readonly int Year;
+
     public Week(int year, int weekNumber)
     {
         Year = year;
         WeekNumber = weekNumber;
     }
-
-    public int Year { get; set; }
-    public int WeekNumber { get; set; }
 
 
     public int CompareTo(Week? other)
@@ -117,11 +118,12 @@ public class Week : IComparable<Week>, IEquatable<Week>
 
         // As we're adding days to a date in Week 1,
         // we need to subtract 1 in order to get the right date for week #1
-        if (firstWeek == 1) WeekNumber -= 1;
+        var weeksSinceJan1 = WeekNumber;
+        if (firstWeek == 1) weeksSinceJan1 -= 1;
 
         // Using the first Thursday as starting week ensures that we are starting in the right year
         // then we add number of weeks multiplied with days
-        var result = firstThursday.AddDays(WeekNumber * 7);
+        var result = firstThursday.AddDays(weeksSinceJan1 * 7);
 
         // Subtract 3 days from Thursday to get Monday, which is the first weekday in ISO8601
         return result.AddDays(-3);
