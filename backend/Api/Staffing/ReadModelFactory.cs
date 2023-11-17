@@ -1,7 +1,6 @@
 using Api.Common;
 using Api.Organisation;
 using Core.DomainModels;
-using Core.Services;
 
 namespace Api.Staffing;
 
@@ -16,12 +15,12 @@ public class ReadModelFactory
 
     public List<ConsultantReadModel> GetConsultantReadModelsForWeeks(string orgUrlKey, List<Week> weeks)
     {
-        var firstDayInScope = DateService.FirstDayOfWorkWeek(weeks.First());
-        var firstWorkDayOutOfScope = DateService.LastWorkDayOfWeek(weeks.Last()).AddDays(1);
+        var firstDayInScope = weeks.First().FirstDayOfWorkWeek();
+        var firstWorkDayOutOfScope = weeks.Last().LastWorkDayOfWeek();
 
         return _storageService.LoadConsultants(orgUrlKey)
             .Where(c => c.EndDate == null || c.EndDate > firstDayInScope)
-            .Where(c => c.StartDate == null || c.StartDate <= firstWorkDayOutOfScope)
+            .Where(c => c.StartDate == null || c.StartDate < firstWorkDayOutOfScope)
             .Select(consultant => MapToReadModelList(consultant, weeks))
             .ToList();
     }
@@ -73,7 +72,7 @@ public class ReadModelFactory
                 weekSet.Select(week => new WeeklyHours(
                     week.ToSortableInt(), grouping
                         .Where(staffing =>
-                            new Week(staffing.Year, staffing.Week).ToSortableInt() == week.ToSortableInt())
+                            new Week(staffing.Year, staffing.Week).Equals(week))
                         .Sum(staffing => staffing.Hours))).ToList()
             ));
 
@@ -85,7 +84,7 @@ public class ReadModelFactory
                 weekSet.Select(week => new WeeklyHours(
                     week.ToSortableInt(), grouping
                         .Where(staffing =>
-                            new Week(staffing.Year, staffing.Week).ToSortableInt() == week.ToSortableInt())
+                            new Week(staffing.Year, staffing.Week).Equals(week))
                         .Sum(staffing => staffing.Hours))).ToList()
             ));
 
@@ -98,7 +97,7 @@ public class ReadModelFactory
                     week.ToSortableInt(),
                     grouping
                         .Where(absence =>
-                            new Week(absence.Year, absence.WeekNumber).ToSortableInt() == week.ToSortableInt())
+                            new Week(absence.Year, absence.WeekNumber).Equals(week))
                         .Sum(absence => absence.Hours)
                 )).ToList()
             ));
@@ -107,14 +106,14 @@ public class ReadModelFactory
         var detailedBookings = billableBookings.Concat(offeredBookings).Concat(plannedAbsencesPrWeek);
 
         var vacationsInSet =
-            consultant.Vacations.Where(v => weekSet.Any(week => DateService.DateIsInWeek(v.Date, week)))
+            consultant.Vacations.Where(v => weekSet.Any(week => week.ContainsDate(v.Date)))
                 .ToList();
 
         if (vacationsInSet.Count > 0)
         {
             var vacationsPrWeek = weekSet.Select(week => new WeeklyHours(
                 week.ToSortableInt(),
-                vacationsInSet.Count(vacation => DateService.DateIsInWeek(vacation.Date, week)) *
+                vacationsInSet.Count(vacation => week.ContainsDate(vacation.Date)) *
                 consultant.Department.Organization.HoursPerWorkday
             )).ToList();
             detailedBookings = detailedBookings.Append(new DetailedBooking(
@@ -174,8 +173,8 @@ public class ReadModelFactory
 
     private static string GetDatesForWeek(Week week)
     {
-        return DateService.GetDatesInWorkWeek(week.Year, week.WeekNumber)[0].ToString("dd.MM") +
-               " - " + DateService
-                   .GetDatesInWorkWeek(week.Year, week.WeekNumber)[^1].ToString("dd.MM");
+        return week.GetDatesInWorkWeek()[0].ToString("dd.MM") +
+               " - " + week
+                   .GetDatesInWorkWeek()[^1].ToString("dd.MM");
     }
 }
