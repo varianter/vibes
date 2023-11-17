@@ -83,6 +83,7 @@ export default function ConsultantRows({
             hoveredRowWeek={hoveredRowWeek}
             columnCount={columnCount}
             isLastCol={index == consultant.bookings.length - 1}
+            isSecondLastCol={index == consultant.bookings.length - 2}
           />
         ))}
       </tr>
@@ -151,6 +152,7 @@ function WeekCell(props: {
   hoveredRowWeek: number;
   columnCount: number;
   isLastCol: boolean;
+  isSecondLastCol: boolean;
 }) {
   const {
     bookedHoursPerWeek: bookedHoursPerWeek,
@@ -161,6 +163,7 @@ function WeekCell(props: {
     hoveredRowWeek,
     columnCount,
     isLastCol,
+    isSecondLastCol,
   } = props;
 
   let pillNumber = 0;
@@ -204,6 +207,8 @@ function WeekCell(props: {
               hoveredRowWeek={hoveredRowWeek}
               consultant={consultant}
               isLastCol={isLastCol}
+              isSecondLastCol={isSecondLastCol}
+              columnCount={columnCount}
             />
           )}
         <div className="flex flex-row justify-end gap-1">
@@ -273,8 +278,16 @@ function HoveredWeek(props: {
   hoveredRowWeek: number;
   consultant: Consultant;
   isLastCol: boolean;
+  isSecondLastCol: boolean;
+  columnCount: number;
 }) {
-  const { hoveredRowWeek, consultant, isLastCol } = props;
+  const {
+    hoveredRowWeek,
+    consultant,
+    isLastCol,
+    isSecondLastCol,
+    columnCount,
+  } = props;
 
   const nonZeroHoursDetailedBookings = consultant.detailedBooking.filter(
     (d) => !isWeekBookingZeroHours(d, hoveredRowWeek),
@@ -283,8 +296,10 @@ function HoveredWeek(props: {
   return (
     <>
       <div
-        className={`rounded-lg bg-white gap-3 min-w-[222px] p-3 shadow-xl absolute bottom-full mb-2 flex flex-col z-20 ${
-          isLastCol ? "right-0 " : "left-1/2 -translate-x-1/2"
+        className={`rounded-lg bg-white gap-3 min-w-[222px] p-3 shadow-xl absolute bottom-full mb-2 flex flex-col z-20 pointer-events-none ${
+          isLastCol || (isSecondLastCol && columnCount >= 26)
+            ? "right-0 "
+            : "left-1/2 -translate-x-1/2"
         } ${nonZeroHoursDetailedBookings.length == 0 && "hidden"}`}
       >
         {nonZeroHoursDetailedBookings.map((detailedBooking, index) => (
@@ -329,7 +344,7 @@ function HoveredWeek(props: {
         ))}
       </div>
       <div
-        className={`absolute bottom-full left-1/2 -translate-x-1/2 flex items-center z-50 w-0 h-0 border-l-[8px] border-l-transparent border-t-[8px] border-t-white border-r-[8px] border-r-transparent ${
+        className={`absolute bottom-full mb-[2px] left-1/2 -translate-x-1/2 flex items-center z-50 w-0 h-0 border-l-[8px] border-l-transparent border-t-[8px] border-t-white border-r-[8px] border-r-transparent pointer-events-none ${
           nonZeroHoursDetailedBookings.length == 0 && "hidden"
         }`}
       ></div>
