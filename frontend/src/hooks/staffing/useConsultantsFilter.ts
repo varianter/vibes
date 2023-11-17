@@ -1,12 +1,37 @@
 import { YearRange, Consultant } from "@/types";
 import { useUrlRouteFilter } from "./useUrlRouteFilter";
 import { FilteredContext } from "@/components/FilteredConsultantProvider";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useYearsXpFilter } from "./useYearsXpFilter";
 import { useAvailabilityFilter } from "./useAvailabilityFilter";
+import { usePathname } from "next/navigation";
+
+async function getNumWorkHours(
+  setNumWorkHours: Function,
+  organisationName: string,
+) {
+  try {
+    const data = await fetch(
+      `/${organisationName}/bemanning/api/weeklyWorkHours?organisationName=${organisationName}`,
+      {
+        method: "get",
+      },
+    );
+    const numWeeklyHours = await data.json();
+    setNumWorkHours(numWeeklyHours);
+  } catch (e) {
+    console.error("Error fetching number of weekly work hours", e);
+  }
+}
 
 export function useConsultantsFilter() {
   const { consultants } = useContext(FilteredContext);
+  const [numWorkHours, setNumWorkHours] = useState<number>(-1);
+  const organisationName = usePathname().split("/")[1];
+
+  useEffect(() => {
+    getNumWorkHours(setNumWorkHours, organisationName);
+  }, [organisationName]);
 
   const { departmentFilter, searchFilter } = useUrlRouteFilter();
 
@@ -27,6 +52,7 @@ export function useConsultantsFilter() {
   const weeklyInvoiceRates = setWeeklyInvoiceRate(
     filteredConsultants,
     weeklyTotalBillable,
+    numWorkHours,
   );
 
   return {
@@ -129,6 +155,7 @@ function setWeeklyTotalBillable(
 function setWeeklyInvoiceRate(
   filteredConsultants: Consultant[],
   weeklyTotalBillable: Map<number, number>,
+  numWorkHours: number,
 ) {
   const weeklyInvoiceRate = new Map<number, number>();
 
@@ -139,7 +166,7 @@ function setWeeklyInvoiceRate(
       consultant.bookings.forEach((booking) => {
         if (booking.weekNumber === weekNumber) {
           let consultantAvailableWeekHours =
-            37.5 -
+            numWorkHours -
             booking.bookingModel.totalHolidayHours -
             booking.bookingModel.totalPlannedAbstences -
             booking.bookingModel.totalVacationHours;

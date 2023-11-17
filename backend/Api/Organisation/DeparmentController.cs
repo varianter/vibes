@@ -35,6 +35,15 @@ public class OrganisationController : ControllerBase
             .Select(d => new DepartmentReadModel(d.Id, d.Name, d.Hotkey))
             .ToList();
     }
+
+    [HttpGet]
+    [Route("{orgUrlKey}/weeklyWorkHours")]
+    public ActionResult<double> GetWeeklyWorkHours([FromRoute] string orgUrlKey)
+    {
+        return _applicationContext.Organization
+            .Single(o => o.UrlKey == orgUrlKey)
+            .HoursPerWorkday * 5;
+    }
 }
 
 public record DepartmentReadModel(string Id, string Name, int? Hotkey);
