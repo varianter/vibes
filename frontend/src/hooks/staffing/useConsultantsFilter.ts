@@ -21,8 +21,19 @@ export function useConsultantsFilter() {
     availabilityFilterOn,
   );
 
+  const { weeklyTotalBillable, weeklyTotalBillableAndOffered } =
+    setWeeklyTotalBillable(filteredConsultants);
+
+  const weeklyInvoiceRates = setWeeklyInvoiceRate(
+    filteredConsultants,
+    weeklyTotalBillable,
+  );
+
   return {
     filteredConsultants,
+    weeklyTotalBillable,
+    weeklyTotalBillableAndOffered,
+    weeklyInvoiceRates,
   };
 }
 
@@ -68,4 +79,82 @@ function inYearRanges(consultant: Consultant, yearRanges: YearRange[]) {
       return true;
   }
   return false;
+}
+
+interface WeeklyTotal {
+  weeklyTotalBillable: Map<number, number>;
+  weeklyTotalBillableAndOffered: Map<number, number>;
+}
+
+function setWeeklyTotalBillable(
+  filteredConsultants: Consultant[],
+): WeeklyTotal {
+  const weeklyTotalBillable = new Map<number, number>();
+  const weeklyTotalBillableAndOffered = new Map<number, number>();
+
+  filteredConsultants.forEach((consultant) => {
+    consultant.bookings.forEach((booking) => {
+      if (weeklyTotalBillable.has(booking.weekNumber)) {
+        weeklyTotalBillable.set(
+          booking.weekNumber,
+          (weeklyTotalBillable.get(booking.weekNumber) || 0) +
+            booking.bookingModel.totalBillable,
+        );
+        weeklyTotalBillableAndOffered.set(
+          booking.weekNumber,
+          (weeklyTotalBillableAndOffered.get(booking.weekNumber) || 0) +
+            booking.bookingModel.totalBillable +
+            booking.bookingModel.totalOffered,
+        );
+      } else {
+        weeklyTotalBillable.set(
+          booking.weekNumber,
+          booking.bookingModel.totalBillable,
+        );
+        weeklyTotalBillableAndOffered.set(
+          booking.weekNumber,
+          booking.bookingModel.totalBillable +
+            booking.bookingModel.totalOffered,
+        );
+      }
+    });
+  });
+
+  return {
+    weeklyTotalBillable,
+    weeklyTotalBillableAndOffered,
+  };
+}
+
+function setWeeklyInvoiceRate(
+  filteredConsultants: Consultant[],
+  weeklyTotalBillable: Map<number, number>,
+) {
+  const weeklyInvoiceRate = new Map<number, number>();
+
+  weeklyTotalBillable.forEach((totalBillable, weekNumber) => {
+    let totalAvailableWeekHours = 0;
+
+    filteredConsultants.forEach((consultant) => {
+      consultant.bookings.forEach((booking) => {
+        if (booking.weekNumber === weekNumber) {
+          let consultantAvailableWeekHours =
+            37.5 -
+            booking.bookingModel.totalHolidayHours -
+            booking.bookingModel.totalPlannedAbstences -
+            booking.bookingModel.totalVacationHours;
+
+          totalAvailableWeekHours += consultantAvailableWeekHours;
+        }
+      });
+    });
+
+    const invoiceRate =
+      totalAvailableWeekHours == 0
+        ? 0
+        : totalBillable / totalAvailableWeekHours;
+    weeklyInvoiceRate.set(weekNumber, invoiceRate);
+  });
+
+  return weeklyInvoiceRate;
 }
