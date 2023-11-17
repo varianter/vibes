@@ -16,11 +16,11 @@ public class ReadModelFactory
     public List<ConsultantReadModel> GetConsultantReadModelsForWeeks(string orgUrlKey, List<Week> weeks)
     {
         var firstDayInScope = weeks.First().FirstDayOfWorkWeek();
-        var firstWorkDayOutOfScope = weeks.Last().LastWorkDayOfWeek().AddDays(1);
+        var firstWorkDayOutOfScope = weeks.Last().LastWorkDayOfWeek();
 
         return _storageService.LoadConsultants(orgUrlKey)
             .Where(c => c.EndDate == null || c.EndDate > firstDayInScope)
-            .Where(c => c.StartDate == null || c.StartDate <= firstWorkDayOutOfScope)
+            .Where(c => c.StartDate == null || c.StartDate < firstWorkDayOutOfScope)
             .Select(consultant => MapToReadModelList(consultant, weeks))
             .ToList();
     }
