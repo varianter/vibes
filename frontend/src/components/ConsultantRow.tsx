@@ -307,14 +307,17 @@ function HoveredWeek(props: {
               <div className="flex flex-col">
                 <p
                   className={`xsmall text-black/75 ${
-                    detailedBooking.bookingDetails.type == "Vacation" &&
-                    "hidden"
+                    !(
+                      detailedBooking.bookingDetails.type ==
+                        BookingType.Offer ||
+                      detailedBooking.bookingDetails.type == BookingType.Booking
+                    ) && "hidden"
                   }`}
                 >
-                  {detailedBooking.bookingDetails.type}
+                  {detailedBooking.bookingDetails.projectName}
                 </p>
                 <p className="small text-black whitespace-nowrap">
-                  {detailedBooking.bookingDetails.name}
+                  {detailedBooking.bookingDetails.customerName}
                 </p>
               </div>
             </div>
@@ -344,7 +347,7 @@ function DetailedBookingRows(props: {
   const { consultant, detailedBooking } = props;
   return (
     <tr
-      key={`${consultant.id}-details-${detailedBooking.bookingDetails.name}`}
+      key={`${consultant.id}-details-${detailedBooking.bookingDetails.customerName}`}
       className="h-fit"
     >
       <td className="border-l-secondary border-l-2"></td>
@@ -356,12 +359,19 @@ function DetailedBookingRows(props: {
         >
           {getIconByBookingType(detailedBooking.bookingDetails.type)}
         </div>
-        <div className="flex flex-col justify-between items-start">
-          <p className="xsmall text-black/75 text-right">
-            {detailedBooking.bookingDetails.type}
+        <div className="flex flex-col justify-center">
+          <p
+            className={`xsmall text-black/75 whitespace-nowrap text-ellipsis overflow-x-hidden max-w-[145px] ${
+              !(
+                detailedBooking.bookingDetails.type == BookingType.Offer ||
+                detailedBooking.bookingDetails.type == BookingType.Booking
+              ) && "hidden"
+            }`}
+          >
+            {detailedBooking.bookingDetails.projectName}
           </p>
           <p className="text-black text-start small">
-            {detailedBooking.bookingDetails.name}
+            {detailedBooking.bookingDetails.customerName}
           </p>
         </div>
       </td>
@@ -369,7 +379,7 @@ function DetailedBookingRows(props: {
         .sort((a, b) => a.week - b.week)
         .map((hours) => (
           <td
-            key={`${consultant.id}-details-${detailedBooking.bookingDetails.name}-${hours.week}`}
+            key={`${consultant.id}-details-${detailedBooking.bookingDetails.projectName}-${hours.week}`}
             className="h-8 p-0.5"
           >
             <p
