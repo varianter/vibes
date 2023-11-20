@@ -7,7 +7,7 @@ public class WeekConverter : ValueConverter<Week, int>
 {
     public WeekConverter() : base(
         week => week.ToSortableInt(),
-        i => new Week(i))
+        weekAsInt => new Week(weekAsInt))
     {
     }
 }
