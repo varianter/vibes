@@ -2,7 +2,7 @@ import StaffingSidebar from "@/components/StaffingSidebar";
 import FilteredConsultantsList from "@/components/FilteredConsultantsList";
 import { fetchWithToken } from "@/data/fetchWithToken";
 import { Consultant, Department } from "@/types";
-import { ConsultantFilterProvider } from "@/components/FilteredConsultantProvider";
+import { ConsultantFilterProvider } from "@/hooks/ConsultantFilterProvider";
 import { stringToWeek } from "@/data/urlUtils";
 import InfoPillDescriptions from "@/components/InfoPillDescriptions";
 

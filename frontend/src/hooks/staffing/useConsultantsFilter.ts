@@ -1,6 +1,6 @@
 import { YearRange, Consultant } from "@/types";
 import { useUrlRouteFilter } from "./useUrlRouteFilter";
-import { FilteredContext } from "@/components/FilteredConsultantProvider";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { useContext, useEffect, useState } from "react";
 import { useYearsXpFilter } from "./useYearsXpFilter";
 import { useAvailabilityFilter } from "./useAvailabilityFilter";
