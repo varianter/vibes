@@ -266,10 +266,7 @@ namespace Database.Migrations
                     b.Property<double>("Hours")
                         .HasColumnType("float");
 
-                    b.Property<int>("WeekNumber")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Year")
+                    b.Property<int>("Week")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -325,9 +322,6 @@ namespace Database.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Week")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Year")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

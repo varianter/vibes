@@ -28,6 +28,10 @@ public class ApplicationContext : DbContext
         configurationBuilder
             .Properties<DateOnly>()
             .HaveConversion<DateOnlyConverter>();
+
+        configurationBuilder
+            .Properties<Week>()
+            .HaveConversion<WeekConverter>();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

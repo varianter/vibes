@@ -85,9 +85,7 @@ public class Tests
             {
                 Absence = Substitute.For<Absence>(),
                 Consultant = consultant,
-                Hours = plannedAbsenceHours,
-                Year = week.Year,
-                WeekNumber = week.WeekNumber
+                Hours = plannedAbsenceHours
             });
 
         if (staffedHours > 0)
@@ -95,9 +93,8 @@ public class Tests
             {
                 Project = project,
                 Consultant = consultant,
-                Year = week.Year,
-                Week = week.WeekNumber,
-                Hours = staffedHours
+                Hours = staffedHours,
+                Week = week
             });
 
         var bookingModel = ReadModelFactory.MapToReadModelList(consultant, new List<Week> { week }).Bookings.First()
@@ -154,8 +151,6 @@ public class Tests
         {
             Absence = leaveA,
             Consultant = consultant,
-            Year = week.Year,
-            WeekNumber = week.WeekNumber,
             Hours = 15
         });
 
@@ -163,8 +158,6 @@ public class Tests
         {
             Absence = leaveB,
             Consultant = consultant,
-            Year = week.Year,
-            WeekNumber = week.WeekNumber,
             Hours = 15
         });
 
