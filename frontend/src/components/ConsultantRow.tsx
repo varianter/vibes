@@ -83,6 +83,7 @@ export default function ConsultantRows({
             hoveredRowWeek={hoveredRowWeek}
             columnCount={columnCount}
             isLastCol={index == consultant.bookings.length - 1}
+            isSecondLastCol={index == consultant.bookings.length - 2}
           />
         ))}
       </tr>
@@ -151,6 +152,7 @@ function WeekCell(props: {
   hoveredRowWeek: number;
   columnCount: number;
   isLastCol: boolean;
+  isSecondLastCol: boolean;
 }) {
   const {
     bookedHoursPerWeek: bookedHoursPerWeek,
@@ -161,6 +163,7 @@ function WeekCell(props: {
     hoveredRowWeek,
     columnCount,
     isLastCol,
+    isSecondLastCol,
   } = props;
 
   let pillNumber = 0;
@@ -204,6 +207,8 @@ function WeekCell(props: {
               hoveredRowWeek={hoveredRowWeek}
               consultant={consultant}
               isLastCol={isLastCol}
+              isSecondLastCol={isSecondLastCol}
+              columnCount={columnCount}
             />
           )}
         <div className="flex flex-row justify-end gap-1">
@@ -273,8 +278,16 @@ function HoveredWeek(props: {
   hoveredRowWeek: number;
   consultant: Consultant;
   isLastCol: boolean;
+  isSecondLastCol: boolean;
+  columnCount: number;
 }) {
-  const { hoveredRowWeek, consultant, isLastCol } = props;
+  const {
+    hoveredRowWeek,
+    consultant,
+    isLastCol,
+    isSecondLastCol,
+    columnCount,
+  } = props;
 
   const nonZeroHoursDetailedBookings = consultant.detailedBooking.filter(
     (d) => !isWeekBookingZeroHours(d, hoveredRowWeek),
@@ -283,8 +296,10 @@ function HoveredWeek(props: {
   return (
     <>
       <div
-        className={`rounded-lg bg-white gap-3 min-w-[222px] p-3 shadow-xl absolute bottom-full mb-2 flex flex-col z-20 ${
-          isLastCol ? "right-0 " : "left-1/2 -translate-x-1/2"
+        className={`rounded-lg bg-white gap-3 min-w-[222px] p-3 shadow-xl absolute bottom-full mb-2 flex flex-col z-20 pointer-events-none ${
+          isLastCol || (isSecondLastCol && columnCount >= 26)
+            ? "right-0 "
+            : "left-1/2 -translate-x-1/2"
         } ${nonZeroHoursDetailedBookings.length == 0 && "hidden"}`}
       >
         {nonZeroHoursDetailedBookings.map((detailedBooking, index) => (
@@ -307,14 +322,17 @@ function HoveredWeek(props: {
               <div className="flex flex-col">
                 <p
                   className={`xsmall text-black/75 ${
-                    detailedBooking.bookingDetails.type == "Vacation" &&
-                    "hidden"
+                    !(
+                      detailedBooking.bookingDetails.type ==
+                        BookingType.Offer ||
+                      detailedBooking.bookingDetails.type == BookingType.Booking
+                    ) && "hidden"
                   }`}
                 >
-                  {detailedBooking.bookingDetails.type}
+                  {detailedBooking.bookingDetails.projectName}
                 </p>
                 <p className="small text-black whitespace-nowrap">
-                  {detailedBooking.bookingDetails.name}
+                  {detailedBooking.bookingDetails.customerName}
                 </p>
               </div>
             </div>
@@ -329,7 +347,7 @@ function HoveredWeek(props: {
         ))}
       </div>
       <div
-        className={`absolute bottom-full left-1/2 -translate-x-1/2 flex items-center z-50 w-0 h-0 border-l-[8px] border-l-transparent border-t-[8px] border-t-white border-r-[8px] border-r-transparent ${
+        className={`absolute bottom-full mb-[2px] left-1/2 -translate-x-1/2 flex items-center z-50 w-0 h-0 border-l-[8px] border-l-transparent border-t-[8px] border-t-white border-r-[8px] border-r-transparent pointer-events-none ${
           nonZeroHoursDetailedBookings.length == 0 && "hidden"
         }`}
       ></div>
@@ -344,7 +362,7 @@ function DetailedBookingRows(props: {
   const { consultant, detailedBooking } = props;
   return (
     <tr
-      key={`${consultant.id}-details-${detailedBooking.bookingDetails.name}`}
+      key={`${consultant.id}-details-${detailedBooking.bookingDetails.customerName}`}
       className="h-fit"
     >
       <td className="border-l-secondary border-l-2"></td>
@@ -356,12 +374,19 @@ function DetailedBookingRows(props: {
         >
           {getIconByBookingType(detailedBooking.bookingDetails.type)}
         </div>
-        <div className="flex flex-col justify-between items-start">
-          <p className="xsmall text-black/75 text-right">
-            {detailedBooking.bookingDetails.type}
+        <div className="flex flex-col justify-center">
+          <p
+            className={`xsmall text-black/75 whitespace-nowrap text-ellipsis overflow-x-hidden max-w-[145px] ${
+              !(
+                detailedBooking.bookingDetails.type == BookingType.Offer ||
+                detailedBooking.bookingDetails.type == BookingType.Booking
+              ) && "hidden"
+            }`}
+          >
+            {detailedBooking.bookingDetails.projectName}
           </p>
           <p className="text-black text-start small">
-            {detailedBooking.bookingDetails.name}
+            {detailedBooking.bookingDetails.customerName}
           </p>
         </div>
       </td>
@@ -369,7 +394,7 @@ function DetailedBookingRows(props: {
         .sort((a, b) => a.week - b.week)
         .map((hours) => (
           <td
-            key={`${consultant.id}-details-${detailedBooking.bookingDetails.name}-${hours.week}`}
+            key={`${consultant.id}-details-${detailedBooking.bookingDetails.projectName}-${hours.week}`}
             className="h-8 p-0.5"
           >
             <p
