@@ -4,8 +4,9 @@ import {
   BookingType,
   Consultant,
   DetailedBooking,
+  WeeklyHours,
 } from "@/types";
-import { ReactElement, useState } from "react";
+import { ReactElement, use, useContext, useState } from "react";
 import {
   AlertTriangle,
   Briefcase,
@@ -17,6 +18,7 @@ import {
   Sun,
 } from "react-feather";
 import InfoPill, { InfoPillVariant } from "./InfoPill";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
 export default function ConsultantRows({
   consultant,
@@ -310,6 +312,7 @@ function HoveredWeek(props: {
       },
       hours: [
         {
+          id: 0,
           week: hoveredRowWeek,
           hours:
             consultant.bookings.find((b) => b.weekNumber == hoveredRowWeek)
@@ -386,6 +389,7 @@ function DetailedBookingRows(props: {
   detailedBooking: DetailedBooking;
 }) {
   const { consultant, detailedBooking } = props;
+
   return (
     <tr
       key={`${consultant.id}-details-${detailedBooking.bookingDetails.customerName}`}
@@ -419,21 +423,57 @@ function DetailedBookingRows(props: {
       {detailedBooking.hours
         .sort((a, b) => a.week - b.week)
         .map((hours) => (
-          <td
+          <DetailedBookingCell
             key={`${consultant.id}-details-${detailedBooking.bookingDetails.projectName}-${hours.week}`}
-            className="h-8 p-0.5"
-          >
-            <p
-              className={`small-medium p-2 rounded h-full flex items-center justify-end
-     ${getColorByStaffingType(
-       detailedBooking.bookingDetails.type ?? BookingType.Offer,
-     )} ${hours.hours == 0 && "bg-opacity-30"}`}
-            >
-              {hours.hours}
-            </p>
-          </td>
+            detailedBooking={detailedBooking}
+            detailedBookingHours={hours}
+          />
         ))}
     </tr>
+  );
+}
+
+async function setDetailedBookingHours(
+  hours: number,
+  bookingId: number,
+  bookingType: string,
+) {}
+
+function DetailedBookingCell({
+  detailedBooking,
+  detailedBookingHours,
+}: {
+  detailedBooking: DetailedBooking;
+  detailedBookingHours: WeeklyHours;
+}) {
+  const [hours, setHours] = useState(detailedBookingHours.hours);
+  const { setIsDisabledHotkeys } = useContext(FilteredContext);
+
+  function updateHours() {
+    setIsDisabledHotkeys(false);
+    setDetailedBookingHours(
+      hours,
+      detailedBookingHours.id,
+      detailedBooking.bookingDetails.type,
+    );
+  }
+
+  return (
+    <td className="h-8 p-0.5">
+      <input
+        type="number"
+        min="0"
+        step="7.5"
+        value={hours}
+        onChange={(e) => setHours(Number(e.target.value))}
+        onFocus={() => setIsDisabledHotkeys(true)}
+        onBlur={() => updateHours()}
+        className={`small-medium rounded text-right w-full py-2 pr-2
+     ${getColorByStaffingType(
+       detailedBooking.bookingDetails.type ?? BookingType.Offer,
+     )} ${hours == 0 && "bg-opacity-30"}`}
+      ></input>
+    </td>
   );
 }
 

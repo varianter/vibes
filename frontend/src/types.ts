@@ -54,6 +54,8 @@ export interface DetailedBooking {
 }
 
 export interface WeeklyHours {
+  /** @format int */
+  id: number;
   /** @format int32 */
   week: number;
   /** @format double */
