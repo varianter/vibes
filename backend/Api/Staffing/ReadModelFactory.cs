@@ -93,7 +93,7 @@ public class ReadModelFactory
             .Where(absence => weekSet.Contains(new Week(absence.Year, absence.WeekNumber)))
             .GroupBy(absence => absence.Absence.Name)
             .Select(grouping => new DetailedBooking(
-                new BookingDetails(grouping.Key, BookingType.PlannedAbsence, grouping.Key),
+                new BookingDetails("", BookingType.PlannedAbsence, grouping.Key), //Empty projectName as PlannedAbsence does not have a project
                 weekSet.Select(week => new WeeklyHours(
                     week.ToSortableInt(),
                     grouping
@@ -118,7 +118,7 @@ public class ReadModelFactory
                 consultant.Department.Organization.HoursPerWorkday
             )).ToList();
             detailedBookings = detailedBookings.Append(new DetailedBooking(
-                new BookingDetails("Ferie", BookingType.Vacation, "Ferie"),
+                new BookingDetails("", BookingType.Vacation, "Ferie"), //Empty projectName as vacation does not have a project
                 vacationsPrWeek));
         }
 
