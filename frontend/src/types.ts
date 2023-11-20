@@ -33,6 +33,7 @@ export enum BookingType {
   Booking = "Booking",
   PlannedAbsence = "PlannedAbsence",
   Vacation = "Vacation",
+  Availible = "Availible",
 }
 
 export type Consultant = {

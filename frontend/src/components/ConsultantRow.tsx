@@ -122,6 +122,8 @@ function getColorByStaffingType(type: BookingType): string {
       return "bg-vacation";
     case BookingType.PlannedAbsence:
       return "bg-absence";
+    case BookingType.Availible:
+      return "bg-available";
     default:
       return "";
   }
@@ -137,6 +139,8 @@ function getIconByBookingType(type: BookingType): ReactElement {
       return <Sun size={16} className="text-vacation_darker" />;
     case BookingType.PlannedAbsence:
       return <Moon size={16} className="text-absence_darker" />;
+    case BookingType.Availible:
+      return <Coffee size={16} className="text-available_darker" />;
     default:
       return <></>;
   }
@@ -279,6 +283,27 @@ function HoveredWeek(props: {
   const nonZeroHoursDetailedBookings = consultant.detailedBooking.filter(
     (d) => !isWeekBookingZeroHours(d, hoveredRowWeek),
   );
+
+  const freeTime = consultant.bookings.find(
+    (b) => b.weekNumber == hoveredRowWeek,
+  )?.bookingModel.totalSellableTime;
+
+  if (freeTime && freeTime > 0) {
+    nonZeroHoursDetailedBookings.push({
+      bookingDetails: {
+        type: BookingType.Availible,
+        name: "Ledig Tid",
+      },
+      hours: [
+        {
+          week: hoveredRowWeek,
+          hours:
+            consultant.bookings.find((b) => b.weekNumber == hoveredRowWeek)
+              ?.bookingModel.totalSellableTime || 0,
+        },
+      ],
+    });
+  }
 
   return (
     <>
