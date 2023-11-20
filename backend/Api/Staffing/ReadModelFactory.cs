@@ -154,7 +154,7 @@ public class ReadModelFactory
         var bookedTime = totalBillable + totalAbsence + totalVacations + totalHolidayHours;
         var hoursPrWorkDay = consultant.Department.Organization.HoursPerWorkday;
 
-        var totalFreeTime =
+        var totalSellableTime =
             Math.Max(hoursPrWorkDay * 5 - bookedTime, 0);
 
         var totalOverbooked =
@@ -165,7 +165,7 @@ public class ReadModelFactory
             week.WeekNumber,
             week.ToSortableInt(),
             GetDatesForWeek(week),
-            new WeeklyBookingReadModel(totalBillable, totalOffered, totalAbsence, totalFreeTime,
+            new WeeklyBookingReadModel(totalBillable, totalOffered, totalAbsence, totalSellableTime,
                 totalHolidayHours, totalVacations,
                 totalOverbooked)
         );
