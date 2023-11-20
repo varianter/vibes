@@ -292,7 +292,8 @@ function HoveredWeek(props: {
     nonZeroHoursDetailedBookings.push({
       bookingDetails: {
         type: BookingType.Availible,
-        name: "Ledig Tid",
+        projectName: "",
+        customerName: "Ledig Tid",
       },
       hours: [
         {
