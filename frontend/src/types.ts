@@ -61,8 +61,9 @@ export interface WeeklyHours {
 }
 
 export interface BookingDetails {
-  name: string | null;
+  projectName: string | null;
   type: BookingType;
+  customerName: string | null;
 }
 
 export type Department = {
