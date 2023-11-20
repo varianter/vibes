@@ -8,11 +8,11 @@ import { usePathname } from "next/navigation";
 
 async function getNumWorkHours(
   setNumWorkHours: Function,
-  organisationName: string,
+  organisationUrlKey: string,
 ) {
   try {
     const data = await fetch(
-      `/${organisationName}/bemanning/api/weeklyWorkHours?organisationName=${organisationName}`,
+      `/${organisationUrlKey}/bemanning/api/weeklyWorkHours`,
       {
         method: "get",
       },

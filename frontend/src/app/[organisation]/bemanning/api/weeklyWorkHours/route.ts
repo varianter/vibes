@@ -1,13 +1,15 @@
 import { fetchWithToken } from "@/data/fetchWithToken";
 import { NextResponse } from "next/server";
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const organisationName = searchParams.get("organisationName") || "";
+export async function GET(
+  request: Request,
+  { params }: { params: { organisation: string } },
+) {
+  const orgUrlKey = params.organisation;
 
   const weeklyWorkHours =
     (await fetchWithToken<number>(
-      `organisations/${organisationName}/weeklyWorkHours`,
+      `organisations/${orgUrlKey}/weeklyWorkHours`,
     )) ?? [];
 
   return NextResponse.json(weeklyWorkHours);
