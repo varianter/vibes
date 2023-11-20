@@ -5,6 +5,8 @@ import WeekSelection from "@/components/WeekSelection";
 import { isCurrentWeek } from "@/hooks/staffing/dateTools";
 import { useConsultantsFilter } from "@/hooks/staffing/useConsultantsFilter";
 import { useUrlRouteFilter } from "@/hooks/staffing/useUrlRouteFilter";
+import InfoPill from "./InfoPill";
+import { Calendar } from "react-feather";
 
 export default function FilteredConsultantList() {
   const { filteredConsultants } = useConsultantsFilter();
@@ -44,10 +46,7 @@ export default function FilteredConsultantList() {
               </div>
             </th>
             {filteredConsultants.at(0)?.bookings?.map((booking) => (
-              <th
-                key={booking.weekNumber}
-                className="m-2 px-2 py-1 pt-3 gap-1 justify-items-end"
-              >
+              <th key={booking.weekNumber} className=" px-2 py-1 pt-3 ">
                 {isCurrentWeek(booking.weekNumber, booking.year) ? (
                   <div className="flex flex-row gap-2 items-center justify-end">
                     <div className="h-2 w-2 rounded-full bg-primary" />
@@ -58,10 +57,26 @@ export default function FilteredConsultantList() {
                 ) : (
                   <p className="normal text-right">{booking.weekNumber}</p>
                 )}
+                <div
+                  className={`flex ${weekSpan > 24 ? "flex-col" : "flex-row"} ${
+                    booking.bookingModel.totalHolidayHours > 0
+                      ? "justify-between"
+                      : "justify-end"
+                  }`}
+                >
+                  {booking.bookingModel.totalHolidayHours > 0 && (
+                    <InfoPill
+                      text={booking.bookingModel.totalHolidayHours.toFixed(1)}
+                      icon={<Calendar size="12" />}
+                      colors={"bg-holiday text-holiday_darker w-fit"}
+                      variant={"wide"}
+                    />
+                  )}
 
-                <p className="xsmall text-black/75 text-right">
-                  {booking.dateString}
-                </p>
+                  <p className="xsmall text-black/75 text-right">
+                    {booking.dateString}
+                  </p>
+                </div>
               </th>
             ))}
           </tr>
