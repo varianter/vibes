@@ -26,5 +26,15 @@ export function useOutsideClick(
 }
 
 export function isClickOutsideElement(e: MouseEvent, el: HTMLElement | null) {
-  return el && !el.contains(e.target as Node);
+  if (!el) {
+    return false;
+  }
+
+  const elDimensions = el.getBoundingClientRect();
+  return (
+    e.clientX < elDimensions.left ||
+    e.clientX > elDimensions.right ||
+    e.clientY < elDimensions.top ||
+    e.clientY > elDimensions.bottom
+  );
 }
