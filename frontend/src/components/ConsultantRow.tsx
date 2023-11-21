@@ -17,6 +17,8 @@ import {
   Sun,
 } from "react-feather";
 import InfoPill, { InfoPillVariant } from "./InfoPill";
+import { useModal } from "@/hooks/useModal";
+import BaseDialog from "./BaseDialog";
 
 export default function ConsultantRows({
   consultant,
@@ -28,6 +30,8 @@ export default function ConsultantRows({
   const [hoveredRowWeek, setHoveredRowWeek] = useState(-1);
 
   const columnCount = consultant.bookings.length ?? 0;
+
+  const { openModal, modalRef } = useModal({ closeOnBackdropClick: true });
 
   function toggleListElementVisibility() {
     setIsListElementVisible(!isListElementVisible);
@@ -101,9 +105,20 @@ export default function ConsultantRows({
           <td className={`${"border-l-secondary border-l-2"}`}></td>
           <td>
             <div className="flex flex-row items-center gap-2">
-              <button className="w-8 h-8 flex justify-center items-center rounded bg-primary/0 hover:bg-primary/10">
+              <button
+                className="w-8 h-8 flex justify-center items-center rounded bg-primary/0 hover:bg-primary/10"
+                onClick={openModal}
+              >
                 <Plus size={16} className="text-primary" />
               </button>
+              <BaseDialog
+                dialogRef={modalRef}
+                title={"Tittel"}
+                onClose={() => console.log("onClose")}
+              >
+                <h1>Modal Title</h1>
+                <div>Text content ...</div>
+              </BaseDialog>
               <p className="small text-primary">Legg til bemanning</p>
             </div>
           </td>
