@@ -113,7 +113,6 @@ export default function ConsultantRows({
               </button>
               <BaseDialog
                 dialogRef={modalRef}
-                title={"Tittel"}
                 onClose={() => console.log("onClose")}
               >
                 <h1>Modal Title</h1>

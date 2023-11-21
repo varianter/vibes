@@ -1,22 +1,21 @@
 "use client";
 
-import { Ref } from "react";
+import { RefObject } from "react";
 
 export interface BaseDialogProps {
-  title: string;
   children: React.ReactNode;
   onClose?: () => void;
-  dialogRef: Ref<HTMLDialogElement>;
+  dialogRef: RefObject<HTMLDialogElement>;
 }
 
 function BaseDialog(props: BaseDialogProps) {
-  const { title, children, onClose, dialogRef } = props;
+  const { children, onClose, dialogRef } = props;
 
-  const dialogElement: HTMLDialogElement = dialogRef && dialogRef.current;
+  const dialogElement = dialogRef?.current;
 
   function handleClose() {
     onClose?.();
-    dialogElement.close();
+    dialogElement?.close();
   }
 
   return (
