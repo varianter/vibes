@@ -10,7 +10,7 @@ public class PlannedAbsence
 
     [Required] public Absence Absence { get; set; }
     [Required] public Consultant Consultant { get; set; }
-    [Required] public int Year { get; set; }
-    [Required] public int WeekNumber { get; set; }
+
+    [Required] public Week Week { get; set; }
     public double Hours { get; set; }
 }

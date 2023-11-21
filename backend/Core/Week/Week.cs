@@ -14,6 +14,12 @@ public class Week : IComparable<Week>, IEquatable<Week>
         WeekNumber = weekNumber;
     }
 
+    public Week(int weekAsInt)
+    {
+        Year = weekAsInt / 100;
+        WeekNumber = weekAsInt % 100;
+    }
+
 
     public int CompareTo(Week? other)
     {

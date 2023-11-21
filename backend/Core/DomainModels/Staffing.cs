@@ -11,9 +11,7 @@ public class Staffing
 
     public required Consultant Consultant { get; set; } = null!;
 
-    public required int Year { get; set; }
-
-    public required int Week { get; set; }
+    public required Week Week { get; set; }
 
     public required double Hours { get; set; } = 0;
 }
