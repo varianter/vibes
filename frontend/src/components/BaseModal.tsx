@@ -2,16 +2,16 @@
 
 import { RefObject } from "react";
 
-export interface BaseDialogProps {
+export interface BaseModalProps {
   children: React.ReactNode;
   onClose?: () => void;
-  dialogRef: RefObject<HTMLDialogElement>;
+  modalRef: RefObject<HTMLDialogElement>;
 }
 
-function BaseDialog(props: BaseDialogProps) {
-  const { children, onClose, dialogRef } = props;
+function BaseModal(props: BaseModalProps) {
+  const { children, onClose, modalRef } = props;
 
-  const dialogElement = dialogRef?.current;
+  const dialogElement = modalRef?.current;
 
   function handleClose() {
     onClose?.();
@@ -19,11 +19,11 @@ function BaseDialog(props: BaseDialogProps) {
   }
 
   return (
-    <dialog ref={dialogRef}>
+    <dialog ref={modalRef}>
       {children}
       <button onClick={handleClose}>Close</button>
     </dialog>
   );
 }
 
-export default BaseDialog;
+export default BaseModal;
