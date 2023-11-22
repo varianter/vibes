@@ -13,8 +13,8 @@ export default function PrimaryButton({
 }) {
   return (
     <button
-      className={`px-3 py-2 h-10 bg-primary rounded-lg inline-flex items-center justify-center gap-2 w-full ${
-        disabled ? "opacity-50" : ""
+      className={`px-3 py-2 h-10 bg-primary rounded-lg inline-flex items-center justify-center gap-2 ${
+        disabled ? "bg-opacity-50" : ""
       } ${fullWidth ? "w-full" : ""}
       `}
       onClick={onClick}

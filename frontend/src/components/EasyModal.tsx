@@ -47,7 +47,7 @@ function EasyModal(props: EasyModalProps) {
         <div className="p-2 md:p-5 space-y-4 z-10">{children}</div>
 
         <div className="p-2 md:p-5 space-y-4 z-10">
-          <PrimaryButton onClick={handleSave} di>
+          <PrimaryButton onClick={handleSave} fullWidth>
             <Check className="text-white" size={24} />
             <span className="text-white text-sm">Lagre</span>
           </PrimaryButton>
