@@ -34,7 +34,7 @@ function EasyModal(props: EasyModalProps) {
     <BaseModal modalRef={modalRef}>
       <div className="w-[299px] md:inset-0 h-[calc(100%-1rem)] max-h-full relative max-w-2xl">
         <div className="w-full h-10 justify-between items-center inline-flex">
-          <div className="p-2 text-zinc-800 text-xl">
+          <div className="p-2 text-zinc-800 text-xl font-normal leading-normal">
             <h2>{title}</h2>
           </div>
           {showCloseButton && (

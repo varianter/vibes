@@ -9,7 +9,7 @@ export function RightCloseButton({ onClick }: { onClick: () => void }) {
           className="absolute top-0 right-0 w-8 h-8 flex justify-center items-center rounded bg-primary/0 hover:bg-primary/5"
           onClick={onClick}
         >
-          <X size={24} className="text-primary" />
+          <X className="h-6 w-6 text-primary" />
         </button>
       </div>
     </div>
