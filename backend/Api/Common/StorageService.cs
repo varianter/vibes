@@ -106,7 +106,7 @@ public class StorageService
         _cache.Set($"{ConsultantCacheKey}/{orgUrlKey}", consultants);
     }
 
-    public int createStaffing(int consultantId, int projectId, double hours, Week week)
+    public int CreateStaffing(int consultantId, int projectId, double hours, Week week)
     {
         var consultant = _dbContext.Consultant.Find(consultantId);
         var project = _dbContext.Project.Include(p=> p.Customer).ThenInclude(c=>c.Organization).FirstOrDefault(project => project.Id == projectId);
@@ -131,7 +131,7 @@ public class StorageService
         return staffing.Id;
     }
     
-    public int createAbsence(int consultantId, int absenceId, double hours, Week week)
+    public int CreateAbsence(int consultantId, int absenceId, double hours, Week week)
     {
         var consultant = _dbContext.Consultant.Find(consultantId);
         var absence = _dbContext.Absence.Include(a=> a.Organization).FirstOrDefault(absence => absence.Id == absenceId);

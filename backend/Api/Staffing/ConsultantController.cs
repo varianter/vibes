@@ -45,22 +45,27 @@ public class ConsultantController : ControllerBase
     public ActionResult<List<ConsultantReadModel>>Put(
             [FromRoute] string orgUrlKey,
             [FromRoute] int staffingId,
-            [FromQuery(Name = "Type")] BookingType bookingType = BookingType.Booking,
+            [FromQuery(Name = "Type")] BookingType bookingType,
             [FromQuery(Name = "Hours")] double hours = 0
         )
     {
         var service = new StorageService(_cache, _context);
 
-        if (bookingType == BookingType.Booking || bookingType == BookingType.Offer)
+        switch (bookingType)
         {
-           service.UpdateStaffing(staffingId, hours);
+            case BookingType.Booking:
+            case BookingType.Offer:
+                service.UpdateStaffing(staffingId, hours);
+                break;
+            case BookingType.PlannedAbsence:
+                service.UpdateAbsence(staffingId, hours);
+                break;
+            case BookingType.Vacation:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(bookingType), bookingType, "Invalid bookingType");
         }
 
-        if (bookingType == BookingType.PlannedAbsence)
-        {
-            service.UpdateAbsence(staffingId, hours);
-        }
-        
         return Ok(hours);
     }
     
@@ -68,36 +73,35 @@ public class ConsultantController : ControllerBase
     [Route("staffing/new")]
     public ActionResult<List<ConsultantReadModel>>Post(
         [FromRoute] string orgUrlKey,
-        [FromQuery(Name = "Type")] BookingType bookingType = BookingType.Booking,
-        [FromQuery(Name = "Hours")] double hours = 0,
-        [FromQuery(Name = "ConsultantID")] int consultantId = 0,
-        [FromQuery(Name = "EngagementID")] int engagementId = 0,
-        [FromQuery(Name = "Year")] int? selectedYearParam = null,
-        [FromQuery(Name = "Week")] int? selectedWeekParam = null
-        
-
+        [FromQuery(Name = "Type")] BookingType bookingType,
+        [FromQuery(Name = "ConsultantID")] int consultantId,
+        [FromQuery(Name = "EngagementID")] int engagementId,
+        [FromQuery(Name = "Year")] int selectedYearParam,
+        [FromQuery(Name = "Week")] int selectedWeekParam,
+        [FromQuery(Name = "Hours")] double hours = 0
     )
     {
         var service = new StorageService(_cache, _context);
 
         var newId = 0;
         
-        var selectedWeek = selectedYearParam is null || selectedWeekParam is null
-            ? Week.FromDateTime(DateTime.Now) //Kanksje heller feilmelding?
-            : new Week((int)selectedYearParam, (int)selectedWeekParam);
+        var selectedWeek = new Week((int)selectedYearParam, (int)selectedWeekParam);
 
-        if (bookingType == BookingType.Booking || bookingType == BookingType.Offer)
+        switch (bookingType)
         {
-            
-            newId = service.createStaffing(consultantId, engagementId, hours, selectedWeek );
+            case BookingType.Booking:
+            case BookingType.Offer:
+                newId = service.CreateStaffing(consultantId, engagementId, hours, selectedWeek );
+                break;
+            case BookingType.PlannedAbsence:
+                newId = service.CreateAbsence(consultantId, engagementId, hours, selectedWeek );
+                break;
+            case BookingType.Vacation:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(bookingType), bookingType, "Invalid bookingType");
         }
 
-        if (bookingType == BookingType.PlannedAbsence)
-        {
-            newId = service.createAbsence(consultantId, engagementId, hours, selectedWeek );
-
-        }
-        
         return Ok(newId);
     }
 }
