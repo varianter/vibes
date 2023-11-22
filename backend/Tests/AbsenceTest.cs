@@ -85,7 +85,8 @@ public class Tests
             {
                 Absence = Substitute.For<Absence>(),
                 Consultant = consultant,
-                Hours = plannedAbsenceHours
+                Hours = plannedAbsenceHours,
+                Week = week
             });
 
         if (staffedHours > 0)
@@ -151,14 +152,16 @@ public class Tests
         {
             Absence = leaveA,
             Consultant = consultant,
-            Hours = 15
+            Hours = 15,
+            Week = week
         });
 
         consultant.PlannedAbsences.Add(new PlannedAbsence
         {
             Absence = leaveB,
             Consultant = consultant,
-            Hours = 15
+            Hours = 15,
+            Week = week
         });
 
         var bookedHours = ReadModelFactory.MapToReadModelList(consultant, new List<Week> { week }).Bookings.First()
