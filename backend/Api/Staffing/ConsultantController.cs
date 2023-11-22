@@ -48,7 +48,7 @@ public class ConsultantController : ControllerBase
             [FromRoute] int staffingId,
             [FromQuery(Name = "Year")] int? selectedYearParam = null, //change to selected week
             [FromQuery(Name = "Week")] int? selectedWeekParam = null,
-            [FromQuery(Name = "BookingType")] string bookingType = "",
+            [FromQuery(Name = "BookingType")] BookingType bookingType = BookingType.Booking,
             [FromQuery(Name = "Hours")] double hours = 0,
             [FromQuery(Name = "WeekSpan")] int numberOfWeeks = 8
        
@@ -56,7 +56,7 @@ public class ConsultantController : ControllerBase
     {
         var service = new StorageService(_cache, _context);
         Console.Write(bookingType);
-        /*if (bookingType == BookingType.Booking || bookingType == BookingType.Offer)
+        if (bookingType == BookingType.Booking || bookingType == BookingType.Offer)
         {
            service.UpdateStaffing(staffingId, hours);
         }
@@ -64,7 +64,7 @@ public class ConsultantController : ControllerBase
         if (bookingType == BookingType.PlannedAbsence)
         {
             service.UpdateAbsence(staffingId, hours);
-        }*/
+        }
         var selectedWeek = selectedYearParam is null || selectedWeekParam is null
             ? Week.FromDateTime(DateTime.Now)
             : new Week((int)selectedYearParam, (int)selectedWeekParam);

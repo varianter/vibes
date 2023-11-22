@@ -5,7 +5,6 @@ import React, { createContext, ReactNode, useState } from "react";
 
 type FilterContextType = {
   consultants: Consultant[];
-  setConsultants: React.Dispatch<React.SetStateAction<Consultant[]>>;
   departments: Department[];
   isDisabledHotkeys: Boolean;
   setIsDisabledHotkeys: React.Dispatch<React.SetStateAction<boolean>>;
@@ -13,7 +12,6 @@ type FilterContextType = {
 
 export const FilteredContext = createContext<FilterContextType>({
   consultants: [],
-  setConsultants: () => {},
   departments: [],
   isDisabledHotkeys: false,
   setIsDisabledHotkeys: () => {},
@@ -25,13 +23,11 @@ export function ConsultantFilterProvider(props: {
   children: ReactNode;
 }) {
   const [isDisabledHotkeys, setIsDisabledHotkeys] = useState(false);
-  const [consultants, setConsultants] = useState(props.consultants);
 
   return (
     <FilteredContext.Provider
       value={{
-        consultants: consultants,
-        setConsultants: setConsultants,
+        consultants: props.consultants,
         departments: props.departments,
         isDisabledHotkeys,
         setIsDisabledHotkeys,

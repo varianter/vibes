@@ -442,7 +442,7 @@ async function setDetailedBookingHours(
   organisationName: string,
   week: number,
   weekSpan: number,
-  setConsultants: React.Dispatch<React.SetStateAction<Consultant[]>>,
+  updateRoute: (updateParams: {}) => void,
 ) {
   if (bookingId == 0) return; //change to create staffing with hours
 
@@ -454,7 +454,7 @@ async function setDetailedBookingHours(
       },
     );
     const res = await data.json();
-    setConsultants(res);
+    updateRoute({});
   } catch (e) {
     console.error("Error updating staffing", e);
   }
@@ -468,7 +468,8 @@ function DetailedBookingCell({
   detailedBookingHours: WeeklyHours;
 }) {
   const [hours, setHours] = useState(detailedBookingHours.hours);
-  const { setConsultants, setIsDisabledHotkeys } = useContext(FilteredContext);
+  const { setIsDisabledHotkeys } = useContext(FilteredContext);
+  const { updateRoute } = useUrlRouteFilter();
 
   const organisationName = usePathname().split("/")[1];
   const { weekSpan } = useUrlRouteFilter();
@@ -482,7 +483,7 @@ function DetailedBookingCell({
       organisationName,
       detailedBookingHours.week,
       weekSpan,
-      setConsultants,
+      updateRoute,
     );
   }
 
