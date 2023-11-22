@@ -27,12 +27,7 @@ public class StorageService
         _cache.Set($"{ConsultantCacheKey}/{orgUrlKey}", loadedConsultants);
         return loadedConsultants;
     }
-
-    public async Task ReloadCache(string orgUrlKey)
-    {
-        _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
-    }
-
+    
     private List<Consultant> LoadConsultantsFromDb(string orgUrlKey)
     {
         var consultantList = _dbContext.Consultant
