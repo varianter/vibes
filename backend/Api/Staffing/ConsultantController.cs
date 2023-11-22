@@ -46,12 +46,8 @@ public class ConsultantController : ControllerBase
     public ActionResult<List<ConsultantReadModel>>Put(
             [FromRoute] string orgUrlKey,
             [FromRoute] int staffingId,
-            [FromQuery(Name = "Year")] int? selectedYearParam = null, //change to selected week
-            [FromQuery(Name = "Week")] int? selectedWeekParam = null,
             [FromQuery(Name = "BookingType")] BookingType bookingType = BookingType.Booking,
-            [FromQuery(Name = "Hours")] double hours = 0,
-            [FromQuery(Name = "WeekSpan")] int numberOfWeeks = 8
-       
+            [FromQuery(Name = "Hours")] double hours = 0
         )
     {
         var service = new StorageService(_cache, _context);
@@ -65,13 +61,6 @@ public class ConsultantController : ControllerBase
         {
             service.UpdateAbsence(staffingId, hours);
         }
-        var selectedWeek = selectedYearParam is null || selectedWeekParam is null
-            ? Week.FromDateTime(DateTime.Now)
-            : new Week((int)selectedYearParam, (int)selectedWeekParam);
-
-        var weekSet = selectedWeek.GetNextWeeks(numberOfWeeks);
-        
-        var readModels = new ReadModelFactory(service).GetConsultantReadModelsForWeeks(orgUrlKey, weekSet);
-        return Ok(readModels);
+        return Ok(hours);
     }
 }

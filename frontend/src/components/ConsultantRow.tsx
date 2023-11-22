@@ -440,15 +440,13 @@ async function setDetailedBookingHours(
   hours: number,
   bookingType: string,
   organisationName: string,
-  week: number,
-  weekSpan: number,
   updateRoute: (updateParams: {}) => void,
 ) {
   if (bookingId == 0) return; //change to create staffing with hours
 
   try {
     const data = await fetch(
-      `/${organisationName}/bemanning/api/updateHours?staffingID=${bookingId}&hours=${hours}&BookingType=${bookingType}&selectedWeek=${week}&weekSpan=${weekSpan}`,
+      `/${organisationName}/bemanning/api/updateHours?staffingID=${bookingId}&hours=${hours}&BookingType=${bookingType}`,
       {
         method: "put",
       },
@@ -472,7 +470,6 @@ function DetailedBookingCell({
   const { updateRoute } = useUrlRouteFilter();
 
   const organisationName = usePathname().split("/")[1];
-  const { weekSpan } = useUrlRouteFilter();
 
   function updateHours() {
     setIsDisabledHotkeys(false);
@@ -481,8 +478,6 @@ function DetailedBookingCell({
       hours,
       detailedBooking.bookingDetails.type,
       organisationName,
-      detailedBookingHours.week,
-      weekSpan,
       updateRoute,
     );
   }
