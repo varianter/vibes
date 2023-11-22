@@ -1,20 +1,28 @@
 import { postWithToken } from "@/data/fetchWithToken";
-import { stringToWeek } from "@/data/urlUtils";
+import { stringWODashToWeek } from "@/data/urlUtils";
 import { NextResponse } from "next/server";
 
-export async function PUT(
+export async function POST(
   request: Request,
   { params }: { params: { organisation: string } },
 ) {
   const orgUrlKey = params.organisation;
   const { searchParams } = new URL(request.url);
-  const staffingID = searchParams.get("staffingID") || "";
+  const consultantID = searchParams.get("consultantID") || "";
+  const engagementID = searchParams.get("engagementID") || "";
   const hours = searchParams.get("hours") || "";
   const bookingType = searchParams.get("bookingType") || "";
+  const selectedWeek = stringWODashToWeek(
+    searchParams.get("selectedWeek") || undefined,
+  );
 
-  const staffing = //Skriv put/post with token
+  const staffing =
     (await postWithToken(
-      `${orgUrlKey}/consultants/staffing/${staffingID}?Hours=${hours}&Type=${bookingType}`,
+      `${orgUrlKey}/consultants/staffing/new?Hours=${hours}&Type=${bookingType}&ConsultantID=${consultantID}&EngagementID=${engagementID}&${
+        selectedWeek
+          ? `Year=${selectedWeek.year}&Week=${selectedWeek.weekNumber}`
+          : ""
+      }`,
     )) ?? [];
 
   return NextResponse.json(staffing);

@@ -69,7 +69,7 @@ public class ReadModelFactory
             .Where(staffing => weekSet.Contains(staffing.Week))
             .GroupBy(staffing => staffing.Project.Name)
             .Select(grouping => new DetailedBooking(
-                new BookingDetails(grouping.Key, BookingType.Booking, grouping.First().Project.Customer.Name),
+                new BookingDetails(grouping.Key, BookingType.Booking, grouping.First().Project.Customer.Name, grouping.First().Project.Id),
                 weekSet.Select(week =>
                 {
                     int? id = null;
@@ -91,7 +91,7 @@ public class ReadModelFactory
             .Where(staffing => weekSet.Contains(staffing.Week))
             .GroupBy(staffing => staffing.Project.Name)
             .Select(grouping => new DetailedBooking(
-                new BookingDetails(grouping.Key, BookingType.Offer, grouping.First().Project.Customer.Name),
+                new BookingDetails(grouping.Key, BookingType.Offer, grouping.First().Project.Customer.Name, grouping.First().Project.Id),
                 weekSet.Select(week =>
                 {
                     int? id = null;
@@ -113,7 +113,7 @@ public class ReadModelFactory
             .GroupBy(absence => absence.Absence.Name)
             .Select(grouping => new DetailedBooking(
                 new BookingDetails("", BookingType.PlannedAbsence,
-                    grouping.Key), //Empty projectName as PlannedAbsence does not have a project
+                    grouping.Key, grouping.First().Absence.Id), //Empty projectName as PlannedAbsence does not have a project
                 weekSet.Select(week =>
                 {
                     int? id = null;
@@ -147,7 +147,7 @@ public class ReadModelFactory
             )).ToList();
             detailedBookings = detailedBookings.Append(new DetailedBooking(
                 new BookingDetails("", BookingType.Vacation,
-                    "Ferie"), //Empty projectName as vacation does not have a project
+                    "Ferie", 0), //Empty projectName as vacation does not have a project, 0 as projectId as vacation is weird
                 vacationsPrWeek));
         }
 

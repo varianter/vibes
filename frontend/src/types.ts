@@ -66,6 +66,7 @@ export interface BookingDetails {
   projectName: string | null;
   type: BookingType;
   customerName: string | null;
+  projectId: string;
 }
 
 export type Department = {

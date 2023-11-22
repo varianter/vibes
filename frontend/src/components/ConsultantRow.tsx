@@ -311,6 +311,7 @@ function HoveredWeek(props: {
         type: BookingType.Available,
         projectName: "",
         customerName: "Ledig Tid",
+        projectId: "",
       },
       hours: [
         {
@@ -429,6 +430,7 @@ function DetailedBookingRows(props: {
             key={`${consultant.id}-details-${detailedBooking.bookingDetails.projectName}-${hours.week}`}
             detailedBooking={detailedBooking}
             detailedBookingHours={hours}
+            consultant={consultant}
           />
         ))}
     </tr>
@@ -441,31 +443,52 @@ async function setDetailedBookingHours(
   bookingType: string,
   organisationName: string,
   router: AppRouterInstance,
+  consultantId: string,
+  engagementId: string,
+  week: number,
+  setCellId: (cellId: number) => void,
 ) {
-  if (bookingId == 0) return; //change to create staffing with hours
-
-  try {
-    const data = await fetch(
-      `/${organisationName}/bemanning/api/updateHours?staffingID=${bookingId}&hours=${hours}&bookingType=${bookingType}`,
-      {
-        method: "put",
-      },
-    );
-    const res = await data.json();
-    router.refresh();
-  } catch (e) {
-    console.error("Error updating staffing", e);
+  if (bookingId == 0) {
+    try {
+      const data = await fetch(
+        `/${organisationName}/bemanning/api/updateHours?hours=${hours}&bookingType=${bookingType}&consultantID=${consultantId}&engagementID=${engagementId}&selectedWeek=${week}`,
+        {
+          method: "post",
+        },
+      );
+      const res = await data.json();
+      setCellId(res);
+      router.refresh();
+    } catch (e) {
+      console.error("Error updating staffing", e);
+    }
+  } else {
+    try {
+      const data = await fetch(
+        `/${organisationName}/bemanning/api/updateHours/${bookingId}?hours=${hours}&bookingType=${bookingType}`,
+        {
+          method: "put",
+        },
+      );
+      const res = await data.json();
+      router.refresh();
+    } catch (e) {
+      console.error("Error updating staffing", e);
+    }
   }
 }
 
 function DetailedBookingCell({
   detailedBooking,
   detailedBookingHours,
+  consultant,
 }: {
   detailedBooking: DetailedBooking;
   detailedBookingHours: WeeklyHours;
+  consultant: Consultant;
 }) {
   const [hours, setHours] = useState(detailedBookingHours.hours);
+  const [cellId, setCellId] = useState(detailedBookingHours.id);
   const { setIsDisabledHotkeys } = useContext(FilteredContext);
   const router = useRouter();
 
@@ -474,11 +497,15 @@ function DetailedBookingCell({
   function updateHours() {
     setIsDisabledHotkeys(false);
     setDetailedBookingHours(
-      detailedBookingHours.id,
+      cellId,
       hours,
       detailedBooking.bookingDetails.type,
       organisationName,
       router,
+      consultant.id,
+      detailedBooking.bookingDetails.projectId,
+      detailedBookingHours.week,
+      setCellId,
     );
   }
 
@@ -489,6 +516,7 @@ function DetailedBookingCell({
         min="0"
         step="7.5"
         value={hours}
+        disabled={detailedBooking.bookingDetails.type == BookingType.Vacation}
         onChange={(e) => setHours(Number(e.target.value))}
         onFocus={() => setIsDisabledHotkeys(true)}
         onBlur={() => updateHours()}
