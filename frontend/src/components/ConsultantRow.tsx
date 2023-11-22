@@ -17,8 +17,11 @@ import {
   Sun,
 } from "react-feather";
 import InfoPill, { InfoPillVariant } from "./InfoPill";
+import { Dialog } from "@headlessui/react";
+import { createPortal } from "react-dom";
 import { useModal } from "@/hooks/useModal";
 import BaseModal from "./BaseModal";
+import Example from "@/components/TmpCombobox";
 
 export default function ConsultantRows({
   consultant,
@@ -30,8 +33,6 @@ export default function ConsultantRows({
   const [hoveredRowWeek, setHoveredRowWeek] = useState(-1);
 
   const columnCount = consultant.bookings.length ?? 0;
-
-  const { openModal, modalRef } = useModal({ closeOnBackdropClick: true });
 
   function toggleListElementVisibility() {
     setIsListElementVisible(!isListElementVisible);
@@ -102,27 +103,33 @@ export default function ConsultantRows({
         ))}
       {isListElementVisible && (
         <tr>
-          <td className={`${"border-l-secondary border-l-2"}`}></td>
-          <td>
-            <div className="flex flex-row items-center gap-2">
-              <button
-                className="w-8 h-8 flex justify-center items-center rounded bg-primary/0 hover:bg-primary/10"
-                onClick={openModal}
-              >
-                <Plus size={16} className="text-primary" />
-              </button>
-              <BaseModal
-                modalRef={modalRef}
-                onClose={() => console.log("onClose")}
-              >
-                <h1>Modal Title</h1>
-                <div>Text content ...</div>
-              </BaseModal>
-              <p className="small text-primary">Legg til bemanning</p>
-            </div>
-          </td>
+          <AddStaffingCell />
         </tr>
       )}
+    </>
+  );
+}
+
+function AddStaffingCell(): ReactElement {
+  const [isOpen, setIsOpen] = useState(false);
+  const { openModal, modalRef } = useModal({ closeOnBackdropClick: true });
+
+  return (
+    <>
+      <BaseModal modalRef={modalRef}>
+        <h1>Legg til bemanning</h1>
+        <Example />
+      </BaseModal>
+
+      <td className={`${"border-l-secondary border-l-2"}`}></td>
+      <td>
+        <div className="flex flex-row items-center gap-2" onClick={openModal}>
+          <button className="w-8 h-8 flex justify-center items-center rounded bg-primary/0 hover:bg-primary/10">
+            <Plus size={16} className="text-primary" />
+          </button>
+          <p className="small text-primary">Legg til bemanning</p>
+        </div>
+      </td>
     </>
   );
 }

@@ -19,7 +19,7 @@ function BaseModal(props: BaseModalProps) {
   }
 
   return (
-    <dialog ref={modalRef}>
+    <dialog ref={modalRef} className="rounded-lg bg-white p-3 shadow-xl">
       {children}
       <button onClick={handleClose}>Close</button>
     </dialog>

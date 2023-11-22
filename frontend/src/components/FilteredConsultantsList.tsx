@@ -6,6 +6,7 @@ import { isCurrentWeek } from "@/hooks/staffing/dateTools";
 import { useConsultantsFilter } from "@/hooks/staffing/useConsultantsFilter";
 import { useUrlRouteFilter } from "@/hooks/staffing/useUrlRouteFilter";
 import StaffingSums from "./StaffingSums";
+import React from "react";
 
 export default function FilteredConsultantList() {
   const {
