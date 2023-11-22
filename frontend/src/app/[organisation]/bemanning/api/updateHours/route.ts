@@ -14,7 +14,7 @@ export async function PUT(
 
   const staffing = //Skriv put/post with token
     (await postWithToken(
-      `${orgUrlKey}/consultants/staffing/${staffingID}?Hours=${hours}&Type${bookingType}`,
+      `${orgUrlKey}/consultants/staffing/${staffingID}?Hours=${hours}&Type=${bookingType}`,
     )) ?? [];
 
   return NextResponse.json(staffing);

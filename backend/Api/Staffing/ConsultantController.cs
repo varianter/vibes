@@ -46,12 +46,12 @@ public class ConsultantController : ControllerBase
     public ActionResult<List<ConsultantReadModel>>Put(
             [FromRoute] string orgUrlKey,
             [FromRoute] int staffingId,
-            [FromQuery(Name = "BookingType")] BookingType bookingType = BookingType.Booking,
+            [FromQuery(Name = "Type")] BookingType? bookingType = BookingType.Booking,
             [FromQuery(Name = "Hours")] double hours = 0
         )
     {
         var service = new StorageService(_cache, _context);
-        Console.Write(bookingType);
+
         if (bookingType == BookingType.Booking || bookingType == BookingType.Offer)
         {
            service.UpdateStaffing(staffingId, hours);
@@ -61,6 +61,7 @@ public class ConsultantController : ControllerBase
         {
             service.UpdateAbsence(staffingId, hours);
         }
+        
         return Ok(hours);
     }
 }

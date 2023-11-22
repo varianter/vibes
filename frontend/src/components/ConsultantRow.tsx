@@ -446,7 +446,7 @@ async function setDetailedBookingHours(
 
   try {
     const data = await fetch(
-      `/${organisationName}/bemanning/api/updateHours?staffingID=${bookingId}&hours=${hours}&BookingType=${bookingType}`,
+      `/${organisationName}/bemanning/api/updateHours?staffingID=${bookingId}&hours=${hours}&bookingType=${bookingType}`,
       {
         method: "put",
       },
