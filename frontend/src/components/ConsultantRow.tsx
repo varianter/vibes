@@ -18,7 +18,7 @@ import {
 } from "react-feather";
 import InfoPill, { InfoPillVariant } from "./InfoPill";
 import { useModal } from "@/hooks/useModal";
-import SmallModal from "./SmallModal";
+import EasyModal from "./EasyModal";
 
 export default function ConsultantRows({
   consultant,
@@ -111,14 +111,14 @@ export default function ConsultantRows({
               >
                 <Plus size={16} className="text-primary" />
               </button>
-              <SmallModal
+              <EasyModal
                 modalRef={modalRef}
                 onClose={() => console.log("onClose")}
                 title={"Nytt Engasjement"}
                 showCloseButton
               >
-                <div>Hello there hello there</div>
-              </SmallModal>
+                Content
+              </EasyModal>
               <p className="small text-primary">Legg til bemanning</p>
             </div>
           </td>
