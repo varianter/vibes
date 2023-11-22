@@ -113,11 +113,11 @@ export default function ConsultantRows({
               </button>
               <EasyModal
                 modalRef={modalRef}
-                onClose={() => console.log("onClose")}
                 title={"Nytt Engasjement"}
+                onClose={() => console.log("onClose")}
                 showCloseButton
               >
-                Content
+                <div className="h-[300px]"></div>
               </EasyModal>
               <p className="small text-primary">Legg til bemanning</p>
             </div>
