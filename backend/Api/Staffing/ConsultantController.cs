@@ -4,6 +4,7 @@ using Database.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using NuGet.Protocol;
 
 namespace Api.Staffing;
 
@@ -36,6 +37,40 @@ public class ConsultantController : ControllerBase
         var weekSet = selectedWeek.GetNextWeeks(numberOfWeeks);
 
         var service = new StorageService(_cache, _context);
+        var readModels = new ReadModelFactory(service).GetConsultantReadModelsForWeeks(orgUrlKey, weekSet);
+        return Ok(readModels);
+    }
+    
+    [HttpPut]
+    [Route("staffing/{staffingId}")]
+    public ActionResult<List<ConsultantReadModel>>Put(
+            [FromRoute] string orgUrlKey,
+            [FromRoute] int staffingId,
+            [FromQuery(Name = "Year")] int? selectedYearParam = null, //change to selected week
+            [FromQuery(Name = "Week")] int? selectedWeekParam = null,
+            [FromQuery(Name = "BookingType")] string bookingType = "",
+            [FromQuery(Name = "Hours")] double hours = 0,
+            [FromQuery(Name = "WeekSpan")] int numberOfWeeks = 8
+       
+        )
+    {
+        var service = new StorageService(_cache, _context);
+        Console.Write(bookingType);
+        /*if (bookingType == BookingType.Booking || bookingType == BookingType.Offer)
+        {
+           service.UpdateStaffing(staffingId, hours);
+        }
+
+        if (bookingType == BookingType.PlannedAbsence)
+        {
+            service.UpdateAbsence(staffingId, hours);
+        }*/
+        var selectedWeek = selectedYearParam is null || selectedWeekParam is null
+            ? Week.FromDateTime(DateTime.Now)
+            : new Week((int)selectedYearParam, (int)selectedWeekParam);
+
+        var weekSet = selectedWeek.GetNextWeeks(numberOfWeeks);
+        
         var readModels = new ReadModelFactory(service).GetConsultantReadModelsForWeeks(orgUrlKey, weekSet);
         return Ok(readModels);
     }

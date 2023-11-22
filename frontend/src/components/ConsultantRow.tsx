@@ -19,6 +19,8 @@ import {
 } from "react-feather";
 import InfoPill, { InfoPillVariant } from "./InfoPill";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
+import { usePathname } from "next/navigation";
+import { useUrlRouteFilter } from "@/hooks/staffing/useUrlRouteFilter";
 
 export default function ConsultantRows({
   consultant,
@@ -434,10 +436,29 @@ function DetailedBookingRows(props: {
 }
 
 async function setDetailedBookingHours(
-  hours: number,
   bookingId: number,
+  hours: number,
   bookingType: string,
-) {}
+  organisationName: string,
+  week: number,
+  weekSpan: number,
+  setConsultants: React.Dispatch<React.SetStateAction<Consultant[]>>,
+) {
+  if (bookingId == 0) return; //change to create staffing with hours
+
+  try {
+    const data = await fetch(
+      `/${organisationName}/bemanning/api/updateHours?staffingID=${bookingId}&hours=${hours}&BookingType=${bookingType}&selectedWeek=${week}&weekSpan=${weekSpan}`,
+      {
+        method: "put",
+      },
+    );
+    const res = await data.json();
+    setConsultants(res);
+  } catch (e) {
+    console.error("Error updating staffing", e);
+  }
+}
 
 function DetailedBookingCell({
   detailedBooking,
@@ -447,14 +468,21 @@ function DetailedBookingCell({
   detailedBookingHours: WeeklyHours;
 }) {
   const [hours, setHours] = useState(detailedBookingHours.hours);
-  const { setIsDisabledHotkeys } = useContext(FilteredContext);
+  const { setConsultants, setIsDisabledHotkeys } = useContext(FilteredContext);
+
+  const organisationName = usePathname().split("/")[1];
+  const { weekSpan } = useUrlRouteFilter();
 
   function updateHours() {
     setIsDisabledHotkeys(false);
     setDetailedBookingHours(
-      hours,
       detailedBookingHours.id,
+      hours,
       detailedBooking.bookingDetails.type,
+      organisationName,
+      detailedBookingHours.week,
+      weekSpan,
+      setConsultants,
     );
   }
 
