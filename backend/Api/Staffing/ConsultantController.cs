@@ -4,7 +4,6 @@ using Database.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using NuGet.Protocol;
 
 namespace Api.Staffing;
 
