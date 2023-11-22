@@ -19,8 +19,8 @@ import {
 } from "react-feather";
 import InfoPill, { InfoPillVariant } from "./InfoPill";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
-import { usePathname } from "next/navigation";
-import { useUrlRouteFilter } from "@/hooks/staffing/useUrlRouteFilter";
+import { usePathname, useRouter } from "next/navigation";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 export default function ConsultantRows({
   consultant,
@@ -440,7 +440,7 @@ async function setDetailedBookingHours(
   hours: number,
   bookingType: string,
   organisationName: string,
-  updateRoute: (updateParams: {}) => void,
+  router: AppRouterInstance,
 ) {
   if (bookingId == 0) return; //change to create staffing with hours
 
@@ -452,7 +452,7 @@ async function setDetailedBookingHours(
       },
     );
     const res = await data.json();
-    updateRoute({});
+    router.refresh();
   } catch (e) {
     console.error("Error updating staffing", e);
   }
@@ -467,7 +467,7 @@ function DetailedBookingCell({
 }) {
   const [hours, setHours] = useState(detailedBookingHours.hours);
   const { setIsDisabledHotkeys } = useContext(FilteredContext);
-  const { updateRoute } = useUrlRouteFilter();
+  const router = useRouter();
 
   const organisationName = usePathname().split("/")[1];
 
@@ -478,7 +478,7 @@ function DetailedBookingCell({
       hours,
       detailedBooking.bookingDetails.type,
       organisationName,
-      updateRoute,
+      router,
     );
   }
 
