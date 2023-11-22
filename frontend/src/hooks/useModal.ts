@@ -1,7 +1,9 @@
 import { useEffect, useRef } from "react";
 import { isClickOutsideElement } from "./useOutsideClick";
 
-export function useModal({ closeOnBackdropClick = true }) {
+export function useModal(options?: { closeOnBackdropClick?: boolean }) {
+  const { closeOnBackdropClick = true } = options || {};
+
   const modalRef = useRef<HTMLDialogElement>(null);
   const modal = modalRef.current;
   const modalNode = modal !== null;
@@ -18,6 +20,7 @@ export function useModal({ closeOnBackdropClick = true }) {
         modal?.close();
       }
     }
+
     if (modal && closeOnBackdropClick) {
       modal.addEventListener("click", handleBackDropClick);
 

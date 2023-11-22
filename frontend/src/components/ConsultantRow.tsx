@@ -31,7 +31,7 @@ export default function ConsultantRows({
 
   const columnCount = consultant.bookings.length ?? 0;
 
-  const { openModal, modalRef } = useModal({ closeOnBackdropClick: true });
+  const { openModal, modalRef } = useModal();
 
   function toggleListElementVisibility() {
     setIsListElementVisible(!isListElementVisible);
