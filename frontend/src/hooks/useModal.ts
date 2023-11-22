@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 import { isClickOutsideElement } from "./useOutsideClick";
 
-export function useModal(options?: { closeOnBackdropClick?: boolean }) {
-  const { closeOnBackdropClick = true } = options || {};
+export function useModal(options?: { closeOnBackdropClick?: true }) {
+  const { closeOnBackdropClick } = options || {};
 
   const modalRef = useRef<HTMLDialogElement>(null);
   const modal = modalRef.current;
