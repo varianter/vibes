@@ -39,11 +39,12 @@ export default function ActionButton({
   const disabledClass = disabled ? "bg-opacity-50" : "";
   const widthClass = fullWidth ? "w-full" : "";
 
-  const smallClass = isIconBtn ? "p-2" : "px-3 py-2";
+  const paddingClass = isIconBtn ? "p-2" : "px-3 py-2";
+  const roundedBorders = small ? "rounded" : "rounded-lg";
 
   return (
     <BaseButton
-      className={`${variantClass} ${disabledClass} ${widthClass} ${smallClass} ${className}`}
+      className={`${variantClass} ${disabledClass} ${widthClass} ${paddingClass} ${roundedBorders} ${className} `}
       onClick={onClick}
     >
       <IconBox small={small}>{iconLeft}</IconBox>
