@@ -32,26 +32,17 @@ function EasyModal(props: EasyModalProps) {
 
   return (
     <BaseModal modalRef={modalRef}>
-      <div className="w-[299px] md:inset-0 h-[calc(100%-1rem)] max-h-full relative max-w-2xl">
-        <div className="w-full h-10 justify-between items-center inline-flex">
-          <div className="p-2 text-zinc-800 text-xl font-normal leading-normal">
+      <div className="w-[332px] flex flex-col gap-8">
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-row justify-between items-center">
             <h2>{title}</h2>
+            {showCloseButton && <RightCloseButton onClick={handleClose} />}
           </div>
-          {showCloseButton && (
-            <div className="p-2 rounded-lg justify-center items-center gap-2 flex">
-              <RightCloseButton onClick={handleClose} />
-            </div>
-          )}
+          {children}
         </div>
-
-        <div className="p-2 md:p-5 space-y-4 z-10">{children}</div>
-
-        <div className="p-2 md:p-5 space-y-4 z-10">
-          <PrimaryButton onClick={handleSave} fullWidth>
-            <Check className="text-white" size={24} />
-            <span className="text-white text-sm">Lagre</span>
-          </PrimaryButton>
-        </div>
+        <PrimaryButton onClick={handleSave} fullWidth>
+          <span className="text-white normal-semibold">Legg til</span>
+        </PrimaryButton>
       </div>
     </BaseModal>
   );
