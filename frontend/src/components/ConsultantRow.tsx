@@ -22,6 +22,7 @@ import { createPortal } from "react-dom";
 import { useModal } from "@/hooks/useModal";
 import BaseModal from "./BaseModal";
 import Example from "@/components/TmpCombobox";
+import TmpReactSelect from "./TmpReactSelect";
 
 export default function ConsultantRows({
   consultant,
@@ -116,13 +117,14 @@ function AddStaffingCell(): ReactElement {
 
   return (
     <>
-      <BaseModal modalRef={modalRef}>
-        <h1>Legg til bemanning</h1>
-        <Example />
-      </BaseModal>
-
       <td className={`${"border-l-secondary border-l-2"}`}></td>
       <td>
+        <BaseModal modalRef={modalRef}>
+          <div className="min-h-[400px]">
+            <h1>Legg til bemanning</h1>
+            <TmpReactSelect />
+          </div>
+        </BaseModal>
         <div className="flex flex-row items-center gap-2" onClick={openModal}>
           <button className="w-8 h-8 flex justify-center items-center rounded bg-primary/0 hover:bg-primary/10">
             <Plus size={16} className="text-primary" />
