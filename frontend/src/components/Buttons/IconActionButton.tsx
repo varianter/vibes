@@ -1,5 +1,6 @@
 import React from "react";
-import ActionButton, { ActionButtonProps, IconBox } from "./ActionButton";
+import ActionButton, { ActionButtonProps } from "./ActionButton";
+import { IconBox } from "./IconBox";
 
 type IconActionButtonProps = ActionButtonProps & {
   icon: React.ReactNode;
