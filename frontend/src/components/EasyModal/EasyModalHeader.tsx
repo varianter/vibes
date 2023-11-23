@@ -1,6 +1,6 @@
 import RightCloseButton from "../RightCloseButton";
 
-export function EasyModalHeaader({
+export function EasyModalHeader({
   showCloseButton,
   title,
   handleClose,

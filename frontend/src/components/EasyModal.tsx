@@ -3,7 +3,7 @@
 import { RefObject } from "react";
 import BaseModal from "./BaseModal";
 import { Check, X, XCircle } from "react-feather";
-import { EasyModalHeaader } from "./EasyModal/EasyModalHeader";
+import { EasyModalHeader } from "./EasyModal/EasyModalHeader";
 import { EasyModalContent } from "./EasyModal/EasyModalContent";
 import ActionButton from "./Buttons/ActionButton";
 
@@ -34,7 +34,7 @@ function EasyModal(props: EasyModalProps) {
   return (
     <BaseModal modalRef={modalRef}>
       <div className="w-[299px] md:inset-0 h-[calc(100%-1rem)] max-h-full relative max-w-2xl">
-        <EasyModalHeaader
+        <EasyModalHeader
           title={title}
           handleClose={handleClose}
           showCloseButton={showCloseButton}
