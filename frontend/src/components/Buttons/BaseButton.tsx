@@ -9,16 +9,16 @@ export default function BaseButton({
 }: {
   onClick?: () => void;
   disabled?: true;
-  small?: true;
+  small?: boolean;
   className: string;
   children: React.ReactNode;
 }) {
-  const smallClass = ` ${small ? "h-8 p-2" : "h-10 px-3 py-2"} `;
+  const smallClass = small ? "p-2" : "px-3 py-2";
 
   return (
     <button
       disabled={disabled}
-      className={`normal-semibold rounded-lg inline-flex items-center justify-center gap-2 ${className} ${smallClass}`}
+      className={`normal-semibold rounded-lg inline-flex items-center justify-center gap-2 ${smallClass} ${className}`}
       onClick={onClick}
     >
       {children}

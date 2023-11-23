@@ -5,11 +5,12 @@ export type ActionButtonProps = {
   variant: "primary" | "secondary" | "terniary";
   iconLeft?: React.ReactNode;
   iconRight?: React.ReactNode;
-  small?: true;
+  small?: boolean;
   fullWidth?: true;
   onClick?: () => void;
   disabled?: true;
   children?: React.ReactNode;
+  className?: string;
 };
 
 export default function ActionButton({
@@ -21,6 +22,7 @@ export default function ActionButton({
   disabled,
   onClick,
   children,
+  className = "",
 }: ActionButtonProps) {
   const variantClass =
     {
@@ -37,13 +39,31 @@ export default function ActionButton({
 
   return (
     <BaseButton
-      className={`${variantClass} + ${disabledClass} + ${widthClass}`}
+      className={`${variantClass} ${disabledClass} ${widthClass} ${className}`}
       small={small}
       onClick={onClick}
     >
-      {iconLeft}
+      <IconBox small={small}>{iconLeft}</IconBox>
       {children}
-      {iconRight}
+      <IconBox small={small}>{iconRight}</IconBox>
     </BaseButton>
+  );
+}
+
+export function IconBox({
+  children,
+  small,
+}: {
+  children: React.ReactNode;
+  small?: boolean;
+}) {
+  const size = small ? "h-4 w-4" : "h-6 w-6";
+
+  if (!children) {
+    return null;
+  }
+
+  return (
+    <div className={`flex items-center justify-center ${size}`}>{children}</div>
   );
 }

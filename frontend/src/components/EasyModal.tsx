@@ -2,9 +2,8 @@
 
 import { RefObject } from "react";
 import BaseModal from "./BaseModal";
-import { Check, X, XCircle } from "react-feather";
+import { AlertOctagon, Check, Plus, X } from "react-feather";
 import { EasyModalHeader } from "./EasyModal/EasyModalHeader";
-import { EasyModalContent } from "./EasyModal/EasyModalContent";
 import ActionButton from "./Buttons/ActionButton";
 import IconActionButton from "./Buttons/IconActionButton";
 
@@ -45,6 +44,12 @@ function EasyModal(props: EasyModalProps) {
 
         <div className="space-y-4">
           <IconActionButton
+            variant="secondary"
+            onClick={handleSave}
+            small
+            icon={<Plus />}
+          />
+          <IconActionButton
             variant="primary"
             onClick={handleSave}
             icon={<Check />}
@@ -52,23 +57,28 @@ function EasyModal(props: EasyModalProps) {
           <ActionButton
             variant="primary"
             onClick={handleSave}
-            fullWidth
-            iconLeft={<Check size={24} />}
+            iconLeft={<Plus />}
           >
-            Lagre
+            Button
+          </ActionButton>
+          <ActionButton
+            variant="primary"
+            onClick={handleSave}
+            iconLeft={<Plus />}
+            iconRight={<Plus />}
+          >
+            Button
           </ActionButton>
           <ActionButton
             variant="secondary"
             onClick={handleSave}
-            fullWidth
-            iconRight={<XCircle />}
+            iconRight={<AlertOctagon />}
           >
             Cancel
           </ActionButton>
           <ActionButton
             variant="terniary"
             onClick={handleSave}
-            fullWidth
             small
             iconRight={<X />}
           >
