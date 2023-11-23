@@ -1,17 +1,18 @@
 "use client";
 
 import { RefObject } from "react";
-import RightCloseButton from "./RightCloseButton";
 import BaseModal from "./BaseModal";
-import PrimaryButton from "./PrimaryButton";
-import { Check } from "react-feather";
+import { Check, X, XCircle } from "react-feather";
+import { EasyModalHeaader } from "./EasyModal/EasyModalHeader";
+import { EasyModalContent } from "./EasyModal/EasyModalContent";
+import ActionButton from "./Buttons/ActionButton";
 
 export interface EasyModalProps {
   children: React.ReactNode;
   onClose?: () => void;
   onSave?: () => void;
   modalRef: RefObject<HTMLDialogElement>;
-  showCloseButton?: boolean;
+  showCloseButton?: true;
   title: string;
 }
 
@@ -32,17 +33,42 @@ function EasyModal(props: EasyModalProps) {
 
   return (
     <BaseModal modalRef={modalRef}>
-      <div className="w-[332px] flex flex-col gap-8">
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-row justify-between items-center">
-            <h2>{title}</h2>
-            {showCloseButton && <RightCloseButton onClick={handleClose} />}
-          </div>
-          {children}
-        </div>
-        <PrimaryButton onClick={handleSave} fullWidth>
-          <span className="text-white normal-semibold">Legg til</span>
-        </PrimaryButton>
+      <div className="w-[299px] md:inset-0 h-[calc(100%-1rem)] max-h-full relative max-w-2xl">
+        <EasyModalHeaader
+          title={title}
+          handleClose={handleClose}
+          showCloseButton={showCloseButton}
+        />
+
+        <EasyModalContent>{children}</EasyModalContent>
+
+        <EasyModalContent>
+          <ActionButton
+            variant="primary"
+            onClick={handleSave}
+            fullWidth
+            iconLeft={<Check size={24} />}
+          >
+            Lagre
+          </ActionButton>
+          <ActionButton
+            variant="secondary"
+            onClick={handleSave}
+            fullWidth
+            iconRight={<XCircle />}
+          >
+            Cancel
+          </ActionButton>
+          <ActionButton
+            variant="terniary"
+            onClick={handleSave}
+            fullWidth
+            small
+            iconRight={<X />}
+          >
+            Exit
+          </ActionButton>
+        </EasyModalContent>
       </div>
     </BaseModal>
   );
