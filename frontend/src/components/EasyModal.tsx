@@ -72,17 +72,37 @@ function EasyModal(props: EasyModalProps) {
           <ActionButton
             variant="secondary"
             onClick={handleSave}
-            iconRight={<AlertOctagon />}
+            iconLeft={<Plus />}
+            iconRight={<Plus />}
           >
-            Cancel
+            Button
+          </ActionButton>
+          <ActionButton
+            variant="secondary"
+            onClick={handleSave}
+            iconLeft={<Plus />}
+            iconRight={<Plus />}
+            small
+          >
+            Button
           </ActionButton>
           <ActionButton
             variant="terniary"
             onClick={handleSave}
             small
-            iconRight={<X />}
+            iconRight={<Plus />}
+            iconLeft={<Plus />}
           >
-            Exit
+            Button
+          </ActionButton>
+          <ActionButton
+            variant="primary"
+            onClick={handleSave}
+            small
+            iconRight={<Plus />}
+            iconLeft={<Plus />}
+          >
+            Button
           </ActionButton>
         </div>
       </div>

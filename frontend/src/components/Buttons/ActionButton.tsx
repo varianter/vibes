@@ -11,6 +11,7 @@ export type ActionButtonProps = {
   disabled?: true;
   children?: React.ReactNode;
   className?: string;
+  isIconBtn?: true;
 };
 
 export default function ActionButton({
@@ -23,6 +24,7 @@ export default function ActionButton({
   onClick,
   children,
   className = "",
+  isIconBtn,
 }: ActionButtonProps) {
   const variantClass =
     {
@@ -37,10 +39,11 @@ export default function ActionButton({
   const disabledClass = disabled ? "bg-opacity-50" : "";
   const widthClass = fullWidth ? "w-full" : "";
 
+  const smallClass = isIconBtn ? "p-2" : "px-3 py-2";
+
   return (
     <BaseButton
-      className={`${variantClass} ${disabledClass} ${widthClass} ${className}`}
-      small={small}
+      className={`${variantClass} ${disabledClass} ${widthClass} ${smallClass} ${className}`}
       onClick={onClick}
     >
       <IconBox small={small}>{iconLeft}</IconBox>

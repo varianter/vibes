@@ -13,12 +13,10 @@ export default function BaseButton({
   className: string;
   children: React.ReactNode;
 }) {
-  const smallClass = small ? "p-2" : "px-3 py-2";
-
   return (
     <button
       disabled={disabled}
-      className={`normal-semibold rounded-lg inline-flex items-center justify-center gap-2 ${smallClass} ${className}`}
+      className={`normal-semibold rounded-lg inline-flex items-center justify-center gap-2 ${className}`}
       onClick={onClick}
     >
       {children}

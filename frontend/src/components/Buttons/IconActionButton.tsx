@@ -8,7 +8,7 @@ type IconActionButtonProps = ActionButtonProps & {
 
 export default function IconActionButton(props: IconActionButtonProps) {
   return (
-    <ActionButton {...props} small={props.small}>
+    <ActionButton {...props} isIconBtn>
       <IconBox small={props.small}>{props.icon}</IconBox>
     </ActionButton>
   );

@@ -1,14 +1,10 @@
 import React from "react";
 import { X } from "react-feather";
+import IconActionButton from "./Buttons/IconActionButton";
 
 export function RightCloseButton({ onClick }: { onClick: () => void }) {
   return (
-    <button
-      className="p-2 flex justify-center items-center rounded-lg hover:bg-primary/5 "
-      onClick={onClick}
-    >
-      <X className="h-6 w-6 text-primary" />
-    </button>
+    <IconActionButton onClick={onClick} variant={"terniary"} icon={<X />} />
   );
 }
 
