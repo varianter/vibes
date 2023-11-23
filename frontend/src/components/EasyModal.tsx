@@ -42,7 +42,7 @@ function EasyModal(props: EasyModalProps) {
 
         <div className="space-y-2">{children}</div>
 
-        <div className="space-y-2">
+        <div className="space-y-2 space-x-2">
           <ActionButton variant="primary" onClick={handleSave}>
             Button
           </ActionButton>
