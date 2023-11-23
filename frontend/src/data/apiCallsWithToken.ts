@@ -10,9 +10,10 @@ import {
 
 type HttpMethod = "GET" | "PUT" | "POST";
 
-export async function callApi<T>(
+export async function callApi<T, Body>(
   path: string,
   method: HttpMethod,
+  bodyInit?: Body,
 ): Promise<T | undefined> {
   if (process.env.NEXT_PUBLIC_NO_AUTH) {
     return mockedCall<T>(path);
@@ -29,10 +30,21 @@ export async function callApi<T>(
 
   headers.append("Authorization", bearer);
 
-  const options = {
-    method: method,
-    headers: headers,
-  };
+  let options;
+
+  if (bodyInit) {
+    headers.append("Content-Type", "application/json");
+    options = {
+      method: method,
+      headers: headers,
+      body: JSON.stringify(bodyInit),
+    };
+  } else {
+    options = {
+      method: method,
+      headers: headers,
+    };
+  }
 
   const completeUrl = `${apiBackendUrl}/${path}`;
 
@@ -46,16 +58,24 @@ export async function callApi<T>(
   }
 }
 
-export async function fetchWithToken<T>(path: string): Promise<T | undefined> {
-  return callApi<T>(path, "GET");
+export async function fetchWithToken<ReturnType, BodyType>(
+  path: string,
+): Promise<ReturnType | undefined> {
+  return callApi<ReturnType, BodyType>(path, "GET");
 }
 
-export async function putWithToken<T>(path: string): Promise<T | undefined> {
-  return callApi<T>(path, "PUT");
+export async function putWithToken<ReturnType, BodyType>(
+  path: string,
+  body?: BodyType,
+): Promise<ReturnType | undefined> {
+  return callApi<ReturnType, BodyType>(path, "PUT", body);
 }
 
-export async function postWithToken<T>(path: string): Promise<T | undefined> {
-  return callApi<T>(path, "POST");
+export async function postWithToken<ReturnType, BodyType>(
+  path: string,
+  body?: BodyType,
+): Promise<ReturnType | undefined> {
+  return callApi<ReturnType, BodyType>(path, "POST", body);
 }
 
 function mockedCall<T>(path: string): Promise<T> {

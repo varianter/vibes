@@ -19,7 +19,7 @@ export default async function Bemanning({
   const weekSpan = searchParams.weekSpan || undefined;
 
   const consultants =
-    (await fetchWithToken<Consultant[]>(
+    (await fetchWithToken<Consultant[], undefined>(
       `${params.organisation}/consultants${
         selectedWeek
           ? `?Year=${selectedWeek.year}&Week=${selectedWeek.weekNumber}`
@@ -28,7 +28,7 @@ export default async function Bemanning({
     )) ?? [];
 
   const departments =
-    (await fetchWithToken<Department[]>(
+    (await fetchWithToken<Department[], undefined>(
       `organisations/${params.organisation}/departments`,
     )) ?? [];
 

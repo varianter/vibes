@@ -56,7 +56,7 @@ public record BookingReadModel(string Name, double Hours, BookingType Type);
 
 public record BookingDetails(string ProjectName, BookingType Type, string CustomerName, int ProjectId);
 
-public record WeeklyHours(int Id, int Week, double Hours);
+public record WeeklyHours(int Week, double Hours);
 
 public enum BookingType
 {

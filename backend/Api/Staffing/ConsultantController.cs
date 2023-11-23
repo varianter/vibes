@@ -1,3 +1,4 @@
+using System.Configuration;
 using Api.Common;
 using Core.DomainModels;
 using Database.DatabaseContext;
@@ -39,69 +40,51 @@ public class ConsultantController : ControllerBase
         var readModels = new ReadModelFactory(service).GetConsultantReadModelsForWeeks(orgUrlKey, weekSet);
         return Ok(readModels);
     }
-    
+
     [HttpPut]
-    [Route("staffing/{staffingId}")]
-    public ActionResult<List<ConsultantReadModel>>Put(
-            [FromRoute] string orgUrlKey,
-            [FromRoute] int staffingId,
-            [FromQuery(Name = "Type")] BookingType bookingType,
-            [FromQuery(Name = "Hours")] double hours = 0
-        )
-    {
-        var service = new StorageService(_cache, _context);
-
-        switch (bookingType)
-        {
-            case BookingType.Booking:
-            case BookingType.Offer:
-                service.UpdateStaffing(staffingId, hours);
-                break;
-            case BookingType.PlannedAbsence:
-                service.UpdateAbsence(staffingId, hours);
-                break;
-            case BookingType.Vacation:
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(bookingType), bookingType, "Invalid bookingType");
-        }
-
-        return Ok(hours);
-    }
-    
-    [HttpPost]
-    [Route("staffing/new")]
-    public ActionResult<List<ConsultantReadModel>>Post(
+    [Route("staffing/update")]
+    public ActionResult<List<ConsultantReadModel>> Put(
         [FromRoute] string orgUrlKey,
-        [FromQuery(Name = "Type")] BookingType bookingType,
-        [FromQuery(Name = "ConsultantID")] int consultantId,
-        [FromQuery(Name = "EngagementID")] int engagementId,
-        [FromQuery(Name = "Year")] int selectedYearParam,
-        [FromQuery(Name = "Week")] int selectedWeekParam,
-        [FromQuery(Name = "Hours")] double hours = 0
+        [FromBody] StaffingWriteModel staffingWriteModel
     )
     {
         var service = new StorageService(_cache, _context);
 
-        var newId = 0;
-        
-        var selectedWeek = new Week((int)selectedYearParam, (int)selectedWeekParam);
-
-        switch (bookingType)
+        if (!StaffingControllerValidator.validateStaffingWriteModel(staffingWriteModel, service, orgUrlKey))
         {
-            case BookingType.Booking:
-            case BookingType.Offer:
-                newId = service.CreateStaffing(consultantId, engagementId, hours, selectedWeek );
-                break;
-            case BookingType.PlannedAbsence:
-                newId = service.CreateAbsence(consultantId, engagementId, hours, selectedWeek );
-                break;
-            case BookingType.Vacation:
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(bookingType), bookingType, "Invalid bookingType");
+            return BadRequest();
         }
 
-        return Ok(newId);
+        try
+        {
+            var selectedWeek = new Week(staffingWriteModel.Year, staffingWriteModel.Week);
+
+            switch (staffingWriteModel.Type)
+            {
+                case BookingType.Booking:
+                case BookingType.Offer:
+                    service.UpdateOrCreateStaffing(new StaffingKey(staffingWriteModel.EngagementId, staffingWriteModel.ConsultantId, selectedWeek), staffingWriteModel.Hours, orgUrlKey);
+                    break;
+                case BookingType.PlannedAbsence:
+                    service.UpdateOrCreatePlannedAbsence(new PlannedAbsenceKey(staffingWriteModel.EngagementId, staffingWriteModel.ConsultantId, selectedWeek), staffingWriteModel.Hours, orgUrlKey);
+                    break;
+                case BookingType.Vacation:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(staffingWriteModel.Type), staffingWriteModel.Type, "Invalid bookingType");
+            }
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+
+
+        return Ok(0);
     }
+
 }
+public record StaffingWriteModel(BookingType Type, int ConsultantId, int EngagementId, int Year, int Week,
+   [property: LongValidator(MinValue = 0, MaxValue = 100)] double Hours);
