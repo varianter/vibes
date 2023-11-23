@@ -32,7 +32,7 @@ export default function ActionButton({
       primary:
         "bg-primary text-white hover:bg-primary_darker hover:border-primary_darker",
       secondary:
-        "bg-white text-primary border-primary/50 hover:bg-primary/10 hover:border-primary",
+        "bg-white text-primary border border-primary/50 hover:bg-primary/10 hover:border-primary",
       terniary:
         "bg-white text-primary hover:bg-primary/10 hover:border-primary",
     }[variant] ?? "Default";
