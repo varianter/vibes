@@ -1,4 +1,4 @@
-import { fetchWithToken } from "@/data/fetchWithToken";
+import { fetchWithToken } from "@/data/apiCallsWithToken";
 import { Department } from "@/types";
 import { NextResponse } from "next/server";
 

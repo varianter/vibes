@@ -1,4 +1,4 @@
-import { postWithToken } from "@/data/fetchWithToken";
+import { postWithToken } from "@/data/apiCallsWithToken";
 import { parseYearWeekFromString } from "@/data/urlUtils";
 import { NextResponse } from "next/server";
 

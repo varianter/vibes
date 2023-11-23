@@ -1,4 +1,4 @@
-import { putWithToken } from "@/data/fetchWithToken";
+import { putWithToken } from "@/data/apiCallsWithToken";
 import { NextResponse } from "next/server";
 
 export async function PUT(
