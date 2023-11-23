@@ -10,15 +10,9 @@ export function EasyModalHeader({
   showCloseButton?: true;
 }) {
   return (
-    <div className="w-full h-10 justify-between items-center inline-flex">
-      <div className="p-2 text-zinc-800 text-xl font-normal leading-normal">
-        <h2>{title}</h2>
-      </div>
-      {showCloseButton && (
-        <div className="p-2 rounded-lg justify-center items-center gap-2 flex">
-          <RightCloseButton onClick={handleClose} />
-        </div>
-      )}
+  <div className="flex flex-row justify-between items-center">
+      <h2>{title}</h2>
+      {showCloseButton && <RightCloseButton onClick={handleClose} />}
     </div>
   );
 }
