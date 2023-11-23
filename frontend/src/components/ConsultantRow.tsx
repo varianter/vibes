@@ -13,6 +13,7 @@ import {
   ChevronDown,
   Coffee,
   FileText,
+  Minus,
   Moon,
   Plus,
   Sun,
@@ -496,16 +497,18 @@ function DetailedBookingCell({
 }) {
   const [hours, setHours] = useState(detailedBookingHours.hours);
   const [cellId, setCellId] = useState(detailedBookingHours.id);
+  const [isChangingHours, setIsChangingHours] = useState(false);
   const { setIsDisabledHotkeys } = useContext(FilteredContext);
   const router = useRouter();
 
   const organisationName = usePathname().split("/")[1];
+  const numWeeks = detailedBooking.hours.length;
 
-  function updateHours() {
+  function updateHours(hourlyChange?: number) {
     setIsDisabledHotkeys(false);
     setDetailedBookingHours(
       cellId,
-      hours,
+      hours + (hourlyChange || 0),
       detailedBooking.bookingDetails.type,
       organisationName,
       router,
@@ -518,20 +521,48 @@ function DetailedBookingCell({
 
   return (
     <td className="h-8 p-0.5">
-      <input
-        type="number"
-        min="0"
-        step="7.5"
-        value={hours}
-        disabled={detailedBooking.bookingDetails.type == BookingType.Vacation}
-        onChange={(e) => setHours(Number(e.target.value))}
-        onFocus={() => setIsDisabledHotkeys(true)}
-        onBlur={() => updateHours()}
-        className={`small-medium rounded text-right w-full py-2 pr-2
-     ${getColorByStaffingType(
-       detailedBooking.bookingDetails.type ?? BookingType.Offer,
-     )} ${hours == 0 && "bg-opacity-30"}`}
-      ></input>
+      <div
+        className={`flex flex-row justify-center items-center rounded px-3 py-2 ${getColorByStaffingType(
+          detailedBooking.bookingDetails.type ?? BookingType.Offer,
+        )} ${hours == 0 && "bg-opacity-30"}`}
+      >
+        {isChangingHours && numWeeks <= 8 && (
+          <button
+            className="p-2 rounded-full hover:bg-primary/10 hidden lg:flex"
+            onClick={() => {
+              setHours(hours - 7.5), updateHours(-7.5);
+            }}
+          >
+            <Minus className="w-4 h-4" />
+          </button>
+        )}
+
+        <input
+          type="number"
+          min="0"
+          step="7.5"
+          value={hours}
+          disabled={detailedBooking.bookingDetails.type == BookingType.Vacation}
+          onChange={(e) => setHours(Number(e.target.value))}
+          onFocus={() => {
+            setIsDisabledHotkeys(true), setIsChangingHours(true);
+          }}
+          onBlur={() => updateHours()}
+          className={`small-medium rounded w-full py-2 bg-transparent focus:outline-none min-w-[24px] ${
+            isChangingHours && numWeeks <= 8 ? "text-center" : "text-right"
+          } `}
+        ></input>
+        {isChangingHours && numWeeks <= 8 && (
+          <button
+            className="p-2 rounded-full hover:bg-primary/10 hidden lg:flex"
+            onClick={() => {
+              setHours(hours + 7.5), updateHours(7.5);
+            }}
+          >
+            <Plus className="w-4 h-4" />
+          </button>
+        )}
+      </div>
     </td>
   );
 }
