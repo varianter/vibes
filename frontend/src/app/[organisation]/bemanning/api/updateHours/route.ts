@@ -1,5 +1,5 @@
 import { postWithToken } from "@/data/fetchWithToken";
-import { stringWODashToWeek } from "@/data/urlUtils";
+import { parseYearWeekFromString } from "@/data/urlUtils";
 import { NextResponse } from "next/server";
 
 export async function POST(
@@ -12,7 +12,7 @@ export async function POST(
   const engagementID = searchParams.get("engagementID") || "";
   const hours = searchParams.get("hours") || "";
   const bookingType = searchParams.get("bookingType") || "";
-  const selectedWeek = stringWODashToWeek(
+  const selectedWeek = parseYearWeekFromString(
     searchParams.get("selectedWeek") || undefined,
   );
 
