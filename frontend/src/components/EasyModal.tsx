@@ -2,7 +2,7 @@
 
 import { RefObject } from "react";
 import BaseModal from "./BaseModal";
-import { AlertOctagon, Check, Plus, X } from "react-feather";
+import { Check, Plus } from "react-feather";
 import { EasyModalHeader } from "./EasyModal/EasyModalHeader";
 import ActionButton from "./Buttons/ActionButton";
 import IconActionButton from "./Buttons/IconActionButton";
@@ -115,6 +115,33 @@ function EasyModal(props: EasyModalProps) {
             onClick={handleSave}
             small
             iconRight={<Plus />}
+            iconLeft={<Plus />}
+          >
+            Button
+          </ActionButton>
+          <ActionButton
+            variant="secondary"
+            onClick={handleSave}
+            iconLeft={<Plus />}
+            fullWidth
+            small
+          >
+            Button
+          </ActionButton>
+          <ActionButton
+            variant="terniary"
+            onClick={handleSave}
+            small
+            fullWidth
+            iconLeft={<Plus />}
+          >
+            Button
+          </ActionButton>
+          <ActionButton
+            variant="primary"
+            onClick={handleSave}
+            small
+            fullWidth
             iconLeft={<Plus />}
           >
             Button
