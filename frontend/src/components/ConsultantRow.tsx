@@ -535,7 +535,7 @@ function DetailedBookingCell({
         onFocus={() => setIsDisabledHotkeys(true)}
         onBlur={() => updateHours()}
         onDragStart={() => setDragValue(hours)}
-        onDragExitCapture={() => {
+        onDragEnterCapture={() => {
           updateHours(), setHours(dragValue ?? hours);
         }}
         onDragEnd={() => setDragValue(undefined)}
