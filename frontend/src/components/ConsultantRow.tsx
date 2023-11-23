@@ -406,7 +406,9 @@ function DetailedBookingRows(props: {
   detailedBooking: DetailedBooking;
 }) {
   const { consultant, detailedBooking } = props;
-  const [dragValue, setDragValue] = useState<number | undefined>(undefined);
+  const [hourDragValue, setHourDragValue] = useState<number | undefined>(
+    undefined,
+  );
 
   return (
     <tr
@@ -446,8 +448,8 @@ function DetailedBookingRows(props: {
             detailedBooking={detailedBooking}
             detailedBookingHours={hours}
             consultant={consultant}
-            dragValue={dragValue}
-            setDragValue={setDragValue}
+            hourDragValue={hourDragValue}
+            setHourDragValue={setHourDragValue}
           />
         ))}
     </tr>
@@ -491,14 +493,14 @@ function DetailedBookingCell({
   detailedBooking,
   detailedBookingHours,
   consultant,
-  dragValue,
-  setDragValue,
+  hourDragValue,
+  setHourDragValue,
 }: {
   detailedBooking: DetailedBooking;
   detailedBookingHours: WeeklyHours;
   consultant: Consultant;
-  dragValue: number | undefined;
-  setDragValue: React.Dispatch<React.SetStateAction<number | undefined>>;
+  hourDragValue: number | undefined;
+  setHourDragValue: React.Dispatch<React.SetStateAction<number | undefined>>;
 }) {
   const [hours, setHours] = useState(detailedBookingHours.hours);
   const [cellId, setCellId] = useState(detailedBookingHours.id);
@@ -511,7 +513,7 @@ function DetailedBookingCell({
     setIsDisabledHotkeys(false);
     setDetailedBookingHours(
       cellId,
-      dragValue ?? hours,
+      hourDragValue ?? hours,
       detailedBooking.bookingDetails.type,
       organisationName,
       router,
@@ -534,11 +536,11 @@ function DetailedBookingCell({
         onChange={(e) => setHours(Number(e.target.value))}
         onFocus={() => setIsDisabledHotkeys(true)}
         onBlur={() => updateHours()}
-        onDragStart={() => setDragValue(hours)}
+        onDragStart={() => setHourDragValue(hours)}
         onDragEnterCapture={() => {
-          updateHours(), setHours(dragValue ?? hours);
+          updateHours(), setHours(hourDragValue ?? hours);
         }}
-        onDragEnd={() => setDragValue(undefined)}
+        onDragEnd={() => setHourDragValue(undefined)}
         className={`small-medium rounded text-right w-full py-2 pr-2
      ${getColorByStaffingType(
        detailedBooking.bookingDetails.type ?? BookingType.Offer,
