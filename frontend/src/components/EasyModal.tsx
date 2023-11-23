@@ -1,17 +1,18 @@
 "use client";
 
 import { RefObject } from "react";
-import RightCloseButton from "./RightCloseButton";
 import BaseModal from "./BaseModal";
-import PrimaryButton from "./PrimaryButton";
-import { Check } from "react-feather";
+import { Check, X, XCircle } from "react-feather";
+import { EasyModalHeaader } from "./EasyModal/EasyModalHeader";
+import { EasyModalContent } from "./EasyModal/EasyModalContent";
+import ActionButton from "./Buttons/ActionButton";
 
 export interface EasyModalProps {
   children: React.ReactNode;
   onClose?: () => void;
   onSave?: () => void;
   modalRef: RefObject<HTMLDialogElement>;
-  showCloseButton?: boolean;
+  showCloseButton?: true;
   title: string;
 }
 
@@ -33,25 +34,41 @@ function EasyModal(props: EasyModalProps) {
   return (
     <BaseModal modalRef={modalRef}>
       <div className="w-[299px] md:inset-0 h-[calc(100%-1rem)] max-h-full relative max-w-2xl">
-        <div className="w-full h-10 justify-between items-center inline-flex">
-          <div className="p-2 text-zinc-800 text-xl font-normal leading-normal">
-            <h2>{title}</h2>
-          </div>
-          {showCloseButton && (
-            <div className="p-2 rounded-lg justify-center items-center gap-2 flex">
-              <RightCloseButton onClick={handleClose} />
-            </div>
-          )}
-        </div>
+        <EasyModalHeaader
+          title={title}
+          handleClose={handleClose}
+          showCloseButton={showCloseButton}
+        />
 
-        <div className="p-2 md:p-5 space-y-4 z-10">{children}</div>
+        <EasyModalContent>{children}</EasyModalContent>
 
-        <div className="p-2 md:p-5 space-y-4 z-10">
-          <PrimaryButton onClick={handleSave} fullWidth>
-            <Check className="text-white" size={24} />
-            <span className="text-white text-sm">Lagre</span>
-          </PrimaryButton>
-        </div>
+        <EasyModalContent>
+          <ActionButton
+            variant="primary"
+            onClick={handleSave}
+            fullWidth
+            iconLeft={<Check size={24} />}
+          >
+            Lagre
+          </ActionButton>
+          <ActionButton
+            variant="secondary"
+            onClick={handleSave}
+            fullWidth
+            iconRight={<XCircle />}
+          >
+            Cancel
+          </ActionButton>
+          <ActionButton
+            variant="terniary"
+            onClick={handleSave}
+            fullWidth
+            small
+            iconRight={<X />}
+          >
+            Exit
+          </ActionButton>
+        </EasyModalContent>
       </div>
     </BaseModal>
   );
