@@ -41,9 +41,9 @@ function EasyModal(props: EasyModalProps) {
           showCloseButton={showCloseButton}
         />
 
-        <EasyModalContent>{children}</EasyModalContent>
+        <div className="space-y-4">{children}</div>
 
-        <EasyModalContent>
+        <div className="space-y-4">
           <IconActionButton
             variant="primary"
             onClick={handleSave}
@@ -74,7 +74,7 @@ function EasyModal(props: EasyModalProps) {
           >
             Exit
           </ActionButton>
-        </EasyModalContent>
+        </div>
       </div>
     </BaseModal>
   );
