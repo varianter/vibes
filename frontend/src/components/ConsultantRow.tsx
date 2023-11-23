@@ -472,15 +472,15 @@ async function setDetailedBookingHours(
       method: bookingId === 0 ? "post" : "put",
     });
 
-      const res = await data.json();
+    const res = await data.json();
 
     if (bookingId === 0) {
       setCellId(res);
     }
 
-      router.refresh();
-    } catch (e) {
-      console.error("Error updating staffing", e);
+    router.refresh();
+  } catch (e) {
+    console.error("Error updating staffing", e);
   }
 }
 
