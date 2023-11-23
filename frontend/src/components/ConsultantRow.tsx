@@ -407,6 +407,9 @@ function DetailedBookingRows(props: {
   detailedBooking: DetailedBooking;
 }) {
   const { consultant, detailedBooking } = props;
+  const [hourDragValue, setHourDragValue] = useState<number | undefined>(
+    undefined,
+  );
 
   return (
     <tr
@@ -446,6 +449,8 @@ function DetailedBookingRows(props: {
             detailedBooking={detailedBooking}
             detailedBookingHours={hours}
             consultant={consultant}
+            hourDragValue={hourDragValue}
+            setHourDragValue={setHourDragValue}
           />
         ))}
     </tr>
@@ -489,10 +494,14 @@ function DetailedBookingCell({
   detailedBooking,
   detailedBookingHours,
   consultant,
+  hourDragValue,
+  setHourDragValue,
 }: {
   detailedBooking: DetailedBooking;
   detailedBookingHours: WeeklyHours;
   consultant: Consultant;
+  hourDragValue: number | undefined;
+  setHourDragValue: React.Dispatch<React.SetStateAction<number | undefined>>;
 }) {
   const [hours, setHours] = useState(detailedBookingHours.hours);
   const [cellId, setCellId] = useState(detailedBookingHours.id);
@@ -505,7 +514,7 @@ function DetailedBookingCell({
     setIsDisabledHotkeys(false);
     setDetailedBookingHours(
       cellId,
-      hours,
+      hourDragValue ?? hours,
       detailedBooking.bookingDetails.type,
       organisationName,
       router,
@@ -523,10 +532,16 @@ function DetailedBookingCell({
         min="0"
         step="7.5"
         value={hours}
+        draggable={true}
         disabled={detailedBooking.bookingDetails.type == BookingType.Vacation}
         onChange={(e) => setHours(Number(e.target.value))}
         onFocus={() => setIsDisabledHotkeys(true)}
         onBlur={() => updateHours()}
+        onDragStart={() => setHourDragValue(hours)}
+        onDragEnterCapture={() => {
+          updateHours(), setHours(hourDragValue ?? hours);
+        }}
+        onDragEnd={() => setHourDragValue(undefined)}
         className={`small-medium rounded text-right w-full py-2 pr-2
      ${getColorByStaffingType(
        detailedBooking.bookingDetails.type ?? BookingType.Offer,
