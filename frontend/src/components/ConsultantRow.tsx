@@ -462,33 +462,25 @@ async function setDetailedBookingHours(
   week: number,
   setCellId: (cellId: number) => void,
 ) {
-  if (bookingId == 0) {
-    try {
-      const data = await fetch(
-        `/${organisationName}/bemanning/api/updateHours?hours=${hours}&bookingType=${bookingType}&consultantID=${consultantId}&engagementID=${engagementId}&selectedWeek=${week}`,
-        {
-          method: "post",
-        },
-      );
+  const url =
+    bookingId === 0
+      ? `/${organisationName}/bemanning/api/updateHours?hours=${hours}&bookingType=${bookingType}&consultantID=${consultantId}&engagementID=${engagementId}&selectedWeek=${week}`
+      : `/${organisationName}/bemanning/api/updateHours/${bookingId}?hours=${hours}&bookingType=${bookingType}`;
+
+  try {
+    const data = await fetch(url, {
+      method: bookingId === 0 ? "post" : "put",
+    });
+
       const res = await data.json();
+
+    if (bookingId === 0) {
       setCellId(res);
+    }
+
       router.refresh();
     } catch (e) {
       console.error("Error updating staffing", e);
-    }
-  } else {
-    try {
-      const data = await fetch(
-        `/${organisationName}/bemanning/api/updateHours/${bookingId}?hours=${hours}&bookingType=${bookingType}`,
-        {
-          method: "put",
-        },
-      );
-      const res = await data.json();
-      router.refresh();
-    } catch (e) {
-      console.error("Error updating staffing", e);
-    }
   }
 }
 
