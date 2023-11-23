@@ -406,6 +406,7 @@ function DetailedBookingRows(props: {
   detailedBooking: DetailedBooking;
 }) {
   const { consultant, detailedBooking } = props;
+  const [dragValue, setDragValue] = useState<number | undefined>(undefined);
 
   return (
     <tr
@@ -445,6 +446,8 @@ function DetailedBookingRows(props: {
             detailedBooking={detailedBooking}
             detailedBookingHours={hours}
             consultant={consultant}
+            dragValue={dragValue}
+            setDragValue={setDragValue}
           />
         ))}
     </tr>
@@ -472,15 +475,15 @@ async function setDetailedBookingHours(
       method: bookingId === 0 ? "post" : "put",
     });
 
-      const res = await data.json();
+    const res = await data.json();
 
     if (bookingId === 0) {
       setCellId(res);
     }
 
-      router.refresh();
-    } catch (e) {
-      console.error("Error updating staffing", e);
+    router.refresh();
+  } catch (e) {
+    console.error("Error updating staffing", e);
   }
 }
 
@@ -488,10 +491,14 @@ function DetailedBookingCell({
   detailedBooking,
   detailedBookingHours,
   consultant,
+  dragValue,
+  setDragValue,
 }: {
   detailedBooking: DetailedBooking;
   detailedBookingHours: WeeklyHours;
   consultant: Consultant;
+  dragValue: number | undefined;
+  setDragValue: React.Dispatch<React.SetStateAction<number | undefined>>;
 }) {
   const [hours, setHours] = useState(detailedBookingHours.hours);
   const [cellId, setCellId] = useState(detailedBookingHours.id);
@@ -504,7 +511,7 @@ function DetailedBookingCell({
     setIsDisabledHotkeys(false);
     setDetailedBookingHours(
       cellId,
-      hours,
+      dragValue ?? hours,
       detailedBooking.bookingDetails.type,
       organisationName,
       router,
@@ -522,10 +529,16 @@ function DetailedBookingCell({
         min="0"
         step="7.5"
         value={hours}
+        draggable={true}
         disabled={detailedBooking.bookingDetails.type == BookingType.Vacation}
         onChange={(e) => setHours(Number(e.target.value))}
         onFocus={() => setIsDisabledHotkeys(true)}
         onBlur={() => updateHours()}
+        onDragStart={() => setDragValue(hours)}
+        onDragExitCapture={() => {
+          updateHours(), setHours(dragValue ?? hours);
+        }}
+        onDragEnd={() => setDragValue(undefined)}
         className={`small-medium rounded text-right w-full py-2 pr-2
      ${getColorByStaffingType(
        detailedBooking.bookingDetails.type ?? BookingType.Offer,
