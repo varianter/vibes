@@ -1,4 +1,4 @@
-import { stringToWeek, weekToString } from "@/data/urlUtils";
+import { parseYearWeekFromUrlString, weekToString } from "@/data/urlUtils";
 import { Week } from "@/types";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
@@ -22,7 +22,7 @@ export function useUrlRouteFilter() {
   const departmentFilter = searchParams.get("depFilter") || "";
   const yearFilter = searchParams.get("yearFilter") || "";
   const availabilityFilter = searchParams.get("availabilityFilter") || "";
-  const selectedWeek = stringToWeek(
+  const selectedWeek = parseYearWeekFromUrlString(
     searchParams.get("selectedWeek") || undefined,
   );
   const weekSpan = Number.parseInt(searchParams.get("weekSpan") ?? "8");

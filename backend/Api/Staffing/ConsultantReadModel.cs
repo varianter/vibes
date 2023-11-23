@@ -29,8 +29,8 @@ public record BookedHoursPerWeek(int Year, int WeekNumber, int SortableWeek, str
 
 public record DetailedBooking(BookingDetails BookingDetails, List<WeeklyHours> Hours)
 {
-    public DetailedBooking(string projectName, BookingType type, string customerName,  List<WeeklyHours> bookings) : this(
-        new BookingDetails(projectName, type, customerName), bookings)
+    public DetailedBooking(string projectName, BookingType type, string customerName, int projectId, List<WeeklyHours> bookings) : this(
+        new BookingDetails(projectName, type, customerName, projectId), bookings)
     {
     }
 
@@ -54,9 +54,9 @@ public record WeeklyBookingReadModel(double TotalBillable, double TotalOffered, 
 
 public record BookingReadModel(string Name, double Hours, BookingType Type);
 
-public record BookingDetails(string ProjectName, BookingType Type, string CustomerName);
+public record BookingDetails(string ProjectName, BookingType Type, string CustomerName, int ProjectId);
 
-public record WeeklyHours(int Week, double Hours);
+public record WeeklyHours(int Id, int Week, double Hours);
 
 public enum BookingType
 {

@@ -8,7 +8,12 @@ import {
   MockOrganisations,
 } from "../../mockdata/mockData";
 
-export async function fetchWithToken<T>(path: string): Promise<T | undefined> {
+type HttpMethod = "GET" | "PUT" | "POST";
+
+export async function callApi<T>(
+  path: string,
+  method: HttpMethod,
+): Promise<T | undefined> {
   if (process.env.NEXT_PUBLIC_NO_AUTH) {
     return mockedCall<T>(path);
   }
@@ -19,14 +24,13 @@ export async function fetchWithToken<T>(path: string): Promise<T | undefined> {
 
   const apiBackendUrl = process.env.BACKEND_URL ?? "http://localhost:7172/v0";
 
-  // @ts-ignore
   const headers = new Headers();
   const bearer = `Bearer ${session.access_token}`;
 
   headers.append("Authorization", bearer);
 
   const options = {
-    method: "GET",
+    method: method,
     headers: headers,
   };
 
@@ -40,6 +44,18 @@ export async function fetchWithToken<T>(path: string): Promise<T | undefined> {
     console.error(e);
     throw new Error(`${options.method} ${completeUrl} failed`);
   }
+}
+
+export async function fetchWithToken<T>(path: string): Promise<T | undefined> {
+  return callApi<T>(path, "GET");
+}
+
+export async function putWithToken<T>(path: string): Promise<T | undefined> {
+  return callApi<T>(path, "PUT");
+}
+
+export async function postWithToken<T>(path: string): Promise<T | undefined> {
+  return callApi<T>(path, "POST");
 }
 
 function mockedCall<T>(path: string): Promise<T> {

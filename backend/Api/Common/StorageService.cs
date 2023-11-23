@@ -19,15 +19,15 @@ public class StorageService
 
     public List<Consultant> LoadConsultants(string orgUrlKey)
     {
-        if (_cache.TryGetValue<List<Consultant>>(ConsultantCacheKey, out var consultants))
+        if (_cache.TryGetValue<List<Consultant>>($"{ConsultantCacheKey}/{orgUrlKey}", out var consultants))
             if (consultants != null)
                 return consultants;
 
         var loadedConsultants = LoadConsultantsFromDb(orgUrlKey);
-        _cache.Set(ConsultantCacheKey, loadedConsultants);
+        _cache.Set($"{ConsultantCacheKey}/{orgUrlKey}", loadedConsultants);
         return loadedConsultants;
     }
-
+    
     private List<Consultant> LoadConsultantsFromDb(string orgUrlKey)
     {
         var consultantList = _dbContext.Consultant
@@ -74,4 +74,103 @@ public class StorageService
 
         return hydratedConsultants;
     }
+
+    public void UpdateStaffing(int id, double hours)
+    {
+        var staffing = _dbContext.Staffing
+            .Include(s=>s.Project)
+            .ThenInclude(p=> p.Customer)
+            .ThenInclude(c=> c.Organization)
+            .Include(s=>s.Consultant)
+            .FirstOrDefault(staffing => staffing.Id == id);
+        if (staffing is null) return;
+        var orgUrlKey = staffing.Project.Customer.Organization.UrlKey;
+        staffing.Hours = hours;
+        _dbContext.SaveChanges();
+        var consultantId = staffing.Consultant.Id;
+        var consultants = LoadConsultants(orgUrlKey);
+        consultants
+            .Single(c => c.Id == consultantId)
+            .Staffings
+            .Single(s => s.Id == id)
+            .Hours = hours;
+        _cache.Set($"{ConsultantCacheKey}/{orgUrlKey}", consultants);
+    }
+
+    public void UpdateAbsence(int id, double hours)
+    {
+        var absence = _dbContext.PlannedAbsence
+            .Include(pa => pa.Absence)
+            .ThenInclude(a => a.Organization)
+            .Include(pa => pa.Consultant)
+            .FirstOrDefault(absence => absence.Id == id);
+        if (absence is null) return;
+        var orgUrlKey = absence.Absence.Organization.UrlKey;
+        absence.Hours = hours;
+        _dbContext.SaveChanges();
+        var consultantId = absence.Consultant.Id;
+        var consultants = LoadConsultants(orgUrlKey);
+        consultants
+            .Single(c => c.Id == consultantId)
+            .PlannedAbsences
+            .Single(pa => pa.Id == id)
+            .Hours = hours;
+        _cache.Set($"{ConsultantCacheKey}/{orgUrlKey}", consultants);
+    }
+
+    public int CreateStaffing(int consultantId, int projectId, double hours, Week week)
+    {
+        var consultant = _dbContext.Consultant.Find(consultantId);
+        var project = _dbContext.Project
+            .Include(p=> p.Customer)
+            .ThenInclude(c=>c.Organization)
+            .FirstOrDefault(project => project.Id == projectId);
+        if (consultant is null || project is null) return 0; //Feilmelding?
+        var staffing = new Core.DomainModels.Staffing
+        {
+            Project = project,
+            Consultant = consultant,
+            Hours = hours,
+            Week = week
+        };
+        consultant.Staffings.Add(staffing);
+        _dbContext.SaveChanges(); 
+        var orgUrlKey = project.Customer.Organization.UrlKey; 
+        var consultants = LoadConsultants(orgUrlKey);
+        
+        if (!consultants.Single(c => c.Id == consultantId).Staffings.Contains(staffing))
+        {
+            consultants.Single(c=>c.Id == consultantId).Staffings.Add(staffing);
+        };
+        _cache.Set($"{ConsultantCacheKey}/{orgUrlKey}", consultants);
+        return staffing.Id;
+    }
+    
+    public int CreateAbsence(int consultantId, int absenceId, double hours, Week week)
+    {
+        var consultant = _dbContext.Consultant.Find(consultantId);
+        var absence = _dbContext.Absence
+            .Include(a=> a.Organization)
+            .FirstOrDefault(absence => absence.Id == absenceId);
+        if (consultant is null || absence is null) return 0; //Feilmelding?
+        var plannedAbsence = new PlannedAbsence
+        {
+            Absence = absence,
+            Consultant = consultant,
+            Hours = hours,
+            Week = week
+        };
+        consultant.PlannedAbsences.Add(plannedAbsence);
+        _dbContext.SaveChanges();
+        var orgUrlKey = absence.Organization.UrlKey;
+        var consultants = LoadConsultants(orgUrlKey);
+        
+        if (!consultants.Single(c => c.Id == consultantId).PlannedAbsences.Contains(plannedAbsence))
+        {
+            consultants.Single(c=>c.Id == consultantId).PlannedAbsences.Add(plannedAbsence);
+        };
+        _cache.Set($"{ConsultantCacheKey}/{orgUrlKey}", consultants);
+        return plannedAbsence.Id;
+    }
+    
 }

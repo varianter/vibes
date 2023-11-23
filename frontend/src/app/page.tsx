@@ -1,5 +1,5 @@
 import SecondaryButton from "@/components/SecondaryButton";
-import { fetchWithToken } from "@/data/fetchWithToken";
+import { fetchWithToken } from "@/data/apiCallsWithToken";
 import { Organisation } from "@/types";
 import Link from "next/link";
 

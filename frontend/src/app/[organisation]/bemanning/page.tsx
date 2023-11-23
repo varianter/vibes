@@ -1,9 +1,9 @@
 import StaffingSidebar from "@/components/StaffingSidebar";
 import FilteredConsultantsList from "@/components/FilteredConsultantsList";
-import { fetchWithToken } from "@/data/fetchWithToken";
+import { fetchWithToken } from "@/data/apiCallsWithToken";
 import { Consultant, Department } from "@/types";
-import { ConsultantFilterProvider } from "@/components/FilteredConsultantProvider";
-import { stringToWeek } from "@/data/urlUtils";
+import { ConsultantFilterProvider } from "@/hooks/ConsultantFilterProvider";
+import { parseYearWeekFromUrlString } from "@/data/urlUtils";
 import InfoPillDescriptions from "@/components/InfoPillDescriptions";
 
 export default async function Bemanning({
@@ -13,7 +13,9 @@ export default async function Bemanning({
   params: { organisation: string };
   searchParams: { selectedWeek?: string; weekSpan?: string };
 }) {
-  const selectedWeek = stringToWeek(searchParams.selectedWeek || undefined);
+  const selectedWeek = parseYearWeekFromUrlString(
+    searchParams.selectedWeek || undefined,
+  );
   const weekSpan = searchParams.weekSpan || undefined;
 
   const consultants =
