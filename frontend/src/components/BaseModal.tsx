@@ -4,24 +4,15 @@ import { RefObject } from "react";
 
 export interface BaseModalProps {
   children: React.ReactNode;
-  onClose?: () => void;
   modalRef: RefObject<HTMLDialogElement>;
 }
 
 function BaseModal(props: BaseModalProps) {
-  const { children, onClose, modalRef } = props;
-
-  const dialogElement = modalRef?.current;
-
-  function handleClose() {
-    onClose?.();
-    dialogElement?.close();
-  }
+  const { children, modalRef } = props;
 
   return (
-    <dialog ref={modalRef}>
+    <dialog ref={modalRef} className="rounded-lg p-4">
       {children}
-      <button onClick={handleClose}>Close</button>
     </dialog>
   );
 }

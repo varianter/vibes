@@ -22,7 +22,7 @@ import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { usePathname, useRouter } from "next/navigation";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { useModal } from "@/hooks/useModal";
-import BaseModal from "./BaseModal";
+import EasyModal from "./EasyModal";
 
 export default function ConsultantRows({
   consultant,
@@ -35,7 +35,7 @@ export default function ConsultantRows({
 
   const columnCount = consultant.bookings.length ?? 0;
 
-  const { openModal, modalRef } = useModal({ closeOnBackdropClick: true });
+  const { openModal, modalRef } = useModal();
 
   function toggleListElementVisibility() {
     setIsListElementVisible(!isListElementVisible);
@@ -115,13 +115,14 @@ export default function ConsultantRows({
               >
                 <Plus size={16} className="text-primary" />
               </button>
-              <BaseModal
+              <EasyModal
                 modalRef={modalRef}
+                title={"Nytt Engasjement"}
                 onClose={() => console.log("onClose")}
+                showCloseButton
               >
-                <h1>Modal Title</h1>
-                <div>Text content ...</div>
-              </BaseModal>
+                <div className="h-[300px]"></div>
+              </EasyModal>
               <p className="small text-primary">Legg til bemanning</p>
             </div>
           </td>
