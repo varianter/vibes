@@ -54,6 +54,8 @@ export interface DetailedBooking {
 }
 
 export interface WeeklyHours {
+  /** @format int */
+  id: number;
   /** @format int32 */
   week: number;
   /** @format double */
@@ -64,6 +66,7 @@ export interface BookingDetails {
   projectName: string | null;
   type: BookingType;
   customerName: string | null;
+  projectId: string;
 }
 
 export type Department = {

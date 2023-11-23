@@ -2,11 +2,12 @@ import { Department } from "@/types";
 import { useCallback, useContext, useEffect } from "react";
 import { useUrlRouteFilter } from "./useUrlRouteFilter";
 import { toggleValueFromFilter } from "./UrlStringFilter";
-import { FilteredContext } from "@/components/FilteredConsultantProvider";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
 export function useDepartmentFilter() {
   const { departments } = useContext(FilteredContext);
   const { departmentFilter, updateRoute } = useUrlRouteFilter();
+  const { isDisabledHotkeys } = useContext(FilteredContext);
 
   const filteredDepartments = departmentFilter
     .split(",")
@@ -31,6 +32,7 @@ export function useDepartmentFilter() {
     }
 
     function keyDownHandler(e: { code: string }) {
+      if (isDisabledHotkeys) return;
       if (
         e.code.startsWith("Digit") &&
         (document.activeElement?.tagName.toLowerCase() !== "input" ||
@@ -48,7 +50,7 @@ export function useDepartmentFilter() {
     return () => {
       document.removeEventListener("keydown", keyDownHandler);
     };
-  }, [updateRoute, departments, toggleDepartmentFilter]);
+  }, [updateRoute, departments, toggleDepartmentFilter, isDisabledHotkeys]);
 
   return {
     departments,

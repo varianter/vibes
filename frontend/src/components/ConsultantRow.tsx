@@ -4,8 +4,9 @@ import {
   BookingType,
   Consultant,
   DetailedBooking,
+  WeeklyHours,
 } from "@/types";
-import { ReactElement, useState } from "react";
+import { ReactElement, useContext, useState } from "react";
 import {
   AlertTriangle,
   Briefcase,
@@ -17,6 +18,9 @@ import {
   Sun,
 } from "react-feather";
 import InfoPill, { InfoPillVariant } from "./InfoPill";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
+import { usePathname, useRouter } from "next/navigation";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { useModal } from "@/hooks/useModal";
 import EasyModal from "./EasyModal";
 
@@ -322,9 +326,11 @@ function HoveredWeek(props: {
         type: BookingType.Available,
         projectName: "",
         customerName: "Ledig Tid",
+        projectId: "",
       },
       hours: [
         {
+          id: 0,
           week: hoveredRowWeek,
           hours:
             consultant.bookings.find((b) => b.weekNumber == hoveredRowWeek)
@@ -401,6 +407,7 @@ function DetailedBookingRows(props: {
   detailedBooking: DetailedBooking;
 }) {
   const { consultant, detailedBooking } = props;
+
   return (
     <tr
       key={`${consultant.id}-details-${detailedBooking.bookingDetails.customerName}`}
@@ -434,21 +441,98 @@ function DetailedBookingRows(props: {
       {detailedBooking.hours
         .sort((a, b) => a.week - b.week)
         .map((hours) => (
-          <td
+          <DetailedBookingCell
             key={`${consultant.id}-details-${detailedBooking.bookingDetails.projectName}-${hours.week}`}
-            className="h-8 p-0.5"
-          >
-            <p
-              className={`small-medium p-2 rounded h-full flex items-center justify-end
-     ${getColorByStaffingType(
-       detailedBooking.bookingDetails.type ?? BookingType.Offer,
-     )} ${hours.hours == 0 && "bg-opacity-30"}`}
-            >
-              {hours.hours}
-            </p>
-          </td>
+            detailedBooking={detailedBooking}
+            detailedBookingHours={hours}
+            consultant={consultant}
+          />
         ))}
     </tr>
+  );
+}
+
+async function setDetailedBookingHours(
+  bookingId: number,
+  hours: number,
+  bookingType: string,
+  organisationName: string,
+  router: AppRouterInstance,
+  consultantId: string,
+  engagementId: string,
+  week: number,
+  setCellId: (cellId: number) => void,
+) {
+  const url =
+    bookingId === 0
+      ? `/${organisationName}/bemanning/api/updateHours?hours=${hours}&bookingType=${bookingType}&consultantID=${consultantId}&engagementID=${engagementId}&selectedWeek=${week}`
+      : `/${organisationName}/bemanning/api/updateHours/${bookingId}?hours=${hours}&bookingType=${bookingType}`;
+
+  try {
+    const data = await fetch(url, {
+      method: bookingId === 0 ? "post" : "put",
+    });
+
+    const res = await data.json();
+
+    if (bookingId === 0) {
+      setCellId(res);
+    }
+
+    router.refresh();
+  } catch (e) {
+    console.error("Error updating staffing", e);
+  }
+}
+
+function DetailedBookingCell({
+  detailedBooking,
+  detailedBookingHours,
+  consultant,
+}: {
+  detailedBooking: DetailedBooking;
+  detailedBookingHours: WeeklyHours;
+  consultant: Consultant;
+}) {
+  const [hours, setHours] = useState(detailedBookingHours.hours);
+  const [cellId, setCellId] = useState(detailedBookingHours.id);
+  const { setIsDisabledHotkeys } = useContext(FilteredContext);
+  const router = useRouter();
+
+  const organisationName = usePathname().split("/")[1];
+
+  function updateHours() {
+    setIsDisabledHotkeys(false);
+    setDetailedBookingHours(
+      cellId,
+      hours,
+      detailedBooking.bookingDetails.type,
+      organisationName,
+      router,
+      consultant.id,
+      detailedBooking.bookingDetails.projectId,
+      detailedBookingHours.week,
+      setCellId,
+    );
+  }
+
+  return (
+    <td className="h-8 p-0.5">
+      <input
+        type="number"
+        min="0"
+        step="7.5"
+        value={hours}
+        disabled={detailedBooking.bookingDetails.type == BookingType.Vacation}
+        onChange={(e) => setHours(Number(e.target.value))}
+        onFocus={() => setIsDisabledHotkeys(true)}
+        onBlur={() => updateHours()}
+        className={`small-medium rounded text-right w-full py-2 pr-2
+     ${getColorByStaffingType(
+       detailedBooking.bookingDetails.type ?? BookingType.Offer,
+     )} ${hours == 0 && "bg-opacity-30"}`}
+      ></input>
+    </td>
   );
 }
 
