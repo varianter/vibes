@@ -61,6 +61,12 @@ function EasyModal(props: EasyModalProps) {
           >
             Button
           </ActionButton>
+          <ActionButton variant="primary" onClick={handleSave}>
+            Button
+          </ActionButton>
+          <ActionButton variant="secondary" onClick={handleSave}>
+            Button
+          </ActionButton>
           <ActionButton
             variant="primary"
             onClick={handleSave}

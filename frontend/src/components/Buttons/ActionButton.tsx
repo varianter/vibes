@@ -37,14 +37,14 @@ export default function ActionButton({
     }[variant] ?? "Default";
 
   const disabledClass = disabled ? "bg-opacity-50" : "";
-  const widthClass = fullWidth ? "w-full" : "";
+  const fullWidthClass = fullWidth ? "w-full" : "";
 
   const paddingClass = isIconBtn ? "p-2" : "px-3 py-2";
-  const roundedBorders = small ? "rounded" : "rounded-lg";
+  const roundedBorders = small ? "rounded h-8" : "rounded-lg h-10";
 
   return (
     <BaseButton
-      className={`${variantClass} ${disabledClass} ${widthClass} ${paddingClass} ${roundedBorders} ${className} `}
+      className={`${variantClass} ${disabledClass} ${fullWidthClass} ${paddingClass} ${roundedBorders} ${className} `}
       onClick={onClick}
     >
       <IconBox small={small}>{iconLeft}</IconBox>
