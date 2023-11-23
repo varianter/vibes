@@ -1,12 +1,22 @@
 import React from "react";
 import Select from "react-select";
 
-const options = [
-  { value: "chocolate", label: "Chocolate" },
-  { value: "strawberry", label: "Strawberry" },
-  { value: "vanilla", label: "Vanilla" },
-];
+export type SelectOption = { value: string; label: string };
 
-export default function TmpReactSelect() {
-  return <Select options={options} />;
+export default function TmpReactSelect({
+  options,
+  selectedValue,
+  onChange,
+}: {
+  options: SelectOption[];
+  selectedValue: SelectOption | null;
+  onChange: (arg: SelectOption) => void;
+}) {
+  return (
+    <Select
+      options={options}
+      value={selectedValue}
+      onChange={(a) => a && onChange(a)}
+    />
+  );
 }

@@ -5,7 +5,7 @@ import {
   Consultant,
   DetailedBooking,
 } from "@/types";
-import { ReactElement, useState } from "react";
+import { ReactElement, useContext, useState } from "react";
 import {
   AlertTriangle,
   Briefcase,
@@ -22,7 +22,8 @@ import { createPortal } from "react-dom";
 import { useModal } from "@/hooks/useModal";
 import BaseModal from "./BaseModal";
 import Example from "@/components/TmpCombobox";
-import TmpReactSelect from "./TmpReactSelect";
+import TmpReactSelect, { SelectOption } from "./TmpReactSelect";
+import { FilteredContext } from "@/components/FilteredConsultantProvider";
 
 export default function ConsultantRows({
   consultant,
@@ -114,6 +115,32 @@ export default function ConsultantRows({
 function AddStaffingCell(): ReactElement {
   const [isOpen, setIsOpen] = useState(false);
   const { openModal, modalRef } = useModal({ closeOnBackdropClick: true });
+  const [selectedCustomer, setSelectedCustomer] = useState<SelectOption | null>(
+    null,
+  );
+
+  const [selectedEngagement, setSelectedEngagement] =
+    useState<SelectOption | null>(null);
+
+  const { customers } = useContext(FilteredContext);
+  const customerOptions = customers.map(
+    (c) =>
+      ({
+        value: `${c.customerId}`,
+        label: `${c.customerName}`,
+      }) as SelectOption,
+  );
+
+  const projectOptions =
+    customers
+      .find((c) => c.customerId == selectedCustomer?.value)
+      ?.engagements?.map(
+        (e) =>
+          ({
+            value: `${e.engagementId}`,
+            label: `${e.engagementName}`,
+          }) as SelectOption,
+      ) ?? [];
 
   return (
     <>
@@ -122,7 +149,19 @@ function AddStaffingCell(): ReactElement {
         <BaseModal modalRef={modalRef}>
           <div className="min-h-[400px]">
             <h1>Legg til bemanning</h1>
-            <TmpReactSelect />
+            <TmpReactSelect
+              options={customerOptions}
+              selectedValue={selectedCustomer}
+              onChange={(newCustomer) => {
+                setSelectedCustomer(newCustomer);
+                setSelectedEngagement(null);
+              }}
+            />
+            <TmpReactSelect
+              options={projectOptions}
+              onChange={(newEngagement) => setSelectedEngagement(newEngagement)}
+              selectedValue={selectedEngagement}
+            />
           </div>
         </BaseModal>
         <div className="flex flex-row items-center gap-2" onClick={openModal}>
