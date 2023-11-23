@@ -1,6 +1,17 @@
 import React from "react";
 import BaseButton from "./BaseButton";
 
+export type ActionButtonProps = {
+  variant: "primary" | "secondary" | "terniary";
+  iconLeft?: React.ReactNode;
+  iconRight?: React.ReactNode;
+  small?: true;
+  fullWidth?: true;
+  onClick?: () => void;
+  disabled?: true;
+  children?: React.ReactNode;
+};
+
 export default function ActionButton({
   variant,
   iconLeft,
@@ -10,16 +21,7 @@ export default function ActionButton({
   disabled,
   onClick,
   children,
-}: {
-  variant: "primary" | "secondary" | "terniary";
-  iconLeft?: React.ReactNode;
-  iconRight?: React.ReactNode;
-  small?: true;
-  fullWidth?: true;
-  onClick?: () => void;
-  disabled?: true;
-  children: React.ReactNode;
-}) {
+}: ActionButtonProps) {
   const variantClass =
     {
       primary:

@@ -6,6 +6,7 @@ import { Check, X, XCircle } from "react-feather";
 import { EasyModalHeader } from "./EasyModal/EasyModalHeader";
 import { EasyModalContent } from "./EasyModal/EasyModalContent";
 import ActionButton from "./Buttons/ActionButton";
+import IconActionButton from "./Buttons/IconActionButton";
 
 export interface EasyModalProps {
   children: React.ReactNode;
@@ -43,6 +44,11 @@ function EasyModal(props: EasyModalProps) {
         <EasyModalContent>{children}</EasyModalContent>
 
         <EasyModalContent>
+          <IconActionButton
+            variant="primary"
+            onClick={handleSave}
+            icon={<Check />}
+          />
           <ActionButton
             variant="primary"
             onClick={handleSave}
