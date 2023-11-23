@@ -34,7 +34,7 @@ function EasyModal(props: EasyModalProps) {
 
   return (
     <BaseModal modalRef={modalRef}>
-      <div className="w-[299px] md:inset-0 h-[calc(100%-1rem)] max-h-full relative max-w-2xl">
+      <div className="w-[332px]">
         <EasyModalHeader
           title={title}
           handleClose={handleClose}
