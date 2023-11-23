@@ -22,7 +22,7 @@ import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { usePathname, useRouter } from "next/navigation";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { useModal } from "@/hooks/useModal";
-import EasyModal from "./EasyModal";
+import EasyModal from "./EasyModal/EasyModal";
 
 export default function ConsultantRows({
   consultant,

@@ -12,6 +12,10 @@ export function useModal(options?: { closeOnBackdropClick?: true }) {
     modalNode && modal.showModal();
   }
 
+  function closeModal() {
+    modalNode && modal.close();
+  }
+
   useEffect(() => {
     function handleBackDropClick(e: MouseEvent) {
       const clickIsOutside = isClickOutsideElement(e, modal);
@@ -33,5 +37,6 @@ export function useModal(options?: { closeOnBackdropClick?: true }) {
   return {
     modalRef,
     openModal,
+    closeModal,
   };
 }

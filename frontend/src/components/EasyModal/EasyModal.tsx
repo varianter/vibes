@@ -1,17 +1,17 @@
 "use client";
 
 import { RefObject } from "react";
-import RightCloseButton from "./RightCloseButton";
-import BaseModal from "./BaseModal";
-import PrimaryButton from "./PrimaryButton";
+import BaseModal from "../BaseModal";
 import { Check } from "react-feather";
+import { EasyModalHeader } from "./EasyModalHeader";
+import ActionButton from "../Buttons/ActionButton";
 
 export interface EasyModalProps {
   children: React.ReactNode;
   onClose?: () => void;
   onSave?: () => void;
   modalRef: RefObject<HTMLDialogElement>;
-  showCloseButton?: boolean;
+  showCloseButton?: true;
   title: string;
 }
 
@@ -32,17 +32,26 @@ function EasyModal(props: EasyModalProps) {
 
   return (
     <BaseModal modalRef={modalRef}>
-      <div className="w-[332px] flex flex-col gap-8">
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-row justify-between items-center">
-            <h2>{title}</h2>
-            {showCloseButton && <RightCloseButton onClick={handleClose} />}
-          </div>
-          {children}
+      <div className="w-[332px]">
+        <EasyModalHeader
+          title={title}
+          handleClose={handleClose}
+          showCloseButton={showCloseButton}
+        />
+
+        <div className="space-y-2">{children}</div>
+
+        <div className="space-y-2 space-x-2">
+          <ActionButton
+            variant="primary"
+            onClick={handleSave}
+            small
+            fullWidth
+            iconLeft={<Check />}
+          >
+            Lagre
+          </ActionButton>
         </div>
-        <PrimaryButton onClick={handleSave} fullWidth>
-          <span className="text-white normal-semibold">Legg til</span>
-        </PrimaryButton>
       </div>
     </BaseModal>
   );
