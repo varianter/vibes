@@ -5,7 +5,13 @@ import {
   Consultant,
   DetailedBooking,
 } from "@/types";
-import { ReactElement, useContext, useState } from "react";
+import React, {
+  ChangeEvent,
+  FormEvent,
+  ReactElement,
+  useContext,
+  useState,
+} from "react";
 import {
   AlertTriangle,
   Briefcase,
@@ -17,11 +23,8 @@ import {
   Sun,
 } from "react-feather";
 import InfoPill, { InfoPillVariant } from "./InfoPill";
-import { Dialog } from "@headlessui/react";
-import { createPortal } from "react-dom";
 import { useModal } from "@/hooks/useModal";
 import BaseModal from "./BaseModal";
-import Example from "@/components/TmpCombobox";
 import TmpReactSelect, { SelectOption } from "./TmpReactSelect";
 import { FilteredContext } from "@/components/FilteredConsultantProvider";
 
@@ -113,8 +116,29 @@ export default function ConsultantRows({
 }
 
 function AddStaffingCell(): ReactElement {
-  const [isOpen, setIsOpen] = useState(false);
   const { openModal, modalRef } = useModal({ closeOnBackdropClick: true });
+
+  return (
+    <>
+      <td className={`${"border-l-secondary border-l-2"}`}></td>
+      <td>
+        <BaseModal modalRef={modalRef}>
+          <AddEngagementForm />
+        </BaseModal>
+        <div className="flex flex-row items-center gap-2" onClick={openModal}>
+          <button className="w-8 h-8 flex justify-center items-center rounded bg-primary/0 hover:bg-primary/10">
+            <Plus size={16} className="text-primary" />
+          </button>
+          <p className="small text-primary">Legg til bemanning</p>
+        </div>
+      </td>
+    </>
+  );
+}
+
+function AddEngagementForm() {
+  const { customers } = useContext(FilteredContext);
+  // State for select components
   const [selectedCustomer, setSelectedCustomer] = useState<SelectOption | null>(
     null,
   );
@@ -122,7 +146,6 @@ function AddStaffingCell(): ReactElement {
   const [selectedEngagement, setSelectedEngagement] =
     useState<SelectOption | null>(null);
 
-  const { customers } = useContext(FilteredContext);
   const customerOptions = customers.map(
     (c) =>
       ({
@@ -142,36 +165,89 @@ function AddStaffingCell(): ReactElement {
           }) as SelectOption,
       ) ?? [];
 
+  // State for radio button group
+  const [radioValue, setRadioValue] = useState("Tilbud");
+
+  // State for toggle
+  const [isFakturerbar, setIsFakturerbar] = useState(false);
+
+  // Handler for select components
+  function handleSelectedCustomerChange(newCustomer: SelectOption) {
+    setSelectedCustomer(newCustomer);
+    setSelectedEngagement(null);
+  }
+
+  function handleSelectedEngagementChange(newValue: SelectOption) {
+    setSelectedEngagement(newValue);
+  }
+
+  // Handler for radio button group
+  function handleRadioChange(event: ChangeEvent<HTMLInputElement>) {
+    setRadioValue(event.target.value);
+  }
+
+  // Handler for toggle
+  function handleToggleChange() {
+    setIsFakturerbar(!isFakturerbar);
+  }
+
+  // Handler for form submission
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    // Add your submission logic here
+    console.log(event);
+    console.log("Form submitted!");
+    // TODO: Legg på noe post-greier her
+  }
+
   return (
-    <>
-      <td className={`${"border-l-secondary border-l-2"}`}></td>
-      <td>
-        <BaseModal modalRef={modalRef}>
-          <div className="min-h-[400px]">
-            <h1>Legg til bemanning</h1>
-            <TmpReactSelect
-              options={customerOptions}
-              selectedValue={selectedCustomer}
-              onChange={(newCustomer) => {
-                setSelectedCustomer(newCustomer);
-                setSelectedEngagement(null);
-              }}
-            />
-            <TmpReactSelect
-              options={projectOptions}
-              onChange={(newEngagement) => setSelectedEngagement(newEngagement)}
-              selectedValue={selectedEngagement}
-            />
-          </div>
-        </BaseModal>
-        <div className="flex flex-row items-center gap-2" onClick={openModal}>
-          <button className="w-8 h-8 flex justify-center items-center rounded bg-primary/0 hover:bg-primary/10">
-            <Plus size={16} className="text-primary" />
-          </button>
-          <p className="small text-primary">Legg til bemanning</p>
-        </div>
-      </td>
-    </>
+    <form onSubmit={handleSubmit}>
+      {/* Selected Customer */}
+      <TmpReactSelect
+        options={customerOptions}
+        selectedValue={selectedCustomer}
+        onChange={handleSelectedCustomerChange}
+      />
+      <TmpReactSelect
+        options={projectOptions}
+        onChange={handleSelectedEngagementChange}
+        selectedValue={selectedEngagement}
+      />
+
+      {/* Radio Button Group */}
+      <div>
+        <label>
+          <input
+            type="radio"
+            value="Tilbud"
+            checked={radioValue === "Tilbud"}
+            onChange={handleRadioChange}
+          />
+          Tilbud
+        </label>
+        <label>
+          <input
+            type="radio"
+            value="Ordre"
+            checked={radioValue === "Ordre"}
+            onChange={handleRadioChange}
+          />
+          Ordre
+        </label>
+      </div>
+
+      {/* Toggle (Checkbox) */}
+      <label>
+        Fakturerbar:
+        <input
+          type="checkbox"
+          checked={isFakturerbar}
+          onChange={handleToggleChange}
+        />
+      </label>
+
+      {/* Submit Button */}
+      <button type="submit">Submit</button>
+    </form>
   );
 }
 
