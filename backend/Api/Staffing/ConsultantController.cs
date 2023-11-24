@@ -50,7 +50,7 @@ public class ConsultantController : ControllerBase
     {
         var service = new StorageService(_cache, _context);
 
-        if (!StaffingControllerValidator.validateStaffingWriteModel(staffingWriteModel, service, orgUrlKey))
+        if (!StaffingControllerValidator.ValidateStaffingWriteModel(staffingWriteModel, service, orgUrlKey))
         {
             return BadRequest();
         }

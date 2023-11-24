@@ -18,7 +18,7 @@ public static class StaffingControllerValidator
         return plannedAbsence.Absence.Organization.Id.Equals(organization.Id);
     }
 
-    public static bool validateStaffingWriteModel(StaffingWriteModel staffingWriteModel, StorageService storageService,
+    public static bool ValidateStaffingWriteModel(StaffingWriteModel staffingWriteModel, StorageService storageService,
         string orgUrlKey)
     {
         return storageService.LoadConsultants(orgUrlKey).Any(c => c.Id == staffingWriteModel.ConsultantId);

@@ -94,9 +94,9 @@ public class StorageService
 
     private Core.DomainModels.Staffing CreateStaffing(StaffingKey staffingKey, double hours )
     {
-        var consultant = _dbContext.Consultant.First(c => c.Id == staffingKey.ConsultantId);
+        var consultant = _dbContext.Consultant.SingleOrDefault(c => c.Id == staffingKey.ConsultantId);
         var project = _dbContext.Project
-            .First(project => project.Id == staffingKey.ProjectId);
+            .SingleOrDefault(project => project.Id == staffingKey.ProjectId);
         
         var staffing = new Core.DomainModels.Staffing
         {
@@ -112,9 +112,9 @@ public class StorageService
     
     private PlannedAbsence CreateAbsence(PlannedAbsenceKey plannedAbsenceKey, double hours)
     {
-        var consultant = _dbContext.Consultant.First(c => c.Id == plannedAbsenceKey.ConsultantId);
+        var consultant = _dbContext.Consultant.SingleOrDefault(c => c.Id == plannedAbsenceKey.ConsultantId);
         var absence = _dbContext.Absence
-            .First(absence => absence.Id == plannedAbsenceKey.AbsenceId);
+            .SingleOrDefault(absence => absence.Id == plannedAbsenceKey.AbsenceId);
         
         var plannedAbsence = new PlannedAbsence
         {
