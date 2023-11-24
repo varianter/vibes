@@ -23,7 +23,7 @@ import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { usePathname, useRouter } from "next/navigation";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { useModal } from "@/hooks/useModal";
-import EasyModal from "./EasyModal";
+import EasyModal from "./EasyModal/EasyModal";
 
 export default function ConsultantRows({
   consultant,
@@ -408,6 +408,9 @@ function DetailedBookingRows(props: {
   detailedBooking: DetailedBooking;
 }) {
   const { consultant, detailedBooking } = props;
+  const [hourDragValue, setHourDragValue] = useState<number | undefined>(
+    undefined,
+  );
 
   return (
     <tr
@@ -447,6 +450,8 @@ function DetailedBookingRows(props: {
             detailedBooking={detailedBooking}
             detailedBookingHours={hours}
             consultant={consultant}
+            hourDragValue={hourDragValue}
+            setHourDragValue={setHourDragValue}
           />
         ))}
     </tr>
@@ -490,10 +495,14 @@ function DetailedBookingCell({
   detailedBooking,
   detailedBookingHours,
   consultant,
+  hourDragValue,
+  setHourDragValue,
 }: {
   detailedBooking: DetailedBooking;
   detailedBookingHours: WeeklyHours;
   consultant: Consultant;
+  hourDragValue: number | undefined;
+  setHourDragValue: React.Dispatch<React.SetStateAction<number | undefined>>;
 }) {
   const [hours, setHours] = useState(detailedBookingHours.hours);
   const [cellId, setCellId] = useState(detailedBookingHours.id);
@@ -508,7 +517,7 @@ function DetailedBookingCell({
     setIsDisabledHotkeys(false);
     setDetailedBookingHours(
       cellId,
-      hours + (hourlyChange || 0),
+      hourDragValue ?? hours,
       detailedBooking.bookingDetails.type,
       organisationName,
       router,
@@ -525,6 +534,9 @@ function DetailedBookingCell({
         className={`flex flex-row justify-center items-center rounded px-3 py-2 ${getColorByStaffingType(
           detailedBooking.bookingDetails.type ?? BookingType.Offer,
         )} ${hours == 0 && "bg-opacity-30"}`}
+        onMouseLeave={() => {
+          !hourDragValue && updateHours();
+        }}
       >
         {isChangingHours && numWeeks <= 8 && (
           <button
@@ -542,12 +554,18 @@ function DetailedBookingCell({
           min="0"
           step="7.5"
           value={hours}
+          draggable={true}
           disabled={detailedBooking.bookingDetails.type == BookingType.Vacation}
           onChange={(e) => setHours(Number(e.target.value))}
           onFocus={() => {
-            setIsDisabledHotkeys(true), setIsChangingHours(true);
+            setIsDisabledHotkeys(true);
+            setIsChangingHours(true);
           }}
-          onBlur={() => updateHours()}
+          onDragStart={() => setHourDragValue(hours)}
+          onDragEnterCapture={() => {
+            updateHours(), setHours(hourDragValue ?? hours);
+          }}
+          onDragEnd={() => setHourDragValue(undefined)}
           className={`small-medium rounded w-full py-2 bg-transparent focus:outline-none min-w-[24px] ${
             isChangingHours && numWeeks <= 8 ? "text-center" : "text-right"
           } `}
