@@ -472,8 +472,6 @@ async function setDetailedBookingHours(
       method: "put",
     });
 
-    const res = await data.json();
-
     router.refresh();
   } catch (e) {
     console.error("Error updating staffing", e);
@@ -494,6 +492,7 @@ function DetailedBookingCell({
   setHourDragValue: React.Dispatch<React.SetStateAction<number | undefined>>;
 }) {
   const [hours, setHours] = useState(detailedBookingHours.hours);
+  const [oldHours, setOldHours] = useState(detailedBookingHours.hours);
   const { setIsDisabledHotkeys } = useContext(FilteredContext);
   const router = useRouter();
 
@@ -501,15 +500,17 @@ function DetailedBookingCell({
 
   function updateHours() {
     setIsDisabledHotkeys(false);
-    setDetailedBookingHours(
-      hourDragValue ?? hours,
-      detailedBooking.bookingDetails.type,
-      organisationName,
-      router,
-      consultant.id,
-      detailedBooking.bookingDetails.projectId,
-      detailedBookingHours.week,
-    );
+    (oldHours != hours || (hourDragValue && oldHours != hourDragValue)) &&
+      setDetailedBookingHours(
+        hourDragValue ?? hours,
+        detailedBooking.bookingDetails.type,
+        organisationName,
+        router,
+        consultant.id,
+        detailedBooking.bookingDetails.projectId,
+        detailedBookingHours.week,
+      );
+    setOldHours(hourDragValue ?? hours);
   }
 
   return (
