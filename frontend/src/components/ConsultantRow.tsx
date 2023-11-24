@@ -500,7 +500,8 @@ function DetailedBookingCell({
 
   function updateHours() {
     setIsDisabledHotkeys(false);
-    (oldHours != hours || (hourDragValue && oldHours != hourDragValue)) &&
+    (oldHours != hours ||
+      (hourDragValue != undefined && oldHours != hourDragValue)) &&
       setDetailedBookingHours(
         hourDragValue ?? hours,
         detailedBooking.bookingDetails.type,
