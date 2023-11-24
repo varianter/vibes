@@ -38,13 +38,13 @@ export function useConsultantsFilter() {
   const { filteredYears } = useYearsXpFilter();
   const { availabilityFilterOn } = useAvailabilityFilter();
 
-  const filteredConsultants = filterConsultants(
-    searchFilter,
+  const filteredConsultants = filterConsultants({
+    search: searchFilter,
     departmentFilter,
-    filteredYears,
+    yearFilter: filteredYears,
     consultants,
     availabilityFilterOn,
-  );
+  });
 
   const { weeklyTotalBillable, weeklyTotalBillableAndOffered } =
     setWeeklyTotalBillable(filteredConsultants);
@@ -63,13 +63,23 @@ export function useConsultantsFilter() {
   };
 }
 
-function filterConsultants(
-  search: string,
-  departmentFilter: string,
-  yearFilter: YearRange[],
-  consultants: Consultant[],
-  availabilityFilterOn: Boolean,
-) {
+export interface ConsultantFilterParams {
+  search: string;
+  departmentFilter: string;
+  yearFilter: YearRange[];
+  consultants: Consultant[];
+  availabilityFilterOn: Boolean;
+}
+
+function filterConsultants(params: ConsultantFilterParams) {
+  const {
+    search,
+    departmentFilter,
+    yearFilter,
+    consultants,
+    availabilityFilterOn,
+  } = params;
+
   let newFilteredConsultants = consultants;
   if (search && search.length > 0) {
     newFilteredConsultants = newFilteredConsultants?.filter((consultant) =>
