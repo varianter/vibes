@@ -457,17 +457,32 @@ function DetailedBookingRows(props: {
   );
 }
 
+export interface BookingObject {
+  bookingId: number;
+  hours: number;
+  bookingType: string;
+  organisationName: string;
+  router: AppRouterInstance;
+  consultantId: string;
+  engagementId: string;
+  week: number;
+}
+
 async function setDetailedBookingHours(
-  bookingId: number,
-  hours: number,
-  bookingType: string,
-  organisationName: string,
-  router: AppRouterInstance,
-  consultantId: string,
-  engagementId: string,
-  week: number,
-  setCellId: (cellId: number) => void,
+  bookingObject: BookingObject,
+  setCellIdCallBack: (cellId: number) => void,
 ) {
+  const {
+    bookingId,
+    bookingType,
+    consultantId,
+    engagementId,
+    hours,
+    organisationName,
+    router,
+    week,
+  } = bookingObject;
+
   const url =
     bookingId === 0
       ? `/${organisationName}/bemanning/api/updateHours?hours=${hours}&bookingType=${bookingType}&consultantID=${consultantId}&engagementID=${engagementId}&selectedWeek=${week}`
@@ -481,7 +496,7 @@ async function setDetailedBookingHours(
     const res = await data.json();
 
     if (bookingId === 0) {
-      setCellId(res);
+      setCellIdCallBack(res);
     }
 
     router.refresh();
@@ -513,14 +528,16 @@ function DetailedBookingCell({
   function updateHours() {
     setIsDisabledHotkeys(false);
     setDetailedBookingHours(
-      cellId,
-      hourDragValue ?? hours,
-      detailedBooking.bookingDetails.type,
-      organisationName,
-      router,
-      consultant.id,
-      detailedBooking.bookingDetails.projectId,
-      detailedBookingHours.week,
+      {
+        bookingId: cellId,
+        hours: hourDragValue ?? hours,
+        bookingType: detailedBooking.bookingDetails.type,
+        organisationName: organisationName,
+        router: router,
+        consultantId: consultant.id,
+        engagementId: detailedBooking.bookingDetails.projectId,
+        week: detailedBookingHours.week,
+      },
       setCellId,
     );
   }
