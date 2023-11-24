@@ -58,10 +58,10 @@ export async function callApi<T, Body>(
   }
 }
 
-export async function fetchWithToken<ReturnType, BodyType>(
+export async function fetchWithToken<ReturnType>(
   path: string,
 ): Promise<ReturnType | undefined> {
-  return callApi<ReturnType, BodyType>(path, "GET");
+  return callApi<ReturnType, undefined>(path, "GET");
 }
 
 export async function putWithToken<ReturnType, BodyType>(

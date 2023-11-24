@@ -8,7 +8,7 @@ export async function GET(
   const orgUrlKey = params.organisation;
 
   const weeklyWorkHours =
-    (await fetchWithToken<number, undefined>(
+    (await fetchWithToken<number>(
       `organisations/${orgUrlKey}/weeklyWorkHours`,
     )) ?? [];
 

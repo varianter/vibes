@@ -82,7 +82,7 @@ public class ConsultantController : ControllerBase
         }
 
 
-        return Ok(0);
+        return Ok("Status ok");
     }
 
 }

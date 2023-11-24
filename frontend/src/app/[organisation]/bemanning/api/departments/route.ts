@@ -7,7 +7,7 @@ export async function GET(request: Request) {
   const organisationName = searchParams.get("organisationName") || "";
 
   const departments =
-    (await fetchWithToken<Department[], undefined>(
+    (await fetchWithToken<Department[]>(
       `organisations/${organisationName}/departments`,
     )) ?? [];
 
