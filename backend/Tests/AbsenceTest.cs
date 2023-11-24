@@ -1,4 +1,4 @@
-using Api.Staffing;
+using Api.StaffingController;
 using Core.DomainModels;
 using NSubstitute;
 
@@ -86,7 +86,9 @@ public class Tests
                 Absence = Substitute.For<Absence>(),
                 Consultant = consultant,
                 Hours = plannedAbsenceHours,
-                Week = week
+                Week = week,
+                AbsenceId = Substitute.For<Absence>().Id,
+                ConsultantId = consultant.Id
             });
 
         if (staffedHours > 0)
@@ -95,7 +97,9 @@ public class Tests
                 Project = project,
                 Consultant = consultant,
                 Hours = staffedHours,
-                Week = week
+                Week = week,
+                ProjectId = project.Id,
+                ConsultantId = consultant.Id
             });
 
         var bookingModel = ReadModelFactory.MapToReadModelList(consultant, new List<Week> { week }).Bookings.First()
@@ -153,7 +157,9 @@ public class Tests
             Absence = leaveA,
             Consultant = consultant,
             Hours = 15,
-            Week = week
+            Week = week,
+            AbsenceId = leaveA.Id,
+            ConsultantId = consultant.Id
         });
 
         consultant.PlannedAbsences.Add(new PlannedAbsence
@@ -161,7 +167,9 @@ public class Tests
             Absence = leaveB,
             Consultant = consultant,
             Hours = 15,
-            Week = week
+            Week = week,
+            AbsenceId = leaveB.Id,
+            ConsultantId = consultant.Id
         });
 
         var bookedHours = ReadModelFactory.MapToReadModelList(consultant, new List<Week> { week }).Bookings.First()
