@@ -457,25 +457,26 @@ function DetailedBookingRows(props: {
 }
 
 export interface BookingObject {
-  bookingId: number;
+  organisationName: string;
   hours: number;
   bookingType: string;
-  organisationName: string;
-  router: AppRouterInstance;
   consultantId: string;
   engagementId: string;
   week: number;
+  router: AppRouterInstance;
 }
 
-async function setDetailedBookingHours(
-  hours: number,
-  bookingType: string,
-  organisationName: string,
-  router: AppRouterInstance,
-  consultantId: string,
-  engagementId: string,
-  week: number,
-) {
+async function setDetailedBookingHours(bookingDetails: BookingObject) {
+  const {
+    organisationName,
+    hours,
+    bookingType,
+    consultantId,
+    engagementId,
+    week,
+    router,
+  } = bookingDetails;
+
   const url = `/${organisationName}/bemanning/api/updateHours?hours=${hours}&bookingType=${bookingType}&consultantID=${consultantId}&engagementID=${engagementId}&selectedWeek=${week}`;
 
   try {
@@ -512,15 +513,15 @@ function DetailedBookingCell({
   function updateHours() {
     setIsDisabledHotkeys(false);
     (oldHours != hours || (hourDragValue && oldHours != hourDragValue)) &&
-      setDetailedBookingHours(
-        hourDragValue ?? hours,
-        detailedBooking.bookingDetails.type,
+      setDetailedBookingHours({
         organisationName,
+        hours: hourDragValue ?? hours,
+        bookingType: detailedBooking.bookingDetails.type,
+        consultantId: consultant.id,
+        engagementId: detailedBooking.bookingDetails.projectId,
+        week: detailedBookingHours.week,
         router,
-        consultant.id,
-        detailedBooking.bookingDetails.projectId,
-        detailedBookingHours.week,
-      );
+      });
     setOldHours(hourDragValue ?? hours);
   }
 
