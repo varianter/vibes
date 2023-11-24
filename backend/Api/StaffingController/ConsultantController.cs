@@ -80,9 +80,7 @@ public class ConsultantController : ControllerBase
             Console.WriteLine(e);
             throw;
         }
-
-
-        return Ok("Status ok");
+        return NoContent();
     }
 
 }

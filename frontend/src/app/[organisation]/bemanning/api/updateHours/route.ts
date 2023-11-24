@@ -27,7 +27,7 @@ export async function PUT(
   };
 
   const staffing =
-    (await putWithToken<string, StaffingWriteModel>(
+    (await putWithToken<never, StaffingWriteModel>(
       `${orgUrlKey}/consultants/staffing/update`,
       body,
     )) ?? [];

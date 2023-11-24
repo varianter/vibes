@@ -50,6 +50,9 @@ export async function callApi<T, Body>(
 
   try {
     const response = await fetch(completeUrl, options);
+    if (response.status == 204) {
+      return;
+    }
     const json = await response.json();
     return json as T;
   } catch (e) {
