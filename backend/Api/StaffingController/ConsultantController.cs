@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Api.Staffing;
+namespace Api.StaffingController;
 
 [Authorize]
 [Route("/v0/{orgUrlKey}/consultants")]

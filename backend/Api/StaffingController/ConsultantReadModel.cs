@@ -1,6 +1,6 @@
 using Core.DomainModels;
 
-namespace Api.Staffing;
+namespace Api.StaffingController;
 
 public record ConsultantReadModel(int Id, string Name, string Email, List<string> Competences, string Department,
     int YearsOfExperience, Degree Degree,

@@ -1,7 +1,7 @@
 using Api.Common;
 using Core.DomainModels;
 
-namespace Api.Staffing;
+namespace Api.StaffingController;
 
 public static class StaffingControllerValidator
 {

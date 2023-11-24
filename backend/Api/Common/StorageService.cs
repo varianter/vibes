@@ -76,7 +76,7 @@ public class StorageService
         {
             consultant.Staffings = staffingPrConsultant.TryGetValue(consultant.Id, out var staffing)
                 ? staffing
-                : new List<Core.DomainModels.Staffing>();
+                : new List<Staffing>();
 
             consultant.PlannedAbsences = plannedAbsencePrConsultant.TryGetValue(consultant.Id, out var plannedAbsences)
                 ? plannedAbsences
@@ -92,13 +92,13 @@ public class StorageService
         return hydratedConsultants;
     }
 
-    private Core.DomainModels.Staffing CreateStaffing(StaffingKey staffingKey, double hours )
+    private Staffing CreateStaffing(StaffingKey staffingKey, double hours )
     {
         var consultant = _dbContext.Consultant.SingleOrDefault(c => c.Id == staffingKey.ConsultantId);
         var project = _dbContext.Project
             .SingleOrDefault(project => project.Id == staffingKey.ProjectId);
         
-        var staffing = new Core.DomainModels.Staffing
+        var staffing = new Staffing
         {
             ProjectId = staffingKey.ProjectId,
             Project = project,

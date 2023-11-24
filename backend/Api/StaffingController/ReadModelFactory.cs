@@ -2,7 +2,7 @@ using Api.Common;
 using Api.Organisation;
 using Core.DomainModels;
 
-namespace Api.Staffing;
+namespace Api.StaffingController;
 
 public class ReadModelFactory
 {
