@@ -409,6 +409,12 @@ function DetailedBookingRows(props: {
   const [hourDragValue, setHourDragValue] = useState<number | undefined>(
     undefined,
   );
+  const [startDragWeek, setStartDragWeek] = useState<number | undefined>(
+    undefined,
+  );
+  const [currentDragWeek, setCurrentDragWeek] = useState<number | undefined>(
+    undefined,
+  );
 
   return (
     <tr
@@ -450,6 +456,10 @@ function DetailedBookingRows(props: {
             consultant={consultant}
             hourDragValue={hourDragValue}
             setHourDragValue={setHourDragValue}
+            currentDragWeek={currentDragWeek}
+            startDragWeek={startDragWeek}
+            setStartDragWeek={setStartDragWeek}
+            setCurrentDragWeek={setCurrentDragWeek}
           />
         ))}
     </tr>
@@ -484,12 +494,20 @@ function DetailedBookingCell({
   consultant,
   hourDragValue,
   setHourDragValue,
+  currentDragWeek,
+  startDragWeek,
+  setStartDragWeek,
+  setCurrentDragWeek,
 }: {
   detailedBooking: DetailedBooking;
   detailedBookingHours: WeeklyHours;
   consultant: Consultant;
   hourDragValue: number | undefined;
+  currentDragWeek: number | undefined;
+  startDragWeek: number | undefined;
   setHourDragValue: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setStartDragWeek: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setCurrentDragWeek: React.Dispatch<React.SetStateAction<number | undefined>>;
 }) {
   const [hours, setHours] = useState(detailedBookingHours.hours);
   const [oldHours, setOldHours] = useState(detailedBookingHours.hours);
@@ -514,8 +532,27 @@ function DetailedBookingCell({
     setOldHours(hourDragValue ?? hours);
   }
 
+  function checkIfMarked() {
+    if (startDragWeek == undefined || currentDragWeek == undefined)
+      return false;
+    if (startDragWeek > currentDragWeek) {
+      return (
+        detailedBookingHours.week >= currentDragWeek &&
+        detailedBookingHours.week <= startDragWeek
+      );
+    }
+    return (
+      detailedBookingHours.week <= currentDragWeek &&
+      detailedBookingHours.week >= startDragWeek
+    );
+  }
+
   return (
-    <td className="h-8 p-0.5">
+    <td
+      className={`h-8 p-0.5 ${
+        checkIfMarked() && "border-8 border-holiday_darker"
+      }`}
+    >
       <input
         type="number"
         min="0"
@@ -526,11 +563,19 @@ function DetailedBookingCell({
         onChange={(e) => setHours(Number(e.target.value))}
         onFocus={() => setIsDisabledHotkeys(true)}
         onBlur={() => updateHours()}
-        onDragStart={() => setHourDragValue(hours)}
-        onDragEnterCapture={() => {
-          updateHours(), setHours(hourDragValue ?? hours);
+        onDragStart={() => {
+          setHourDragValue(hours), setStartDragWeek(detailedBookingHours.week);
         }}
-        onDragEnd={() => setHourDragValue(undefined)}
+        onDragEnterCapture={() => {
+          updateHours(),
+            setHours(hourDragValue ?? hours),
+            setCurrentDragWeek(detailedBookingHours.week);
+        }}
+        onDragEnd={() => {
+          setHourDragValue(undefined),
+            setCurrentDragWeek(undefined),
+            setStartDragWeek(undefined);
+        }}
         className={`small-medium rounded text-right w-full py-2 pr-2
      ${getColorByStaffingType(
        detailedBooking.bookingDetails.type ?? BookingType.Offer,
