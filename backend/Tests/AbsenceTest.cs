@@ -75,6 +75,7 @@ public class Tests
         for (var i = 0; i < vacationDays; i++)
             consultant.Vacations.Add(new Vacation
             {
+                ConsultantId = consultant.Id,
                 Consultant = consultant,
                 Date = mondayDateOnly.AddDays(i)
             });
