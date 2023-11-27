@@ -493,7 +493,7 @@ function DetailedBookingCell({
 }) {
   const { setConsultants } = useContext(FilteredContext);
   const [hours, setHours] = useState(detailedBookingHours.hours);
-  const [oldHours] = useState(detailedBookingHours.hours);
+  const [oldHours, setOldHours] = useState(detailedBookingHours.hours);
   const { setIsDisabledHotkeys } = useContext(FilteredContext);
   const router = useRouter();
 
@@ -513,12 +513,13 @@ function DetailedBookingCell({
         consultant.id,
         detailedBooking.bookingDetails.projectId,
         detailedBookingHours.week,
-      ).then((res) =>
+      ).then((res) => {
         setConsultants((old) => [
           // Use spread to make a new list, forcing a re-render
           ...upsertConsultantWithSingleWeekBooking(old, res),
-        ]),
-      );
+        ]);
+        setOldHours(hourDragValue ?? hours);
+      });
     }
   }
 
