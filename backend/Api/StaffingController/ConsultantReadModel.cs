@@ -24,12 +24,36 @@ public record ConsultantReadModel(int Id, string Name, string Email, List<string
     }
 }
 
+public record ConsultantReadModelSingleWeek(int Id, string Name, string Email, List<string> Competences,
+    string Department,
+    int YearsOfExperience, Degree Degree,
+    BookedHoursPerWeek Bookings, DetailedBooking DetailedBooking, bool IsOccupied)
+{
+    public ConsultantReadModelSingleWeek(Consultant consultant, BookedHoursPerWeek bookings,
+        DetailedBooking detailedBookings, bool IsOccupied)
+        : this(
+            consultant.Id,
+            consultant.Name,
+            consultant.Email,
+            consultant.Competences.Select(c => c.Name).ToList(),
+            consultant.Department.Name,
+            consultant.YearsOfExperience,
+            consultant.Degree ?? Degree.Master,
+            bookings,
+            detailedBookings,
+            IsOccupied
+        )
+    {
+    }
+}
+
 public record BookedHoursPerWeek(int Year, int WeekNumber, int SortableWeek, string DateString,
     WeeklyBookingReadModel BookingModel);
 
 public record DetailedBooking(BookingDetails BookingDetails, List<WeeklyHours> Hours)
 {
-    public DetailedBooking(string projectName, BookingType type, string customerName, int projectId, List<WeeklyHours> bookings) : this(
+    public DetailedBooking(string projectName, BookingType type, string customerName, int projectId,
+        List<WeeklyHours> bookings) : this(
         new BookingDetails(projectName, type, customerName, projectId), bookings)
     {
     }

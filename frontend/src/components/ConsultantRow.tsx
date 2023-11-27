@@ -3,6 +3,7 @@ import {
   BookedHoursPerWeek,
   BookingType,
   Consultant,
+  ConsultantReadModelSingleWeek,
   DetailedBooking,
   WeeklyHours,
 } from "@/types";
@@ -475,8 +476,7 @@ async function setDetailedBookingHours(
     const data = await fetch(url, {
       method: "put",
     });
-
-    router.refresh();
+    return (await data.json()) as ConsultantReadModelSingleWeek;
   } catch (e) {
     console.error("Error updating staffing", e);
   }
@@ -499,9 +499,10 @@ function DetailedBookingCell({
   isRowHovered: boolean;
   setIsRowHovered: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+  const { setConsultants } = useContext(FilteredContext);
   const [hours, setHours] = useState(detailedBookingHours.hours);
   const [isChangingHours, setIsChangingHours] = useState(false);
-  const [oldHours, setOldHours] = useState(detailedBookingHours.hours);
+  const [oldHours] = useState(detailedBookingHours.hours);
   const { setIsDisabledHotkeys } = useContext(FilteredContext);
 
   const [isInputFocused, setIsInputFocused] = useState(false);
@@ -512,8 +513,10 @@ function DetailedBookingCell({
 
   function updateHours() {
     setIsDisabledHotkeys(false);
-    (oldHours != hours ||
-      (hourDragValue != undefined && oldHours != hourDragValue)) &&
+    if (
+      oldHours != hours ||
+      (hourDragValue != undefined && oldHours != hourDragValue)
+    ) {
       setDetailedBookingHours(
         hourDragValue ?? hours,
         detailedBooking.bookingDetails.type,
@@ -522,8 +525,13 @@ function DetailedBookingCell({
         consultant.id,
         detailedBooking.bookingDetails.projectId,
         detailedBookingHours.week,
+      ).then((res) =>
+        setConsultants((old) => [
+          // Use spread to make a new list, forcing a re-render
+          ...upsertConsultantWithSingleWeekBooking(old, res),
+        ]),
       );
-    setOldHours(hourDragValue ?? hours);
+    }
   }
 
   useEffect(() => {
@@ -624,4 +632,38 @@ function getInfopillVariantByColumnCount(count: number): InfoPillVariant {
     default:
       return "wide";
   }
+}
+
+function upsertConsultantWithSingleWeekBooking(
+  old: Consultant[],
+  res?: ConsultantReadModelSingleWeek,
+) {
+  if (!res) return old;
+
+  const consultantToUpdate = old.find((c) => c.id === res.id);
+  if (!consultantToUpdate || !res) return old;
+
+  consultantToUpdate.bookings = consultantToUpdate.bookings ?? [];
+  const bookingIndex = consultantToUpdate.bookings.findIndex(
+    (b) =>
+      b.year == res.bookings?.year && b.weekNumber == res.bookings.weekNumber,
+  );
+  if (bookingIndex !== -1 && res.bookings) {
+    consultantToUpdate.bookings[bookingIndex] = res.bookings;
+  }
+
+  consultantToUpdate.detailedBooking = consultantToUpdate.detailedBooking ?? [];
+
+  if (bookingIndex !== -1 && res.detailedBooking) {
+    const hoursIndex = consultantToUpdate.detailedBooking[0].hours.findIndex(
+      (h) => h.week == res.detailedBooking?.hours[0].week,
+    );
+    consultantToUpdate.detailedBooking[0].hours[hoursIndex] =
+      res.detailedBooking.hours[0];
+  }
+
+  const consultantIndex = old.findIndex((c) => c.id === `${res.id}`);
+  old[consultantIndex] = consultantToUpdate;
+
+  return [...old];
 }
