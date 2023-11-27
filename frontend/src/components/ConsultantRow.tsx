@@ -4,6 +4,7 @@ import {
   BookingType,
   Consultant,
   DetailedBooking,
+  WeeklyHours,
 } from "@/types";
 import React, {
   ChangeEvent,
@@ -23,10 +24,12 @@ import {
   Sun,
 } from "react-feather";
 import InfoPill, { InfoPillVariant } from "./InfoPill";
+import { usePathname, useRouter } from "next/navigation";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { useModal } from "@/hooks/useModal";
-import BaseModal from "./BaseModal";
+import EasyModal from "./EasyModal/EasyModal";
 import TmpReactSelect, { SelectOption } from "./TmpReactSelect";
-import { FilteredContext } from "@/components/FilteredConsultantProvider";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
 export default function ConsultantRows({
   consultant,
@@ -122,9 +125,9 @@ function AddStaffingCell(): ReactElement {
     <>
       <td className={`${"border-l-secondary border-l-2"}`}></td>
       <td>
-        <BaseModal modalRef={modalRef}>
+        <EasyModal modalRef={modalRef} title={"Legg til engasjement"}>
           <AddEngagementForm />
-        </BaseModal>
+        </EasyModal>
         <div className="flex flex-row items-center gap-2" onClick={openModal}>
           <button className="w-8 h-8 flex justify-center items-center rounded bg-primary/0 hover:bg-primary/10">
             <Plus size={16} className="text-primary" />
@@ -445,6 +448,7 @@ function HoveredWeek(props: {
         type: BookingType.Available,
         projectName: "",
         customerName: "Ledig Tid",
+        projectId: "",
       },
       hours: [
         {
@@ -524,6 +528,10 @@ function DetailedBookingRows(props: {
   detailedBooking: DetailedBooking;
 }) {
   const { consultant, detailedBooking } = props;
+  const [hourDragValue, setHourDragValue] = useState<number | undefined>(
+    undefined,
+  );
+
   return (
     <tr
       key={`${consultant.id}-details-${detailedBooking.bookingDetails.customerName}`}
@@ -557,21 +565,100 @@ function DetailedBookingRows(props: {
       {detailedBooking.hours
         .sort((a, b) => a.week - b.week)
         .map((hours) => (
-          <td
+          <DetailedBookingCell
             key={`${consultant.id}-details-${detailedBooking.bookingDetails.projectName}-${hours.week}`}
-            className="h-8 p-0.5"
-          >
-            <p
-              className={`small-medium p-2 rounded h-full flex items-center justify-end
-     ${getColorByStaffingType(
-       detailedBooking.bookingDetails.type ?? BookingType.Offer,
-     )} ${hours.hours == 0 && "bg-opacity-30"}`}
-            >
-              {hours.hours}
-            </p>
-          </td>
+            detailedBooking={detailedBooking}
+            detailedBookingHours={hours}
+            consultant={consultant}
+            hourDragValue={hourDragValue}
+            setHourDragValue={setHourDragValue}
+          />
         ))}
     </tr>
+  );
+}
+
+async function setDetailedBookingHours(
+  hours: number,
+  bookingType: string,
+  organisationName: string,
+  router: AppRouterInstance,
+  consultantId: string,
+  engagementId: string,
+  week: number,
+) {
+  const url = `/${organisationName}/bemanning/api/updateHours?hours=${hours}&bookingType=${bookingType}&consultantID=${consultantId}&engagementID=${engagementId}&selectedWeek=${week}`;
+
+  try {
+    const data = await fetch(url, {
+      method: "put",
+    });
+
+    router.refresh();
+  } catch (e) {
+    console.error("Error updating staffing", e);
+  }
+}
+
+function DetailedBookingCell({
+  detailedBooking,
+  detailedBookingHours,
+  consultant,
+  hourDragValue,
+  setHourDragValue,
+}: {
+  detailedBooking: DetailedBooking;
+  detailedBookingHours: WeeklyHours;
+  consultant: Consultant;
+  hourDragValue: number | undefined;
+  setHourDragValue: React.Dispatch<React.SetStateAction<number | undefined>>;
+}) {
+  const [hours, setHours] = useState(detailedBookingHours.hours);
+  const [oldHours, setOldHours] = useState(detailedBookingHours.hours);
+  const { setIsDisabledHotkeys } = useContext(FilteredContext);
+  const router = useRouter();
+
+  const organisationName = usePathname().split("/")[1];
+
+  function updateHours() {
+    setIsDisabledHotkeys(false);
+    (oldHours != hours ||
+      (hourDragValue != undefined && oldHours != hourDragValue)) &&
+      setDetailedBookingHours(
+        hourDragValue ?? hours,
+        detailedBooking.bookingDetails.type,
+        organisationName,
+        router,
+        consultant.id,
+        detailedBooking.bookingDetails.projectId,
+        detailedBookingHours.week,
+      );
+    setOldHours(hourDragValue ?? hours);
+  }
+
+  return (
+    <td className="h-8 p-0.5">
+      <input
+        type="number"
+        min="0"
+        step="7.5"
+        value={hours}
+        draggable={true}
+        disabled={detailedBooking.bookingDetails.type == BookingType.Vacation}
+        onChange={(e) => setHours(Number(e.target.value))}
+        onFocus={() => setIsDisabledHotkeys(true)}
+        onBlur={() => updateHours()}
+        onDragStart={() => setHourDragValue(hours)}
+        onDragEnterCapture={() => {
+          updateHours(), setHours(hourDragValue ?? hours);
+        }}
+        onDragEnd={() => setHourDragValue(undefined)}
+        className={`small-medium rounded text-right w-full py-2 pr-2
+     ${getColorByStaffingType(
+       detailedBooking.bookingDetails.type ?? BookingType.Offer,
+     )} ${hours == 0 && "bg-opacity-30"}`}
+      ></input>
+    </td>
   );
 }
 

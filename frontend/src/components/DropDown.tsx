@@ -1,7 +1,8 @@
 "use client";
 import { Check, ChevronDown } from "react-feather";
 import { ChevronUp } from "react-feather";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useOutsideClick } from "@/hooks/useOutsideClick";
 
 export default function DropDown({
   startingOption,
@@ -15,8 +16,14 @@ export default function DropDown({
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
   const [chosenOption, setChosenOption] = useState(startingOption);
 
+  const dropDownRef = useRef(null);
+
+  useOutsideClick(dropDownRef, () => {
+    if (isDropDownOpen) setIsDropDownOpen(false);
+  });
+
   return (
-    <div className="relative">
+    <div className="relative" ref={dropDownRef}>
       <button
         className={`w-[120px] py-2 px-3 flex flex-row justify-between items-center rounded-lg hover:bg-primary hover:bg-opacity-10 border hover:border-primary ${
           isDropDownOpen ? "border-primary" : "border-primary/50"

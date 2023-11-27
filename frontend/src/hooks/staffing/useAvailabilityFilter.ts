@@ -1,12 +1,14 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { useUrlRouteFilter } from "./useUrlRouteFilter";
+import { FilteredContext } from "../ConsultantFilterProvider";
 
 export function useAvailabilityFilter() {
   const { updateRoute } = useUrlRouteFilter();
   const { availabilityFilter } = useUrlRouteFilter();
   const availabilityFilterOn = availabilityFilter === "true";
+  const { isDisabledHotkeys } = useContext(FilteredContext);
 
   const setAvailabilityFilter = useCallback(
     (availabelFilterOn: Boolean) => {
@@ -22,6 +24,7 @@ export function useAvailabilityFilter() {
 
   useEffect(() => {
     function keyDownHandler(e: { code: string }) {
+      if (isDisabledHotkeys) return;
       if (e.code.includes("Period")) {
         toggleAvailabilityFilter();
       }
@@ -32,7 +35,7 @@ export function useAvailabilityFilter() {
     return () => {
       document.removeEventListener("keydown", keyDownHandler);
     };
-  }, [toggleAvailabilityFilter]);
+  }, [isDisabledHotkeys, toggleAvailabilityFilter]);
 
   return {
     availabilityFilterOn,

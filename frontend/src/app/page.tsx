@@ -1,5 +1,5 @@
-import SecondaryButton from "@/components/SecondaryButton";
-import { fetchWithToken } from "@/data/fetchWithToken";
+import ActionButton from "@/components/Buttons/ActionButton";
+import { fetchWithToken } from "@/data/apiCallsWithToken";
 import { Organisation } from "@/types";
 import Link from "next/link";
 
@@ -10,7 +10,7 @@ export default async function Root() {
       {orgs.map((o) => (
         <li key={o.urlKey}>
           <Link href={`/${o.urlKey}/bemanning`}>
-            <SecondaryButton label={o.name} />
+            <ActionButton variant="secondary">{o.name}</ActionButton>
           </Link>
         </li>
       ))}
