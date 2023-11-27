@@ -6,7 +6,7 @@ import {
   DetailedBooking,
   WeeklyHours,
 } from "@/types";
-import { ReactElement, useContext, useRef, useState } from "react";
+import { ReactElement, useContext, useEffect, useRef, useState } from "react";
 import {
   AlertTriangle,
   Briefcase,
@@ -410,6 +410,7 @@ function DetailedBookingRows(props: {
   const [hourDragValue, setHourDragValue] = useState<number | undefined>(
     undefined,
   );
+  const [isRowHovered, setIsRowHovered] = useState(false);
 
   return (
     <tr
@@ -451,6 +452,8 @@ function DetailedBookingRows(props: {
             consultant={consultant}
             hourDragValue={hourDragValue}
             setHourDragValue={setHourDragValue}
+            isRowHovered={isRowHovered}
+            setIsRowHovered={setIsRowHovered}
           />
         ))}
     </tr>
@@ -485,17 +488,23 @@ function DetailedBookingCell({
   consultant,
   hourDragValue,
   setHourDragValue,
+  isRowHovered,
+  setIsRowHovered,
 }: {
   detailedBooking: DetailedBooking;
   detailedBookingHours: WeeklyHours;
   consultant: Consultant;
   hourDragValue: number | undefined;
   setHourDragValue: React.Dispatch<React.SetStateAction<number | undefined>>;
+  isRowHovered: boolean;
+  setIsRowHovered: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [hours, setHours] = useState(detailedBookingHours.hours);
   const [isChangingHours, setIsChangingHours] = useState(false);
   const [oldHours, setOldHours] = useState(detailedBookingHours.hours);
   const { setIsDisabledHotkeys } = useContext(FilteredContext);
+
+  const [isInputFocused, setIsInputFocused] = useState(false);
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const organisationName = usePathname().split("/")[1];
@@ -517,27 +526,30 @@ function DetailedBookingCell({
     setOldHours(hourDragValue ?? hours);
   }
 
+  useEffect(() => {
+    if (!isRowHovered && inputRef.current) {
+      inputRef.current.blur();
+    }
+  }, [isRowHovered]);
+
   return (
     <td className="h-8 p-0.5">
       <div
         className={`flex flex-row justify-center items-center rounded px-3 border  ${getColorByStaffingType(
           detailedBooking.bookingDetails.type ?? BookingType.Offer,
         )} ${hours == 0 && "bg-opacity-30"} ${
-          inputRef.current && inputRef.current === document.activeElement
+          isInputFocused
             ? "border-primary"
-            : "border-transparent hover:border-primary/50"
+            : "border-transparent hover:border-primary/10"
         }`}
-        onMouseLeave={() => {
-          updateHours();
-          setIsChangingHours(false);
-          setIsDisabledHotkeys(false);
-          if (inputRef.current) {
-            inputRef.current.blur(); // Remove focus from the input field
-          }
-        }}
         onMouseEnter={() => {
           setIsChangingHours(true);
-          setIsDisabledHotkeys(true);
+          setIsRowHovered(true);
+        }}
+        onMouseLeave={() => {
+          setIsRowHovered(false);
+          setIsChangingHours(false);
+          !isInputFocused && updateHours();
         }}
       >
         {isChangingHours && numWeeks <= 12 && (
@@ -547,7 +559,7 @@ function DetailedBookingCell({
               numWeeks <= 8 && "md:flex"
             } ${numWeeks <= 12 && "lg:flex"} `}
             onClick={() => {
-              setHours(hours - 7.5);
+              setHours(Math.max(hours - 7.5, 0));
             }}
           >
             <Minus className="w-4 h-4" />
@@ -563,7 +575,16 @@ function DetailedBookingCell({
           draggable={true}
           disabled={detailedBooking.bookingDetails.type == BookingType.Vacation}
           onChange={(e) => setHours(Number(e.target.value))}
-          onFocus={(e) => e.target.select()}
+          onFocus={(e) => {
+            e.target.select();
+            setIsInputFocused(true);
+            setIsDisabledHotkeys(true);
+          }}
+          onBlur={() => {
+            updateHours();
+            setIsInputFocused(false);
+            setIsDisabledHotkeys(false);
+          }}
           onDragStart={() => setHourDragValue(hours)}
           onDragEnterCapture={() => {
             updateHours();
