@@ -466,7 +466,7 @@ function DetailedBookingRows(props: {
   );
 }
 
-async function setDetailedBookingHours(
+async function setSingularDetailedBookingHours(
   hours: number,
   bookingType: string,
   organisationName: string,
@@ -482,6 +482,28 @@ async function setDetailedBookingHours(
       method: "put",
     });
 
+    router.refresh();
+  } catch (e) {
+    console.error("Error updating staffing", e);
+  }
+}
+
+async function setSeveralDetailedBookingHours(
+  hours: number,
+  bookingType: string,
+  organisationName: string,
+  router: AppRouterInstance,
+  consultantId: string,
+  engagementId: string,
+  startWeek: number,
+  endWeek: number,
+) {
+  const url = `/${organisationName}/bemanning/api/updateHours/several?hours=${hours}&bookingType=${bookingType}&consultantID=${consultantId}&engagementID=${engagementId}&startWeek=${startWeek}&endWeek=${endWeek}`;
+
+  try {
+    const data = await fetch(url, {
+      method: "put",
+    });
     router.refresh();
   } catch (e) {
     console.error("Error updating staffing", e);
@@ -516,12 +538,12 @@ function DetailedBookingCell({
 
   const organisationName = usePathname().split("/")[1];
 
-  function updateHours() {
+  function updateSingularHours() {
     setIsDisabledHotkeys(false);
-    (oldHours != hours ||
-      (hourDragValue != undefined && oldHours != hourDragValue)) &&
-      setDetailedBookingHours(
-        hourDragValue ?? hours,
+    oldHours != hours &&
+      hourDragValue == undefined &&
+      setSingularDetailedBookingHours(
+        hours,
         detailedBooking.bookingDetails.type,
         organisationName,
         router,
@@ -529,7 +551,29 @@ function DetailedBookingCell({
         detailedBooking.bookingDetails.projectId,
         detailedBookingHours.week,
       );
-    setOldHours(hourDragValue ?? hours);
+    setOldHours(hours);
+  }
+
+  function updateDragHours() {
+    setIsDisabledHotkeys(false);
+    if (
+      hourDragValue == undefined ||
+      startDragWeek == undefined ||
+      currentDragWeek == undefined
+    ) {
+      return;
+    }
+    setSeveralDetailedBookingHours(
+      hourDragValue,
+      detailedBooking.bookingDetails.type,
+      organisationName,
+      router,
+      consultant.id,
+      detailedBooking.bookingDetails.projectId,
+      startDragWeek,
+      currentDragWeek,
+    );
+    setOldHours(hourDragValue);
   }
 
   function checkIfMarked() {
@@ -548,11 +592,7 @@ function DetailedBookingCell({
   }
 
   return (
-    <td
-      className={`h-8 p-0.5 ${
-        checkIfMarked() && "border-8 border-holiday_darker"
-      }`}
-    >
+    <td className="h-8 p-0.5">
       <input
         type="number"
         min="0"
@@ -562,24 +602,21 @@ function DetailedBookingCell({
         disabled={detailedBooking.bookingDetails.type == BookingType.Vacation}
         onChange={(e) => setHours(Number(e.target.value))}
         onFocus={() => setIsDisabledHotkeys(true)}
-        onBlur={() => updateHours()}
+        onBlur={() => updateSingularHours()}
         onDragStart={() => {
           setHourDragValue(hours), setStartDragWeek(detailedBookingHours.week);
         }}
-        onDragEnterCapture={() => {
-          updateHours(),
-            setHours(hourDragValue ?? hours),
-            setCurrentDragWeek(detailedBookingHours.week);
-        }}
+        onDragEnterCapture={() => setCurrentDragWeek(detailedBookingHours.week)}
         onDragEnd={() => {
-          setHourDragValue(undefined),
-            setCurrentDragWeek(undefined),
-            setStartDragWeek(undefined);
+          updateDragHours();
+          setHourDragValue(undefined);
+          setCurrentDragWeek(undefined);
+          setStartDragWeek(undefined);
         }}
         className={`small-medium rounded text-right w-full py-2 pr-2
      ${getColorByStaffingType(
        detailedBooking.bookingDetails.type ?? BookingType.Offer,
-     )} ${hours == 0 && "bg-opacity-30"}`}
+     )} ${hours == 0 && "bg-opacity-30"} ${checkIfMarked() && "ring"}`}
       ></input>
     </td>
   );

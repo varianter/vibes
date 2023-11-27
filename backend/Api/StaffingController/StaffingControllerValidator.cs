@@ -23,5 +23,11 @@ public static class StaffingControllerValidator
     {
         return storageService.LoadConsultants(orgUrlKey).Any(c => c.Id == staffingWriteModel.ConsultantId);
     }
+    
+    public static bool ValidateStaffingWriteModel(SeveralStaffingWriteModel staffingWriteModel, StorageService storageService,
+        string orgUrlKey)
+    {
+        return storageService.LoadConsultants(orgUrlKey).Any(c => c.Id == staffingWriteModel.ConsultantId);
+    }
 
 }
