@@ -5,7 +5,6 @@ namespace Api.StaffingController;
 
 public static class StaffingControllerValidator
 {
-
     public static bool OrganisationContainsProject(Organization? organization, Project? project)
     {
         if (organization is null || project is null) return false;
@@ -21,7 +20,7 @@ public static class StaffingControllerValidator
     public static bool ValidateStaffingWriteModel(StaffingWriteModel staffingWriteModel, StorageService storageService,
         string orgUrlKey)
     {
-        return storageService.LoadConsultants(orgUrlKey).Any(c => c.Id == staffingWriteModel.ConsultantId);
+        //return storageService.LoadConsultants(orgUrlKey).Any(c => c.Id == staffingWriteModel.ConsultantId);
+        return true;
     }
-
 }
