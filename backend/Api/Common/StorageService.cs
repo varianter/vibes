@@ -48,21 +48,10 @@ public class StorageService
         return consultant;
     }
 
-    public List<Project> LoadProjects(string orgUrlKey)
+    public Consultant? GetBaseConsultantById(int id)
     {
-        return _dbContext.Project
-            .Include(p => p.Customer)
-            .ThenInclude(c => c.Organization)
-            .Where(project => project.Customer.Organization.UrlKey == orgUrlKey)
-            .ToList();
-    }
-
-    public List<Absence> LoadAbsences(string orgUrlKey)
-    {
-        return _dbContext.Absence
-            .Include(a => a.Organization)
-            .Where(absence => absence.Organization.UrlKey == orgUrlKey)
-            .ToList();
+        return _dbContext.Consultant.Include(c => c.Department).ThenInclude(d => d.Organization)
+            .SingleOrDefault(c => c.Id == id);
     }
 
     private List<Consultant> LoadConsultantsFromDb(string orgUrlKey)
@@ -137,9 +126,9 @@ public class StorageService
 
     private PlannedAbsence CreateAbsence(PlannedAbsenceKey plannedAbsenceKey, double hours)
     {
-        var consultant = _dbContext.Consultant.SingleOrDefault(c => c.Id == plannedAbsenceKey.ConsultantId);
+        var consultant = _dbContext.Consultant.Find(plannedAbsenceKey.ConsultantId);
         var absence = _dbContext.Absence
-            .SingleOrDefault(absence => absence.Id == plannedAbsenceKey.AbsenceId);
+            .Find(plannedAbsenceKey.AbsenceId);
 
         var plannedAbsence = new PlannedAbsence
         {

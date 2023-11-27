@@ -144,9 +144,6 @@ public class ReadModelFactory
 
         var detailedBookingList = detailedBookings.ToList();
 
-        // Remove empty rows
-        //detailedBookingList.RemoveAll(detailedBooking => detailedBooking.Hours.Sum(hours => hours.Hours) == 0);
-
         return detailedBookingList;
     }
 
