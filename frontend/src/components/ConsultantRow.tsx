@@ -331,7 +331,6 @@ function HoveredWeek(props: {
       },
       hours: [
         {
-          id: 0,
           week: hoveredRowWeek,
           hours:
             consultant.bookings.find((b) => b.weekNumber == hoveredRowWeek)
@@ -459,7 +458,6 @@ function DetailedBookingRows(props: {
 }
 
 async function setDetailedBookingHours(
-  bookingId: number,
   hours: number,
   bookingType: string,
   organisationName: string,
@@ -467,23 +465,13 @@ async function setDetailedBookingHours(
   consultantId: string,
   engagementId: string,
   week: number,
-  setCellId: (cellId: number) => void,
 ) {
-  const url =
-    bookingId === 0
-      ? `/${organisationName}/bemanning/api/updateHours?hours=${hours}&bookingType=${bookingType}&consultantID=${consultantId}&engagementID=${engagementId}&selectedWeek=${week}`
-      : `/${organisationName}/bemanning/api/updateHours/${bookingId}?hours=${hours}&bookingType=${bookingType}`;
+  const url = `/${organisationName}/bemanning/api/updateHours?hours=${hours}&bookingType=${bookingType}&consultantID=${consultantId}&engagementID=${engagementId}&selectedWeek=${week}`;
 
   try {
     const data = await fetch(url, {
-      method: bookingId === 0 ? "post" : "put",
+      method: "put",
     });
-
-    const res = await data.json();
-
-    if (bookingId === 0) {
-      setCellId(res);
-    }
 
     router.refresh();
   } catch (e) {
@@ -505,8 +493,8 @@ function DetailedBookingCell({
   setHourDragValue: React.Dispatch<React.SetStateAction<number | undefined>>;
 }) {
   const [hours, setHours] = useState(detailedBookingHours.hours);
-  const [cellId, setCellId] = useState(detailedBookingHours.id);
   const [isChangingHours, setIsChangingHours] = useState(false);
+  const [oldHours, setOldHours] = useState(detailedBookingHours.hours);
   const { setIsDisabledHotkeys } = useContext(FilteredContext);
   const router = useRouter();
 
@@ -515,17 +503,18 @@ function DetailedBookingCell({
 
   function updateHours(hourlyChange?: number) {
     setIsDisabledHotkeys(false);
-    setDetailedBookingHours(
-      cellId,
-      hourDragValue ?? hours,
-      detailedBooking.bookingDetails.type,
-      organisationName,
-      router,
-      consultant.id,
-      detailedBooking.bookingDetails.projectId,
-      detailedBookingHours.week,
-      setCellId,
-    );
+    (oldHours != hours ||
+      (hourDragValue != undefined && oldHours != hourDragValue)) &&
+      setDetailedBookingHours(
+        hourDragValue ?? hours,
+        detailedBooking.bookingDetails.type,
+        organisationName,
+        router,
+        consultant.id,
+        detailedBooking.bookingDetails.projectId,
+        detailedBookingHours.week,
+      );
+    setOldHours(hourDragValue ?? hours);
   }
 
   return (

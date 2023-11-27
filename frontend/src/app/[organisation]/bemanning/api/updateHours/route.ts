@@ -1,8 +1,9 @@
-import { postWithToken } from "@/data/apiCallsWithToken";
+import { putWithToken } from "@/data/apiCallsWithToken";
 import { parseYearWeekFromString } from "@/data/urlUtils";
+import { StaffingWriteModel } from "@/types";
 import { NextResponse } from "next/server";
 
-export async function POST(
+export async function PUT(
   request: Request,
   { params }: { params: { organisation: string } },
 ) {
@@ -16,13 +17,19 @@ export async function POST(
     searchParams.get("selectedWeek") || undefined,
   );
 
+  const body: StaffingWriteModel = {
+    type: bookingType,
+    consultantId: Number(consultantID),
+    engagementId: Number(engagementID),
+    year: selectedWeek?.year ?? 0,
+    week: selectedWeek?.weekNumber ?? 0,
+    hours: Number(hours),
+  };
+
   const staffing =
-    (await postWithToken(
-      `${orgUrlKey}/consultants/staffing/new?Hours=${hours}&Type=${bookingType}&ConsultantID=${consultantID}&EngagementID=${engagementID}&${
-        selectedWeek
-          ? `Year=${selectedWeek.year}&Week=${selectedWeek.weekNumber}`
-          : ""
-      }`,
+    (await putWithToken<never, StaffingWriteModel>(
+      `${orgUrlKey}/consultants/staffing/update`,
+      body,
     )) ?? [];
 
   return NextResponse.json(staffing);
