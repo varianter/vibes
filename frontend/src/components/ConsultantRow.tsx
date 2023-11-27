@@ -497,7 +497,7 @@ function DetailedBookingCell({
   const [oldHours, setOldHours] = useState(detailedBookingHours.hours);
   const { setIsDisabledHotkeys } = useContext(FilteredContext);
   const router = useRouter();
-
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const organisationName = usePathname().split("/")[1];
   const numWeeks = detailedBooking.hours.length;
 
@@ -516,7 +516,6 @@ function DetailedBookingCell({
       );
     setOldHours(hourDragValue ?? hours);
   }
-  const inputRef = useRef<HTMLInputElement | null>(null);
 
   return (
     <td className="h-8 p-0.5">
