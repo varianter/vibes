@@ -1,5 +1,3 @@
-import { Degree } from "@/swagger-types";
-
 export interface BookedHoursPerWeek {
   year: number;
   weekNumber: number;
@@ -119,4 +117,9 @@ export interface ConsultantReadModelSingleWeek {
   bookings?: BookedHoursPerWeek;
   detailedBooking?: DetailedBooking;
   isOccupied?: boolean;
+}
+export enum Degree {
+  Master = "Master",
+  Bachelor = "Bachelor",
+  None = "None",
 }
