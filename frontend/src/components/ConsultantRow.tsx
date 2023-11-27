@@ -6,7 +6,7 @@ import {
   DetailedBooking,
   WeeklyHours,
 } from "@/types";
-import { ReactElement, useContext, useState } from "react";
+import { ReactElement, useContext, useRef, useState } from "react";
 import {
   AlertTriangle,
   Briefcase,
@@ -501,7 +501,7 @@ function DetailedBookingCell({
   const organisationName = usePathname().split("/")[1];
   const numWeeks = detailedBooking.hours.length;
 
-  function updateHours(hourlyChange?: number) {
+  function updateHours() {
     setIsDisabledHotkeys(false);
     (oldHours != hours ||
       (hourDragValue != undefined && oldHours != hourDragValue)) &&
@@ -516,22 +516,39 @@ function DetailedBookingCell({
       );
     setOldHours(hourDragValue ?? hours);
   }
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   return (
     <td className="h-8 p-0.5">
       <div
-        className={`flex flex-row justify-center items-center rounded px-3 py-2 ${getColorByStaffingType(
+        className={`flex flex-row justify-center items-center rounded px-3 border  ${getColorByStaffingType(
           detailedBooking.bookingDetails.type ?? BookingType.Offer,
-        )} ${hours == 0 && "bg-opacity-30"}`}
+        )} ${hours == 0 && "bg-opacity-30"} ${
+          inputRef.current && inputRef.current === document.activeElement
+            ? "border-primary"
+            : "border-transparent hover:border-primary/50"
+        }`}
         onMouseLeave={() => {
-          !hourDragValue && updateHours();
+          updateHours();
+          setIsChangingHours(false);
+          setIsDisabledHotkeys(false);
+          if (inputRef.current) {
+            inputRef.current.blur(); // Remove focus from the input field
+          }
+        }}
+        onMouseEnter={() => {
+          setIsChangingHours(true);
+          setIsDisabledHotkeys(true);
         }}
       >
-        {isChangingHours && numWeeks <= 8 && (
+        {isChangingHours && numWeeks <= 12 && (
           <button
-            className="p-2 rounded-full hover:bg-primary/10 hidden lg:flex"
+            tabIndex={-1}
+            className={`p-1 rounded-full hover:bg-primary/10 hidden ${
+              numWeeks <= 8 && "md:flex"
+            } ${numWeeks <= 12 && "lg:flex"} `}
             onClick={() => {
-              setHours(hours - 7.5), updateHours(-7.5);
+              setHours(hours - 7.5);
             }}
           >
             <Minus className="w-4 h-4" />
@@ -539,6 +556,7 @@ function DetailedBookingCell({
         )}
 
         <input
+          ref={inputRef}
           type="number"
           min="0"
           step="7.5"
@@ -546,24 +564,25 @@ function DetailedBookingCell({
           draggable={true}
           disabled={detailedBooking.bookingDetails.type == BookingType.Vacation}
           onChange={(e) => setHours(Number(e.target.value))}
-          onFocus={() => {
-            setIsDisabledHotkeys(true);
-            setIsChangingHours(true);
-          }}
+          onFocus={(e) => e.target.select()}
           onDragStart={() => setHourDragValue(hours)}
           onDragEnterCapture={() => {
-            updateHours(), setHours(hourDragValue ?? hours);
+            updateHours();
+            setHours(hourDragValue ?? hours);
           }}
           onDragEnd={() => setHourDragValue(undefined)}
           className={`small-medium rounded w-full py-2 bg-transparent focus:outline-none min-w-[24px] ${
-            isChangingHours && numWeeks <= 8 ? "text-center" : "text-right"
+            isChangingHours && numWeeks <= 12 ? "text-center" : "text-right"
           } `}
         ></input>
-        {isChangingHours && numWeeks <= 8 && (
+        {isChangingHours && numWeeks <= 12 && (
           <button
-            className="p-2 rounded-full hover:bg-primary/10 hidden lg:flex"
+            tabIndex={-1}
+            className={`p-1 rounded-full hover:bg-primary/10 hidden ${
+              numWeeks <= 8 && "md:flex"
+            } ${numWeeks <= 12 && "lg:flex"} `}
             onClick={() => {
-              setHours(hours + 7.5), updateHours(7.5);
+              setHours(hours + 7.5);
             }}
           >
             <Plus className="w-4 h-4" />
