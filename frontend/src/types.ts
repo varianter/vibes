@@ -121,3 +121,23 @@ export type Week = {
   year: number;
   weekNumber: number;
 };
+
+export interface ConsultantReadModelSingleWeek {
+  /** @format int32 */
+  id?: string;
+  name?: string | null;
+  email?: string | null;
+  competences?: string[] | null;
+  department?: string | null;
+  /** @format int32 */
+  yearsOfExperience?: number;
+  degree?: Degree;
+  bookings?: BookedHoursPerWeek;
+  detailedBooking?: DetailedBooking;
+  isOccupied?: boolean;
+}
+export enum Degree {
+  Master = "Master",
+  Bachelor = "Bachelor",
+  None = "None",
+}
