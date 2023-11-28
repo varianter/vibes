@@ -28,7 +28,7 @@ public class StorageService
         return loadedConsultants;
     }
 
-    public Consultant LoadConsultantForSingleWeek(string orgUrlKey, int consultantId, Week week)
+    public Consultant LoadConsultantForSingleWeek(int consultantId, Week week)
     {
         var consultant = _dbContext.Consultant
             .Include(c => c.Department)
@@ -41,6 +41,27 @@ public class StorageService
 
         consultant.PlannedAbsences = _dbContext.PlannedAbsence
             .Where(absence => absence.Week.Equals(week) && absence.ConsultantId == consultantId).Include(a => a.Absence)
+            .ToList();
+
+        consultant.Vacations = _dbContext.Vacation.Where(vacation => vacation.ConsultantId == consultantId).ToList();
+
+        return consultant;
+    }
+    
+    public Consultant LoadConsultantForWeekSet(int consultantId, List<Week> weeks)
+    { 
+        var consultant = _dbContext.Consultant
+            .Include(c => c.Department)
+            .ThenInclude(d => d.Organization)
+            .Single(c => c.Id == consultantId);
+        
+
+        consultant.Staffings = _dbContext.Staffing.Where(staffing =>
+                weeks.Contains(staffing.Week) && staffing.ConsultantId == consultantId).Include(s => s.Project)
+            .ThenInclude(p => p.Customer).ToList();
+
+        consultant.PlannedAbsences = _dbContext.PlannedAbsence
+            .Where(absence => weeks.Contains(absence.Week) && absence.ConsultantId == consultantId).Include(a => a.Absence)
             .ToList();
 
         consultant.Vacations = _dbContext.Vacation.Where(vacation => vacation.ConsultantId == consultantId).ToList();
@@ -156,6 +177,8 @@ public class StorageService
             staffing.Hours = hours;
 
         _dbContext.SaveChanges();
+        _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
+
     }
 
 
@@ -174,4 +197,69 @@ public class StorageService
         _dbContext.SaveChanges();
         _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
     }
+
+    public void UpdateOrCreateStaffings(int consultantId, int projectId, List<Week> weeks, double hours, string orgUrlKey)
+    {
+        var consultant = _dbContext.Consultant.Find(consultantId);
+        var project = _dbContext.Project
+            .Find(projectId);
+        foreach (var week in weeks)
+        {
+            var staffing = _dbContext.Staffing
+                .FirstOrDefault(s => s.ProjectId.Equals(projectId)
+                                     && s.ConsultantId.Equals(consultantId)
+                                     && s.Week.Equals(week));
+            if (staffing is null)
+            {
+                _dbContext.Add(new Staffing
+                {
+                    ProjectId = projectId,
+                    Project = project,
+                    ConsultantId = consultantId,
+                    Consultant = consultant,
+                    Hours = hours,
+                    Week = week,
+                });
+            }
+            else
+                staffing.Hours = hours;
+        }
+        _dbContext.SaveChanges();
+        _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
+
+    }
+
+
+    public void UpdateOrCreatePlannedAbsences(int consultantId, int absenceId, List<Week> weeks, double hours, string orgUrlKey)
+    {
+        var consultant = _dbContext.Consultant.Find(consultantId);
+        var absence = _dbContext.Absence
+            .Find(absenceId);
+        foreach (var week in weeks)
+        {
+            var plannedAbsence = _dbContext.PlannedAbsence
+                .FirstOrDefault(pa => pa.AbsenceId.Equals(absenceId)
+                                      && pa.ConsultantId.Equals(consultantId)
+                                      && pa.Week.Equals(week));
+
+            if (plannedAbsence is null)
+            {   
+                _dbContext.Add(new PlannedAbsence
+                {
+                    AbsenceId = absenceId,
+                    Absence = absence,
+                    ConsultantId = consultantId,
+                    Consultant = consultant,
+                    Hours = hours,
+                    Week = week
+                });
+            }
+            else
+                plannedAbsence.Hours = hours;
+        }
+        
+        _dbContext.SaveChanges();
+        _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
+    }
+    
 }

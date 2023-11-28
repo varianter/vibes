@@ -3,6 +3,7 @@ import {
   BookedHoursPerWeek,
   BookingType,
   Consultant,
+  ConsultantReadModelMultipleWeeks,
   ConsultantReadModelSingleWeek,
   DetailedBooking,
   WeeklyHours,
@@ -21,8 +22,7 @@ import {
 } from "react-feather";
 import InfoPill, { InfoPillVariant } from "./InfoPill";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
-import { usePathname, useRouter } from "next/navigation";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { usePathname } from "next/navigation";
 import { useModal } from "@/hooks/useModal";
 import EasyModal from "./EasyModal/EasyModal";
 
@@ -475,7 +475,6 @@ async function setSingularDetailedBookingHours(
   hours: number,
   bookingType: string,
   organisationName: string,
-  router: AppRouterInstance,
   consultantId: string,
   engagementId: string,
   week: number,
@@ -496,7 +495,6 @@ async function setSeveralDetailedBookingHours(
   hours: number,
   bookingType: string,
   organisationName: string,
-  router: AppRouterInstance,
   consultantId: string,
   engagementId: string,
   startWeek: number,
@@ -508,7 +506,7 @@ async function setSeveralDetailedBookingHours(
     const data = await fetch(url, {
       method: "put",
     });
-    router.refresh();
+    return (await data.json()) as ConsultantReadModelMultipleWeeks;
   } catch (e) {
     console.error("Error updating staffing", e);
   }
@@ -546,7 +544,6 @@ function DetailedBookingCell({
   const { setIsDisabledHotkeys } = useContext(FilteredContext);
 
   const [isInputFocused, setIsInputFocused] = useState(false);
-  const router = useRouter();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const organisationName = usePathname().split("/")[1];
   const numWeeks = detailedBooking.hours.length;
@@ -558,7 +555,6 @@ function DetailedBookingCell({
         hours,
         detailedBooking.bookingDetails.type,
         organisationName,
-        router,
         consultant.id,
         detailedBooking.bookingDetails.projectId,
         detailedBookingHours.week,
@@ -567,7 +563,7 @@ function DetailedBookingCell({
           // Use spread to make a new list, forcing a re-render
           ...upsertConsultantWithSingleWeekBooking(old, res),
         ]);
-        setOldHours(hourDragValue ?? hours);
+        setOldHours(hours);
       });
     }
   }
@@ -577,6 +573,11 @@ function DetailedBookingCell({
       inputRef.current.blur();
     }
   }, [isRowHovered]);
+
+  useEffect(() => {
+    setHours(detailedBookingHours.hours);
+    setOldHours(detailedBookingHours.hours);
+  }, [detailedBookingHours.hours]);
 
   function updateDragHours() {
     setIsDisabledHotkeys(false);
@@ -591,12 +592,17 @@ function DetailedBookingCell({
       hourDragValue,
       detailedBooking.bookingDetails.type,
       organisationName,
-      router,
       consultant.id,
       detailedBooking.bookingDetails.projectId,
       startDragWeek,
       currentDragWeek,
-    );
+    ).then((res) => {
+      setConsultants((old) => [
+        // Use spread to make a new list, forcing a re-render
+        ...upsertConsultantWithMultipleWeeksBooking(old, res),
+      ]);
+      setOldHours(hourDragValue);
+    });
   }
 
   function checkIfMarked() {
@@ -620,7 +626,7 @@ function DetailedBookingCell({
         className={`flex flex-row justify-center items-center rounded px-3 border  ${getColorByStaffingType(
           detailedBooking.bookingDetails.type ?? BookingType.Offer,
         )} ${hours == 0 && "bg-opacity-30"} ${
-          isInputFocused
+          isInputFocused || checkIfMarked()
             ? "border-primary"
             : "border-transparent hover:border-primary/10"
         }`}
@@ -656,7 +662,9 @@ function DetailedBookingCell({
           value={hours}
           draggable={true}
           disabled={detailedBooking.bookingDetails.type == BookingType.Vacation}
-          onChange={(e) => setHours(Number(e.target.value))}
+          onChange={(e) =>
+            hourDragValue == undefined && setHours(Number(e.target.value))
+          }
           onFocus={(e) => {
             e.target.select();
             setIsInputFocused(true);
@@ -682,7 +690,7 @@ function DetailedBookingCell({
           }}
           className={`small-medium rounded w-full py-2 bg-transparent focus:outline-none min-w-[24px] ${
             isChangingHours && numWeeks <= 12 ? "text-center" : "text-right"
-          }  ${checkIfMarked() && "ring"} `}
+          } `}
         ></input>
         {isChangingHours && numWeeks <= 12 && (
           <button
@@ -736,11 +744,61 @@ function upsertConsultantWithSingleWeekBooking(
   consultantToUpdate.detailedBooking = consultantToUpdate.detailedBooking ?? [];
 
   if (bookingIndex !== -1 && res.detailedBooking) {
-    const hoursIndex = consultantToUpdate.detailedBooking[0].hours.findIndex(
-      (h) => h.week == res.detailedBooking?.hours[0].week,
+    const detailedBookingIndex = consultantToUpdate.detailedBooking.findIndex(
+      (db) =>
+        db.bookingDetails.projectId ==
+        res.detailedBooking?.bookingDetails.projectId,
     );
-    consultantToUpdate.detailedBooking[0].hours[hoursIndex] =
+    const hoursIndex = consultantToUpdate.detailedBooking[
+      detailedBookingIndex
+    ].hours.findIndex((h) => h.week == res.detailedBooking?.hours[0].week);
+    consultantToUpdate.detailedBooking[detailedBookingIndex].hours[hoursIndex] =
       res.detailedBooking.hours[0];
+  }
+
+  const consultantIndex = old.findIndex((c) => c.id === `${res.id}`);
+  old[consultantIndex] = consultantToUpdate;
+
+  return [...old];
+}
+
+function upsertConsultantWithMultipleWeeksBooking(
+  old: Consultant[],
+  res?: ConsultantReadModelMultipleWeeks,
+) {
+  if (!res) return old;
+
+  const consultantToUpdate = old.find((c) => c.id === res.id);
+  if (!consultantToUpdate || !res) return old;
+
+  consultantToUpdate.bookings = consultantToUpdate.bookings ?? [];
+  res.bookings?.map((booking) => {
+    const bookingIndex = consultantToUpdate.bookings.findIndex(
+      (b) => b.year == booking.year && b.weekNumber == booking.weekNumber,
+    );
+    if (bookingIndex !== -1 && res.bookings) {
+      consultantToUpdate.bookings[bookingIndex] = booking;
+    }
+
+    consultantToUpdate.detailedBooking =
+      consultantToUpdate.detailedBooking ?? [];
+  });
+  if (res.detailedBooking) {
+    res.detailedBooking.map((detailedBooking) => {
+      const detailedBookingIndex = consultantToUpdate.detailedBooking.findIndex(
+        (db) =>
+          db.bookingDetails.projectId ==
+          detailedBooking.bookingDetails.projectId,
+      );
+      detailedBooking.hours.map((hour) => {
+        const hoursIndex = consultantToUpdate.detailedBooking[
+          detailedBookingIndex
+        ].hours.findIndex((h) => h.week == hour.week);
+        consultantToUpdate.detailedBooking[detailedBookingIndex].hours[
+          hoursIndex
+        ] = hour;
+      });
+    });
   }
 
   const consultantIndex = old.findIndex((c) => c.id === `${res.id}`);
