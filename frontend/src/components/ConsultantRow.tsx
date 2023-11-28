@@ -584,7 +584,8 @@ function DetailedBookingCell({
     if (
       hourDragValue == undefined ||
       startDragWeek == undefined ||
-      currentDragWeek == undefined
+      currentDragWeek == undefined ||
+      startDragWeek == currentDragWeek
     ) {
       return;
     }
