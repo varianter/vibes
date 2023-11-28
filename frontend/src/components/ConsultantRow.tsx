@@ -226,7 +226,7 @@ function AddEngagementForm() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="flex flex-col gap-6 pt-6 h-[400px]">
+      <div className="flex flex-col gap-6 pt-6 h-96">
         {/* Selected Customer */}
         <div className="flex flex-col gap-2">
           <p className="small text-black">Konsulenter</p>
@@ -277,13 +277,20 @@ function AddEngagementForm() {
           </label>
         </div>
         {/* Toggle (Checkbox) */}
-        <label className="flex flex-row justify-between normal items-center">
+        <label className="flex flex-row justify-between items-center">
           Fakturerbart
-          <input
-            type="checkbox"
-            checked={isFakturerbar}
-            onChange={handleToggleChange}
-          />
+          <div
+            className={`rounded-full w-[52px] h-7 flex items-center  ${
+              isFakturerbar ? "bg-primary" : "bg-black/20"
+            }`}
+            onClick={handleToggleChange}
+          >
+            <div
+              className={`m-[2px] bg-white rounded-full w-6 h-6 ${
+                isFakturerbar && " translate-x-6"
+              }`}
+            ></div>
+          </div>
         </label>
       </div>
 
