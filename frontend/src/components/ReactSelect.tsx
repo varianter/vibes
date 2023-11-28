@@ -1,25 +1,38 @@
 import React from "react";
-import Select from "react-select";
+import Select, { MultiValue } from "react-select";
 
 export type SelectOption = { value: string; label: string };
 
 export default function ReactSelect({
   options,
-  selectedValue,
-  onChange,
+  selectedSingleOptionValue,
+  selectedMultipleOptionsValue,
+  onSingleOptionChange,
+  onMultipleOptionsChange,
   isMultipleOptions = false,
 }: {
   options: SelectOption[];
-  selectedValue: SelectOption | null;
-  onChange: (arg: SelectOption) => void;
+  selectedSingleOptionValue?: SelectOption | null;
+  selectedMultipleOptionsValue?: MultiValue<SelectOption> | null;
+  onSingleOptionChange?: (arg: SelectOption) => void;
+  onMultipleOptionsChange?: (arg: MultiValue<SelectOption>) => void;
   isMultipleOptions?: boolean;
 }) {
   return (
     <Select
       isMulti={isMultipleOptions}
       options={options}
-      value={selectedValue}
-      onChange={(a) => a && onChange(a)}
+      value={
+        isMultipleOptions
+          ? selectedMultipleOptionsValue
+          : selectedSingleOptionValue
+      }
+      onChange={(a) => {
+        a && isMultipleOptions
+          ? onMultipleOptionsChange?.(a as MultiValue<SelectOption>)
+          : onSingleOptionChange?.(a as SelectOption);
+      }}
+      classNames={{ menu: () => "max-h-[120px] bg-white overflow-hidden" }}
     />
   );
 }

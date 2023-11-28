@@ -32,8 +32,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { useModal } from "@/hooks/useModal";
 import EasyModal from "./EasyModal/EasyModal";
-import TmpReactSelect, { SelectOption } from "./TmpReactSelect";
+import ReactSelect, { SelectOption } from "./ReactSelect";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
+import { MultiValue } from "react-select";
 
 export default function ConsultantRows({
   consultant,
@@ -129,8 +130,14 @@ function AddStaffingCell(): ReactElement {
     <>
       <td className={`${"border-l-secondary border-l-2"}`}></td>
       <td>
-        <EasyModal modalRef={modalRef} title={"Legg til engasjement"}>
-          <AddEngagementForm />
+        <EasyModal
+          modalRef={modalRef}
+          title={"Legg til engasjement"}
+          showCloseButton={true}
+        >
+          <div className="min-h-[300px]">
+            <AddEngagementForm />
+          </div>
         </EasyModal>
         <div className="flex flex-row items-center gap-2" onClick={openModal}>
           <button className="w-8 h-8 flex justify-center items-center rounded bg-primary/0 hover:bg-primary/10">
@@ -144,14 +151,16 @@ function AddStaffingCell(): ReactElement {
 }
 
 function AddEngagementForm() {
-  const { customers } = useContext(FilteredContext);
+  const { customers, consultants } = useContext(FilteredContext);
   // State for select components
   const [selectedCustomer, setSelectedCustomer] = useState<SelectOption | null>(
     null,
   );
-
   const [selectedEngagement, setSelectedEngagement] =
     useState<SelectOption | null>(null);
+
+  const [selectedConsultants, setSelectedConsultants] =
+    useState<MultiValue<SelectOption> | null>(null);
 
   const customerOptions = customers.map(
     (c) =>
@@ -171,6 +180,15 @@ function AddEngagementForm() {
             label: `${e.engagementName}`,
           }) as SelectOption,
       ) ?? [];
+
+  const consultantOptions =
+    consultants.map(
+      (c) =>
+        ({
+          value: `${c.id}`,
+          label: `${c.name}`,
+        }) as SelectOption,
+    ) ?? [];
 
   // State for radio button group
   const [radioValue, setRadioValue] = useState("Tilbud");
@@ -208,49 +226,66 @@ function AddEngagementForm() {
 
   return (
     <form onSubmit={handleSubmit}>
-      {/* Selected Customer */}
-      <TmpReactSelect
-        options={customerOptions}
-        selectedValue={selectedCustomer}
-        onChange={handleSelectedCustomerChange}
-      />
-      <TmpReactSelect
-        options={projectOptions}
-        onChange={handleSelectedEngagementChange}
-        selectedValue={selectedEngagement}
-      />
-
-      {/* Radio Button Group */}
-      <div>
-        <label>
-          <input
-            type="radio"
-            value="Tilbud"
-            checked={radioValue === "Tilbud"}
-            onChange={handleRadioChange}
+      <div className="flex flex-col gap-6 pt-6 h-[400px]">
+        {/* Selected Customer */}
+        <div className="flex flex-col gap-2">
+          <p className="small text-black">Konsulenter</p>
+          <ReactSelect
+            options={consultantOptions}
+            selectedMultipleOptionsValue={selectedConsultants}
+            onMultipleOptionsChange={setSelectedConsultants}
+            isMultipleOptions={true}
           />
-          Tilbud
-        </label>
-        <label>
-          <input
-            type="radio"
-            value="Ordre"
-            checked={radioValue === "Ordre"}
-            onChange={handleRadioChange}
+        </div>
+        <div className="flex flex-col gap-2">
+          <p className="small text-black">Kunde</p>
+          <ReactSelect
+            options={customerOptions}
+            selectedSingleOptionValue={selectedCustomer}
+            onSingleOptionChange={handleSelectedCustomerChange}
+            isMultipleOptions={false}
           />
-          Ordre
+        </div>
+        <div className="flex flex-col gap-2">
+          <p className="small text-black">Engasjement</p>
+          <ReactSelect
+            options={projectOptions}
+            onSingleOptionChange={handleSelectedEngagementChange}
+            selectedSingleOptionValue={selectedEngagement}
+            isMultipleOptions={false}
+          />
+        </div>
+        {/* Radio Button Group */}
+        <div className="flex flex-row gap-4">
+          <label className="flex gap-2 normal items-center">
+            <input
+              type="radio"
+              value="Tilbud"
+              checked={radioValue === "Tilbud"}
+              onChange={handleRadioChange}
+            />
+            Tilbud
+          </label>
+          <label className="flex gap-2 normal items-center">
+            <input
+              type="radio"
+              value="Ordre"
+              checked={radioValue === "Ordre"}
+              onChange={handleRadioChange}
+            />
+            Ordre
+          </label>
+        </div>
+        {/* Toggle (Checkbox) */}
+        <label className="flex flex-row justify-between normal items-center">
+          Fakturerbart
+          <input
+            type="checkbox"
+            checked={isFakturerbar}
+            onChange={handleToggleChange}
+          />
         </label>
       </div>
-
-      {/* Toggle (Checkbox) */}
-      <label>
-        Fakturerbar:
-        <input
-          type="checkbox"
-          checked={isFakturerbar}
-          onChange={handleToggleChange}
-        />
-      </label>
 
       {/* Submit Button */}
       <button type="submit">Submit</button>
