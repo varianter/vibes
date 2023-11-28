@@ -22,6 +22,18 @@
   src: url(../../public/fonts/Graphik-Bold-Web.woff2) format("truetype");
 }
 
+@layer base {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield; /* Firefox */
+    appearance: textfield;
+  }
+}
+
 @layer components {
   .dropdown-shadow {
     box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.3);
