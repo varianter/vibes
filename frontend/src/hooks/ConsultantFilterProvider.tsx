@@ -5,10 +5,11 @@ import {
   Department,
   EngagementPerCustomerReadModel,
 } from "@/types";
-import { ReactNode, createContext, useState } from "react";
+import React, { createContext, ReactNode, useEffect, useState } from "react";
 
 type FilterContextType = {
   consultants: Consultant[];
+  setConsultants: React.Dispatch<React.SetStateAction<Consultant[]>>;
   departments: Department[];
   customers: EngagementPerCustomerReadModel[];
   isDisabledHotkeys: Boolean;
@@ -17,6 +18,7 @@ type FilterContextType = {
 
 export const FilteredContext = createContext<FilterContextType>({
   consultants: [],
+  setConsultants: () => null,
   departments: [],
   customers: [],
   isDisabledHotkeys: false,
@@ -30,9 +32,20 @@ export function ConsultantFilterProvider(props: {
   children: ReactNode;
 }) {
   const [isDisabledHotkeys, setIsDisabledHotkeys] = useState(false);
+  const [consultants, setConsultants] = useState(props.consultants ?? []);
+
+  useEffect(() => setConsultants(props.consultants), [props.consultants]);
 
   return (
-    <FilteredContext.Provider value={{ ...props }}>
+    <FilteredContext.Provider
+      value={{
+        ...props,
+        isDisabledHotkeys,
+        setIsDisabledHotkeys,
+        consultants,
+        setConsultants,
+      }}
+    >
       {props.children}
     </FilteredContext.Provider>
   );
