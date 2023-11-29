@@ -5,8 +5,6 @@ import { useSelectedWeek } from "@/hooks/staffing/useSelectedWeek";
 import DropDown from "./DropDown";
 import { useUrlRouteFilter } from "@/hooks/staffing/useUrlRouteFilter";
 import ActionButton from "./Buttons/ActionButton";
-import { LargeModal } from "./EasyModal/LargeModal";
-import ButtonExampleModal from "./EasyModal/ButtonExampleModal";
 
 export default function WeekSelection() {
   const weekSpanOptions = ["8 uker", "12 uker", "26 uker"];
