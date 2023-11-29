@@ -45,11 +45,10 @@ function EasyModal(props: EasyModalProps) {
           <ActionButton
             variant="primary"
             onClick={handleSave}
-            small
             fullWidth
-            iconLeft={<Check />}
+            isIconBtn={false}
           >
-            Lagre
+            Legg til
           </ActionButton>
         </div>
       </div>
