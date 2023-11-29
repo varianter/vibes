@@ -73,7 +73,13 @@ export default function FilteredConsultantList() {
                       </p>
                     </div>
                   ) : (
-                    <div className="flex flex-row gap-2 justify-end">
+                    <div
+                      className={`flex justify-end ${
+                        weekSpan >= 26
+                          ? "min-h-[30px] flex-col mb-2 gap-[1px] items-end"
+                          : "flex-row gap-2"
+                      }`}
+                    >
                       {booking.bookingModel.totalHolidayHours > 0 && (
                         <InfoPill
                           text={booking.bookingModel.totalHolidayHours.toFixed(
