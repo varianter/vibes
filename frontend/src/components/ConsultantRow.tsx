@@ -33,6 +33,7 @@ export default function ConsultantRows({
 }) {
   const [isListElementVisible, setIsListElementVisible] = useState(false);
   const [isRowHovered, setIsRowHovered] = useState(false);
+  const [isAddStaffingHovered, setIsAddStaffingHovered] = useState(false);
   const [hoveredRowWeek, setHoveredRowWeek] = useState(-1);
 
   const columnCount = consultant.bookings.length ?? 0;
@@ -110,23 +111,30 @@ export default function ConsultantRows({
         <tr>
           <td className={`${"border-l-secondary border-l-2"}`}></td>
           <td>
-            <div className="flex flex-row items-center gap-2">
-              <button
-                className="w-8 h-8 flex justify-center items-center rounded bg-primary/0 hover:bg-primary/10"
-                onClick={openModal}
+            <button
+              onClick={openModal}
+              className="flex flex-row items-center gap-2"
+              onMouseEnter={() => setIsAddStaffingHovered(true)}
+              onMouseLeave={() => setIsAddStaffingHovered(false)}
+            >
+              <span
+                className={`w-8 h-8 flex justify-center items-center rounded bg-primary/0 ${
+                  isAddStaffingHovered && "bg-primary/10"
+                }`}
               >
                 <Plus size={16} className="text-primary" />
-              </button>
-              <EasyModal
-                modalRef={modalRef}
-                title={"Nytt Engasjement"}
-                onClose={() => console.log("onClose")}
-                showCloseButton
-              >
-                <div className="h-[300px]"></div>
-              </EasyModal>
+              </span>
+
               <p className="small text-primary">Legg til bemanning</p>
-            </div>
+            </button>
+            <EasyModal
+              modalRef={modalRef}
+              title={"Nytt Engasjement"}
+              onClose={() => console.log("onClose")}
+              showCloseButton
+            >
+              <div className="h-[300px]"></div>
+            </EasyModal>
           </td>
         </tr>
       )}
