@@ -40,7 +40,7 @@ export default function ActionButton({
   const disabledClass = disabled ? "bg-opacity-50" : "";
   const fullWidthClass = fullWidth ? "w-full" : "";
 
-  const paddingClass = isIconBtn ? "p-2" : "p-3";
+  const paddingClass = isIconBtn ? "px-3 py-2" : "p-3";
   const roundedBorders = small ? "rounded h-8" : "rounded-lg h-10";
 
   return (
