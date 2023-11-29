@@ -82,11 +82,62 @@ public class ConsultantController : ControllerBase
             throw;
         }
 
-        return new ReadModelFactory(service).GetConsultantReadModelForWeek(orgUrlKey,
+        return new ReadModelFactory(service).GetConsultantReadModelForWeek(
             staffingWriteModel.ConsultantId, selectedWeek);
+    }
+
+    [HttpPut]
+    [Route("staffing/update/several")]
+    public ActionResult<ConsultantReadModel> Put(
+        [FromRoute] string orgUrlKey,
+        [FromBody] SeveralStaffingWriteModel severalStaffingWriteModel
+    )
+    {
+        var service = new StorageService(_cache, _context);
+
+        if (!StaffingControllerValidator.ValidateStaffingWriteModel(severalStaffingWriteModel, service, orgUrlKey))
+        {
+            return BadRequest();
+        }
+
+        var startWeek = new Week(severalStaffingWriteModel.StartYear, severalStaffingWriteModel.StartWeek);
+        var endWeek = new Week(severalStaffingWriteModel.EndYear, severalStaffingWriteModel.EndWeek);
+
+        var weekSet = startWeek.CompareTo(endWeek) < 0 ? startWeek.GetNextWeeks(endWeek) : endWeek.GetNextWeeks(startWeek);
+        try
+        {
+
+                switch (severalStaffingWriteModel.Type)
+                {
+                    case BookingType.Booking:
+                    case BookingType.Offer:
+                        service.UpdateOrCreateStaffings(severalStaffingWriteModel.ConsultantId, severalStaffingWriteModel.EngagementId, weekSet, severalStaffingWriteModel.Hours, orgUrlKey);
+                        break;
+                    case BookingType.PlannedAbsence:
+                        service.UpdateOrCreatePlannedAbsences(severalStaffingWriteModel.ConsultantId, severalStaffingWriteModel.EngagementId, weekSet, severalStaffingWriteModel.Hours, orgUrlKey);
+                        break;
+                    case BookingType.Vacation:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(severalStaffingWriteModel.Type), severalStaffingWriteModel.Type, "Invalid bookingType");
+                }
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+
+        return new ReadModelFactory(service).GetConsultantReadModelForWeeks(
+            severalStaffingWriteModel.ConsultantId, weekSet );;
     }
 }
 
 public record StaffingWriteModel(BookingType Type, int ConsultantId, int EngagementId, int Year, int Week,
+   [property: LongValidator(MinValue = 0, MaxValue = 100)]
+    double Hours);
+
+public record SeveralStaffingWriteModel(BookingType Type, int ConsultantId, int EngagementId, int StartYear, int StartWeek, int EndYear, int EndWeek,
     [property: LongValidator(MinValue = 0, MaxValue = 100)]
     double Hours);

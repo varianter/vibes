@@ -23,7 +23,12 @@ export default function StaffingSums({
         </td>
         {totalBillableHours.map((totalBillableHour, index) => (
           <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
-            <p className="small-medium text-right">{totalBillableHour}</p>
+            <p className="small-medium text-right">
+              {totalBillableHour.toLocaleString("nb-No", {
+                maximumFractionDigits: 1,
+                minimumFractionDigits: 1,
+              })}
+            </p>
           </td>
         ))}
       </tr>
@@ -35,7 +40,10 @@ export default function StaffingSums({
           (totalBillableAndOfferedHour, index) => (
             <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
               <p className="small-medium text-right">
-                {totalBillableAndOfferedHour}
+                {totalBillableAndOfferedHour.toLocaleString("nb-No", {
+                  maximumFractionDigits: 1,
+                  minimumFractionDigits: 1,
+                })}
               </p>
             </td>
           ),
@@ -48,7 +56,7 @@ export default function StaffingSums({
         {weeklyInvoiceRatesArray.map((indexRates, index) => (
           <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
             <p className="small-medium text-right">
-              {Math.floor(indexRates * 100)}
+              {Math.round(indexRates * 100)}%
             </p>
           </td>
         ))}
