@@ -57,15 +57,29 @@ export default function FilteredConsultantList() {
                 {isCurrentWeek(booking.weekNumber, booking.year) ? (
                   <div className="flex flex-row gap-2 items-center justify-end">
                     <div className="h-2 w-2 rounded-full bg-primary" />
-                    <p className="normal-medium text-right">
+                    <p
+                      className={`normal-medium ${
+                        weekSpan >= 26 ? "text-center" : "text-right"
+                      }`}
+                    >
                       {booking.weekNumber}
                     </p>
                   </div>
                 ) : (
-                  <p className="normal text-right">{booking.weekNumber}</p>
+                  <p
+                    className={`normal ${
+                      weekSpan >= 26 ? "text-center" : "text-right"
+                    }`}
+                  >
+                    {booking.weekNumber}
+                  </p>
                 )}
 
-                <p className="xsmall text-black/75 text-right">
+                <p
+                  className={`xsmall text-black/75 text-right ${
+                    weekSpan >= 26 && "hidden"
+                  }`}
+                >
                   {booking.dateString}
                 </p>
               </th>
