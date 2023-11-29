@@ -68,11 +68,7 @@ export default function FilteredConsultantList() {
                       )}
                       <div className="h-2 w-2 rounded-full bg-primary" />
 
-                      <p
-                        className={`normal-medium ${
-                          weekSpan >= 26 ? "text-center" : "text-right"
-                        }`}
-                      >
+                      <p className="normal-medium text-right">
                         {booking.weekNumber}
                       </p>
                     </div>
@@ -88,11 +84,7 @@ export default function FilteredConsultantList() {
                           variant={weekSpan < 24 ? "wide" : "medium"}
                         />
                       )}
-                      <p
-                        className={`normal-medium ${
-                          weekSpan >= 26 ? "text-center" : "text-right"
-                        }`}
-                      >
+                      <p className="normal-medium text-right">
                         {booking.weekNumber}
                       </p>
                     </div>
