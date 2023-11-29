@@ -56,11 +56,7 @@ export default function StaffingSums({
         {weeklyInvoiceRatesArray.map((indexRates, index) => (
           <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
             <p className="small-medium text-right">
-              {Math.floor(indexRates * 100).toLocaleString("nb-No", {
-                maximumFractionDigits: 1,
-                minimumFractionDigits: 1,
-              })}
-              %
+              {Math.round(indexRates * 100)}%
             </p>
           </td>
         ))}
