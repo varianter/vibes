@@ -10,4 +10,12 @@ public static class StaffingControllerValidator
         return storageService.GetBaseConsultantById(staffingWriteModel.ConsultantId)?.Department.Organization.UrlKey ==
                orgUrlKey;
     }
+
+    public static bool ValidateStaffingWriteModel(SeveralStaffingWriteModel staffingWriteModel, StorageService storageService,
+        string orgUrlKey)
+    {
+        return storageService.GetBaseConsultantById(staffingWriteModel.ConsultantId)?.Department.Organization.UrlKey ==
+               orgUrlKey;
+    }
+
 }

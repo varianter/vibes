@@ -81,6 +81,24 @@ export interface StaffingWriteModel {
   hours: number;
 }
 
+export interface SeveralStaffingWriteModel {
+  type: string;
+  /** @format int32 */
+  consultantId: number;
+  /** @format int32 */
+  engagementId: number;
+  /** @format int32 */
+  startYear: number;
+  /** @format int32 */
+  startWeek: number;
+  /** @format int32 */
+  endYear: number;
+  /** @format int32 */
+  endWeek: number;
+  /** @format double */
+  hours: number;
+}
+
 export type Department = {
   id: string;
   name: string;
@@ -118,6 +136,22 @@ export interface ConsultantReadModelSingleWeek {
   detailedBooking?: DetailedBooking;
   isOccupied?: boolean;
 }
+
+export interface ConsultantReadModelMultipleWeeks {
+  /** @format int32 */
+  id?: string;
+  name?: string | null;
+  email?: string | null;
+  competences?: string[] | null;
+  department?: string | null;
+  /** @format int32 */
+  yearsOfExperience?: number;
+  degree?: Degree;
+  bookings?: BookedHoursPerWeek[];
+  detailedBooking?: DetailedBooking[];
+  isOccupied?: boolean;
+}
+
 export enum Degree {
   Master = "Master",
   Bachelor = "Bachelor",
