@@ -433,9 +433,9 @@ function DetailedBookingRows(props: {
       className="h-fit"
     >
       <td className="border-l-secondary border-l-2"></td>
-      <td className="flex flex-row gap-2 justify-start p-0.5">
+      <td className="flex flex-row gap-2 justify-start">
         <div
-          className={`h-8 w-8 flex justify-center align-middle items-center rounded ${getColorByStaffingType(
+          className={`h-8 w-8 flex justify-center items-center rounded ${getColorByStaffingType(
             detailedBooking.bookingDetails.type,
           )}`}
         >
