@@ -3,8 +3,6 @@ import {
   BookedHoursPerWeek,
   BookingType,
   Consultant,
-  ConsultantReadModelMultipleWeeks,
-  ConsultantReadModelSingleWeek,
   DetailedBooking,
   WeeklyHours,
 } from "@/types";
@@ -471,42 +469,42 @@ function DetailedBookingRows(props: {
   );
 }
 
-async function setSingularDetailedBookingHours(
-  hours: number,
-  bookingType: string,
-  organisationName: string,
-  consultantId: string,
-  engagementId: string,
-  week: number,
-) {
-  const url = `/${organisationName}/bemanning/api/updateHours?hours=${hours}&bookingType=${bookingType}&consultantID=${consultantId}&engagementID=${engagementId}&selectedWeek=${week}`;
-
-  try {
-    const data = await fetch(url, {
-      method: "put",
-    });
-    return (await data.json()) as ConsultantReadModelSingleWeek;
-  } catch (e) {
-    console.error("Error updating staffing", e);
-  }
+interface updateBookingHoursProps {
+  hours: number;
+  bookingType: BookingType;
+  organisationUrl: string;
+  consultantId: string;
+  bookingId: string;
+  startWeek: number;
+  endWeek?: number;
 }
 
-async function setSeveralDetailedBookingHours(
-  hours: number,
-  bookingType: string,
-  organisationName: string,
-  consultantId: string,
-  engagementId: string,
-  startWeek: number,
-  endWeek: number,
-) {
-  const url = `/${organisationName}/bemanning/api/updateHours/several?hours=${hours}&bookingType=${bookingType}&consultantID=${consultantId}&engagementID=${engagementId}&startWeek=${startWeek}&endWeek=${endWeek}`;
+export interface updateBookingHoursBody {
+  hours: number;
+  bookingType: BookingType;
+  consultantId: string;
+  bookingId: string;
+  startWeek: number;
+  endWeek?: number;
+}
+
+async function setDetailedBookingHours(props: updateBookingHoursProps) {
+  const url = `/${props.organisationUrl}/bemanning/api/updateHours`;
+  const body: updateBookingHoursBody = {
+    hours: props.hours,
+    bookingType: props.bookingType,
+    consultantId: props.consultantId,
+    bookingId: props.bookingId,
+    startWeek: props.startWeek,
+    endWeek: props.endWeek,
+  };
 
   try {
     const data = await fetch(url, {
       method: "put",
+      body: JSON.stringify(body),
     });
-    return (await data.json()) as ConsultantReadModelMultipleWeeks;
+    return (await data.json()) as Consultant;
   } catch (e) {
     console.error("Error updating staffing", e);
   }
@@ -551,17 +549,17 @@ function DetailedBookingCell({
   function updateSingularHours() {
     setIsDisabledHotkeys(false);
     if (oldHours != hours && hourDragValue == undefined) {
-      setSingularDetailedBookingHours(
-        hours,
-        detailedBooking.bookingDetails.type,
-        organisationName,
-        consultant.id,
-        detailedBooking.bookingDetails.projectId,
-        detailedBookingHours.week,
-      ).then((res) => {
+      setDetailedBookingHours({
+        hours: hours,
+        bookingType: detailedBooking.bookingDetails.type,
+        organisationUrl: organisationName,
+        consultantId: consultant.id,
+        bookingId: detailedBooking.bookingDetails.projectId,
+        startWeek: detailedBookingHours.week,
+      }).then((res) => {
         setConsultants((old) => [
           // Use spread to make a new list, forcing a re-render
-          ...upsertConsultantWithSingleWeekBooking(old, res),
+          ...upsertConsultantBooking(old, res),
         ]);
         setOldHours(hours);
       });
@@ -589,18 +587,18 @@ function DetailedBookingCell({
     ) {
       return;
     }
-    setSeveralDetailedBookingHours(
-      hourDragValue,
-      detailedBooking.bookingDetails.type,
-      organisationName,
-      consultant.id,
-      detailedBooking.bookingDetails.projectId,
-      startDragWeek,
-      currentDragWeek,
-    ).then((res) => {
+    setDetailedBookingHours({
+      hours: hourDragValue,
+      bookingType: detailedBooking.bookingDetails.type,
+      organisationUrl: organisationName,
+      consultantId: consultant.id,
+      bookingId: detailedBooking.bookingDetails.projectId,
+      startWeek: startDragWeek,
+      endWeek: currentDragWeek,
+    }).then((res) => {
       setConsultants((old) => [
         // Use spread to make a new list, forcing a re-render
-        ...upsertConsultantWithMultipleWeeksBooking(old, res),
+        ...upsertConsultantBooking(old, res),
       ]);
       setOldHours(hourDragValue);
     });
@@ -724,49 +722,7 @@ function getInfopillVariantByColumnCount(count: number): InfoPillVariant {
   }
 }
 
-function upsertConsultantWithSingleWeekBooking(
-  old: Consultant[],
-  res?: ConsultantReadModelSingleWeek,
-) {
-  if (!res) return old;
-
-  const consultantToUpdate = old.find((c) => c.id === res.id);
-  if (!consultantToUpdate || !res) return old;
-
-  consultantToUpdate.bookings = consultantToUpdate.bookings ?? [];
-  const bookingIndex = consultantToUpdate.bookings.findIndex(
-    (b) =>
-      b.year == res.bookings?.year && b.weekNumber == res.bookings.weekNumber,
-  );
-  if (bookingIndex !== -1 && res.bookings) {
-    consultantToUpdate.bookings[bookingIndex] = res.bookings;
-  }
-
-  consultantToUpdate.detailedBooking = consultantToUpdate.detailedBooking ?? [];
-
-  if (bookingIndex !== -1 && res.detailedBooking) {
-    const detailedBookingIndex = consultantToUpdate.detailedBooking.findIndex(
-      (db) =>
-        db.bookingDetails.projectId ==
-        res.detailedBooking?.bookingDetails.projectId,
-    );
-    const hoursIndex = consultantToUpdate.detailedBooking[
-      detailedBookingIndex
-    ].hours.findIndex((h) => h.week == res.detailedBooking?.hours[0].week);
-    consultantToUpdate.detailedBooking[detailedBookingIndex].hours[hoursIndex] =
-      res.detailedBooking.hours[0];
-  }
-
-  const consultantIndex = old.findIndex((c) => c.id === `${res.id}`);
-  old[consultantIndex] = consultantToUpdate;
-
-  return [...old];
-}
-
-function upsertConsultantWithMultipleWeeksBooking(
-  old: Consultant[],
-  res?: ConsultantReadModelMultipleWeeks,
-) {
+function upsertConsultantBooking(old: Consultant[], res?: Consultant) {
   if (!res) return old;
 
   const consultantToUpdate = old.find((c) => c.id === res.id);
