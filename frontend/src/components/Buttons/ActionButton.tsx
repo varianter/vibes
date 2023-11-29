@@ -12,7 +12,7 @@ export type ActionButtonProps = {
   disabled?: true;
   children?: React.ReactNode;
   className?: string;
-  isIconBtn?: true;
+  isIconBtn?: boolean;
 };
 
 export default function ActionButton({
@@ -25,7 +25,7 @@ export default function ActionButton({
   onClick,
   children,
   className = "",
-  isIconBtn,
+  isIconBtn = true,
 }: ActionButtonProps) {
   const variantClass =
     {
@@ -40,7 +40,7 @@ export default function ActionButton({
   const disabledClass = disabled ? "bg-opacity-50" : "";
   const fullWidthClass = fullWidth ? "w-full" : "";
 
-  const paddingClass = isIconBtn ? "p-2" : "px-3 py-2";
+  const paddingClass = isIconBtn ? "p-2" : "p-3";
   const roundedBorders = small ? "rounded h-8" : "rounded-lg h-10";
 
   return (
