@@ -1,4 +1,4 @@
-using Api.Staffing;
+using Api.StaffingController;
 using Core.DomainModels;
 using NSubstitute;
 
@@ -75,6 +75,7 @@ public class Tests
         for (var i = 0; i < vacationDays; i++)
             consultant.Vacations.Add(new Vacation
             {
+                ConsultantId = consultant.Id,
                 Consultant = consultant,
                 Date = mondayDateOnly.AddDays(i)
             });
@@ -86,8 +87,9 @@ public class Tests
                 Absence = Substitute.For<Absence>(),
                 Consultant = consultant,
                 Hours = plannedAbsenceHours,
-                Year = week.Year,
-                WeekNumber = week.WeekNumber
+                Week = week,
+                AbsenceId = Substitute.For<Absence>().Id,
+                ConsultantId = consultant.Id
             });
 
         if (staffedHours > 0)
@@ -95,9 +97,10 @@ public class Tests
             {
                 Project = project,
                 Consultant = consultant,
-                Year = week.Year,
-                Week = week.WeekNumber,
-                Hours = staffedHours
+                Hours = staffedHours,
+                Week = week,
+                ProjectId = project.Id,
+                ConsultantId = consultant.Id
             });
 
         var bookingModel = ReadModelFactory.MapToReadModelList(consultant, new List<Week> { week }).Bookings.First()
@@ -154,18 +157,20 @@ public class Tests
         {
             Absence = leaveA,
             Consultant = consultant,
-            Year = week.Year,
-            WeekNumber = week.WeekNumber,
-            Hours = 15
+            Hours = 15,
+            Week = week,
+            AbsenceId = leaveA.Id,
+            ConsultantId = consultant.Id
         });
 
         consultant.PlannedAbsences.Add(new PlannedAbsence
         {
             Absence = leaveB,
             Consultant = consultant,
-            Year = week.Year,
-            WeekNumber = week.WeekNumber,
-            Hours = 15
+            Hours = 15,
+            Week = week,
+            AbsenceId = leaveB.Id,
+            ConsultantId = consultant.Id
         });
 
         var bookedHours = ReadModelFactory.MapToReadModelList(consultant, new List<Week> { week }).Bookings.First()

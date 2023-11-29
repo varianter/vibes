@@ -2,7 +2,7 @@ using Api.Common;
 using Api.Organisation;
 using Core.DomainModels;
 
-namespace Api.Staffing;
+namespace Api.StaffingController;
 
 public class ReadModelFactory
 {
@@ -23,6 +23,15 @@ public class ReadModelFactory
             .Where(c => c.StartDate == null || c.StartDate < firstWorkDayOutOfScope)
             .Select(consultant => MapToReadModelList(consultant, weeks))
             .ToList();
+    }
+
+    public ConsultantReadModelSingleWeek GetConsultantReadModelForWeek(string orgUrlKey, int consultantId, Week week)
+    {
+        var consultant = _storageService.LoadConsultantForSingleWeek(orgUrlKey, consultantId, week);
+        var readModel = MapToReadModelList(consultant, new List<Week> { week });
+
+        return new ConsultantReadModelSingleWeek(consultant, readModel.Bookings.First(),
+            readModel.DetailedBooking.First(), readModel.IsOccupied);
     }
 
     public static ConsultantReadModel MapToReadModelList(
@@ -66,40 +75,50 @@ public class ReadModelFactory
         // var billableProjects = UniqueWorkTypes(projects, billableStaffing);
         var billableBookings = consultant.Staffings
             .Where(staffing => staffing.Project.State == ProjectState.Active)
-            .Where(staffing => weekSet.Contains(new Week(staffing.Year, staffing.Week)))
-            .GroupBy(staffing => staffing.Project.Customer.Name)
-            .Select(grouping => new DetailedBooking(new BookingDetails(grouping.Key, BookingType.Booking),
-                weekSet.Select(week => new WeeklyHours(
-                    week.ToSortableInt(), grouping
-                        .Where(staffing =>
-                            new Week(staffing.Year, staffing.Week).Equals(week))
-                        .Sum(staffing => staffing.Hours))).ToList()
+            .Where(staffing => weekSet.Contains(staffing.Week))
+            .GroupBy(staffing => staffing.Project.Name)
+            .Select(grouping => new DetailedBooking(
+                new BookingDetails(grouping.Key, BookingType.Booking, grouping.First().Project.Customer.Name,
+                    grouping.First().Project.Id),
+                weekSet.Select(week =>
+                    new WeeklyHours(
+                        week.ToSortableInt(), grouping
+                            .Where(staffing => staffing.Week.Equals(week))
+                            .Sum(staffing => staffing.Hours))
+                ).ToList()
             ));
 
         var offeredBookings = consultant.Staffings
             .Where(staffing => staffing.Project.State == ProjectState.Offer)
-            .Where(staffing => weekSet.Contains(new Week(staffing.Year, staffing.Week)))
-            .GroupBy(staffing => staffing.Project.Customer.Name)
-            .Select(grouping => new DetailedBooking(new BookingDetails(grouping.Key, BookingType.Offer),
-                weekSet.Select(week => new WeeklyHours(
-                    week.ToSortableInt(), grouping
-                        .Where(staffing =>
-                            new Week(staffing.Year, staffing.Week).Equals(week))
-                        .Sum(staffing => staffing.Hours))).ToList()
+            .Where(staffing => weekSet.Contains(staffing.Week))
+            .GroupBy(staffing => staffing.Project.Name)
+            .Select(grouping => new DetailedBooking(
+                new BookingDetails(grouping.Key, BookingType.Offer, grouping.First().Project.Customer.Name,
+                    grouping.First().Project.Id),
+                weekSet.Select(week =>
+                    new WeeklyHours(
+                        week.ToSortableInt(),
+                        grouping
+                            .Where(staffing =>
+                                staffing.Week.Equals(week))
+                            .Sum(staffing => staffing.Hours))).ToList()
             ));
 
         var plannedAbsencesPrWeek = consultant.PlannedAbsences
-            .Where(absence => weekSet.Contains(new Week(absence.Year, absence.WeekNumber)))
+            .Where(absence => weekSet.Contains(absence.Week))
             .GroupBy(absence => absence.Absence.Name)
             .Select(grouping => new DetailedBooking(
-                new BookingDetails(grouping.Key, BookingType.PlannedAbsence),
-                weekSet.Select(week => new WeeklyHours(
-                    week.ToSortableInt(),
-                    grouping
-                        .Where(absence =>
-                            new Week(absence.Year, absence.WeekNumber).Equals(week))
-                        .Sum(absence => absence.Hours)
-                )).ToList()
+                new BookingDetails("", BookingType.PlannedAbsence,
+                    grouping.Key,
+                    grouping.First().Absence.Id), //Empty projectName as PlannedAbsence does not have a project
+                weekSet.Select(week =>
+                    new WeeklyHours(
+                        week.ToSortableInt(),
+                        grouping
+                            .Where(absence =>
+                                absence.Week.Equals(week))
+                            .Sum(absence => absence.Hours)
+                    )).ToList()
             ));
 
 
@@ -117,14 +136,13 @@ public class ReadModelFactory
                 consultant.Department.Organization.HoursPerWorkday
             )).ToList();
             detailedBookings = detailedBookings.Append(new DetailedBooking(
-                new BookingDetails("Ferie", BookingType.Vacation),
+                new BookingDetails("", BookingType.Vacation,
+                    "Ferie",
+                    0), //Empty projectName as vacation does not have a project, 0 as projectId as vacation is weird
                 vacationsPrWeek));
         }
 
         var detailedBookingList = detailedBookings.ToList();
-
-        // Remove empty rows
-        detailedBookingList.RemoveAll(detailedBooking => detailedBooking.Hours.Sum(hours => hours.Hours) == 0);
 
         return detailedBookingList;
     }
@@ -154,7 +172,7 @@ public class ReadModelFactory
         var bookedTime = totalBillable + totalAbsence + totalVacations + totalHolidayHours;
         var hoursPrWorkDay = consultant.Department.Organization.HoursPerWorkday;
 
-        var totalFreeTime =
+        var totalSellableTime =
             Math.Max(hoursPrWorkDay * 5 - bookedTime, 0);
 
         var totalOverbooked =
@@ -165,7 +183,7 @@ public class ReadModelFactory
             week.WeekNumber,
             week.ToSortableInt(),
             GetDatesForWeek(week),
-            new WeeklyBookingReadModel(totalBillable, totalOffered, totalAbsence, totalFreeTime,
+            new WeeklyBookingReadModel(totalBillable, totalOffered, totalAbsence, totalSellableTime,
                 totalHolidayHours, totalVacations,
                 totalOverbooked)
         );

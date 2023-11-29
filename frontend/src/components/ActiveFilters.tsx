@@ -35,7 +35,7 @@ export default function ActiveFilters() {
   return (
     <div className="h-4">
       {filterSummaryText != "" && (
-        <div className="flex flex-row gap-[5px] text-primary_default items-center">
+        <div className="flex flex-row gap-3 text-primary items-center">
           <Filter size="12" />{" "}
           <p className="small-medium"> {filterSummaryText} </p>
         </div>

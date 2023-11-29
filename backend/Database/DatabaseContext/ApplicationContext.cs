@@ -28,6 +28,10 @@ public class ApplicationContext : DbContext
         configurationBuilder
             .Properties<DateOnly>()
             .HaveConversion<DateOnlyConverter>();
+
+        configurationBuilder
+            .Properties<Week>()
+            .HaveConversion<WeekConverter>();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -53,6 +57,12 @@ public class ApplicationContext : DbContext
             .Property(project => project.State)
             .HasConversion<string>();
 
+        modelBuilder.Entity<Staffing>()
+            .HasKey(staffing => new StaffingKey(staffing.ProjectId, staffing.ConsultantId, staffing.Week));
+        
+        modelBuilder.Entity<PlannedAbsence>()
+            .HasKey(plannedAbsence => new PlannedAbsenceKey(plannedAbsence.AbsenceId, plannedAbsence.ConsultantId, plannedAbsence.Week));
+        
         modelBuilder.Entity<Project>()
             .HasMany(p => p.Consultants)
             .WithMany(c => c.Projects)

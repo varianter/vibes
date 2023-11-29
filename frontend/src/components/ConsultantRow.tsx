@@ -3,20 +3,28 @@ import {
   BookedHoursPerWeek,
   BookingType,
   Consultant,
+  ConsultantReadModelSingleWeek,
   DetailedBooking,
+  WeeklyHours,
 } from "@/types";
-import { ReactElement, useState } from "react";
+import { ReactElement, useContext, useEffect, useRef, useState } from "react";
 import {
   AlertTriangle,
   Briefcase,
   ChevronDown,
   Coffee,
   FileText,
+  Minus,
   Moon,
   Plus,
   Sun,
 } from "react-feather";
 import InfoPill, { InfoPillVariant } from "./InfoPill";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
+import { usePathname, useRouter } from "next/navigation";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { useModal } from "@/hooks/useModal";
+import EasyModal from "./EasyModal/EasyModal";
 
 export default function ConsultantRows({
   consultant,
@@ -28,6 +36,8 @@ export default function ConsultantRows({
   const [hoveredRowWeek, setHoveredRowWeek] = useState(-1);
 
   const columnCount = consultant.bookings.length ?? 0;
+
+  const { openModal, modalRef } = useModal();
 
   function toggleListElementVisibility() {
     setIsListElementVisible(!isListElementVisible);
@@ -83,6 +93,7 @@ export default function ConsultantRows({
             hoveredRowWeek={hoveredRowWeek}
             columnCount={columnCount}
             isLastCol={index == consultant.bookings.length - 1}
+            isSecondLastCol={index == consultant.bookings.length - 2}
           />
         ))}
       </tr>
@@ -100,9 +111,20 @@ export default function ConsultantRows({
           <td className={`${"border-l-secondary border-l-2"}`}></td>
           <td>
             <div className="flex flex-row items-center gap-2">
-              <button className="w-8 h-8 flex justify-center items-center rounded bg-primary/0 hover:bg-primary/10">
+              <button
+                className="w-8 h-8 flex justify-center items-center rounded bg-primary/0 hover:bg-primary/10"
+                onClick={openModal}
+              >
                 <Plus size={16} className="text-primary" />
               </button>
+              <EasyModal
+                modalRef={modalRef}
+                title={"Nytt Engasjement"}
+                onClose={() => console.log("onClose")}
+                showCloseButton
+              >
+                <div className="h-[300px]"></div>
+              </EasyModal>
               <p className="small text-primary">Legg til bemanning</p>
             </div>
           </td>
@@ -122,6 +144,8 @@ function getColorByStaffingType(type: BookingType): string {
       return "bg-vacation";
     case BookingType.PlannedAbsence:
       return "bg-absence";
+    case BookingType.Available:
+      return "bg-available";
     default:
       return "";
   }
@@ -137,6 +161,8 @@ function getIconByBookingType(type: BookingType): ReactElement {
       return <Sun size={16} className="text-vacation_darker" />;
     case BookingType.PlannedAbsence:
       return <Moon size={16} className="text-absence_darker" />;
+    case BookingType.Available:
+      return <Coffee size={16} className="text-available_darker" />;
     default:
       return <></>;
   }
@@ -151,6 +177,7 @@ function WeekCell(props: {
   hoveredRowWeek: number;
   columnCount: number;
   isLastCol: boolean;
+  isSecondLastCol: boolean;
 }) {
   const {
     bookedHoursPerWeek: bookedHoursPerWeek,
@@ -161,6 +188,7 @@ function WeekCell(props: {
     hoveredRowWeek,
     columnCount,
     isLastCol,
+    isSecondLastCol,
   } = props;
 
   let pillNumber = 0;
@@ -204,6 +232,8 @@ function WeekCell(props: {
               hoveredRowWeek={hoveredRowWeek}
               consultant={consultant}
               isLastCol={isLastCol}
+              isSecondLastCol={isSecondLastCol}
+              columnCount={columnCount}
             />
           )}
         <div className="flex flex-row justify-end gap-1">
@@ -273,18 +303,51 @@ function HoveredWeek(props: {
   hoveredRowWeek: number;
   consultant: Consultant;
   isLastCol: boolean;
+  isSecondLastCol: boolean;
+  columnCount: number;
 }) {
-  const { hoveredRowWeek, consultant, isLastCol } = props;
+  const {
+    hoveredRowWeek,
+    consultant,
+    isLastCol,
+    isSecondLastCol,
+    columnCount,
+  } = props;
 
   const nonZeroHoursDetailedBookings = consultant.detailedBooking.filter(
     (d) => !isWeekBookingZeroHours(d, hoveredRowWeek),
   );
 
+  const freeTime = consultant.bookings.find(
+    (b) => b.weekNumber == hoveredRowWeek,
+  )?.bookingModel.totalSellableTime;
+
+  if (freeTime && freeTime > 0) {
+    nonZeroHoursDetailedBookings.push({
+      bookingDetails: {
+        type: BookingType.Available,
+        projectName: "",
+        customerName: "Ledig Tid",
+        projectId: "",
+      },
+      hours: [
+        {
+          week: hoveredRowWeek,
+          hours:
+            consultant.bookings.find((b) => b.weekNumber == hoveredRowWeek)
+              ?.bookingModel.totalSellableTime || 0,
+        },
+      ],
+    });
+  }
+
   return (
     <>
       <div
-        className={`rounded-lg bg-white gap-3 min-w-[222px] p-3 shadow-xl absolute bottom-full mb-2 flex flex-col z-20 ${
-          isLastCol ? "right-0 " : "left-1/2 -translate-x-1/2"
+        className={`rounded-lg bg-white gap-3 min-w-[222px] p-3 shadow-xl absolute bottom-full mb-2 flex flex-col z-20 pointer-events-none ${
+          isLastCol || (isSecondLastCol && columnCount >= 26)
+            ? "right-0 "
+            : "left-1/2 -translate-x-1/2"
         } ${nonZeroHoursDetailedBookings.length == 0 && "hidden"}`}
       >
         {nonZeroHoursDetailedBookings.map((detailedBooking, index) => (
@@ -307,14 +370,17 @@ function HoveredWeek(props: {
               <div className="flex flex-col">
                 <p
                   className={`xsmall text-black/75 ${
-                    detailedBooking.bookingDetails.type == "Vacation" &&
-                    "hidden"
+                    !(
+                      detailedBooking.bookingDetails.type ==
+                        BookingType.Offer ||
+                      detailedBooking.bookingDetails.type == BookingType.Booking
+                    ) && "hidden"
                   }`}
                 >
-                  {detailedBooking.bookingDetails.type}
+                  {detailedBooking.bookingDetails.projectName}
                 </p>
                 <p className="small text-black whitespace-nowrap">
-                  {detailedBooking.bookingDetails.name}
+                  {detailedBooking.bookingDetails.customerName}
                 </p>
               </div>
             </div>
@@ -329,7 +395,7 @@ function HoveredWeek(props: {
         ))}
       </div>
       <div
-        className={`absolute bottom-full left-1/2 -translate-x-1/2 flex items-center z-50 w-0 h-0 border-l-[8px] border-l-transparent border-t-[8px] border-t-white border-r-[8px] border-r-transparent ${
+        className={`absolute bottom-full mb-[2px] left-1/2 -translate-x-1/2 flex items-center z-50 w-0 h-0 border-l-[8px] border-l-transparent border-t-[8px] border-t-white border-r-[8px] border-r-transparent pointer-events-none ${
           nonZeroHoursDetailedBookings.length == 0 && "hidden"
         }`}
       ></div>
@@ -342,9 +408,14 @@ function DetailedBookingRows(props: {
   detailedBooking: DetailedBooking;
 }) {
   const { consultant, detailedBooking } = props;
+  const [hourDragValue, setHourDragValue] = useState<number | undefined>(
+    undefined,
+  );
+  const [isRowHovered, setIsRowHovered] = useState(false);
+
   return (
     <tr
-      key={`${consultant.id}-details-${detailedBooking.bookingDetails.name}`}
+      key={`${consultant.id}-details-${detailedBooking.bookingDetails.customerName}`}
       className="h-fit"
     >
       <td className="border-l-secondary border-l-2"></td>
@@ -356,33 +427,198 @@ function DetailedBookingRows(props: {
         >
           {getIconByBookingType(detailedBooking.bookingDetails.type)}
         </div>
-        <div className="flex flex-col justify-between items-start">
-          <p className="xsmall text-black/75 text-right">
-            {detailedBooking.bookingDetails.type}
+        <div className="flex flex-col justify-center">
+          <p
+            className={`xsmall text-black/75 whitespace-nowrap text-ellipsis overflow-x-hidden max-w-[145px] ${
+              !(
+                detailedBooking.bookingDetails.type == BookingType.Offer ||
+                detailedBooking.bookingDetails.type == BookingType.Booking
+              ) && "hidden"
+            }`}
+          >
+            {detailedBooking.bookingDetails.projectName}
           </p>
           <p className="text-black text-start small">
-            {detailedBooking.bookingDetails.name}
+            {detailedBooking.bookingDetails.customerName}
           </p>
         </div>
       </td>
       {detailedBooking.hours
         .sort((a, b) => a.week - b.week)
         .map((hours) => (
-          <td
-            key={`${consultant.id}-details-${detailedBooking.bookingDetails.name}-${hours.week}`}
-            className="h-8 p-0.5"
-          >
-            <p
-              className={`small-medium p-2 rounded h-full flex items-center justify-end
-     ${getColorByStaffingType(
-       detailedBooking.bookingDetails.type ?? BookingType.Offer,
-     )} ${hours.hours == 0 && "bg-opacity-30"}`}
-            >
-              {hours.hours}
-            </p>
-          </td>
+          <DetailedBookingCell
+            key={`${consultant.id}-details-${detailedBooking.bookingDetails.projectName}-${hours.week}`}
+            detailedBooking={detailedBooking}
+            detailedBookingHours={hours}
+            consultant={consultant}
+            hourDragValue={hourDragValue}
+            setHourDragValue={setHourDragValue}
+            isRowHovered={isRowHovered}
+            setIsRowHovered={setIsRowHovered}
+          />
         ))}
     </tr>
+  );
+}
+
+async function setDetailedBookingHours(
+  hours: number,
+  bookingType: string,
+  organisationName: string,
+  router: AppRouterInstance,
+  consultantId: string,
+  engagementId: string,
+  week: number,
+) {
+  const url = `/${organisationName}/bemanning/api/updateHours?hours=${hours}&bookingType=${bookingType}&consultantID=${consultantId}&engagementID=${engagementId}&selectedWeek=${week}`;
+
+  try {
+    const data = await fetch(url, {
+      method: "put",
+    });
+    return (await data.json()) as ConsultantReadModelSingleWeek;
+  } catch (e) {
+    console.error("Error updating staffing", e);
+  }
+}
+
+function DetailedBookingCell({
+  detailedBooking,
+  detailedBookingHours,
+  consultant,
+  hourDragValue,
+  setHourDragValue,
+  isRowHovered,
+  setIsRowHovered,
+}: {
+  detailedBooking: DetailedBooking;
+  detailedBookingHours: WeeklyHours;
+  consultant: Consultant;
+  hourDragValue: number | undefined;
+  setHourDragValue: React.Dispatch<React.SetStateAction<number | undefined>>;
+  isRowHovered: boolean;
+  setIsRowHovered: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  const { setConsultants } = useContext(FilteredContext);
+  const [hours, setHours] = useState(detailedBookingHours.hours);
+  const [isChangingHours, setIsChangingHours] = useState(false);
+  const [oldHours, setOldHours] = useState(detailedBookingHours.hours);
+  const { setIsDisabledHotkeys } = useContext(FilteredContext);
+
+  const [isInputFocused, setIsInputFocused] = useState(false);
+  const router = useRouter();
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const organisationName = usePathname().split("/")[1];
+  const numWeeks = detailedBooking.hours.length;
+
+  function updateHours() {
+    setIsDisabledHotkeys(false);
+    if (
+      oldHours != hours ||
+      (hourDragValue != undefined && oldHours != hourDragValue)
+    ) {
+      setDetailedBookingHours(
+        hourDragValue ?? hours,
+        detailedBooking.bookingDetails.type,
+        organisationName,
+        router,
+        consultant.id,
+        detailedBooking.bookingDetails.projectId,
+        detailedBookingHours.week,
+      ).then((res) => {
+        setConsultants((old) => [
+          // Use spread to make a new list, forcing a re-render
+          ...upsertConsultantWithSingleWeekBooking(old, res),
+        ]);
+        setOldHours(hourDragValue ?? hours);
+      });
+    }
+  }
+
+  useEffect(() => {
+    if (!isRowHovered && inputRef.current) {
+      inputRef.current.blur();
+    }
+  }, [isRowHovered]);
+
+  return (
+    <td className="h-8 p-0.5">
+      <div
+        className={`flex flex-row justify-center items-center rounded px-3 border  ${getColorByStaffingType(
+          detailedBooking.bookingDetails.type ?? BookingType.Offer,
+        )} ${hours == 0 && "bg-opacity-30"} ${
+          isInputFocused
+            ? "border-primary"
+            : "border-transparent hover:border-primary/10"
+        }`}
+        onMouseEnter={() => {
+          setIsChangingHours(true);
+          setIsRowHovered(true);
+        }}
+        onMouseLeave={() => {
+          setIsRowHovered(false);
+          setIsChangingHours(false);
+          !isInputFocused && updateHours();
+        }}
+      >
+        {isChangingHours && numWeeks <= 12 && (
+          <button
+            tabIndex={-1}
+            className={`p-1 rounded-full hover:bg-primary/10 hidden ${
+              numWeeks <= 8 && "md:flex"
+            } ${numWeeks <= 12 && "lg:flex"} `}
+            onClick={() => {
+              setHours(Math.max(hours - 7.5, 0));
+            }}
+          >
+            <Minus className="w-4 h-4" />
+          </button>
+        )}
+
+        <input
+          ref={inputRef}
+          type="number"
+          min="0"
+          step="7.5"
+          value={hours}
+          draggable={true}
+          disabled={detailedBooking.bookingDetails.type == BookingType.Vacation}
+          onChange={(e) => setHours(Number(e.target.value))}
+          onFocus={(e) => {
+            e.target.select();
+            setIsInputFocused(true);
+            setIsDisabledHotkeys(true);
+          }}
+          onBlur={() => {
+            updateHours();
+            setIsInputFocused(false);
+            setIsDisabledHotkeys(false);
+          }}
+          onDragStart={() => setHourDragValue(hours)}
+          onDragEnterCapture={() => {
+            updateHours();
+            setHours(hourDragValue ?? hours);
+          }}
+          onDragEnd={() => setHourDragValue(undefined)}
+          className={`small-medium rounded w-full py-2 bg-transparent focus:outline-none min-w-[24px] ${
+            isChangingHours && numWeeks <= 12 ? "text-center" : "text-right"
+          } `}
+        ></input>
+        {isChangingHours && numWeeks <= 12 && (
+          <button
+            tabIndex={-1}
+            className={`p-1 rounded-full hover:bg-primary/10 hidden ${
+              numWeeks <= 8 && "md:flex"
+            } ${numWeeks <= 12 && "lg:flex"} `}
+            onClick={() => {
+              setHours(hours + 7.5);
+            }}
+          >
+            <Plus className="w-4 h-4" />
+          </button>
+        )}
+      </div>
+    </td>
   );
 }
 
@@ -397,4 +633,38 @@ function getInfopillVariantByColumnCount(count: number): InfoPillVariant {
     default:
       return "wide";
   }
+}
+
+function upsertConsultantWithSingleWeekBooking(
+  old: Consultant[],
+  res?: ConsultantReadModelSingleWeek,
+) {
+  if (!res) return old;
+
+  const consultantToUpdate = old.find((c) => c.id === res.id);
+  if (!consultantToUpdate || !res) return old;
+
+  consultantToUpdate.bookings = consultantToUpdate.bookings ?? [];
+  const bookingIndex = consultantToUpdate.bookings.findIndex(
+    (b) =>
+      b.year == res.bookings?.year && b.weekNumber == res.bookings.weekNumber,
+  );
+  if (bookingIndex !== -1 && res.bookings) {
+    consultantToUpdate.bookings[bookingIndex] = res.bookings;
+  }
+
+  consultantToUpdate.detailedBooking = consultantToUpdate.detailedBooking ?? [];
+
+  if (bookingIndex !== -1 && res.detailedBooking) {
+    const hoursIndex = consultantToUpdate.detailedBooking[0].hours.findIndex(
+      (h) => h.week == res.detailedBooking?.hours[0].week,
+    );
+    consultantToUpdate.detailedBooking[0].hours[hoursIndex] =
+      res.detailedBooking.hours[0];
+  }
+
+  const consultantIndex = old.findIndex((c) => c.id === `${res.id}`);
+  old[consultantIndex] = consultantToUpdate;
+
+  return [...old];
 }

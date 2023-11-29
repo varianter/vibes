@@ -1,7 +1,8 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Search } from "react-feather";
 import { useNameSearch } from "@/hooks/staffing/useNameSearch";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
 export default function SearchBarComponent({
   hidden = false,
@@ -11,9 +12,11 @@ export default function SearchBarComponent({
   const { setNameSearch, activeNameSearch } = useNameSearch();
   const inputRef = useRef<HTMLInputElement>(null);
   const [searchIsActive, setIsSearchActive] = useState(false);
+  const { isDisabledHotkeys } = useContext(FilteredContext);
 
   useEffect(() => {
     function keyDownHandler(e: { code: string }) {
+      if (isDisabledHotkeys) return;
       if (
         (e.code.startsWith("Key") || e.code.includes("Backspace")) &&
         inputRef &&
@@ -34,7 +37,7 @@ export default function SearchBarComponent({
     return () => {
       document.removeEventListener("keydown", keyDownHandler);
     };
-  }, [setNameSearch]);
+  }, [isDisabledHotkeys, setNameSearch]);
 
   return (
     <>
@@ -46,7 +49,6 @@ export default function SearchBarComponent({
           onChange={(e) => setNameSearch(e.target.value)}
           ref={inputRef}
           value={activeNameSearch}
-          onFocus={() => console.log("F")}
         />
       ) : (
         <div className={`flex flex-col gap-2`}>

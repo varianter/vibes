@@ -8,7 +8,13 @@ import {
   MockOrganisations,
 } from "../../mockdata/mockData";
 
-export async function fetchWithToken<T>(path: string): Promise<T | undefined> {
+type HttpMethod = "GET" | "PUT" | "POST";
+
+export async function callApi<T, Body>(
+  path: string,
+  method: HttpMethod,
+  bodyInit?: Body,
+): Promise<T | undefined> {
   if (process.env.NEXT_PUBLIC_NO_AUTH) {
     return mockedCall<T>(path);
   }
@@ -19,27 +25,60 @@ export async function fetchWithToken<T>(path: string): Promise<T | undefined> {
 
   const apiBackendUrl = process.env.BACKEND_URL ?? "http://localhost:7172/v0";
 
-  // @ts-ignore
   const headers = new Headers();
   const bearer = `Bearer ${session.access_token}`;
 
   headers.append("Authorization", bearer);
 
-  const options = {
-    method: "GET",
-    headers: headers,
-  };
+  let options;
+
+  if (bodyInit) {
+    headers.append("Content-Type", "application/json");
+    options = {
+      method: method,
+      headers: headers,
+      body: JSON.stringify(bodyInit),
+    };
+  } else {
+    options = {
+      method: method,
+      headers: headers,
+    };
+  }
 
   const completeUrl = `${apiBackendUrl}/${path}`;
 
   try {
     const response = await fetch(completeUrl, options);
+    if (response.status == 204) {
+      return;
+    }
     const json = await response.json();
     return json as T;
   } catch (e) {
     console.error(e);
     throw new Error(`${options.method} ${completeUrl} failed`);
   }
+}
+
+export async function fetchWithToken<ReturnType>(
+  path: string,
+): Promise<ReturnType | undefined> {
+  return callApi<ReturnType, undefined>(path, "GET");
+}
+
+export async function putWithToken<ReturnType, BodyType>(
+  path: string,
+  body?: BodyType,
+): Promise<ReturnType | undefined> {
+  return callApi<ReturnType, BodyType>(path, "PUT", body);
+}
+
+export async function postWithToken<ReturnType, BodyType>(
+  path: string,
+  body?: BodyType,
+): Promise<ReturnType | undefined> {
+  return callApi<ReturnType, BodyType>(path, "POST", body);
 }
 
 function mockedCall<T>(path: string): Promise<T> {

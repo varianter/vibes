@@ -7,9 +7,15 @@ import { useConsultantsFilter } from "@/hooks/staffing/useConsultantsFilter";
 import { useUrlRouteFilter } from "@/hooks/staffing/useUrlRouteFilter";
 import InfoPill from "./InfoPill";
 import { Calendar } from "react-feather";
+import StaffingSums from "./StaffingSums";
 
 export default function FilteredConsultantList() {
-  const { filteredConsultants } = useConsultantsFilter();
+  const {
+    filteredConsultants,
+    weeklyTotalBillable,
+    weeklyTotalBillableAndOffered,
+    weeklyInvoiceRates,
+  } = useConsultantsFilter();
 
   const { weekSpan } = useUrlRouteFilter();
 
@@ -86,6 +92,11 @@ export default function FilteredConsultantList() {
             <ConsultantRows key={consultant.id} consultant={consultant} />
           ))}
         </tbody>
+        <StaffingSums
+          weeklyTotalBillable={weeklyTotalBillable}
+          weeklyTotalBillableAndOffered={weeklyTotalBillableAndOffered}
+          weeklyInvoiceRates={weeklyInvoiceRates}
+        />
       </table>
     </div>
   );

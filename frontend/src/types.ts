@@ -33,6 +33,7 @@ export enum BookingType {
   Booking = "Booking",
   PlannedAbsence = "PlannedAbsence",
   Vacation = "Vacation",
+  Available = "Available",
 }
 
 export type Consultant = {
@@ -60,8 +61,24 @@ export interface WeeklyHours {
 }
 
 export interface BookingDetails {
-  name: string | null;
+  projectName: string | null;
   type: BookingType;
+  customerName: string | null;
+  projectId: string;
+}
+
+export interface StaffingWriteModel {
+  type: string;
+  /** @format int32 */
+  consultantId: number;
+  /** @format int32 */
+  engagementId: number;
+  /** @format int32 */
+  year: number;
+  /** @format int32 */
+  week: number;
+  /** @format double */
+  hours: number;
 }
 
 export type Department = {
@@ -86,3 +103,23 @@ export type Week = {
   year: number;
   weekNumber: number;
 };
+
+export interface ConsultantReadModelSingleWeek {
+  /** @format int32 */
+  id?: string;
+  name?: string | null;
+  email?: string | null;
+  competences?: string[] | null;
+  department?: string | null;
+  /** @format int32 */
+  yearsOfExperience?: number;
+  degree?: Degree;
+  bookings?: BookedHoursPerWeek;
+  detailedBooking?: DetailedBooking;
+  isOccupied?: boolean;
+}
+export enum Degree {
+  Master = "Master",
+  Bachelor = "Bachelor",
+  None = "None",
+}

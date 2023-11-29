@@ -1,5 +1,3 @@
-import PrimaryButton from "@/components/PrimaryButton";
-
 export default function FilterButton({
   label,
   onClick,

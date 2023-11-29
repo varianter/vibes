@@ -4,6 +4,7 @@ using Database.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Database.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20231120143825_AddWeek")]
+    partial class AddWeek
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -251,19 +254,33 @@ namespace Database.Migrations
 
             modelBuilder.Entity("Core.DomainModels.PlannedAbsence", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<int>("AbsenceId")
                         .HasColumnType("int");
 
                     b.Property<int>("ConsultantId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Week")
-                        .HasColumnType("int");
-
                     b.Property<double>("Hours")
                         .HasColumnType("float");
 
-                    b.HasKey("AbsenceId", "ConsultantId", "Week");
+                    b.Property<int>("Week")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WeekNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AbsenceId");
 
                     b.HasIndex("ConsultantId");
 
@@ -298,21 +315,35 @@ namespace Database.Migrations
 
             modelBuilder.Entity("Core.DomainModels.Staffing", b =>
                 {
-                    b.Property<int>("ProjectId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ConsultantId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Week")
                         .HasColumnType("int");
 
                     b.Property<double>("Hours")
                         .HasColumnType("float");
 
-                    b.HasKey("ProjectId", "ConsultantId", "Week");
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TmpWeek")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Week")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("ConsultantId");
+
+                    b.HasIndex("ProjectId");
 
                     b.ToTable("Staffing");
                 });
