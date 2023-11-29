@@ -5,6 +5,8 @@ import WeekSelection from "@/components/WeekSelection";
 import { isCurrentWeek } from "@/hooks/staffing/dateTools";
 import { useConsultantsFilter } from "@/hooks/staffing/useConsultantsFilter";
 import { useUrlRouteFilter } from "@/hooks/staffing/useUrlRouteFilter";
+import InfoPill from "./InfoPill";
+import { Calendar } from "react-feather";
 import StaffingSums from "./StaffingSums";
 
 export default function FilteredConsultantList() {
@@ -50,38 +52,60 @@ export default function FilteredConsultantList() {
               </div>
             </th>
             {filteredConsultants.at(0)?.bookings?.map((booking) => (
-              <th
-                key={booking.weekNumber}
-                className="m-2 px-2 py-1 pt-3 gap-1 justify-items-end"
-              >
-                {isCurrentWeek(booking.weekNumber, booking.year) ? (
-                  <div className="flex flex-row gap-2 items-center justify-end">
-                    <div className="h-2 w-2 rounded-full bg-primary" />
-                    <p
-                      className={`normal-medium ${
-                        weekSpan >= 26 ? "text-center" : "text-right"
-                      }`}
-                    >
-                      {booking.weekNumber}
-                    </p>
-                  </div>
-                ) : (
+              <th key={booking.weekNumber} className=" px-2 py-1 pt-3 ">
+                <div className="flex flex-col gap-1">
+                  {isCurrentWeek(booking.weekNumber, booking.year) ? (
+                    <div className="flex flex-row gap-2 items-center justify-end">
+                      {booking.bookingModel.totalHolidayHours > 0 && (
+                        <InfoPill
+                          text={booking.bookingModel.totalHolidayHours.toFixed(
+                            1,
+                          )}
+                          icon={<Calendar size="12" />}
+                          colors={"bg-holiday text-holiday_darker w-fit"}
+                          variant={weekSpan < 24 ? "wide" : "medium"}
+                        />
+                      )}
+                      <div className="h-2 w-2 rounded-full bg-primary" />
+
+                      <p
+                        className={`normal-medium ${
+                          weekSpan >= 26 ? "text-center" : "text-right"
+                        }`}
+                      >
+                        {booking.weekNumber}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-row gap-2 justify-end">
+                      {booking.bookingModel.totalHolidayHours > 0 && (
+                        <InfoPill
+                          text={booking.bookingModel.totalHolidayHours.toFixed(
+                            1,
+                          )}
+                          icon={<Calendar size="12" />}
+                          colors={"bg-holiday text-holiday_darker w-fit"}
+                          variant={weekSpan < 24 ? "wide" : "medium"}
+                        />
+                      )}
+                      <p
+                        className={`normal-medium ${
+                          weekSpan >= 26 ? "text-center" : "text-right"
+                        }`}
+                      >
+                        {booking.weekNumber}
+                      </p>
+                    </div>
+                  )}
+
                   <p
-                    className={`normal ${
-                      weekSpan >= 26 ? "text-center" : "text-right"
+                    className={`xsmall text-black/75 text-right ${
+                      weekSpan >= 26 && "hidden"
                     }`}
                   >
-                    {booking.weekNumber}
+                    {booking.dateString}
                   </p>
-                )}
-
-                <p
-                  className={`xsmall text-black/75 text-right ${
-                    weekSpan >= 26 && "hidden"
-                  }`}
-                >
-                  {booking.dateString}
-                </p>
+                </div>
               </th>
             ))}
           </tr>
