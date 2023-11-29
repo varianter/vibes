@@ -22,16 +22,13 @@ export default function WeekSelection() {
 
   return (
     <div className="flex flex-row gap-2">
-      <LargeModal />
-      <ButtonExampleModal />
-
       <DropDown
         startingOption={weekSpan ? weekSpan + " uker" : weekSpanOptions[0]}
         dropDownOptions={weekSpanOptions}
         dropDownFunction={setWeekSpan}
       />
       <ActionButton variant="secondary" onClick={resetSelectedWeek}>
-        Denne uka
+        Nåværende uke
       </ActionButton>
       <IconSecondaryButton
         icon={<ArrowLeft size={24} />}
