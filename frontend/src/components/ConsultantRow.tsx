@@ -16,6 +16,7 @@ import React, {
   useState,
   useEffect,
   useRef,
+  RefObject,
 } from "react";
 import {
   AlertTriangle,
@@ -31,10 +32,11 @@ import {
 import InfoPill, { InfoPillVariant } from "./InfoPill";
 import { usePathname } from "next/navigation";
 import { useModal } from "@/hooks/useModal";
-import EasyModal from "./EasyModal/EasyModal";
+import EasyModal from "./Modals/EasyModal";
 import ReactSelect, { SelectOption } from "./ReactSelect";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { MultiValue } from "react-select";
+import { LargeModal } from "./Modals/LargeModal";
 
 export default function ConsultantRows({
   consultant,
@@ -162,6 +164,7 @@ function AddStaffingCell(): ReactElement {
 }
 
 function AddEngagementForm() {
+  const { openModal, modalRef } = useModal({ closeOnBackdropClick: true });
   const { customers, consultants } = useContext(FilteredContext);
   // State for select components
   const [selectedCustomer, setSelectedCustomer] = useState<SelectOption | null>(
@@ -232,82 +235,106 @@ function AddEngagementForm() {
     // Add your submission logic here
     console.log(event);
     console.log("Form submitted!");
+
+    event.preventDefault();
+    openModal();
     // TODO: Legg på noe post-greier her
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="flex flex-col gap-6 pt-6 h-96">
-        {/* Selected Customer */}
-        <div className="flex flex-col gap-2">
-          <p className="small text-black">Konsulenter</p>
-          <ReactSelect
-            options={consultantOptions}
-            selectedMultipleOptionsValue={selectedConsultants}
-            onMultipleOptionsChange={setSelectedConsultants}
-            isMultipleOptions={true}
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <p className="small text-black">Kunde</p>
-          <ReactSelect
-            options={customerOptions}
-            selectedSingleOptionValue={selectedCustomer}
-            onSingleOptionChange={handleSelectedCustomerChange}
-            isMultipleOptions={false}
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <p className="small text-black">Engasjement</p>
-          <ReactSelect
-            options={projectOptions}
-            onSingleOptionChange={handleSelectedEngagementChange}
-            selectedSingleOptionValue={selectedEngagement}
-            isMultipleOptions={false}
-          />
-        </div>
-        {/* Radio Button Group */}
-        <div className="flex flex-row gap-4">
-          <label className="flex gap-2 normal items-center">
-            <input
-              type="radio"
-              value="Tilbud"
-              checked={radioValue === "Tilbud"}
-              onChange={handleRadioChange}
+    <>
+      <form onSubmit={handleSubmit}>
+        <div className="flex flex-col gap-6 pt-6 h-96">
+          {/* Selected Customer */}
+          <div className="flex flex-col gap-2">
+            <p className="small text-black">Konsulenter</p>
+            <ReactSelect
+              options={consultantOptions}
+              selectedMultipleOptionsValue={selectedConsultants}
+              onMultipleOptionsChange={setSelectedConsultants}
+              isMultipleOptions={true}
             />
-            Tilbud
-          </label>
-          <label className="flex gap-2 normal items-center">
-            <input
-              type="radio"
-              value="Ordre"
-              checked={radioValue === "Ordre"}
-              onChange={handleRadioChange}
-            />
-            Ordre
-          </label>
-        </div>
-        {/* Toggle (Checkbox) */}
-        <label className="flex flex-row justify-between items-center">
-          Fakturerbart
-          <div
-            className={`rounded-full w-[52px] h-7 flex items-center  ${
-              isFakturerbar ? "bg-primary" : "bg-black/20"
-            }`}
-            onClick={handleToggleChange}
-          >
-            <div
-              className={`m-[2px] bg-white rounded-full w-6 h-6 ${
-                isFakturerbar && " translate-x-6"
-              }`}
-            ></div>
           </div>
-        </label>
-      </div>
+          <div className="flex flex-col gap-2">
+            <p className="small text-black">Kunde</p>
+            <ReactSelect
+              options={customerOptions}
+              selectedSingleOptionValue={selectedCustomer}
+              onSingleOptionChange={handleSelectedCustomerChange}
+              isMultipleOptions={false}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <p className="small text-black">Engasjement</p>
+            <ReactSelect
+              options={projectOptions}
+              onSingleOptionChange={handleSelectedEngagementChange}
+              selectedSingleOptionValue={selectedEngagement}
+              isMultipleOptions={false}
+            />
+          </div>
+          {/* Radio Button Group */}
+          <div className="flex flex-row gap-4">
+            <label className="flex gap-2 normal items-center">
+              <input
+                type="radio"
+                value="Tilbud"
+                checked={radioValue === "Tilbud"}
+                onChange={handleRadioChange}
+              />
+              Tilbud
+            </label>
+            <label className="flex gap-2 normal items-center">
+              <input
+                type="radio"
+                value="Ordre"
+                checked={radioValue === "Ordre"}
+                onChange={handleRadioChange}
+              />
+              Ordre
+            </label>
+          </div>
+          {/* Toggle (Checkbox) */}
+          <label className="flex flex-row justify-between items-center">
+            Fakturerbart
+            <div
+              className={`rounded-full w-[52px] h-7 flex items-center  ${
+                isFakturerbar ? "bg-primary" : "bg-black/20"
+              }`}
+              onClick={handleToggleChange}
+            >
+              <div
+                className={`m-[2px] bg-white rounded-full w-6 h-6 ${
+                  isFakturerbar && " translate-x-6"
+                }`}
+              ></div>
+            </div>
+          </label>
+        </div>
 
-      {/* Submit Button */}
-      <button type="submit">Submit</button>
-    </form>
+        {/* Submit Button */}
+        <button type="submit">Submit</button>
+      </form>
+      <AddEngagementHoursModal modalRef={modalRef} />
+    </>
+  );
+}
+
+function AddEngagementHoursModal({
+  modalRef,
+}: {
+  modalRef: RefObject<HTMLDialogElement>;
+}) {
+  return (
+    <LargeModal
+      modalRef={modalRef}
+      engagementName="Designbistand"
+      customerName="Akva Group"
+      type={BookingType.Offer}
+      showCloseButton={true}
+    >
+      <div className="min-h-[640px]"> Hello large modal</div>
+    </LargeModal>
   );
 }
 
@@ -328,18 +355,21 @@ function getColorByStaffingType(type: BookingType): string {
   }
 }
 
-function getIconByBookingType(type: BookingType): ReactElement {
+export function getIconByBookingType(
+  type: BookingType,
+  size: number,
+): ReactElement {
   switch (type) {
     case BookingType.Offer:
-      return <FileText size={16} className="text-primary_darker" />;
+      return <FileText size={size} className="text-primary_darker" />;
     case BookingType.Booking:
-      return <Briefcase size={16} className="text-black" />;
+      return <Briefcase size={size} className="text-black" />;
     case BookingType.Vacation:
-      return <Sun size={16} className="text-vacation_darker" />;
+      return <Sun size={size} className="text-vacation_darker" />;
     case BookingType.PlannedAbsence:
-      return <Moon size={16} className="text-absence_darker" />;
+      return <Moon size={size} className="text-absence_darker" />;
     case BookingType.Available:
-      return <Coffee size={16} className="text-available_darker" />;
+      return <Coffee size={size} className="text-available_darker" />;
     default:
       return <></>;
   }
@@ -542,7 +572,7 @@ function HoveredWeek(props: {
                   detailedBooking.bookingDetails.type,
                 )}`}
               >
-                {getIconByBookingType(detailedBooking.bookingDetails.type)}
+                {getIconByBookingType(detailedBooking.bookingDetails.type, 16)}
               </div>
               <div className="flex flex-col">
                 <p
@@ -608,7 +638,7 @@ function DetailedBookingRows(props: {
             detailedBooking.bookingDetails.type,
           )}`}
         >
-          {getIconByBookingType(detailedBooking.bookingDetails.type)}
+          {getIconByBookingType(detailedBooking.bookingDetails.type, 16)}
         </div>
         <div className="flex flex-col justify-center">
           <p
