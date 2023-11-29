@@ -1,7 +1,6 @@
-import { updateBookingHoursBody } from "@/components/ConsultantRow";
 import { putWithToken } from "@/data/apiCallsWithToken";
 import { parseYearWeekFromString } from "@/data/urlUtils";
-import { StaffingWriteModel } from "@/types";
+import { StaffingWriteModel, updateBookingHoursBody } from "@/types";
 import { NextResponse } from "next/server";
 
 export async function PUT(

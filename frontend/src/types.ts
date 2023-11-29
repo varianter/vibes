@@ -113,3 +113,12 @@ export enum Degree {
   Bachelor = "Bachelor",
   None = "None",
 }
+
+export interface updateBookingHoursBody {
+  hours: number;
+  bookingType: BookingType;
+  consultantId: string;
+  bookingId: string;
+  startWeek: number;
+  endWeek?: number;
+}

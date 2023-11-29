@@ -5,6 +5,7 @@ import {
   Consultant,
   DetailedBooking,
   WeeklyHours,
+  updateBookingHoursBody,
 } from "@/types";
 import { ReactElement, useContext, useEffect, useRef, useState } from "react";
 import {
@@ -473,15 +474,6 @@ interface updateBookingHoursProps {
   hours: number;
   bookingType: BookingType;
   organisationUrl: string;
-  consultantId: string;
-  bookingId: string;
-  startWeek: number;
-  endWeek?: number;
-}
-
-export interface updateBookingHoursBody {
-  hours: number;
-  bookingType: BookingType;
   consultantId: string;
   bookingId: string;
   startWeek: number;
