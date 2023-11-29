@@ -641,19 +641,21 @@ function DetailedBookingCell({
           !isInputFocused && updateSingularHours();
         }}
       >
-        {isChangingHours && numWeeks <= 12 && (
-          <button
-            tabIndex={-1}
-            className={`p-1 rounded-full hover:bg-primary/10 hidden ${
-              numWeeks <= 8 && "md:flex"
-            } ${numWeeks <= 12 && "lg:flex"} `}
-            onClick={() => {
-              setHours(Math.max(hours - 7.5, 0));
-            }}
-          >
-            <Minus className="w-4 h-4" />
-          </button>
-        )}
+        {isChangingHours &&
+          numWeeks <= 12 &&
+          detailedBooking.bookingDetails.type != BookingType.Vacation && (
+            <button
+              tabIndex={-1}
+              className={`p-1 rounded-full hover:bg-primary/10 hidden ${
+                numWeeks <= 8 && "md:flex"
+              } ${numWeeks <= 12 && "lg:flex"} `}
+              onClick={() => {
+                setHours(Math.max(hours - 7.5, 0));
+              }}
+            >
+              <Minus className="w-4 h-4" />
+            </button>
+          )}
 
         <input
           ref={inputRef}
@@ -693,19 +695,21 @@ function DetailedBookingCell({
             isChangingHours && numWeeks <= 12 ? "text-center" : "text-right"
           } `}
         ></input>
-        {isChangingHours && numWeeks <= 12 && (
-          <button
-            tabIndex={-1}
-            className={`p-1 rounded-full hover:bg-primary/10 hidden ${
-              numWeeks <= 8 && "md:flex"
-            } ${numWeeks <= 12 && "lg:flex"} `}
-            onClick={() => {
-              setHours(hours + 7.5);
-            }}
-          >
-            <Plus className="w-4 h-4" />
-          </button>
-        )}
+        {isChangingHours &&
+          numWeeks <= 12 &&
+          detailedBooking.bookingDetails.type != BookingType.Vacation && (
+            <button
+              tabIndex={-1}
+              className={`p-1 rounded-full hover:bg-primary/10 hidden ${
+                numWeeks <= 8 && "md:flex"
+              } ${numWeeks <= 12 && "lg:flex"} `}
+              onClick={() => {
+                setHours(hours + 7.5);
+              }}
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+          )}
       </div>
     </td>
   );
