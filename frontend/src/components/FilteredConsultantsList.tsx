@@ -88,7 +88,11 @@ export default function FilteredConsultantList() {
                     </div>
                   )}
 
-                  <p className="xsmall text-black/75 text-right">
+                  <p
+                    className={`xsmall text-black/75 text-right ${
+                      weekSpan >= 26 && "hidden"
+                    }`}
+                  >
                     {booking.dateString}
                   </p>
                 </div>
