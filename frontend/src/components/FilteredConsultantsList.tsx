@@ -84,9 +84,7 @@ export default function FilteredConsultantList() {
                           variant={weekSpan < 24 ? "wide" : "medium"}
                         />
                       )}
-                      <p className="normal-medium text-right">
-                        {booking.weekNumber}
-                      </p>
+                      <p className="normal text-right">{booking.weekNumber}</p>
                     </div>
                   )}
 
