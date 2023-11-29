@@ -209,18 +209,21 @@ public class StorageService
         
         foreach (var week in weeks)
         {
-            var holidayHours = org.GetTotalHolidayHoursOfWeek(week);
-            var vacations = _dbContext.Vacation.Where(v=>v.ConsultantId.Equals(consultantId)).ToList();
-            var vacationHours = vacations.Count(v=> week.ContainsDate(v.Date)) * org.HoursPerWorkday;
-            var plannedAbsenceHours = _dbContext.PlannedAbsence.Where(pa => pa.Week.Equals(week) && pa.ConsultantId.Equals(consultantId))
-                .Select(pa => pa.Hours).Sum();
+            var newHours = hours;
+            if (org != null)
+            {
+                var holidayHours = org.GetTotalHolidayHoursOfWeek(week);
+                var vacations = _dbContext.Vacation.Where(v=>v.ConsultantId.Equals(consultantId)).ToList();
+                var vacationHours = vacations.Count(v=> week.ContainsDate(v.Date)) * org.HoursPerWorkday;
+                    var plannedAbsenceHours = _dbContext.PlannedAbsence.Where(pa => pa.Week.Equals(week) && pa.ConsultantId.Equals(consultantId))
+                    .Select(pa => pa.Hours).Sum();
 
-            var total = holidayHours + vacationHours + plannedAbsenceHours;
+                var total = holidayHours + vacationHours + plannedAbsenceHours;
 
-            var newHours = (hours+total > org.HoursPerWorkday*5) 
-                ? Math.Max(hours - total, 0) 
-                : hours;
-            
+                newHours = (hours+total > org.HoursPerWorkday*5) 
+                    ? Math.Max(org.HoursPerWorkday*5 - total, 0) 
+                    : hours;
+            }
             var staffing = _dbContext.Staffing
                 .FirstOrDefault(s => s.ProjectId.Equals(projectId)
                                      && s.ConsultantId.Equals(consultantId)
@@ -255,15 +258,20 @@ public class StorageService
         var org = _dbContext.Organization.FirstOrDefault(o => o.UrlKey == orgUrlKey);
         foreach (var week in weeks)
         {
-            var holidayHours = org.GetTotalHolidayHoursOfWeek(week);
+            var newHours = hours;
+            if (org != null)
+            {
+                var holidayHours = org.GetTotalHolidayHoursOfWeek(week);
+                newHours = holidayHours + hours > org.HoursPerWorkday * 5
+                    ? Math.Max(org.HoursPerWorkday*5 - holidayHours, 0)
+                    : hours;
+            }
+            
             var plannedAbsence = _dbContext.PlannedAbsence
                 .FirstOrDefault(pa => pa.AbsenceId.Equals(absenceId)
                                       && pa.ConsultantId.Equals(consultantId)
                                       && pa.Week.Equals(week));
-
-            var newHours = holidayHours + hours > org.HoursPerWorkday * 5
-                ? Math.Max(hours - holidayHours, 0)
-                : hours;
+            
             if (plannedAbsence is null)
             {   
                 _dbContext.Add(new PlannedAbsence
