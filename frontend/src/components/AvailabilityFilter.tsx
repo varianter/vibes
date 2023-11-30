@@ -1,6 +1,6 @@
 "use client";
 import { useAvailabilityFilter } from "@/hooks/staffing/useAvailabilityFilter";
-import FilterButton from "./FilterButton";
+import FilterButton from "./Buttons/FilterButton";
 
 export default function AvailabilityFilter() {
   const { availabilityFilterOn, toggleAvailabilityFilter } =

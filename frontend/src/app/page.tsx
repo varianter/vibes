@@ -1,19 +1,13 @@
-import ActionButton from "@/components/Buttons/ActionButton";
+import OrganisationSelector from "@/components/OrganisationSelector";
 import { fetchWithToken } from "@/data/apiCallsWithToken";
 import { Organisation } from "@/types";
-import Link from "next/link";
 
 export default async function Root() {
   const orgs = (await fetchWithToken<Organisation[]>("organisations")) ?? [];
+
   return (
     <ul className="main h-screen flex items-center justify-center gap-4">
-      {orgs.map((o) => (
-        <li key={o.urlKey}>
-          <Link href={`/${o.urlKey}/bemanning`}>
-            <ActionButton variant="secondary">{o.name}</ActionButton>
-          </Link>
-        </li>
-      ))}
+      <OrganisationSelector orgs={orgs} />
     </ul>
   );
 }

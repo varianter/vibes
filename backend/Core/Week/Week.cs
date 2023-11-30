@@ -95,6 +95,13 @@ public class Week : IComparable<Week>, IEquatable<Week>
                 return new Week(year, week);
             }).ToList();
     }
+    
+    public List<Week> GetNextWeeks(Week otherWeek)
+    {
+        var numberOfWeeks = (otherWeek.FirstDayOfWorkWeek().DayNumber - FirstDayOfWorkWeek().DayNumber) / 7;
+
+        return GetNextWeeks(numberOfWeeks+1);
+    }
 
     public List<DateOnly> GetDatesInWorkWeek()
     {
