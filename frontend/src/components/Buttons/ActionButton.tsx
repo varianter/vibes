@@ -12,7 +12,7 @@ export type ActionButtonProps = {
   className?: string;
   disabled?: boolean;
   isIconBtn?: boolean;
-  isSmallBtn?: boolean;
+  small?: boolean;
 };
 
 export default function ActionButton({
@@ -25,7 +25,7 @@ export default function ActionButton({
   className = "",
   disabled = false,
   isIconBtn = false,
-  isSmallBtn = false,
+  small = false,
 }: ActionButtonProps) {
   const variantClass =
     {
@@ -38,7 +38,7 @@ export default function ActionButton({
   const disabledClass = disabled ? "bg-opacity-50" : "";
   const fullWidthClass = fullWidth ? "w-full" : "";
   const buttonShapeClass = isIconBtn
-    ? isSmallBtn
+    ? small
       ? "p-2 rounded-[4px]"
       : "px-3 py-2 rounded-lg"
     : "p-3 rounded-lg";
@@ -48,9 +48,9 @@ export default function ActionButton({
       className={` ${variantClass} ${disabledClass} ${fullWidthClass} ${buttonShapeClass} ${className}`}
       onClick={onClick}
     >
-      <IconBox isSmallIcon={isSmallBtn}>{iconLeft}</IconBox>
+      <IconBox isSmallIcon={small}>{iconLeft}</IconBox>
       {children}
-      <IconBox isSmallIcon={isSmallBtn}>{iconRight}</IconBox>
+      <IconBox isSmallIcon={small}>{iconRight}</IconBox>
     </BaseButton>
   );
 }

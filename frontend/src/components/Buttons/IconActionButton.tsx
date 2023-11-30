@@ -8,7 +8,7 @@ export type IconActionButtonProps = {
   onClick: () => void;
   className?: string;
   disabled?: boolean;
-  isSmallBtn?: boolean;
+  small?: boolean;
 };
 
 export default function IconActionButton({
@@ -17,7 +17,7 @@ export default function IconActionButton({
   onClick,
   className = "",
   disabled = false,
-  isSmallBtn = false,
+  small = false,
 }: IconActionButtonProps) {
   const variantClass =
     {
@@ -33,7 +33,7 @@ export default function IconActionButton({
       className={`p-2 rounded-lg ${variantClass} ${disabledClass} ${className} `}
       onClick={onClick}
     >
-      <IconBox isSmallIcon={isSmallBtn}>{icon}</IconBox>
+      <IconBox isSmallIcon={small}>{icon}</IconBox>
     </BaseButton>
   );
 }
