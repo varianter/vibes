@@ -4,53 +4,53 @@ import { IconBox } from "./IconBox";
 
 export type ActionButtonProps = {
   variant: "primary" | "secondary" | "terniary";
+  onClick: () => void;
+  children?: React.ReactNode;
   iconLeft?: React.ReactNode;
   iconRight?: React.ReactNode;
-  small?: boolean;
   fullWidth?: true;
-  onClick?: () => void;
-  disabled?: true;
-  children?: React.ReactNode;
   className?: string;
-  isIconBtn?: true;
+  disabled?: boolean;
+  isIconBtn?: boolean;
+  isSmallBtn?: boolean;
 };
 
 export default function ActionButton({
   variant,
-  iconLeft,
-  iconRight,
-  small,
-  fullWidth,
-  disabled,
   onClick,
   children,
+  iconLeft,
+  iconRight,
+  fullWidth,
   className = "",
-  isIconBtn,
+  disabled = false,
+  isIconBtn = false,
+  isSmallBtn = false,
 }: ActionButtonProps) {
   const variantClass =
     {
-      primary:
-        "bg-primary text-white hover:bg-primary_darker hover:border-primary_darker",
+      primary: "bg-primary text-white hover:bg-primary_darker",
       secondary:
         "bg-white text-primary border border-primary/50 hover:bg-primary/10 hover:border-primary",
-      terniary:
-        "bg-white text-primary hover:bg-primary/10 hover:border-primary",
+      terniary: "bg-white text-primary hover:bg-primary/10",
     }[variant] ?? "Default";
 
   const disabledClass = disabled ? "bg-opacity-50" : "";
   const fullWidthClass = fullWidth ? "w-full" : "";
-
-  const paddingClass = isIconBtn ? "p-2" : "px-3 py-2";
-  const roundedBorders = small ? "rounded h-8" : "rounded-lg h-10";
+  const buttonShapeClass = isIconBtn
+    ? isSmallBtn
+      ? "p-2 rounded-[4px]"
+      : "px-3 py-2 rounded-lg"
+    : "p-3 rounded-lg";
 
   return (
     <BaseButton
-      className={`${variantClass} ${disabledClass} ${fullWidthClass} ${paddingClass} ${roundedBorders} ${className} `}
+      className={` ${variantClass} ${disabledClass} ${fullWidthClass} ${buttonShapeClass} ${className}`}
       onClick={onClick}
     >
-      <IconBox small={small}>{iconLeft}</IconBox>
+      <IconBox isSmallIcon={isSmallBtn}>{iconLeft}</IconBox>
       {children}
-      <IconBox small={small}>{iconRight}</IconBox>
+      <IconBox isSmallIcon={isSmallBtn}>{iconRight}</IconBox>
     </BaseButton>
   );
 }
