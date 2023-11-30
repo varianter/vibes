@@ -1,6 +1,6 @@
 "use client";
 import { YearRange } from "@/types";
-import FilterButton from "./FilterButton";
+import FilterButton from "./Buttons/FilterButton";
 import { useYearsXpFilter } from "@/hooks/staffing/useYearsXpFilter";
 
 export const yearRanges: YearRange[] = [
