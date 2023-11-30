@@ -7,7 +7,15 @@ import {
   WeeklyHours,
   updateBookingHoursBody,
 } from "@/types";
-import { ReactElement, useContext, useEffect, useRef, useState } from "react";
+import React, {
+  ChangeEvent,
+  FormEvent,
+  ReactElement,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+} from "react";
 import {
   AlertTriangle,
   Briefcase,
@@ -20,10 +28,12 @@ import {
   Sun,
 } from "react-feather";
 import InfoPill, { InfoPillVariant } from "./InfoPill";
-import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { usePathname } from "next/navigation";
 import { useModal } from "@/hooks/useModal";
 import EasyModal from "./EasyModal/EasyModal";
+import ReactSelect, { SelectOption } from "./ReactSelect";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
+import { MultiValue } from "react-select";
 
 export default function ConsultantRows({
   consultant,
@@ -32,12 +42,9 @@ export default function ConsultantRows({
 }) {
   const [isListElementVisible, setIsListElementVisible] = useState(false);
   const [isRowHovered, setIsRowHovered] = useState(false);
-  const [isAddStaffingHovered, setIsAddStaffingHovered] = useState(false);
   const [hoveredRowWeek, setHoveredRowWeek] = useState(-1);
 
   const columnCount = consultant.bookings.length ?? 0;
-
-  const { openModal, modalRef } = useModal();
 
   function toggleListElementVisibility() {
     setIsListElementVisible(!isListElementVisible);
@@ -108,36 +115,198 @@ export default function ConsultantRows({
         ))}
       {isListElementVisible && (
         <tr>
-          <td className={`${"border-l-secondary border-l-2"}`}></td>
-          <td>
-            <button
-              onClick={openModal}
-              className="flex flex-row items-center gap-2"
-              onMouseEnter={() => setIsAddStaffingHovered(true)}
-              onMouseLeave={() => setIsAddStaffingHovered(false)}
-            >
-              <span
-                className={`w-8 h-8 flex justify-center items-center rounded bg-primary/0 ${
-                  isAddStaffingHovered && "bg-primary/10"
-                }`}
-              >
-                <Plus size={16} className="text-primary" />
-              </span>
-
-              <p className="small text-primary">Legg til bemanning</p>
-            </button>
-            <EasyModal
-              modalRef={modalRef}
-              title={"Nytt Engasjement"}
-              onClose={() => console.log("onClose")}
-              showCloseButton
-            >
-              <div className="h-[300px]"></div>
-            </EasyModal>
-          </td>
+          <AddStaffingCell />
         </tr>
       )}
     </>
+  );
+}
+
+function AddStaffingCell(): ReactElement {
+  const { openModal, modalRef } = useModal({ closeOnBackdropClick: true });
+  const [isAddStaffingHovered, setIsAddStaffingHovered] = useState(false);
+
+  return (
+    <>
+      <td className={`${"border-l-secondary border-l-2"}`}></td>
+      <td>
+        <EasyModal
+          modalRef={modalRef}
+          title={"Legg til engasjement"}
+          showCloseButton={true}
+        >
+          <div className="min-h-[300px]">
+            <AddEngagementForm />
+          </div>
+        </EasyModal>
+        <button
+          onClick={openModal}
+          className="flex flex-row items-center gap-2"
+          onMouseEnter={() => setIsAddStaffingHovered(true)}
+          onMouseLeave={() => setIsAddStaffingHovered(false)}
+        >
+          <span
+            className={`w-8 h-8 flex justify-center items-center rounded bg-primary/0 ${
+              isAddStaffingHovered && "bg-primary/10"
+            }`}
+          >
+            <Plus size={16} className="text-primary" />
+          </span>
+
+          <p className="small text-primary">Legg til bemanning</p>
+        </button>
+      </td>
+    </>
+  );
+}
+
+function AddEngagementForm() {
+  const { customers, consultants } = useContext(FilteredContext);
+  // State for select components
+  const [selectedCustomer, setSelectedCustomer] = useState<SelectOption | null>(
+    null,
+  );
+  const [selectedEngagement, setSelectedEngagement] =
+    useState<SelectOption | null>(null);
+
+  const [selectedConsultants, setSelectedConsultants] =
+    useState<MultiValue<SelectOption> | null>(null);
+
+  const customerOptions = customers.map(
+    (c) =>
+      ({
+        value: `${c.customerId}`,
+        label: `${c.customerName}`,
+      }) as SelectOption,
+  );
+
+  const projectOptions =
+    customers
+      .find((c) => c.customerId == selectedCustomer?.value)
+      ?.engagements?.map(
+        (e) =>
+          ({
+            value: `${e.engagementId}`,
+            label: `${e.engagementName}`,
+          }) as SelectOption,
+      ) ?? [];
+
+  const consultantOptions =
+    consultants.map(
+      (c) =>
+        ({
+          value: `${c.id}`,
+          label: `${c.name}`,
+        }) as SelectOption,
+    ) ?? [];
+
+  // State for radio button group
+  const [radioValue, setRadioValue] = useState("Tilbud");
+
+  // State for toggle
+  const [isFakturerbar, setIsFakturerbar] = useState(false);
+
+  // Handler for select components
+  function handleSelectedCustomerChange(newCustomer: SelectOption) {
+    setSelectedCustomer(newCustomer);
+    setSelectedEngagement(null);
+  }
+
+  function handleSelectedEngagementChange(newValue: SelectOption) {
+    setSelectedEngagement(newValue);
+  }
+
+  // Handler for radio button group
+  function handleRadioChange(event: ChangeEvent<HTMLInputElement>) {
+    setRadioValue(event.target.value);
+  }
+
+  // Handler for toggle
+  function handleToggleChange() {
+    setIsFakturerbar(!isFakturerbar);
+  }
+
+  // Handler for form submission
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    // Add your submission logic here
+    console.log(event);
+    console.log("Form submitted!");
+    // TODO: Legg på noe post-greier her
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <div className="flex flex-col gap-6 pt-6 h-96">
+        {/* Selected Customer */}
+        <div className="flex flex-col gap-2">
+          <p className="small text-black">Konsulenter</p>
+          <ReactSelect
+            options={consultantOptions}
+            selectedMultipleOptionsValue={selectedConsultants}
+            onMultipleOptionsChange={setSelectedConsultants}
+            isMultipleOptions={true}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <p className="small text-black">Kunde</p>
+          <ReactSelect
+            options={customerOptions}
+            selectedSingleOptionValue={selectedCustomer}
+            onSingleOptionChange={handleSelectedCustomerChange}
+            isMultipleOptions={false}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <p className="small text-black">Engasjement</p>
+          <ReactSelect
+            options={projectOptions}
+            onSingleOptionChange={handleSelectedEngagementChange}
+            selectedSingleOptionValue={selectedEngagement}
+            isMultipleOptions={false}
+          />
+        </div>
+        {/* Radio Button Group */}
+        <div className="flex flex-row gap-4">
+          <label className="flex gap-2 normal items-center">
+            <input
+              type="radio"
+              value="Tilbud"
+              checked={radioValue === "Tilbud"}
+              onChange={handleRadioChange}
+            />
+            Tilbud
+          </label>
+          <label className="flex gap-2 normal items-center">
+            <input
+              type="radio"
+              value="Ordre"
+              checked={radioValue === "Ordre"}
+              onChange={handleRadioChange}
+            />
+            Ordre
+          </label>
+        </div>
+        {/* Toggle (Checkbox) */}
+        <label className="flex flex-row justify-between items-center">
+          Fakturerbart
+          <div
+            className={`rounded-full w-[52px] h-7 flex items-center  ${
+              isFakturerbar ? "bg-primary" : "bg-black/20"
+            }`}
+            onClick={handleToggleChange}
+          >
+            <div
+              className={`m-[2px] bg-white rounded-full w-6 h-6 ${
+                isFakturerbar && " translate-x-6"
+              }`}
+            ></div>
+          </div>
+        </label>
+      </div>
+
+      {/* Submit Button */}
+      <button type="submit">Submit</button>
+    </form>
   );
 }
 

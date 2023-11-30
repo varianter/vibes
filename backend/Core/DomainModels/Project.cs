@@ -16,6 +16,8 @@ public class Project
     public required List<Staffing> Staffings { get; set; } = new();
 
     public required string Name { get; set; }
+
+    //public required bool IsBillable { get; set; }
 }
 
 public enum ProjectState

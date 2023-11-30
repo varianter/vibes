@@ -1,7 +1,11 @@
 import StaffingSidebar from "@/components/StaffingSidebar";
 import FilteredConsultantsList from "@/components/FilteredConsultantsList";
 import { fetchWithToken } from "@/data/apiCallsWithToken";
-import { Consultant, Department } from "@/types";
+import {
+  Consultant,
+  Department,
+  EngagementPerCustomerReadModel,
+} from "@/types";
 import { ConsultantFilterProvider } from "@/hooks/ConsultantFilterProvider";
 import { parseYearWeekFromUrlString } from "@/data/urlUtils";
 import InfoPillDescriptions from "@/components/InfoPillDescriptions";
@@ -32,10 +36,16 @@ export default async function Bemanning({
       `organisations/${params.organisation}/departments`,
     )) ?? [];
 
+  const customers =
+    (await fetchWithToken<EngagementPerCustomerReadModel[]>(
+      `${params.organisation}/projects`,
+    )) ?? [];
+
   return (
     <ConsultantFilterProvider
       consultants={consultants}
       departments={departments}
+      customers={customers}
     >
       <StaffingSidebar />
 
