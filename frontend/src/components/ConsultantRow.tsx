@@ -571,7 +571,6 @@ function DetailedBookingCell({
           // Use spread to make a new list, forcing a re-render
           ...upsertConsultantWithSingleWeekBooking(old, res),
         ]);
-        setOldHours(hours);
       });
     }
   }
@@ -610,7 +609,6 @@ function DetailedBookingCell({
         // Use spread to make a new list, forcing a re-render
         ...upsertConsultantWithMultipleWeeksBooking(old, res),
       ]);
-      setOldHours(hourDragValue);
     });
   }
 
