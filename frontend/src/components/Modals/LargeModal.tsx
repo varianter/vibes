@@ -47,7 +47,7 @@ export function LargeModal(props: EasyModalProps) {
             onClick={handleClose}
             variant={"primary"}
             iconLeft={<Check />}
-            isIconBtn={true}
+            iconBtn
           >
             Ferdig
           </ActionButton>
