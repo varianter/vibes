@@ -1,6 +1,6 @@
 "use client";
 import { useDepartmentFilter } from "@/hooks/staffing/useDepartmentFilter";
-import FilterButton from "./FilterButton";
+import FilterButton from "./Buttons/FilterButton";
 
 export default function DepartmentFilter() {
   const { departments, filteredDepartments, toggleDepartmentFilter } =

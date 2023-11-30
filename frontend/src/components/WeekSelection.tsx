@@ -1,10 +1,10 @@
 "use client";
 import { ArrowLeft, ArrowRight } from "react-feather";
-import IconSecondaryButton from "./IconSecondaryButton";
 import { useSelectedWeek } from "@/hooks/staffing/useSelectedWeek";
 import DropDown from "./DropDown";
 import { useUrlRouteFilter } from "@/hooks/staffing/useUrlRouteFilter";
 import ActionButton from "./Buttons/ActionButton";
+import IconActionButton from "./Buttons/IconActionButton";
 
 export default function WeekSelection() {
   const weekSpanOptions = ["8 uker", "12 uker", "26 uker"];
@@ -28,12 +28,14 @@ export default function WeekSelection() {
       <ActionButton variant="secondary" onClick={resetSelectedWeek}>
         Nåværende uke
       </ActionButton>
-      <IconSecondaryButton
-        icon={<ArrowLeft size={24} />}
+      <IconActionButton
+        variant={"secondary"}
+        icon={<ArrowLeft />}
         onClick={decrementSelectedWeek}
       />
-      <IconSecondaryButton
-        icon={<ArrowRight size={24} />}
+      <IconActionButton
+        variant={"secondary"}
+        icon={<ArrowRight />}
         onClick={incrementSelectedWeek}
       />
     </div>
