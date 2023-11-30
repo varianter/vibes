@@ -74,27 +74,13 @@ export interface StaffingWriteModel {
   /** @format int32 */
   engagementId: number;
   /** @format int32 */
-  year: number;
-  /** @format int32 */
-  week: number;
-  /** @format double */
-  hours: number;
-}
-
-export interface SeveralStaffingWriteModel {
-  type: string;
-  /** @format int32 */
-  consultantId: number;
-  /** @format int32 */
-  engagementId: number;
-  /** @format int32 */
   startYear: number;
   /** @format int32 */
   startWeek: number;
   /** @format int32 */
-  endYear: number;
+  endYear?: number;
   /** @format int32 */
-  endWeek: number;
+  endWeek?: number;
   /** @format double */
   hours: number;
 }
@@ -122,38 +108,17 @@ export type Week = {
   weekNumber: number;
 };
 
-export interface ConsultantReadModelSingleWeek {
-  /** @format int32 */
-  id?: string;
-  name?: string | null;
-  email?: string | null;
-  competences?: string[] | null;
-  department?: string | null;
-  /** @format int32 */
-  yearsOfExperience?: number;
-  degree?: Degree;
-  bookings?: BookedHoursPerWeek;
-  detailedBooking?: DetailedBooking;
-  isOccupied?: boolean;
-}
-
-export interface ConsultantReadModelMultipleWeeks {
-  /** @format int32 */
-  id?: string;
-  name?: string | null;
-  email?: string | null;
-  competences?: string[] | null;
-  department?: string | null;
-  /** @format int32 */
-  yearsOfExperience?: number;
-  degree?: Degree;
-  bookings?: BookedHoursPerWeek[];
-  detailedBooking?: DetailedBooking[];
-  isOccupied?: boolean;
-}
-
 export enum Degree {
   Master = "Master",
   Bachelor = "Bachelor",
   None = "None",
+}
+
+export interface updateBookingHoursBody {
+  hours: number;
+  bookingType: BookingType;
+  consultantId: string;
+  bookingId: string;
+  startWeek: number;
+  endWeek?: number;
 }

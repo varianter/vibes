@@ -43,7 +43,7 @@ public class ConsultantController : ControllerBase
 
     [HttpPut]
     [Route("staffing/update")]
-    public ActionResult<ConsultantReadModelSingleWeek> Put(
+    public ActionResult<ConsultantReadModel> Put(
         [FromRoute] string orgUrlKey,
         [FromBody] StaffingWriteModel staffingWriteModel
     )
@@ -52,7 +52,7 @@ public class ConsultantController : ControllerBase
 
         if (!StaffingControllerValidator.ValidateStaffingWriteModel(staffingWriteModel, service, orgUrlKey))
             return BadRequest();
-        var selectedWeek = new Week(staffingWriteModel.Year, staffingWriteModel.Week);
+        var selectedWeek = new Week(staffingWriteModel.StartYear, staffingWriteModel.StartWeek);
         try
         {
             switch (staffingWriteModel.Type)
@@ -134,7 +134,7 @@ public class ConsultantController : ControllerBase
     }
 }
 
-public record StaffingWriteModel(BookingType Type, int ConsultantId, int EngagementId, int Year, int Week,
+public record StaffingWriteModel(BookingType Type, int ConsultantId, int EngagementId, int StartYear, int StartWeek,
    [property: LongValidator(MinValue = 0, MaxValue = 100)]
     double Hours);
 
