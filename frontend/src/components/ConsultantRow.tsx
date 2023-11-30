@@ -223,7 +223,7 @@ function WeekCell(props: {
       className={`h-[52px] ${isLastCol ? "py-0.5 pl-0.5" : "p-0.5"}`}
     >
       <div
-        className={`flex flex-col gap-1 p-2 justify-end rounded w-full h-full relative border border-transparent hover:border-primary/50 hover:cursor-pointer ${
+        className={`flex flex-col gap-1 p-2 justify-end rounded w-full h-full relative border border-transparent hover:border-primary/30 hover:cursor-pointer ${
           bookedHoursPerWeek.bookingModel.totalOverbooking > 0
             ? `bg-black text-white`
             : bookedHoursPerWeek.bookingModel.totalSellableTime > 0
@@ -637,7 +637,7 @@ function DetailedBookingCell({
         )} ${hours == 0 && "bg-opacity-30"} ${
           isInputFocused || checkIfMarked()
             ? "border-primary"
-            : "border-transparent hover:border-primary/10"
+            : "border-transparent hover:border-primary/30"
         }`}
         onMouseEnter={() => {
           setIsChangingHours(true);
@@ -654,14 +654,21 @@ function DetailedBookingCell({
           detailedBooking.bookingDetails.type != BookingType.Vacation && (
             <button
               tabIndex={-1}
+              disabled={hours == 0}
               className={`p-1 rounded-full hover:bg-primary/10 hidden ${
                 numWeeks <= 8 && "md:flex"
-              } ${numWeeks <= 12 && "lg:flex"} `}
+              } ${numWeeks <= 12 && "lg:flex"} ${
+                hours == 0 && "hover:bg-primary/0"
+              } `}
               onClick={() => {
                 setHours(Math.max(hours - 7.5, 0));
               }}
             >
-              <Minus className="w-4 h-4" />
+              <Minus
+                className={`w-4 h-4 text-primary ${
+                  hours == 0 && "text-primary/50"
+                }`}
+              />
             </button>
           )}
 
@@ -715,7 +722,7 @@ function DetailedBookingCell({
                 setHours(hours + 7.5);
               }}
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-4 h-4 text-primary" />
             </button>
           )}
       </div>
