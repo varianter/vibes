@@ -2,14 +2,14 @@ import React from "react";
 
 export default function BaseButton({
   onClick,
-  disabled,
   className,
   children,
+  disabled = false,
 }: {
-  onClick?: () => void;
-  disabled?: true;
+  onClick: () => void;
   className: string;
   children: React.ReactNode;
+  disabled?: boolean;
 }) {
   return (
     <button

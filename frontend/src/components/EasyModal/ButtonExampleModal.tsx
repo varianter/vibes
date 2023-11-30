@@ -43,7 +43,6 @@ function ButtonExampleModal() {
             <IconActionButton
               variant="secondary"
               onClick={handleSave}
-              small
               icon={<Plus />}
             />
             <IconActionButton
@@ -85,14 +84,12 @@ function ButtonExampleModal() {
               onClick={handleSave}
               iconLeft={<Plus />}
               iconRight={<Plus />}
-              small
             >
               Button
             </ActionButton>
             <ActionButton
               variant="terniary"
               onClick={handleSave}
-              small
               iconRight={<Plus />}
               iconLeft={<Plus />}
             >
@@ -101,7 +98,6 @@ function ButtonExampleModal() {
             <ActionButton
               variant="primary"
               onClick={handleSave}
-              small
               iconRight={<Plus />}
               iconLeft={<Plus />}
             >
@@ -112,14 +108,12 @@ function ButtonExampleModal() {
               onClick={handleSave}
               iconLeft={<Plus />}
               fullWidth
-              small
             >
               Button
             </ActionButton>
             <ActionButton
               variant="terniary"
               onClick={handleSave}
-              small
               fullWidth
               iconLeft={<Plus />}
             >
@@ -128,7 +122,6 @@ function ButtonExampleModal() {
             <ActionButton
               variant="primary"
               onClick={handleSave}
-              small
               fullWidth
               iconLeft={<Plus />}
             >

@@ -2,7 +2,7 @@ import React from "react";
 
 export function IconBox({
   children,
-  small,
+  small = false,
 }: {
   children: React.ReactNode;
   small?: boolean;
