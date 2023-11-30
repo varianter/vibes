@@ -26,13 +26,13 @@ public class ReadModelFactory
     }
     
 
-    public ConsultantReadModelSingleWeek GetConsultantReadModelForWeek(int consultantId, Week week)
+    public ConsultantReadModel GetConsultantReadModelForWeek(int consultantId, Week week)
     {
         var consultant = _storageService.LoadConsultantForSingleWeek(consultantId, week);
         var readModel = MapToReadModelList(consultant, new List<Week> { week });
 
-        return new ConsultantReadModelSingleWeek(consultant, readModel.Bookings.First(),
-            readModel.DetailedBooking.First(), readModel.IsOccupied);
+        return new ConsultantReadModel(consultant, new List<BookedHoursPerWeek> { readModel.Bookings.First() },
+           new List<DetailedBooking> { readModel.DetailedBooking.First() }, readModel.IsOccupied);
     }
     
     public ConsultantReadModel GetConsultantReadModelForWeeks( int consultantId, List<Week> weeks)

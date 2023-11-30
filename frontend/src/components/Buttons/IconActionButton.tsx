@@ -1,16 +1,39 @@
 import React from "react";
-import ActionButton, { ActionButtonProps } from "./ActionButton";
 import { IconBox } from "./IconBox";
+import BaseButton from "./BaseButton";
 
-type IconActionButtonProps = ActionButtonProps & {
+export type IconActionButtonProps = {
+  variant: "primary" | "secondary" | "terniary";
   icon: React.ReactNode;
-  small?: true;
+  onClick: () => void;
+  className?: string;
+  disabled?: boolean;
+  small?: boolean;
 };
 
-export default function IconActionButton(props: IconActionButtonProps) {
+export default function IconActionButton({
+  variant,
+  icon,
+  onClick,
+  className = "",
+  disabled = false,
+  small = false,
+}: IconActionButtonProps) {
+  const variantClass =
+    {
+      primary: "bg-primary text-white hover:bg-primary_darker",
+      secondary:
+        "bg-white text-primary border border-primary/50 hover:bg-primary/10 hover:border-primary",
+      terniary: "bg-white text-primary hover:bg-primary/10 ",
+    }[variant] ?? "Default";
+  const disabledClass = disabled ? "bg-opacity-50" : "";
+
   return (
-    <ActionButton {...props} isIconBtn>
-      <IconBox small={props.small}>{props.icon}</IconBox>
-    </ActionButton>
+    <BaseButton
+      className={`p-2 rounded-lg ${variantClass} ${disabledClass} ${className} `}
+      onClick={onClick}
+    >
+      <IconBox small={small}>{icon}</IconBox>
+    </BaseButton>
   );
 }

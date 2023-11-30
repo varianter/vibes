@@ -4,48 +4,48 @@ import { IconBox } from "./IconBox";
 
 export type ActionButtonProps = {
   variant: "primary" | "secondary" | "terniary";
+  onClick: () => void;
+  children?: React.ReactNode;
   iconLeft?: React.ReactNode;
   iconRight?: React.ReactNode;
-  small?: boolean;
   fullWidth?: true;
-  onClick?: () => void;
-  disabled?: true;
-  children?: React.ReactNode;
   className?: string;
-  isIconBtn?: boolean;
+  disabled?: boolean;
+  iconBtn?: boolean;
+  small?: boolean;
 };
 
 export default function ActionButton({
   variant,
-  iconLeft,
-  iconRight,
-  small,
-  fullWidth,
-  disabled,
   onClick,
   children,
+  iconLeft,
+  iconRight,
+  fullWidth,
   className = "",
-  isIconBtn = true,
+  disabled = false,
+  iconBtn = false,
+  small = false,
 }: ActionButtonProps) {
   const variantClass =
     {
-      primary:
-        "bg-primary text-white hover:bg-primary_darker hover:border-primary_darker",
+      primary: "bg-primary text-white hover:bg-primary_darker",
       secondary:
         "bg-white text-primary border border-primary/50 hover:bg-primary/10 hover:border-primary",
-      terniary:
-        "bg-white text-primary hover:bg-primary/10 hover:border-primary",
+      terniary: "bg-white text-primary hover:bg-primary/10",
     }[variant] ?? "Default";
 
   const disabledClass = disabled ? "bg-opacity-50" : "";
   const fullWidthClass = fullWidth ? "w-full" : "";
-
-  const paddingClass = isIconBtn ? "p-2" : "p-3";
-  const roundedBorders = small ? "rounded h-8" : "rounded-lg h-10";
+  const buttonShapeClass = iconBtn
+    ? small
+      ? "p-2 rounded-[4px]"
+      : "px-3 py-2 rounded-lg"
+    : "p-3 rounded-lg";
 
   return (
     <BaseButton
-      className={`${variantClass} ${disabledClass} ${fullWidthClass} ${paddingClass} ${roundedBorders} ${className} `}
+      className={` ${variantClass} ${disabledClass} ${fullWidthClass} ${buttonShapeClass} ${className}`}
       onClick={onClick}
     >
       <IconBox small={small}>{iconLeft}</IconBox>
