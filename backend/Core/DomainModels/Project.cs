@@ -1,11 +1,13 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Core.DomainModels;
 
 public class Project
 {
+    [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public required int Id { get; set; }
+    public int Id { get; set; }
 
     public required Customer Customer { get; set; }
 
@@ -17,7 +19,7 @@ public class Project
 
     public required string Name { get; set; }
 
-    //public required bool IsBillable { get; set; }
+    public required bool IsBillable { get; set; }
 }
 
 public enum ProjectState

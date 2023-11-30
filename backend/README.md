@@ -25,6 +25,18 @@ cd backend/Api
 dotnet run
 ```
 
+## Add / Remove Migrations
+To create new migrations or revert the current:
+```shell
+# Create a new
+dotnet ef migrations add WhatIHaveChangedToTheModelHere --startup-project Api/ --project Database/ 
+
+# Remove the current
+dotnet ef migrations remove --startup-project Api/ --project Database/ 
+
+```
+
+
 ## Swagger API Auth
 By default, the API endpoints requires authorization by a token acquired by the SSO Auth token from Azure AD.
 

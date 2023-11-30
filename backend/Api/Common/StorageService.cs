@@ -1,6 +1,8 @@
 using Api.Organisation;
+using Api.Projects;
 using Core.DomainModels;
 using Database.DatabaseContext;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -48,14 +50,14 @@ public class StorageService
 
         return consultant;
     }
-    
+
     public Consultant LoadConsultantForWeekSet(int consultantId, List<Week> weeks)
-    { 
+    {
         var consultant = _dbContext.Consultant
             .Include(c => c.Department)
             .ThenInclude(d => d.Organization)
             .Single(c => c.Id == consultantId);
-        
+
 
         consultant.Staffings = _dbContext.Staffing.Where(staffing =>
                 weeks.Contains(staffing.Week) && staffing.ConsultantId == consultantId).Include(s => s.Project)
@@ -206,22 +208,22 @@ public class StorageService
             .Find(projectId);
 
         var org = _dbContext.Organization.FirstOrDefault(o => o.UrlKey == orgUrlKey);
-        
+
         foreach (var week in weeks)
         {
             var newHours = hours;
             if (org != null)
             {
                 var holidayHours = org.GetTotalHolidayHoursOfWeek(week);
-                var vacations = _dbContext.Vacation.Where(v=>v.ConsultantId.Equals(consultantId)).ToList();
-                var vacationHours = vacations.Count(v=> week.ContainsDate(v.Date)) * org.HoursPerWorkday;
-                    var plannedAbsenceHours = _dbContext.PlannedAbsence.Where(pa => pa.Week.Equals(week) && pa.ConsultantId.Equals(consultantId))
-                    .Select(pa => pa.Hours).Sum();
+                var vacations = _dbContext.Vacation.Where(v => v.ConsultantId.Equals(consultantId)).ToList();
+                var vacationHours = vacations.Count(v => week.ContainsDate(v.Date)) * org.HoursPerWorkday;
+                var plannedAbsenceHours = _dbContext.PlannedAbsence.Where(pa => pa.Week.Equals(week) && pa.ConsultantId.Equals(consultantId))
+                .Select(pa => pa.Hours).Sum();
 
                 var total = holidayHours + vacationHours + plannedAbsenceHours;
 
-                newHours = (hours+total > org.HoursPerWorkday*5) 
-                    ? Math.Max(org.HoursPerWorkday*5 - total, 0) 
+                newHours = (hours + total > org.HoursPerWorkday * 5)
+                    ? Math.Max(org.HoursPerWorkday * 5 - total, 0)
                     : hours;
             }
             var staffing = _dbContext.Staffing
@@ -263,17 +265,17 @@ public class StorageService
             {
                 var holidayHours = org.GetTotalHolidayHoursOfWeek(week);
                 newHours = holidayHours + hours > org.HoursPerWorkday * 5
-                    ? Math.Max(org.HoursPerWorkday*5 - holidayHours, 0)
+                    ? Math.Max(org.HoursPerWorkday * 5 - holidayHours, 0)
                     : hours;
             }
-            
+
             var plannedAbsence = _dbContext.PlannedAbsence
                 .FirstOrDefault(pa => pa.AbsenceId.Equals(absenceId)
                                       && pa.ConsultantId.Equals(consultantId)
                                       && pa.Week.Equals(week));
-            
+
             if (plannedAbsence is null)
-            {   
+            {
                 _dbContext.Add(new PlannedAbsence
                 {
                     AbsenceId = absenceId,
@@ -287,9 +289,53 @@ public class StorageService
             else
                 plannedAbsence.Hours = newHours;
         }
-        
+
         _dbContext.SaveChanges();
         _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
     }
-    
+
+
+    public Customer CreateCustomer(string customerName, Organization org)
+    {
+        var customer = new Customer
+        {
+            Name = customerName,
+            Organization = org,
+            Projects = new List<Project>()
+        };
+
+        _dbContext.Customer.Add(customer);
+        _dbContext.SaveChanges();
+
+        return customer;
+    }
+
+    public Project CreateProject(string projectName, Customer customer, EngagementBackendBody body)
+    {
+        var project = new Project
+        {
+            Customer = customer,
+            State = body.BookingType,
+            Staffings = new List<Staffing>(),
+            Consultants = new List<Consultant>(),
+            Name = projectName,
+            IsBillable = body.IsBillable
+        };
+
+        _dbContext.Project.Add(project);
+        _dbContext.SaveChanges();
+
+        return project;
+    }
+
+
+    public Project LoadConsultantsForProject(int projectId)
+    {
+        var project = _dbContext.Project.SingleOrDefault(p => p.Id == projectId);
+
+        if (project is null)
+            Console.WriteLine("not found");
+
+        return project;
+    }
 }

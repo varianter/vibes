@@ -226,10 +226,56 @@ function AddEngagementForm() {
     setIsFakturerbar(!isFakturerbar);
   }
 
+  function submitAddEngagementForm(body: ) {
+    const url = `/${organisationName}/bemanning/api/engagements}`;
+
+    try {
+      const data = await fetch(url, {
+        method: "put",
+        body: JSON.stringify({
+          isBillable: isFakturerbar,
+          customerId: selectedCustomer?.value,
+          consultantIDs: selectedConsultants?.map((c) => c.value),
+          engagementID: selectedEngagement?.value,
+          bookingType: radioValue,
+        }),
+      });
+      return (await data.json()) as ConsultantReadModelSingleWeek;
+    } catch (e) {
+      console.error("Error updating staffing", e);
+    }
+  }
+
+
+  export interface AddEngagementFormBody { 
+    isBillable: boolean;
+    customerId: string;
+    consultantIDs: string[];
+    engagementID: string;
+    bookingType: string;
+  }
+
   // Handler for form submission
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    event.stopPropagation();
     // Add your submission logic here
     console.log(event);
+
+    const body = {
+      consultantIds: selectedConsultants?.map((c) => Number(c.value)), // Solid existing
+      
+      customerId: Number(selectedCustomer?.value),
+      customerName: selectedCustomer?.label,
+      engagementId: Number(selectedEngagement?.value),
+      engagementName: selectedEngagement?.label,
+
+      bookingType: radioValue,
+      isBillable: isFakturerbar,
+    };
+
+    console.log(body);
+
     console.log("Form submitted!");
     // TODO: Legg på noe post-greier her
   }
