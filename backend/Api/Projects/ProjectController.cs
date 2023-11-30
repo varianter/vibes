@@ -1,4 +1,5 @@
 using Api.Common;
+using Api.StaffingController;
 using Core.DomainModels;
 using Database.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
@@ -41,8 +42,8 @@ public class ProjectController : ControllerBase
             .ToList();
     }
 
-    [HttpPost]
-    public ActionResult<EngagementReadModel> Post([FromRoute] string orgUrlKey,
+    [HttpPut]
+    public ActionResult<EngagementReadModel> Put([FromRoute] string orgUrlKey,
         [FromBody] EngagementBackendBody body)
     {
         var service = new StorageService(_cache, _context);
@@ -50,35 +51,55 @@ public class ProjectController : ControllerBase
         var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrg is null) return BadRequest("Selected org not found");
 
-
-        var existingCustomer = _context.Customer.SingleOrDefault(c => c.Id == body.CustomerId);
-        
-        // GET customer => or POST/CREATE customer =>     
-    
-        var customer = existingCustomer ?? service.CreateCustomer("Nytt kundenavn", selectedOrg);
-        var project = _context.Project.SingleOrDefault(p => p.Id == body.EngagementId) ?? service.CreateProject("ProjectName", customer, body);
+        var customer = service.UpdateOrCreateCustomer(selectedOrg, body);
+        var project = service.UpdateOrCreateProject(customer, body);
         
         var consultants = _context.Consultant.Where(c => body.ConsultantIds.Contains(c.Id)).ToList();
         if (!consultants.Any()) return BadRequest("No consultant-ids match in db");
 
         // Adding consultants to project
+        // TODO : What if consultants exists from before on project?
         project.Consultants.AddRange(consultants);
-        
-        var week = Week.FromDateTime(DateTime.Now);
-        service.UpdateOrCreateStaffing(
-            new StaffingKey(project.Id, consultants.First().Id, week), 37.5, orgUrlKey
-        );
-        
-        // Temp save this
-        // customer.Projects.Add(project);
-        // _context.SaveChanges();
-        
-        
 
-        var result = new EngagementReadModel(project.Id, project.Name, project.State, false);
+        var thisWeek = Week.FromDateTime(DateTime.Now);
+        var nextWeekSet = thisWeek.GetNextWeeks(8);
 
-        return Ok(result);
-        
+        const double emptyHours = 0;
+
+        foreach (var consultant in consultants)
+        {
+            foreach (var week in nextWeekSet)
+            {
+                var staffing = _context.Staffing
+                    .FirstOrDefault(s => s.ProjectId.Equals(project.Id)
+                                         && s.ConsultantId.Equals(consultant.Id)
+                                         && s.Week.Equals(week));
+                if (staffing is null)
+                {
+                    _context.Add(new Staffing
+                    {
+                        ProjectId = project.Id,
+                        Project = project,
+                        ConsultantId = consultant.Id,
+                        Consultant = consultant,
+                        Week = week,
+                        Hours = emptyHours
+                    });
+                }
+                else
+                    staffing.Hours = emptyHours;
+            }
+        }
+
+        _context.SaveChanges();
+
+        var readModels = new ReadModelFactory(service).GetConsultantReadModelsForWeeks(orgUrlKey, nextWeekSet);
+
+        var filteredConsultants = readModels.Where(c => body.ConsultantIds.Contains(c.Id)).ToList();
+
+        var responseModel = new ProjectWithConsultantsReadModel(project.Name, customer.Name, project.State, filteredConsultants, project.IsBillable);
+
+        return Ok(responseModel);
     }
 }
 
@@ -87,6 +108,9 @@ public record EngagementPerCustomerReadModel(int CustomerId, string CustomerName
 
 public record EngagementReadModel(int EngagementId, string EngagementName, ProjectState BookingType, bool IsBillable);
 
-
 public record EngagementBackendBody(int CustomerId, List<int> ConsultantIds, int EngagementId, ProjectState BookingType,
-    bool IsBillable);
+    bool IsBillable, string? ProjectName, string? CustomerName);
+
+
+public record ProjectWithConsultantsReadModel(string ProjectName, string CustomerName, ProjectState BookingType,
+    List<ConsultantReadModel> Consultants, bool IsBillable);

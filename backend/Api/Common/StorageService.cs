@@ -2,7 +2,6 @@ using Api.Organisation;
 using Api.Projects;
 using Core.DomainModels;
 using Database.DatabaseContext;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -295,47 +294,52 @@ public class StorageService
     }
 
 
-    public Customer CreateCustomer(string customerName, Organization org)
+    public Customer UpdateOrCreateCustomer(Organization org, EngagementBackendBody body)
     {
-        var customer = new Customer
-        {
-            Name = customerName,
-            Organization = org,
-            Projects = new List<Project>()
-        };
+        var customer = _dbContext.Customer.SingleOrDefault(c => c.Id == body.CustomerId);
 
-        _dbContext.Customer.Add(customer);
+        if (customer is null)
+        {
+            customer = new Customer
+            {
+                Name = body.CustomerName ?? "name error",
+                Organization = org,
+                Projects = new List<Project>()
+            };
+            
+            _dbContext.Customer.Add(customer);
+        }
         _dbContext.SaveChanges();
 
         return customer;
     }
 
-    public Project CreateProject(string projectName, Customer customer, EngagementBackendBody body)
+    public Project UpdateOrCreateProject(Customer customer, EngagementBackendBody body)
     {
-        var project = new Project
-        {
-            Customer = customer,
-            State = body.BookingType,
-            Staffings = new List<Staffing>(),
-            Consultants = new List<Consultant>(),
-            Name = projectName,
-            IsBillable = body.IsBillable
-        };
 
-        _dbContext.Project.Add(project);
-        _dbContext.SaveChanges();
-
-        return project;
-    }
-
-
-    public Project LoadConsultantsForProject(int projectId)
-    {
-        var project = _dbContext.Project.SingleOrDefault(p => p.Id == projectId);
-
+        var project = _dbContext.Project.SingleOrDefault(p => p.Id == body.EngagementId);
+        
         if (project is null)
-            Console.WriteLine("not found");
-
+        {
+            project = new Project
+            {
+                Customer = customer,
+                State = body.BookingType,
+                Staffings = new List<Staffing>(),
+                Consultants = new List<Consultant>(),
+                Name = body.ProjectName ?? "Missing Project Name",
+                IsBillable = body.IsBillable
+            };
+            
+            _dbContext.Project.Add(project);
+        }
+        else
+        {
+            project.State = body.BookingType;
+            project.IsBillable = body.IsBillable;
+        }
+        _dbContext.SaveChanges();
+        
         return project;
     }
 }
