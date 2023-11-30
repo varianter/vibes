@@ -223,7 +223,7 @@ function WeekCell(props: {
       className={`h-[52px] ${isLastCol ? "py-0.5 pl-0.5" : "p-0.5"}`}
     >
       <div
-        className={`flex flex-col gap-1 p-2 justify-end rounded w-full h-full relative border border-transparent hover:border-primary/50 hover:cursor-pointer ${
+        className={`flex flex-col gap-1 p-2 justify-end rounded w-full h-full relative border border-transparent hover:border-primary/30 hover:cursor-pointer ${
           bookedHoursPerWeek.bookingModel.totalOverbooking > 0
             ? `bg-black text-white`
             : bookedHoursPerWeek.bookingModel.totalSellableTime > 0
@@ -571,7 +571,6 @@ function DetailedBookingCell({
           // Use spread to make a new list, forcing a re-render
           ...upsertConsultantWithSingleWeekBooking(old, res),
         ]);
-        setOldHours(hours);
       });
     }
   }
@@ -610,7 +609,6 @@ function DetailedBookingCell({
         // Use spread to make a new list, forcing a re-render
         ...upsertConsultantWithMultipleWeeksBooking(old, res),
       ]);
-      setOldHours(hourDragValue);
     });
   }
 
@@ -632,12 +630,12 @@ function DetailedBookingCell({
   return (
     <td className="h-8 p-0.5">
       <div
-        className={`flex flex-row justify-center items-center rounded px-3 border  ${getColorByStaffingType(
+        className={`flex flex-row justify-center items-center rounded px-1 border  ${getColorByStaffingType(
           detailedBooking.bookingDetails.type ?? BookingType.Offer,
         )} ${hours == 0 && "bg-opacity-30"} ${
           isInputFocused || checkIfMarked()
             ? "border-primary"
-            : "border-transparent hover:border-primary/10"
+            : "border-transparent hover:border-primary/30"
         }`}
         onMouseEnter={() => {
           setIsChangingHours(true);
@@ -654,14 +652,21 @@ function DetailedBookingCell({
           detailedBooking.bookingDetails.type != BookingType.Vacation && (
             <button
               tabIndex={-1}
-              className={`p-1 rounded-full hover:bg-primary/10 hidden ${
+              disabled={hours == 0}
+              className={`my-1 p-1 rounded-full hover:bg-primary/10 hidden ${
                 numWeeks <= 8 && "md:flex"
-              } ${numWeeks <= 12 && "lg:flex"} `}
+              } ${numWeeks <= 12 && "lg:flex"} ${
+                hours == 0 && "hover:bg-primary/0"
+              } `}
               onClick={() => {
                 setHours(Math.max(hours - 7.5, 0));
               }}
             >
-              <Minus className="w-4 h-4" />
+              <Minus
+                className={`w-4 h-4 text-primary ${
+                  hours == 0 && "text-primary/50"
+                }`}
+              />
             </button>
           )}
 
@@ -701,21 +706,21 @@ function DetailedBookingCell({
           }}
           className={`small-medium rounded w-full py-2 bg-transparent focus:outline-none min-w-[24px] ${
             isChangingHours && numWeeks <= 12 ? "text-center" : "text-right"
-          } `}
+          } ${hours == 0 && "text-black/75"} `}
         ></input>
         {isChangingHours &&
           numWeeks <= 12 &&
           detailedBooking.bookingDetails.type != BookingType.Vacation && (
             <button
               tabIndex={-1}
-              className={`p-1 rounded-full hover:bg-primary/10 hidden ${
+              className={`my-1 p-1 rounded-full hover:bg-primary/10 hidden ${
                 numWeeks <= 8 && "md:flex"
               } ${numWeeks <= 12 && "lg:flex"} `}
               onClick={() => {
                 setHours(hours + 7.5);
               }}
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-4 h-4 text-primary" />
             </button>
           )}
       </div>
