@@ -706,7 +706,7 @@ function DetailedBookingCell({
           }}
           className={`small-medium rounded w-full py-2 bg-transparent focus:outline-none min-w-[24px] ${
             isChangingHours && numWeeks <= 12 ? "text-center" : "text-right"
-          } `}
+          } ${hours == 0 && "text-black/75"} `}
         ></input>
         {isChangingHours &&
           numWeeks <= 12 &&
