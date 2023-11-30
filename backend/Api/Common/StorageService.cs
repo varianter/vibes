@@ -294,7 +294,7 @@ public class StorageService
     }
 
 
-    public Customer UpdateOrCreateCustomer(Organization org, EngagementBackendBody body)
+    public Customer UpdateOrCreateCustomer(Organization org, EngagementBackendBody body, string orgUrlKey)
     {
         var customer = _dbContext.Customer.SingleOrDefault(c => c.Id == body.CustomerId);
 
@@ -310,11 +310,12 @@ public class StorageService
             _dbContext.Customer.Add(customer);
         }
         _dbContext.SaveChanges();
+        _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
 
         return customer;
     }
 
-    public Project UpdateOrCreateProject(Customer customer, EngagementBackendBody body)
+    public Project UpdateOrCreateProject(Customer customer, EngagementBackendBody body, string orgUrlKey)
     {
 
         var project = _dbContext.Project.SingleOrDefault(p => p.Id == body.EngagementId);
@@ -339,6 +340,7 @@ public class StorageService
             project.IsBillable = body.IsBillable;
         }
         _dbContext.SaveChanges();
+        _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
         
         return project;
     }

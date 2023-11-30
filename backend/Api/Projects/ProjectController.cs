@@ -51,8 +51,8 @@ public class ProjectController : ControllerBase
         var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrg is null) return BadRequest("Selected org not found");
 
-        var customer = service.UpdateOrCreateCustomer(selectedOrg, body);
-        var project = service.UpdateOrCreateProject(customer, body);
+        var customer = service.UpdateOrCreateCustomer(selectedOrg, body, orgUrlKey);
+        var project = service.UpdateOrCreateProject(customer, body, orgUrlKey);
         
         var consultants = _context.Consultant.Where(c => body.ConsultantIds.Contains(c.Id)).ToList();
         if (!consultants.Any()) return BadRequest("No consultant-ids match in db");
@@ -64,7 +64,7 @@ public class ProjectController : ControllerBase
         var thisWeek = Week.FromDateTime(DateTime.Now);
         var nextWeekSet = thisWeek.GetNextWeeks(8);
 
-        const double emptyHours = 0;
+        const double dummyHours = 37.5;
 
         foreach (var consultant in consultants)
         {
@@ -83,15 +83,16 @@ public class ProjectController : ControllerBase
                         ConsultantId = consultant.Id,
                         Consultant = consultant,
                         Week = week,
-                        Hours = emptyHours
+                        Hours = dummyHours
                     });
                 }
                 else
-                    staffing.Hours = emptyHours;
+                    staffing.Hours = dummyHours;
             }
         }
 
         _context.SaveChanges();
+        _cache.Remove($"{"consultantCacheKey"}/{orgUrlKey}");
 
         var readModels = new ReadModelFactory(service).GetConsultantReadModelsForWeeks(orgUrlKey, nextWeekSet);
 
