@@ -2,12 +2,12 @@ import React from "react";
 
 export function IconBox({
   children,
-  isSmallIcon = false,
+  small = false,
 }: {
   children: React.ReactNode;
-  isSmallIcon?: boolean;
+  small?: boolean;
 }) {
-  const size = isSmallIcon ? "h-4 w-4" : "h-6 w-6";
+  const size = small ? "h-4 w-4" : "h-6 w-6";
 
   if (!children) {
     return null;

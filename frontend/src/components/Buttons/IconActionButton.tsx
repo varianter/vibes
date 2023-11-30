@@ -33,7 +33,7 @@ export default function IconActionButton({
       className={`p-2 rounded-lg ${variantClass} ${disabledClass} ${className} `}
       onClick={onClick}
     >
-      <IconBox isSmallIcon={small}>{icon}</IconBox>
+      <IconBox small={small}>{icon}</IconBox>
     </BaseButton>
   );
 }
