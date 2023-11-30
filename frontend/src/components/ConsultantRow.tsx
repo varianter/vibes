@@ -630,7 +630,7 @@ function DetailedBookingCell({
   return (
     <td className="h-8 p-0.5">
       <div
-        className={`flex flex-row justify-center items-center rounded px-3 border  ${getColorByStaffingType(
+        className={`flex flex-row justify-center items-center rounded px-1 border  ${getColorByStaffingType(
           detailedBooking.bookingDetails.type ?? BookingType.Offer,
         )} ${hours == 0 && "bg-opacity-30"} ${
           isInputFocused || checkIfMarked()
@@ -653,7 +653,7 @@ function DetailedBookingCell({
             <button
               tabIndex={-1}
               disabled={hours == 0}
-              className={`p-1 rounded-full hover:bg-primary/10 hidden ${
+              className={`my-1 p-1 rounded-full hover:bg-primary/10 hidden ${
                 numWeeks <= 8 && "md:flex"
               } ${numWeeks <= 12 && "lg:flex"} ${
                 hours == 0 && "hover:bg-primary/0"
@@ -713,7 +713,7 @@ function DetailedBookingCell({
           detailedBooking.bookingDetails.type != BookingType.Vacation && (
             <button
               tabIndex={-1}
-              className={`p-1 rounded-full hover:bg-primary/10 hidden ${
+              className={`my-1 p-1 rounded-full hover:bg-primary/10 hidden ${
                 numWeeks <= 8 && "md:flex"
               } ${numWeeks <= 12 && "lg:flex"} `}
               onClick={() => {
