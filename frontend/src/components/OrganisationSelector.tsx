@@ -4,20 +4,16 @@ import Link from "next/link";
 import ActionButton from "./Buttons/ActionButton";
 import { useRouter } from "next/navigation";
 
-export default function OrganisationSelector({
-  orgs,
-}: {
-  orgs: Organisation[];
-}) {
+export function OrganisationSelector({ orgs }: { orgs: Organisation[] }) {
   const router = useRouter();
 
-  if (typeof window !== "undefined") {
+  /*if (typeof window !== "undefined") {
     const chosenUrlKey = localStorage.getItem("chosenUrlKey");
 
     if (orgs.find((o) => o.urlKey == chosenUrlKey)) {
       router.push(`/${chosenUrlKey}/bemanning`);
     }
-  }
+  }*/
 
   function setUrlKey(urlKey: string): void {
     localStorage.setItem("chosenUrlKey", urlKey);
@@ -38,5 +34,19 @@ export default function OrganisationSelector({
         </li>
       ))}
     </>
+  );
+}
+
+export default function OrganisationButton({
+  org,
+  setCookie,
+}: {
+  org: Organisation;
+  setCookie: (string: string) => void;
+}) {
+  return (
+    <ActionButton variant="secondary" onClick={() => setCookie(org.urlKey)}>
+      {org.name}
+    </ActionButton>
   );
 }
