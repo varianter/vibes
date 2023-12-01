@@ -47,6 +47,8 @@ public class ProjectController : ControllerBase
         [FromBody] EngagementBackendBody body)
     {
         var service = new StorageService(_cache, _context);
+        
+        const string consultantCacheKey = "consultantCacheKey";
 
         var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrg is null) return BadRequest("Selected org not found");
@@ -64,7 +66,7 @@ public class ProjectController : ControllerBase
         var thisWeek = Week.FromDateTime(DateTime.Now);
         var nextWeekSet = thisWeek.GetNextWeeks(8);
 
-        const double dummyHours = 37.5;
+        const double emptyHours = 0;
 
         foreach (var consultant in consultants)
         {
@@ -83,16 +85,16 @@ public class ProjectController : ControllerBase
                         ConsultantId = consultant.Id,
                         Consultant = consultant,
                         Week = week,
-                        Hours = dummyHours
+                        Hours = emptyHours
                     });
                 }
                 else
-                    staffing.Hours = dummyHours;
+                    staffing.Hours = emptyHours;
             }
         }
-
+         
         _context.SaveChanges();
-        _cache.Remove($"{"consultantCacheKey"}/{orgUrlKey}");
+        _cache.Remove($"{consultantCacheKey}/{orgUrlKey}");
 
         var readModels = new ReadModelFactory(service).GetConsultantReadModelsForWeeks(orgUrlKey, nextWeekSet);
 

@@ -310,7 +310,7 @@ public class StorageService
             _dbContext.Customer.Add(customer);
         }
         _dbContext.SaveChanges();
-        _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
+        // _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
 
         return customer;
     }
@@ -340,7 +340,7 @@ public class StorageService
             project.IsBillable = body.IsBillable;
         }
         _dbContext.SaveChanges();
-        _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
+        // _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
         
         return project;
     }
