@@ -1,7 +1,5 @@
-import Image from "next/image";
 import NavBarLink from "./NavBarLink";
 import NavBarUserIcon from "./NavBarUserIcon";
-import OrganisationSelector from "../OrganisationSelector";
 import { fetchWithToken } from "@/data/apiCallsWithToken";
 import { Organisation } from "@/types";
 import NavBarOrganisationDropdown from "./NavBarOrganisationDropdown";
