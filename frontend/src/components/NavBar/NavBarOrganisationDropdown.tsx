@@ -4,7 +4,7 @@ import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { Organisation } from "@/types";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Check } from "react-feather";
+import { Check, ChevronDown, ChevronUp } from "react-feather";
 
 export default function NavBarOrganisationDropdown({
   organisations,
@@ -30,12 +30,19 @@ export default function NavBarOrganisationDropdown({
         {currentOrganisation && (
           <>
             <button
-              className="border-r border-white/20 py-2"
+              className={`p-2 rounded flex gap-2 text-white ${
+                organisations.length > 1 && "hover:bg-white/10"
+              }`}
               onClick={() => setIsOpen(!isOpen)}
+              disabled={organisations.length == 1}
             >
-              <p className="normal-medium text-white pr-4">
-                {currentOrganisation?.name}
-              </p>
+              <p className="normal-medium">{currentOrganisation?.name}</p>
+              {organisations.length > 1 &&
+                (isOpen ? (
+                  <ChevronUp className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
+                ))}
             </button>
             <div
               className={`absolute right-0 top-[48px] z-50 rounded-lg text-primary bg-white flex flex-col w-[138px] shadow-xl p-1 ${
