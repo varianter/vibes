@@ -34,24 +34,26 @@ export function LargeModal(props: EasyModalProps) {
   }
 
   return (
-    <BaseModal modalRef={modalRef} classNames="w-full max-w-screen-md">
-      <LargeModalHeader
-        engagementName={engagementName}
-        customerName={customerName}
-        type={type}
-      />
-      <div>{children}</div>
-      <div className="w-full flex justify-end">
-        {showCloseButton && (
-          <ActionButton
-            onClick={handleClose}
-            variant={"primary"}
-            iconLeft={<Check />}
-            iconBtn
-          >
-            Ferdig
-          </ActionButton>
-        )}
+    <BaseModal modalRef={modalRef} classNames="h-[640px] max-w-[1200px]">
+      <div className="flex flex-col h-full">
+        <LargeModalHeader
+          engagementName={engagementName}
+          customerName={customerName}
+          type={type}
+        />
+        <div className="flex-1">{children}</div>
+        <div className="flex justify-end">
+          {showCloseButton && (
+            <ActionButton
+              onClick={handleClose}
+              variant={"primary"}
+              iconLeft={<Check />}
+              iconBtn
+            >
+              Ferdig
+            </ActionButton>
+          )}
+        </div>
       </div>
     </BaseModal>
   );

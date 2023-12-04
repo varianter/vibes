@@ -19,7 +19,10 @@ import React, {
 } from "react";
 import {
   AlertTriangle,
+  ArrowLeft,
+  ArrowRight,
   Briefcase,
+  Calendar,
   ChevronDown,
   Coffee,
   FileText,
@@ -36,6 +39,11 @@ import ReactSelect, { SelectOption } from "./ReactSelect";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { MultiValue } from "react-select";
 import { LargeModal } from "./Modals/LargeModal";
+import WeekSelection from "./WeekSelection";
+import { isCurrentWeek } from "@/hooks/staffing/dateTools";
+import DropDown from "./DropDown";
+import ActionButton from "./Buttons/ActionButton";
+import IconActionButton from "./Buttons/IconActionButton";
 
 export default function ConsultantRows({
   consultant,
@@ -125,7 +133,9 @@ export default function ConsultantRows({
 }
 
 function AddStaffingCell(): ReactElement {
-  const { openModal, modalRef } = useModal({ closeOnBackdropClick: true });
+  const { closeModal, openModal, modalRef } = useModal({
+    closeOnBackdropClick: true,
+  });
   const [isAddStaffingHovered, setIsAddStaffingHovered] = useState(false);
 
   return (
@@ -138,7 +148,7 @@ function AddStaffingCell(): ReactElement {
           showCloseButton={true}
         >
           <div className="min-h-[300px]">
-            <AddEngagementForm />
+            <AddEngagementForm closeEngagementModal={closeModal} />
           </div>
         </EasyModal>
         <button
@@ -162,8 +172,14 @@ function AddStaffingCell(): ReactElement {
   );
 }
 
-function AddEngagementForm() {
-  const { openModal, modalRef } = useModal({ closeOnBackdropClick: true });
+function AddEngagementForm({
+  closeEngagementModal,
+}: {
+  closeEngagementModal: () => void;
+}) {
+  const { openModal, modalRef } = useModal({
+    closeOnBackdropClick: true,
+  });
   const { customers, consultants } = useContext(FilteredContext);
   // State for select components
   const [selectedCustomer, setSelectedCustomer] = useState<SelectOption | null>(
@@ -235,7 +251,9 @@ function AddEngagementForm() {
     console.log(event);
     console.log("Form submitted!");
 
+    //TODO: Need to close the add engagement modal before opening the large modal
     event.preventDefault();
+    closeEngagementModal();
     openModal();
     // TODO: Legg på noe post-greier her
   }
@@ -314,16 +332,25 @@ function AddEngagementForm() {
         {/* Submit Button */}
         <button type="submit">Submit</button>
       </form>
-      <AddEngagementHoursModal modalRef={modalRef} />
+      <AddEngagementHoursModal
+        modalRef={modalRef}
+        weekSpan={8}
+        chosenConsultants={consultants.slice(0, 3)}
+      />
     </>
   );
 }
 
 function AddEngagementHoursModal({
   modalRef,
+  chosenConsultants,
 }: {
   modalRef: RefObject<HTMLDialogElement>;
+  weekSpan: number;
+  chosenConsultants: Consultant[];
 }) {
+  const weekSpanOptions = ["8 uker", "12 uker", "26 uker"];
+  const [selectedWeekSpan, setSelectedWeekSpan] = useState<number>(8);
   return (
     <LargeModal
       modalRef={modalRef}
@@ -332,8 +359,159 @@ function AddEngagementHoursModal({
       type={BookingType.Offer}
       showCloseButton={true}
     >
-      <div className="min-h-[640px]"> Hello large modal</div>
+      <div className="flex flex-col gap-6">
+        <div className="flex justify-end">
+          <div className="flex flex-row gap-2">
+            <DropDown
+              startingOption={
+                selectedWeekSpan
+                  ? selectedWeekSpan + " uker"
+                  : weekSpanOptions[0]
+              }
+              dropDownOptions={weekSpanOptions}
+              dropDownFunction={setSelectedWeekSpan}
+            />
+            <ActionButton
+              variant="secondary"
+              onClick={() => setSelectedWeekSpan(46)}
+            >
+              Nåværende uke
+            </ActionButton>
+            <IconActionButton
+              variant={"secondary"}
+              icon={<ArrowLeft />}
+              onClick={() => setSelectedWeekSpan(selectedWeekSpan - 1)}
+            />
+            <IconActionButton
+              variant={"secondary"}
+              icon={<ArrowRight />}
+              onClick={() => setSelectedWeekSpan(selectedWeekSpan + 1)}
+            />
+          </div>
+        </div>
+        <table
+          className={`w-full ${
+            selectedWeekSpan > 23
+              ? "min-w-[1400px]"
+              : selectedWeekSpan > 11
+              ? "min-w-[850px]"
+              : "min-w-[700px]"
+          } table-fixed`}
+        >
+          <colgroup>
+            <col span={1} className="w-8" />
+            <col span={1} className="w-[190px]" />
+            {chosenConsultants
+              .at(0)
+              ?.bookings?.map((booking, index) => <col key={index} span={1} />)}
+          </colgroup>
+          <thead>
+            <tr className="sticky -top-6 bg-white z-10">
+              <th colSpan={2} className="pt-3 pl-2 -left-2 relative bg-white">
+                <div className="flex flex-row gap-3 pb-4 items-center">
+                  <p className="normal-medium ">Konsulenter</p>
+                  <p className="text-primary small-medium rounded-full bg-primary/5 px-2 py-1">
+                    {chosenConsultants?.length}
+                  </p>
+                </div>
+              </th>
+              {chosenConsultants.at(0)?.bookings?.map((booking) => (
+                <th key={booking.weekNumber} className=" px-2 py-1 pt-3 ">
+                  <div className="flex flex-col gap-1">
+                    {isCurrentWeek(booking.weekNumber, booking.year) ? (
+                      <div className="flex flex-row gap-2 items-center justify-end">
+                        {booking.bookingModel.totalHolidayHours > 0 && (
+                          <InfoPill
+                            text={booking.bookingModel.totalHolidayHours.toFixed(
+                              1,
+                            )}
+                            icon={<Calendar size="12" />}
+                            colors={"bg-holiday text-holiday_darker w-fit"}
+                            variant={selectedWeekSpan < 24 ? "wide" : "medium"}
+                          />
+                        )}
+                        <div className="h-2 w-2 rounded-full bg-primary" />
+
+                        <p className="normal-medium text-right">
+                          {booking.weekNumber}
+                        </p>
+                      </div>
+                    ) : (
+                      <div
+                        className={`flex justify-end ${
+                          selectedWeekSpan >= 26
+                            ? "min-h-[30px] flex-col mb-2 gap-[1px] items-end"
+                            : "flex-row gap-2"
+                        }`}
+                      >
+                        {booking.bookingModel.totalHolidayHours > 0 && (
+                          <InfoPill
+                            text={booking.bookingModel.totalHolidayHours.toFixed(
+                              1,
+                            )}
+                            icon={<Calendar size="12" />}
+                            colors={"bg-holiday text-holiday_darker w-fit"}
+                            variant={selectedWeekSpan < 24 ? "wide" : "medium"}
+                          />
+                        )}
+                        <p className="normal text-right">
+                          {booking.weekNumber}
+                        </p>
+                      </div>
+                    )}
+
+                    <p
+                      className={`xsmall text-black/75 text-right ${
+                        selectedWeekSpan >= 26 && "hidden"
+                      }`}
+                    >
+                      {booking.dateString}
+                    </p>
+                  </div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {chosenConsultants?.map((consultant) => (
+              <AddEngagementHoursRow
+                key={consultant.id}
+                consultant={consultant}
+                weekSpan={selectedWeekSpan}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
     </LargeModal>
+  );
+}
+
+function AddEngagementHoursRow({
+  consultant,
+  weekSpan,
+}: {
+  consultant: Consultant;
+  weekSpan: number;
+}) {
+  return (
+    <tr>
+      <td>
+        <div className="flex justify-center items-center w-8 h-8 bg-offer rounded-lg">
+          <Briefcase className="text-black w-4 h-4" />
+        </div>
+      </td>
+      <td>
+        <p className="text-black text-start small pl-2">{consultant.name}</p>
+      </td>
+      {Array.from({ length: weekSpan }, (_, index) => (
+        <td key={index} className=" p-0.5">
+          <div className="flex justify-end items-center bg-offer/30  rounded-lg h-full">
+            <p className="small-medium text-black/75 p-2">0</p>
+          </div>
+        </td>
+      ))}
+    </tr>
   );
 }
 
