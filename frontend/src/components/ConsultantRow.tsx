@@ -284,6 +284,8 @@ function AddEngagementForm(props: { consultantId?: string }): ReactElement {
 
     console.log(result);
     // TODO: Legg på noe post-greier her
+
+    console.log("need to open large modal here and use result");
   }
 
   return (
