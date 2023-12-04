@@ -4,6 +4,9 @@ import {
   BookingType,
   Consultant,
   DetailedBooking,
+  EngagementBackendBody,
+  ProjectState,
+  ProjectWithConsultantsReadModel,
   WeeklyHours,
   updateBookingHoursBody,
 } from "@/types";
@@ -115,14 +118,18 @@ export default function ConsultantRows({
         ))}
       {isListElementVisible && (
         <tr>
-          <AddStaffingCell />
+          <AddStaffingCell consultant={consultant} />
         </tr>
       )}
     </>
   );
 }
 
-function AddStaffingCell(): ReactElement {
+interface AddStaffingCellProps {
+  consultant: Consultant;
+}
+
+function AddStaffingCell(props: AddStaffingCellProps): ReactElement {
   const { openModal, modalRef } = useModal({ closeOnBackdropClick: true });
   const [isAddStaffingHovered, setIsAddStaffingHovered] = useState(false);
 
@@ -136,7 +143,7 @@ function AddStaffingCell(): ReactElement {
           showCloseButton={true}
         >
           <div className="min-h-[300px]">
-            <AddEngagementForm />
+            <AddEngagementForm consultantId={props.consultant.id} />
           </div>
         </EasyModal>
         <button
@@ -160,8 +167,9 @@ function AddStaffingCell(): ReactElement {
   );
 }
 
-function AddEngagementForm() {
+function AddEngagementForm(props: { consultantId?: string }): ReactElement {
   const { customers, consultants } = useContext(FilteredContext);
+
   // State for select components
   const [selectedCustomer, setSelectedCustomer] = useState<SelectOption | null>(
     null,
@@ -169,8 +177,7 @@ function AddEngagementForm() {
   const [selectedEngagement, setSelectedEngagement] =
     useState<SelectOption | null>(null);
 
-  const [selectedConsultants, setSelectedConsultants] =
-    useState<MultiValue<SelectOption> | null>(null);
+  const organisationName = usePathname().split("/")[1];
 
   const customerOptions = customers.map(
     (c) =>
@@ -200,8 +207,18 @@ function AddEngagementForm() {
         }) as SelectOption,
     ) ?? [];
 
+  const preSelectedConsultant =
+    consultantOptions.find((c) => c.value == props.consultantId) ?? null;
+
+  const [selectedConsultants, setSelectedConsultants] =
+    useState<MultiValue<SelectOption> | null>(
+      preSelectedConsultant ? [preSelectedConsultant] : null,
+    );
+
   // State for radio button group
-  const [radioValue, setRadioValue] = useState("Tilbud");
+  const [radioValue, setRadioValue] = useState<ProjectState>(
+    ProjectState.Offer,
+  );
 
   // State for toggle
   const [isFakturerbar, setIsFakturerbar] = useState(false);
@@ -218,7 +235,7 @@ function AddEngagementForm() {
 
   // Handler for radio button group
   function handleRadioChange(event: ChangeEvent<HTMLInputElement>) {
-    setRadioValue(event.target.value);
+    setRadioValue(event.target.value as ProjectState);
   }
 
   // Handler for toggle
@@ -226,50 +243,35 @@ function AddEngagementForm() {
     setIsFakturerbar(!isFakturerbar);
   }
 
-  function submitAddEngagementForm(body: ) {
-    const url = `/${organisationName}/bemanning/api/engagements}`;
+  async function submitAddEngagementForm(body: EngagementBackendBody) {
+    const url = `/${organisationName}/bemanning/api/engagements`;
 
     try {
       const data = await fetch(url, {
         method: "put",
         body: JSON.stringify({
-          isBillable: isFakturerbar,
-          customerId: selectedCustomer?.value,
-          consultantIDs: selectedConsultants?.map((c) => c.value),
-          engagementID: selectedEngagement?.value,
-          bookingType: radioValue,
+          ...body,
         }),
       });
-      return (await data.json()) as ConsultantReadModelSingleWeek;
+      return (await data.json()) as ProjectWithConsultantsReadModel;
     } catch (e) {
       console.error("Error updating staffing", e);
     }
   }
 
-
-  export interface AddEngagementFormBody { 
-    isBillable: boolean;
-    customerId: string;
-    consultantIDs: string[];
-    engagementID: string;
-    bookingType: string;
-  }
-
   // Handler for form submission
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     event.stopPropagation();
     // Add your submission logic here
     console.log(event);
 
-    const body = {
+    const body: EngagementBackendBody = {
       consultantIds: selectedConsultants?.map((c) => Number(c.value)), // Solid existing
-      
       customerId: Number(selectedCustomer?.value),
       customerName: selectedCustomer?.label,
       engagementId: Number(selectedEngagement?.value),
-      engagementName: selectedEngagement?.label,
-
+      projectName: selectedEngagement?.label,
       bookingType: radioValue,
       isBillable: isFakturerbar,
     };
@@ -277,6 +279,10 @@ function AddEngagementForm() {
     console.log(body);
 
     console.log("Form submitted!");
+
+    const result = await submitAddEngagementForm(body);
+
+    console.log(result);
     // TODO: Legg på noe post-greier her
   }
 
@@ -316,8 +322,8 @@ function AddEngagementForm() {
           <label className="flex gap-2 normal items-center">
             <input
               type="radio"
-              value="Tilbud"
-              checked={radioValue === "Tilbud"}
+              value={ProjectState.Offer}
+              checked={radioValue === ProjectState.Offer}
               onChange={handleRadioChange}
             />
             Tilbud
@@ -325,8 +331,8 @@ function AddEngagementForm() {
           <label className="flex gap-2 normal items-center">
             <input
               type="radio"
-              value="Ordre"
-              checked={radioValue === "Ordre"}
+              value={ProjectState.Order}
+              checked={radioValue === ProjectState.Order}
               onChange={handleRadioChange}
             />
             Ordre

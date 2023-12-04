@@ -175,3 +175,38 @@ export interface updateBookingHoursBody {
   startWeek: number;
   endWeek?: number;
 }
+
+export interface ProjectWithConsultantsReadModel {
+  projectName?: string | null;
+  customerName?: string | null;
+  bookingType?: ProjectState;
+  consultants?: ConsultantReadModel[] | null;
+  isBillable?: boolean;
+}
+
+export interface EngagementBackendBody {
+  /** @format int32 */
+  customerId?: number;
+  consultantIds?: number[] | null;
+  /** @format int32 */
+  engagementId?: number;
+  bookingType?: ProjectState;
+  isBillable?: boolean;
+  projectName?: string | null;
+  customerName?: string | null;
+}
+
+export interface ConsultantReadModel {
+  /** @format int32 */
+  id?: number;
+  name?: string | null;
+  email?: string | null;
+  competences?: string[] | null;
+  department?: string | null;
+  /** @format int32 */
+  yearsOfExperience?: number;
+  degree?: Degree;
+  bookings?: BookedHoursPerWeek[] | null;
+  detailedBooking?: DetailedBooking[] | null;
+  isOccupied?: boolean;
+}

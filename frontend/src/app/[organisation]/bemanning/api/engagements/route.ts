@@ -1,14 +1,23 @@
 import { putWithToken } from "@/data/apiCallsWithToken";
+import {
+  EngagementBackendBody,
+  ProjectWithConsultantsReadModel,
+} from "@/types";
 import { NextResponse } from "next/server";
 
 export async function PUT(
   request: Request,
   { params }: { params: { organisation: string } },
 ) {
-  const orgUrlKey = params.organisation;
+  const endpointUrl = `${params.organisation}/projects`;
+  const requestBody = (await request.json()) as EngagementBackendBody;
 
-  const engagement =
-    (await putWithToken<never, any>(`${orgUrlKey}/projects`, body)) ?? [];
+  console.log("PUT", request);
+
+  const engagement = await putWithToken<
+    ProjectWithConsultantsReadModel,
+    EngagementBackendBody
+  >(endpointUrl, requestBody);
 
   return NextResponse.json(engagement);
 }
