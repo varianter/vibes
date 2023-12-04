@@ -43,19 +43,18 @@ public class ProjectController : ControllerBase
     }
 
     [HttpPut]
-    public ActionResult<EngagementReadModel> Put([FromRoute] string orgUrlKey,
+    public ActionResult<ProjectWithConsultantsReadModel> Put([FromRoute] string orgUrlKey,
         [FromBody] EngagementBackendBody body)
     {
         var service = new StorageService(_cache, _context);
-        
+
         const string consultantCacheKey = "consultantCacheKey";
 
         var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrg is null) return BadRequest("Selected org not found");
-
         var customer = service.UpdateOrCreateCustomer(selectedOrg, body, orgUrlKey);
         var project = service.UpdateOrCreateProject(customer, body, orgUrlKey);
-        
+
         var consultants = _context.Consultant.Where(c => body.ConsultantIds.Contains(c.Id)).ToList();
         if (!consultants.Any()) return BadRequest("No consultant-ids match in db");
 
@@ -66,7 +65,7 @@ public class ProjectController : ControllerBase
         var thisWeek = Week.FromDateTime(DateTime.Now);
         var nextWeekSet = thisWeek.GetNextWeeks(8);
 
-        const double emptyHours = 0;
+        const double emptyHours = 37.5;
 
         foreach (var consultant in consultants)
         {
@@ -92,7 +91,7 @@ public class ProjectController : ControllerBase
                     staffing.Hours = emptyHours;
             }
         }
-         
+
         _context.SaveChanges();
         _cache.Remove($"{consultantCacheKey}/{orgUrlKey}");
 
