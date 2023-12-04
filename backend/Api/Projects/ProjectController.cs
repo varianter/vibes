@@ -44,7 +44,7 @@ public class ProjectController : ControllerBase
 
     [HttpPut]
     public ActionResult<ProjectWithConsultantsReadModel> Put([FromRoute] string orgUrlKey,
-        [FromBody] EngagementBackendBody body)
+        [FromBody] EngagementWriteModel body)
     {
         var service = new StorageService(_cache, _context);
 
@@ -52,6 +52,7 @@ public class ProjectController : ControllerBase
 
         var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrg is null) return BadRequest("Selected org not found");
+
         var customer = service.UpdateOrCreateCustomer(selectedOrg, body, orgUrlKey);
         var project = service.UpdateOrCreateProject(customer, body, orgUrlKey);
 
@@ -110,8 +111,13 @@ public record EngagementPerCustomerReadModel(int CustomerId, string CustomerName
 
 public record EngagementReadModel(int EngagementId, string EngagementName, ProjectState BookingType, bool IsBillable);
 
-public record EngagementBackendBody(int CustomerId, List<int> ConsultantIds, int EngagementId, ProjectState BookingType,
+public record EngagementWriteModel(int CustomerId, List<int> ConsultantIds, int EngagementId, ProjectState BookingType,
+    bool IsBillable);
+
+public record ProjectWriteModel(int CustomerId, List<int> ConsultantIds, int EngagementId, ProjectState BookingType,
     bool IsBillable, string? ProjectName, string? CustomerName);
+
+
 
 
 public record ProjectWithConsultantsReadModel(string ProjectName, string CustomerName, ProjectState BookingType,

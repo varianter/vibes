@@ -294,7 +294,7 @@ public class StorageService
     }
 
 
-    public Customer UpdateOrCreateCustomer(Organization org, EngagementBackendBody body, string orgUrlKey)
+    public Customer UpdateOrCreateCustomer(Organization org, string customerName, string orgUrlKey)
     {
         var customer = _dbContext.Customer.SingleOrDefault(c => c.Id == body.CustomerId);
 
@@ -302,46 +302,46 @@ public class StorageService
         {
             customer = new Customer
             {
-                Name = body.CustomerName ?? "name error",
+                Name = customerName,
                 Organization = org,
                 Projects = new List<Project>()
             };
-            
+
             _dbContext.Customer.Add(customer);
         }
         _dbContext.SaveChanges();
-        // _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
+        _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
 
         return customer;
     }
 
-    public Project UpdateOrCreateProject(Customer customer, EngagementBackendBody body, string orgUrlKey)
+    public Project UpdateOrCreateProject(Customer customer, ProjectWriteModel payload, string orgUrlKey)
     {
 
-        var project = _dbContext.Project.SingleOrDefault(p => p.Id == body.EngagementId);
-        
-        if (project is null)
+        var project = _dbContext.Project.SingleOrDefault(p => p.Id == payload.EngagementId);
+
+        if (project is null && payload.ProjectName is not null)
         {
             project = new Project
             {
                 Customer = customer,
-                State = body.BookingType,
+                State = payload.BookingType,
                 Staffings = new List<Staffing>(),
                 Consultants = new List<Consultant>(),
-                Name = body.ProjectName ?? "Missing Project Name",
-                IsBillable = body.IsBillable
+                Name = payload.ProjectName,
+                IsBillable = payload.IsBillable
             };
-            
+
             _dbContext.Project.Add(project);
         }
         else
         {
-            project.State = body.BookingType;
-            project.IsBillable = body.IsBillable;
+            project.State = payload.BookingType;
+            project.IsBillable = payload.IsBillable;
         }
+
         _dbContext.SaveChanges();
-        // _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
-        
+        _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
         return project;
     }
 }
