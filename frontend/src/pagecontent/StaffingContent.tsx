@@ -24,13 +24,11 @@ export function StaffingContent() {
 
         <div className="flex flex-row justify-between items-center">
           <div className="flex flex-row items-center gap-3">
-            {!isSideBarOpen && (
-              <IconActionButton
-                variant={"secondary"}
-                icon={<Filter />}
-                onClick={() => setIsSidebarOpen(true)}
-              />
-            )}
+            <IconActionButton
+              variant={"secondary"}
+              icon={<Filter />}
+              onClick={() => setIsSidebarOpen((wasOpen) => !wasOpen)}
+            />
             <ActiveFilters showIcon={isSideBarOpen} />
           </div>
 
