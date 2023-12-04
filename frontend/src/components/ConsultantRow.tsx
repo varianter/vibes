@@ -47,7 +47,6 @@ import { isCurrentWeek } from "@/hooks/staffing/dateTools";
 import DropDown from "./DropDown";
 import IconActionButton from "./Buttons/IconActionButton";
 import { WeekCell } from "./WeekCell";
-import { type } from "os";
 import {
   getColorByStaffingType,
   getIconByBookingType,
