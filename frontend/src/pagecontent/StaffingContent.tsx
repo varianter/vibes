@@ -19,10 +19,10 @@ export function StaffingContent() {
         closeSidebar={() => setIsSidebarOpen(false)}
       />
 
-      <div className="main p-4 w-full flex flex-col gap-8">
+      <div className="main p-4 pt-5 w-full flex flex-col gap-8">
         <h1>Bemanning</h1>
 
-        <div className="flex flex-row justify-between items-center">
+        <div className="flex flex-row justify-between items-center pt-[12px]">
           <div className="flex flex-row items-center gap-3">
             <IconActionButton
               variant={"secondary"}
