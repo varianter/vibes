@@ -13,7 +13,7 @@ export default async function NavBar() {
         <NavBarLink text="Bemanning" path={`bemanning`} />
       </div>
       <div className="flex flex-row gap-4 items-center">
-        <NavBarOrganisationDropdown organisations={orgs.splice(0, 1)} />
+        <NavBarOrganisationDropdown organisations={orgs} />
         <div className="w-[1px] h-8 bg-white/20" />
         <NavBarUserIcon />
       </div>
