@@ -1,6 +1,3 @@
-import StaffingSidebar from "@/components/StaffingSidebar";
-import FilteredConsultantsList from "@/components/FilteredConsultantsList";
-import { fetchWithToken } from "@/data/apiCallsWithToken";
 import {
   Consultant,
   Department,
@@ -8,7 +5,9 @@ import {
 } from "@/types";
 import { ConsultantFilterProvider } from "@/hooks/ConsultantFilterProvider";
 import { parseYearWeekFromUrlString } from "@/data/urlUtils";
-import InfoPillDescriptions from "@/components/InfoPillDescriptions";
+import React from "react";
+import { StaffingContent } from "@/pagecontent/StaffingContent";
+import { fetchWithToken } from "@/data/apiCallsWithToken";
 
 export default async function Bemanning({
   params,
@@ -47,13 +46,7 @@ export default async function Bemanning({
       departments={departments}
       customers={customers}
     >
-      <StaffingSidebar />
-
-      <div className="main p-4 w-full flex flex-col gap-8">
-        <h1>Bemanning</h1>
-        <FilteredConsultantsList />
-        <InfoPillDescriptions />
-      </div>
+      <StaffingContent />
     </ConsultantFilterProvider>
   );
 }
