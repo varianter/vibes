@@ -50,7 +50,7 @@ export default function DropDown({
               setIsDropDownOpen(false);
               setChosenOption(option);
             }}
-            className="hover:bg-primary px-3 py-2 rounded-md hover:bg-opacity-10 flex flex-row justify-between items-center"
+            className="hover:bg-primary px-3 py-2 rounded hover:bg-opacity-10 flex flex-row justify-between items-center"
           >
             <p className="h-6 flex items-center normal-semibold text-primary">
               {option}

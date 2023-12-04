@@ -4,6 +4,7 @@ import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { Organisation } from "@/types";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { Check } from "react-feather";
 
 export default function NavBarOrganisationDropdown({
   organisations,
@@ -37,20 +38,25 @@ export default function NavBarOrganisationDropdown({
               </p>
             </button>
             <div
-              className={`absolute right-0 top-[48px] z-50 rounded text-primary bg-white flex flex-col w-[138px] shadow-xl p-1 ${
+              className={`absolute right-0 top-[48px] z-50 rounded-lg text-primary bg-white flex flex-col w-[138px] shadow-xl p-1 ${
                 !isOpen && "hidden"
               }`}
             >
               {organisations.map((organisation, index) => (
                 <Link
                   key={index}
-                  className="px-3 py-2 rounded flex flex-row gap-3 hover:bg-primary/10"
+                  className="hover:bg-primary/10 px-3 py-2 rounded flex flex-row justify-between items-center "
                   href={`/${organisation.urlKey}/bemanning`}
                   onClick={() =>
                     localStorage.setItem("chosenUrlKey", organisation.urlKey)
                   }
                 >
-                  <p className="normal">{organisation.name}</p>
+                  <p className="h-6 flex items-center normal-semibold text-primary">
+                    {organisation.name}
+                  </p>
+                  {organisation == currentOrganisation && (
+                    <Check className="h-6 w-6 text-primary" />
+                  )}
                 </Link>
               ))}
             </div>
