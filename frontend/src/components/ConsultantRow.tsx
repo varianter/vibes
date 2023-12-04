@@ -39,11 +39,10 @@ import ReactSelect, { SelectOption } from "./ReactSelect";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { MultiValue } from "react-select";
 import { LargeModal } from "./Modals/LargeModal";
-import WeekSelection from "./WeekSelection";
-import { isCurrentWeek } from "@/hooks/staffing/dateTools";
 import DropDown from "./DropDown";
 import ActionButton from "./Buttons/ActionButton";
 import IconActionButton from "./Buttons/IconActionButton";
+import { DateTime } from "luxon";
 
 export default function ConsultantRows({
   consultant,
@@ -142,15 +141,11 @@ function AddStaffingCell(): ReactElement {
     <>
       <td className={`${"border-l-secondary border-l-2"}`}></td>
       <td>
-        <EasyModal
-          modalRef={modalRef}
-          title={"Legg til engasjement"}
-          showCloseButton={true}
-        >
-          <div className="min-h-[300px]">
-            <AddEngagementForm closeEngagementModal={closeModal} />
-          </div>
-        </EasyModal>
+        <AddEngagementForm
+          closeEngagementModal={closeModal}
+          easyModalRef={modalRef}
+        />
+
         <button
           onClick={openModal}
           className="flex flex-row items-center gap-2"
@@ -174,11 +169,13 @@ function AddStaffingCell(): ReactElement {
 
 function AddEngagementForm({
   closeEngagementModal,
+  easyModalRef,
 }: {
   closeEngagementModal: () => void;
+  easyModalRef: RefObject<HTMLDialogElement>;
 }) {
   const { openModal, modalRef } = useModal({
-    closeOnBackdropClick: true,
+    closeOnBackdropClick: false,
   });
   const { customers, consultants } = useContext(FilteredContext);
   // State for select components
@@ -255,83 +252,92 @@ function AddEngagementForm({
     event.preventDefault();
     closeEngagementModal();
     openModal();
+
     // TODO: Legg på noe post-greier her
   }
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
-        <div className="flex flex-col gap-6 pt-6 h-96">
-          {/* Selected Customer */}
-          <div className="flex flex-col gap-2">
-            <p className="small text-black">Konsulenter</p>
-            <ReactSelect
-              options={consultantOptions}
-              selectedMultipleOptionsValue={selectedConsultants}
-              onMultipleOptionsChange={setSelectedConsultants}
-              isMultipleOptions={true}
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <p className="small text-black">Kunde</p>
-            <ReactSelect
-              options={customerOptions}
-              selectedSingleOptionValue={selectedCustomer}
-              onSingleOptionChange={handleSelectedCustomerChange}
-              isMultipleOptions={false}
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <p className="small text-black">Engasjement</p>
-            <ReactSelect
-              options={projectOptions}
-              onSingleOptionChange={handleSelectedEngagementChange}
-              selectedSingleOptionValue={selectedEngagement}
-              isMultipleOptions={false}
-            />
-          </div>
-          {/* Radio Button Group */}
-          <div className="flex flex-row gap-4">
-            <label className="flex gap-2 normal items-center">
-              <input
-                type="radio"
-                value="Tilbud"
-                checked={radioValue === "Tilbud"}
-                onChange={handleRadioChange}
-              />
-              Tilbud
-            </label>
-            <label className="flex gap-2 normal items-center">
-              <input
-                type="radio"
-                value="Ordre"
-                checked={radioValue === "Ordre"}
-                onChange={handleRadioChange}
-              />
-              Ordre
-            </label>
-          </div>
-          {/* Toggle (Checkbox) */}
-          <label className="flex flex-row justify-between items-center">
-            Fakturerbart
-            <div
-              className={`rounded-full w-[52px] h-7 flex items-center  ${
-                isFakturerbar ? "bg-primary" : "bg-black/20"
-              }`}
-              onClick={handleToggleChange}
-            >
-              <div
-                className={`m-[2px] bg-white rounded-full w-6 h-6 ${
-                  isFakturerbar && " translate-x-6"
-                }`}
-              ></div>
+      <EasyModal
+        modalRef={easyModalRef}
+        title={"Legg til engasjement"}
+        showCloseButton={true}
+      >
+        <div className="min-h-[300px]">
+          <form onSubmit={handleSubmit}>
+            <div className="flex flex-col gap-6 pt-6 h-96">
+              {/* Selected Customer */}
+              <div className="flex flex-col gap-2">
+                <p className="small text-black">Konsulenter</p>
+                <ReactSelect
+                  options={consultantOptions}
+                  selectedMultipleOptionsValue={selectedConsultants}
+                  onMultipleOptionsChange={setSelectedConsultants}
+                  isMultipleOptions={true}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <p className="small text-black">Kunde</p>
+                <ReactSelect
+                  options={customerOptions}
+                  selectedSingleOptionValue={selectedCustomer}
+                  onSingleOptionChange={handleSelectedCustomerChange}
+                  isMultipleOptions={false}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <p className="small text-black">Engasjement</p>
+                <ReactSelect
+                  options={projectOptions}
+                  onSingleOptionChange={handleSelectedEngagementChange}
+                  selectedSingleOptionValue={selectedEngagement}
+                  isMultipleOptions={false}
+                />
+              </div>
+              {/* Radio Button Group */}
+              <div className="flex flex-row gap-4">
+                <label className="flex gap-2 normal items-center">
+                  <input
+                    type="radio"
+                    value="Tilbud"
+                    checked={radioValue === "Tilbud"}
+                    onChange={handleRadioChange}
+                  />
+                  Tilbud
+                </label>
+                <label className="flex gap-2 normal items-center">
+                  <input
+                    type="radio"
+                    value="Ordre"
+                    checked={radioValue === "Ordre"}
+                    onChange={handleRadioChange}
+                  />
+                  Ordre
+                </label>
+              </div>
+              {/* Toggle (Checkbox) */}
+              <label className="flex flex-row justify-between items-center">
+                Fakturerbart
+                <div
+                  className={`rounded-full w-[52px] h-7 flex items-center  ${
+                    isFakturerbar ? "bg-primary" : "bg-black/20"
+                  }`}
+                  onClick={handleToggleChange}
+                >
+                  <div
+                    className={`m-[2px] bg-white rounded-full w-6 h-6 ${
+                      isFakturerbar && " translate-x-6"
+                    }`}
+                  ></div>
+                </div>
+              </label>
             </div>
-          </label>
-        </div>
 
-        {/* Submit Button */}
-        <button type="submit">Submit</button>
-      </form>
+            {/* Submit Button */}
+            <button type="submit">Submit</button>
+          </form>
+        </div>
+      </EasyModal>
       <AddEngagementHoursModal
         modalRef={modalRef}
         weekSpan={8}
@@ -339,6 +345,17 @@ function AddEngagementForm({
       />
     </>
   );
+}
+
+function generateWeekList(
+  firstVisibleDay: DateTime,
+  numberofWeeks: number,
+): DateTime[] | (() => DateTime[]) {
+  let numbers = [];
+  for (let i = 0; i < numberofWeeks; i++) {
+    numbers.push(firstVisibleDay.plus({ weeks: i }));
+  }
+  return numbers;
 }
 
 function AddEngagementHoursModal({
@@ -351,6 +368,23 @@ function AddEngagementHoursModal({
 }) {
   const weekSpanOptions = ["8 uker", "12 uker", "26 uker"];
   const [selectedWeekSpan, setSelectedWeekSpan] = useState<number>(8);
+  const [firstVisibleDay, setFirstVisibleDay] = useState<DateTime>(
+    DateTime.now(),
+  );
+
+  function setWeekSpan(weekSpanString: string) {
+    const weekSpanNum = parseInt(weekSpanString.split(" ")[0]);
+    setSelectedWeekSpan(weekSpanNum);
+  }
+
+  const [weekList, setWeekList] = useState<DateTime[]>(
+    generateWeekList(firstVisibleDay, selectedWeekSpan),
+  );
+
+  useEffect(() => {
+    setWeekList(generateWeekList(firstVisibleDay, selectedWeekSpan));
+  }, [firstVisibleDay, selectedWeekSpan]);
+
   return (
     <LargeModal
       modalRef={modalRef}
@@ -369,23 +403,31 @@ function AddEngagementHoursModal({
                   : weekSpanOptions[0]
               }
               dropDownOptions={weekSpanOptions}
-              dropDownFunction={setSelectedWeekSpan}
+              dropDownFunction={setWeekSpan}
             />
             <ActionButton
               variant="secondary"
-              onClick={() => setSelectedWeekSpan(46)}
+              onClick={() => setFirstVisibleDay(DateTime.now())}
             >
               Nåværende uke
             </ActionButton>
             <IconActionButton
               variant={"secondary"}
               icon={<ArrowLeft />}
-              onClick={() => setSelectedWeekSpan(selectedWeekSpan - 1)}
+              onClick={() =>
+                setFirstVisibleDay(
+                  firstVisibleDay.minus({ week: selectedWeekSpan - 1 }),
+                )
+              }
             />
             <IconActionButton
               variant={"secondary"}
               icon={<ArrowRight />}
-              onClick={() => setSelectedWeekSpan(selectedWeekSpan + 1)}
+              onClick={() =>
+                setFirstVisibleDay(
+                  firstVisibleDay.plus({ week: selectedWeekSpan - 1 }),
+                )
+              }
             />
           </div>
         </div>
@@ -401,9 +443,9 @@ function AddEngagementHoursModal({
           <colgroup>
             <col span={1} className="w-8" />
             <col span={1} className="w-[190px]" />
-            {chosenConsultants
-              .at(0)
-              ?.bookings?.map((booking, index) => <col key={index} span={1} />)}
+            {weekList.map((booking, index) => (
+              <col key={index} span={1} />
+            ))}
           </colgroup>
           <thead>
             <tr className="sticky -top-6 bg-white z-10">
@@ -415,57 +457,32 @@ function AddEngagementHoursModal({
                   </p>
                 </div>
               </th>
-              {chosenConsultants.at(0)?.bookings?.map((booking) => (
-                <th key={booking.weekNumber} className=" px-2 py-1 pt-3 ">
+              {weekList.map((day) => (
+                <th key={day.weekNumber} className=" px-2 py-1 pt-3 ">
                   <div className="flex flex-col gap-1">
-                    {isCurrentWeek(booking.weekNumber, booking.year) ? (
-                      <div className="flex flex-row gap-2 items-center justify-end">
-                        {booking.bookingModel.totalHolidayHours > 0 && (
-                          <InfoPill
-                            text={booking.bookingModel.totalHolidayHours.toFixed(
-                              1,
-                            )}
-                            icon={<Calendar size="12" />}
-                            colors={"bg-holiday text-holiday_darker w-fit"}
-                            variant={selectedWeekSpan < 24 ? "wide" : "medium"}
-                          />
-                        )}
-                        <div className="h-2 w-2 rounded-full bg-primary" />
-
-                        <p className="normal-medium text-right">
-                          {booking.weekNumber}
-                        </p>
-                      </div>
-                    ) : (
-                      <div
-                        className={`flex justify-end ${
-                          selectedWeekSpan >= 26
-                            ? "min-h-[30px] flex-col mb-2 gap-[1px] items-end"
-                            : "flex-row gap-2"
-                        }`}
-                      >
-                        {booking.bookingModel.totalHolidayHours > 0 && (
-                          <InfoPill
-                            text={booking.bookingModel.totalHolidayHours.toFixed(
-                              1,
-                            )}
-                            icon={<Calendar size="12" />}
-                            colors={"bg-holiday text-holiday_darker w-fit"}
-                            variant={selectedWeekSpan < 24 ? "wide" : "medium"}
-                          />
-                        )}
-                        <p className="normal text-right">
-                          {booking.weekNumber}
-                        </p>
-                      </div>
-                    )}
-
+                    <div
+                      className={`flex justify-end ${
+                        selectedWeekSpan >= 26
+                          ? "min-h-[30px] flex-col mb-2 gap-[1px] items-end"
+                          : "flex-row gap-2"
+                      }`}
+                    >
+                      <p className="normal text-right">{day.weekNumber}</p>
+                    </div>
                     <p
                       className={`xsmall text-black/75 text-right ${
                         selectedWeekSpan >= 26 && "hidden"
                       }`}
                     >
-                      {booking.dateString}
+                      {(day.day < 10 ? "0" + day.day : day.day) +
+                        "." +
+                        day.month +
+                        " - " +
+                        (day.plus({ days: 4 }).day < 10
+                          ? "0" + day.plus({ days: 4 }).day
+                          : day.plus({ days: 4 }).day) +
+                        "." +
+                        day.plus({ days: 4 }).month}
                     </p>
                   </div>
                 </th>
@@ -477,7 +494,7 @@ function AddEngagementHoursModal({
               <AddEngagementHoursRow
                 key={consultant.id}
                 consultant={consultant}
-                weekSpan={selectedWeekSpan}
+                weekList={weekList}
               />
             ))}
           </tbody>
@@ -489,10 +506,10 @@ function AddEngagementHoursModal({
 
 function AddEngagementHoursRow({
   consultant,
-  weekSpan,
+  weekList,
 }: {
   consultant: Consultant;
-  weekSpan: number;
+  weekList: DateTime[];
 }) {
   return (
     <tr>
@@ -504,8 +521,12 @@ function AddEngagementHoursRow({
       <td>
         <p className="text-black text-start small pl-2">{consultant.name}</p>
       </td>
-      {Array.from({ length: weekSpan }, (_, index) => (
-        <td key={index} className=" p-0.5">
+      {weekList.map((day) => (
+        /*Notat til senere:
+        day er første dagen i den gitte uka, og dette tallet kan bli brukt til å finne ukenr og år når man skal sende/lagre dataen om timene. 
+        Kan gjøre at vi må håndtere ting forskjellig når vi skal redigere et engasjement
+      */
+        <td key={day.weekNumber} className=" p-0.5">
           <div className="flex justify-end items-center bg-offer/30  rounded-lg h-full">
             <p className="small-medium text-black/75 p-2">0</p>
           </div>
