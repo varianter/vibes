@@ -35,10 +35,7 @@ export default function ActiveFilters({ showIcon }: { showIcon: boolean }) {
   return (
     <div className="h-4">
       {filterSummaryText != "" && (
-        <div className="flex flex-row gap-3 text-primary items-center">
-          {showIcon && <Filter size="12" />}
-          <p className="small-medium"> {filterSummaryText} </p>
-        </div>
+        <p className="small-medium"> {filterSummaryText} </p>
       )}
     </div>
   );
