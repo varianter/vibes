@@ -25,11 +25,6 @@ function EasyModal(props: EasyModalProps) {
     dialogElement?.close();
   }
 
-  function handleSave() {
-    onSave?.();
-    dialogElement?.close();
-  }
-
   return (
     <BaseModal modalRef={modalRef}>
       <div className="w-[332px]">
@@ -40,17 +35,6 @@ function EasyModal(props: EasyModalProps) {
         />
 
         <div className="space-y-2">{children}</div>
-
-        <div className="space-y-2 space-x-2">
-          <ActionButton
-            variant="primary"
-            onClick={handleSave}
-            fullWidth
-            isIconBtn={false}
-          >
-            Legg til
-          </ActionButton>
-        </div>
       </div>
     </BaseModal>
   );

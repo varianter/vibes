@@ -37,6 +37,7 @@ import EasyModal from "./EasyModal/EasyModal";
 import ReactSelect, { SelectOption } from "./ReactSelect";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { MultiValue } from "react-select";
+import ActionButton from "./Buttons/ActionButton";
 
 export default function ConsultantRows({
   consultant,
@@ -141,6 +142,7 @@ function AddStaffingCell(props: AddStaffingCellProps): ReactElement {
           modalRef={modalRef}
           title={"Legg til engasjement"}
           showCloseButton={true}
+          onSave={() => console.log("save")}
         >
           <div className="min-h-[300px]">
             <AddEngagementForm consultantId={props.consultant.id} />
@@ -261,8 +263,8 @@ function AddEngagementForm(props: { consultantId?: string }): ReactElement {
 
   // Handler for form submission
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    event.stopPropagation();
+    // event.preventDefault();
+    // event.stopPropagation();
     // Add your submission logic here
     console.log(event);
 
@@ -285,7 +287,7 @@ function AddEngagementForm(props: { consultantId?: string }): ReactElement {
     console.log(result);
     // TODO: Legg på noe post-greier her
 
-    console.log("need to open large modal here and use result");
+    if (result) console.log("need to open large modal here and use result");
   }
 
   return (
@@ -358,8 +360,14 @@ function AddEngagementForm(props: { consultantId?: string }): ReactElement {
         </label>
       </div>
 
-      {/* Submit Button */}
-      <button type="submit">Submit</button>
+      {/* Submit Button
+      <button type="submit">Submit</button> */}
+
+      <div className="space-y-2 space-x-2">
+        <ActionButton variant="primary" type="submit" fullWidth>
+          Legg til engasjement
+        </ActionButton>
+      </div>
     </form>
   );
 }
