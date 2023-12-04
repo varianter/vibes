@@ -5,7 +5,7 @@ import { useDepartmentFilter } from "@/hooks/staffing/useDepartmentFilter";
 import { useYearsXpFilter } from "@/hooks/staffing/useYearsXpFilter";
 import { useAvailabilityFilter } from "@/hooks/staffing/useAvailabilityFilter";
 
-export default function ActiveFilters({ showIcon }: { showIcon: boolean }) {
+export default function ActiveFilters() {
   const filterTextComponents: string[] = [];
 
   const { searchFilter } = useUrlRouteFilter();

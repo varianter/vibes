@@ -29,7 +29,7 @@ export function StaffingContent() {
               icon={<Filter />}
               onClick={() => setIsSidebarOpen((wasOpen) => !wasOpen)}
             />
-            <ActiveFilters showIcon={isSideBarOpen} />
+            <ActiveFilters />
           </div>
 
           <WeekSelection />
