@@ -4,8 +4,6 @@ import { useSelectedWeek } from "@/hooks/staffing/useSelectedWeek";
 import DropDown from "./DropDown";
 import { useUrlRouteFilter } from "@/hooks/staffing/useUrlRouteFilter";
 import ActionButton from "./Buttons/ActionButton";
-import { LargeModal } from "./EasyModal/LargeModal";
-import ButtonExampleModal from "./EasyModal/ButtonExampleModal";
 import IconActionButton from "./Buttons/IconActionButton";
 
 export default function WeekSelection() {

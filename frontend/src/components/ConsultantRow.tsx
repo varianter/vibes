@@ -18,10 +18,14 @@ import React, {
   useState,
   useEffect,
   useRef,
+  RefObject,
 } from "react";
 import {
   AlertTriangle,
+  ArrowLeft,
+  ArrowRight,
   Briefcase,
+  Calendar,
   ChevronDown,
   Coffee,
   FileText,
@@ -33,11 +37,23 @@ import {
 import InfoPill, { InfoPillVariant } from "./InfoPill";
 import { usePathname } from "next/navigation";
 import { useModal } from "@/hooks/useModal";
-import EasyModal from "./EasyModal/EasyModal";
+import EasyModal from "./Modals/EasyModal";
 import ReactSelect, { SelectOption } from "./ReactSelect";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { MultiValue } from "react-select";
 import ActionButton from "./Buttons/ActionButton";
+import { LargeModal } from "./Modals/LargeModal";
+import { isCurrentWeek } from "@/hooks/staffing/dateTools";
+import DropDown from "./DropDown";
+import IconActionButton from "./Buttons/IconActionButton";
+import { WeekCell } from "./WeekCell";
+import { type } from "os";
+import {
+  getColorByStaffingType,
+  getIconByBookingType,
+  setDetailedBookingHours,
+  upsertConsultantBooking,
+} from "./consultantTools";
 
 export default function ConsultantRows({
   consultant,
@@ -131,7 +147,9 @@ interface AddStaffingCellProps {
 }
 
 function AddStaffingCell(props: AddStaffingCellProps): ReactElement {
-  const { openModal, modalRef } = useModal({ closeOnBackdropClick: true });
+  const { closeModal, openModal, modalRef } = useModal({
+    closeOnBackdropClick: true,
+  });
   const [isAddStaffingHovered, setIsAddStaffingHovered] = useState(false);
 
   return (
@@ -145,7 +163,10 @@ function AddStaffingCell(props: AddStaffingCellProps): ReactElement {
           onSave={() => console.log("save")}
         >
           <div className="min-h-[300px]">
-            <AddEngagementForm consultantId={props.consultant.id} />
+            <AddEngagementForm
+              consultantId={props.consultant.id}
+              closeEngagementModal={closeModal}
+            />
           </div>
         </EasyModal>
         <button
@@ -169,7 +190,14 @@ function AddStaffingCell(props: AddStaffingCellProps): ReactElement {
   );
 }
 
-function AddEngagementForm(props: { consultantId?: string }): ReactElement {
+function AddEngagementForm(props: {
+  consultantId?: string;
+  closeEngagementModal: () => void;
+}): ReactElement {
+  const { closeEngagementModal } = props;
+  const { openModal, modalRef } = useModal({
+    closeOnBackdropClick: true,
+  });
   const { customers, consultants } = useContext(FilteredContext);
 
   // State for select components
@@ -285,359 +313,273 @@ function AddEngagementForm(props: { consultantId?: string }): ReactElement {
     const result = await submitAddEngagementForm(body);
 
     console.log(result);
+    //TODO: Need to close the add engagement modal before opening the large modal
+    event.preventDefault();
+    closeEngagementModal();
+    openModal();
     // TODO: Legg på noe post-greier her
 
     if (result) console.log("need to open large modal here and use result");
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="flex flex-col gap-6 pt-6 h-96">
-        {/* Selected Customer */}
-        <div className="flex flex-col gap-2">
-          <p className="small text-black">Konsulenter</p>
-          <ReactSelect
-            options={consultantOptions}
-            selectedMultipleOptionsValue={selectedConsultants}
-            onMultipleOptionsChange={setSelectedConsultants}
-            isMultipleOptions={true}
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <p className="small text-black">Kunde</p>
-          <ReactSelect
-            options={customerOptions}
-            selectedSingleOptionValue={selectedCustomer}
-            onSingleOptionChange={handleSelectedCustomerChange}
-            isMultipleOptions={false}
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <p className="small text-black">Engasjement</p>
-          <ReactSelect
-            options={projectOptions}
-            onSingleOptionChange={handleSelectedEngagementChange}
-            selectedSingleOptionValue={selectedEngagement}
-            isMultipleOptions={false}
-          />
-        </div>
-        {/* Radio Button Group */}
-        <div className="flex flex-row gap-4">
-          <label className="flex gap-2 normal items-center">
-            <input
-              type="radio"
-              value={ProjectState.Offer}
-              checked={radioValue === ProjectState.Offer}
-              onChange={handleRadioChange}
-            />
-            Tilbud
-          </label>
-          <label className="flex gap-2 normal items-center">
-            <input
-              type="radio"
-              value={ProjectState.Order}
-              checked={radioValue === ProjectState.Order}
-              onChange={handleRadioChange}
-            />
-            Ordre
-          </label>
-        </div>
-        {/* Toggle (Checkbox) */}
-        <label className="flex flex-row justify-between items-center">
-          Fakturerbart
-          <div
-            className={`rounded-full w-[52px] h-7 flex items-center  ${
-              isFakturerbar ? "bg-primary" : "bg-black/20"
-            }`}
-            onClick={handleToggleChange}
-          >
-            <div
-              className={`m-[2px] bg-white rounded-full w-6 h-6 ${
-                isFakturerbar && " translate-x-6"
-              }`}
-            ></div>
-          </div>
-        </label>
-      </div>
-
-      {/* Submit Button
-      <button type="submit">Submit</button> */}
-
-      <div className="space-y-2 space-x-2">
-        <ActionButton variant="primary" type="submit" fullWidth>
-          Legg til engasjement
-        </ActionButton>
-      </div>
-    </form>
-  );
-}
-
-function getColorByStaffingType(type: BookingType): string {
-  switch (type) {
-    case BookingType.Offer:
-      return "bg-offer";
-    case BookingType.Booking:
-      return "bg-primary/[3%]";
-    case BookingType.Vacation:
-      return "bg-vacation";
-    case BookingType.PlannedAbsence:
-      return "bg-absence";
-    case BookingType.Available:
-      return "bg-available";
-    default:
-      return "";
-  }
-}
-
-function getIconByBookingType(type: BookingType): ReactElement {
-  switch (type) {
-    case BookingType.Offer:
-      return <FileText size={16} className="text-primary_darker" />;
-    case BookingType.Booking:
-      return <Briefcase size={16} className="text-black" />;
-    case BookingType.Vacation:
-      return <Sun size={16} className="text-vacation_darker" />;
-    case BookingType.PlannedAbsence:
-      return <Moon size={16} className="text-absence_darker" />;
-    case BookingType.Available:
-      return <Coffee size={16} className="text-available_darker" />;
-    default:
-      return <></>;
-  }
-}
-
-function WeekCell(props: {
-  bookedHoursPerWeek: BookedHoursPerWeek;
-  isListElementVisible: boolean;
-  setIsListElementVisible: Function;
-  consultant: Consultant;
-  setHoveredRowWeek: (number: number) => void;
-  hoveredRowWeek: number;
-  columnCount: number;
-  isLastCol: boolean;
-  isSecondLastCol: boolean;
-}) {
-  const {
-    bookedHoursPerWeek: bookedHoursPerWeek,
-    isListElementVisible,
-    setIsListElementVisible,
-    consultant,
-    setHoveredRowWeek,
-    hoveredRowWeek,
-    columnCount,
-    isLastCol,
-    isSecondLastCol,
-  } = props;
-
-  let pillNumber = 0;
-
-  if (bookedHoursPerWeek.bookingModel.totalOffered > 0) {
-    pillNumber++;
-  }
-  if (bookedHoursPerWeek.bookingModel.totalOverbooking > 0) {
-    pillNumber++;
-  }
-  if (bookedHoursPerWeek.bookingModel.totalPlannedAbstences > 0) {
-    pillNumber++;
-  }
-  if (bookedHoursPerWeek.bookingModel.totalVacationHours > 0) {
-    pillNumber++;
-  }
-  if (bookedHoursPerWeek.bookingModel.totalSellableTime > 0) {
-    pillNumber++;
-  }
-
-  return (
-    <td
-      key={bookedHoursPerWeek.weekNumber}
-      className={`h-[52px] ${isLastCol ? "py-0.5 pl-0.5" : "p-0.5"}`}
-    >
-      <div
-        className={`flex flex-col gap-1 p-2 justify-end rounded w-full h-full relative border border-transparent hover:border-primary/30 hover:cursor-pointer ${
-          bookedHoursPerWeek.bookingModel.totalOverbooking > 0
-            ? `bg-black text-white`
-            : bookedHoursPerWeek.bookingModel.totalSellableTime > 0
-            ? `bg-available/50`
-            : `bg-primary/[3%]`
-        }`}
-        onMouseEnter={() => setHoveredRowWeek(bookedHoursPerWeek.weekNumber)}
-        onMouseLeave={() => setHoveredRowWeek(-1)}
-        onClick={() => setIsListElementVisible(!isListElementVisible)}
-      >
-        {hoveredRowWeek != -1 &&
-          hoveredRowWeek == bookedHoursPerWeek.weekNumber && (
-            <HoveredWeek
-              hoveredRowWeek={hoveredRowWeek}
-              consultant={consultant}
-              isLastCol={isLastCol}
-              isSecondLastCol={isSecondLastCol}
-              columnCount={columnCount}
-            />
-          )}
-        <div className="flex flex-row justify-end gap-1">
-          {bookedHoursPerWeek.bookingModel.totalOffered > 0 && (
-            <InfoPill
-              text={bookedHoursPerWeek.bookingModel.totalOffered.toFixed(1)}
-              colors="bg-offer text-primary_darker border-primary_darker"
-              icon={<FileText size="12" />}
-              variant={getInfopillVariantByColumnCount(columnCount)}
-            />
-          )}
-          {bookedHoursPerWeek.bookingModel.totalSellableTime > 0 &&
-            getInfopillVariantByColumnCount(columnCount) !== "narrow" && (
-              <InfoPill
-                text={bookedHoursPerWeek.bookingModel.totalSellableTime.toFixed(
-                  1,
-                )}
-                colors="bg-available text-available_darker border-available_darker"
-                icon={<Coffee size="12" />}
-                variant={getInfopillVariantByColumnCount(columnCount)}
-              />
-            )}
-          {bookedHoursPerWeek.bookingModel.totalVacationHours > 0 && (
-            <InfoPill
-              text={bookedHoursPerWeek.bookingModel.totalVacationHours.toFixed(
-                1,
-              )}
-              colors="bg-vacation text-vacation_darker border-vacation_darker"
-              icon={<Sun size="12" />}
-              variant={getInfopillVariantByColumnCount(columnCount)}
-            />
-          )}
-          {bookedHoursPerWeek.bookingModel.totalOverbooking > 0 && (
-            <InfoPill
-              text={bookedHoursPerWeek.bookingModel.totalOverbooking.toFixed(1)}
-              colors="bg-overbooked_darker text-white border-white"
-              icon={<AlertTriangle size="12" />}
-              variant={getInfopillVariantByColumnCount(columnCount)}
-            />
-          )}
-        </div>
-        <p
-          className={`text-right ${
-            isListElementVisible ? "normal-medium" : "normal"
-          }`}
-        >
-          {bookedHoursPerWeek.bookingModel.totalBillable}
-        </p>
-      </div>
-    </td>
-  );
-}
-
-function isWeekBookingZeroHours(
-  detailedBooking: DetailedBooking,
-  hoveredRowWeek: number,
-): boolean {
-  return (
-    detailedBooking.hours.filter(
-      (weekHours) =>
-        weekHours.week % 100 == hoveredRowWeek && weekHours.hours != 0,
-    ).length == 0
-  );
-}
-
-function HoveredWeek(props: {
-  hoveredRowWeek: number;
-  consultant: Consultant;
-  isLastCol: boolean;
-  isSecondLastCol: boolean;
-  columnCount: number;
-}) {
-  const {
-    hoveredRowWeek,
-    consultant,
-    isLastCol,
-    isSecondLastCol,
-    columnCount,
-  } = props;
-
-  const nonZeroHoursDetailedBookings = consultant.detailedBooking.filter(
-    (d) => !isWeekBookingZeroHours(d, hoveredRowWeek),
-  );
-
-  const freeTime = consultant.bookings.find(
-    (b) => b.weekNumber == hoveredRowWeek,
-  )?.bookingModel.totalSellableTime;
-
-  if (freeTime && freeTime > 0) {
-    nonZeroHoursDetailedBookings.push({
-      bookingDetails: {
-        type: BookingType.Available,
-        projectName: "",
-        customerName: "Ledig Tid",
-        projectId: "",
-      },
-      hours: [
-        {
-          week: hoveredRowWeek,
-          hours:
-            consultant.bookings.find((b) => b.weekNumber == hoveredRowWeek)
-              ?.bookingModel.totalSellableTime || 0,
-        },
-      ],
-    });
-  }
-
-  return (
     <>
-      <div
-        className={`rounded-lg bg-white gap-3 min-w-[222px] p-3 shadow-xl absolute bottom-full mb-2 flex flex-col z-20 pointer-events-none ${
-          isLastCol || (isSecondLastCol && columnCount >= 26)
-            ? "right-0 "
-            : "left-1/2 -translate-x-1/2"
-        } ${nonZeroHoursDetailedBookings.length == 0 && "hidden"}`}
-      >
-        {nonZeroHoursDetailedBookings.map((detailedBooking, index) => (
-          <div
-            key={index}
-            className={`flex flex-row gap-2 justify-between items-center
-            ${
-              index < nonZeroHoursDetailedBookings.length - 1 &&
-              "pb-3 border-b border-black/10"
-            }`}
-          >
-            <div className="flex flex-row gap-2 items-center">
-              <div
-                className={`h-8 w-8 flex justify-center align-middle items-center rounded ${getColorByStaffingType(
-                  detailedBooking.bookingDetails.type,
-                )}`}
-              >
-                {getIconByBookingType(detailedBooking.bookingDetails.type)}
-              </div>
-              <div className="flex flex-col">
-                <p
-                  className={`xsmall text-black/75 ${
-                    !(
-                      detailedBooking.bookingDetails.type ==
-                        BookingType.Offer ||
-                      detailedBooking.bookingDetails.type == BookingType.Booking
-                    ) && "hidden"
-                  }`}
-                >
-                  {detailedBooking.bookingDetails.projectName}
-                </p>
-                <p className="small text-black whitespace-nowrap">
-                  {detailedBooking.bookingDetails.customerName}
-                </p>
-              </div>
-            </div>
-            <p className="small text-black/75">
-              {
-                detailedBooking.hours.find(
-                  (hour) => hour.week % 100 == hoveredRowWeek,
-                )?.hours
-              }
-            </p>
+      <form onSubmit={handleSubmit}>
+        <div className="flex flex-col gap-6 pt-6 h-96">
+          {/* Selected Customer */}
+          <div className="flex flex-col gap-2">
+            <p className="small text-black">Konsulenter</p>
+            <ReactSelect
+              options={consultantOptions}
+              selectedMultipleOptionsValue={selectedConsultants}
+              onMultipleOptionsChange={setSelectedConsultants}
+              isMultipleOptions={true}
+            />
           </div>
-        ))}
-      </div>
-      <div
-        className={`absolute bottom-full mb-[2px] left-1/2 -translate-x-1/2 flex items-center z-50 w-0 h-0 border-l-[8px] border-l-transparent border-t-[8px] border-t-white border-r-[8px] border-r-transparent pointer-events-none ${
-          nonZeroHoursDetailedBookings.length == 0 && "hidden"
-        }`}
-      ></div>
+          <div className="flex flex-col gap-2">
+            <p className="small text-black">Kunde</p>
+            <ReactSelect
+              options={customerOptions}
+              selectedSingleOptionValue={selectedCustomer}
+              onSingleOptionChange={handleSelectedCustomerChange}
+              isMultipleOptions={false}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <p className="small text-black">Engasjement</p>
+            <ReactSelect
+              options={projectOptions}
+              onSingleOptionChange={handleSelectedEngagementChange}
+              selectedSingleOptionValue={selectedEngagement}
+              isMultipleOptions={false}
+            />
+          </div>
+          {/* Radio Button Group */}
+          <div className="flex flex-row gap-4">
+            <label className="flex gap-2 normal items-center">
+              <input
+                type="radio"
+                value={ProjectState.Offer}
+                checked={radioValue === ProjectState.Offer}
+                onChange={handleRadioChange}
+              />
+              Tilbud
+            </label>
+            <label className="flex gap-2 normal items-center">
+              <input
+                type="radio"
+                value={ProjectState.Order}
+                checked={radioValue === ProjectState.Order}
+                onChange={handleRadioChange}
+              />
+              Ordre
+            </label>
+          </div>
+          {/* Toggle (Checkbox) */}
+          <label className="flex flex-row justify-between items-center">
+            Fakturerbart
+            <div
+              className={`rounded-full w-[52px] h-7 flex items-center  ${
+                isFakturerbar ? "bg-primary" : "bg-black/20"
+              }`}
+              onClick={handleToggleChange}
+            >
+              <div
+                className={`m-[2px] bg-white rounded-full w-6 h-6 ${
+                  isFakturerbar && " translate-x-6"
+                }`}
+              ></div>
+            </div>
+          </label>
+        </div>
+
+        <div className="space-y-2 space-x-2">
+          <ActionButton variant="primary" type="submit" fullWidth>
+            Legg til engasjement
+          </ActionButton>
+        </div>
+      </form>
+
+      <AddEngagementHoursModal
+        modalRef={modalRef}
+        weekSpan={8}
+        chosenConsultants={consultants.slice(0, 3)}
+      />
     </>
+  );
+}
+
+function AddEngagementHoursModal({
+  modalRef,
+  chosenConsultants,
+}: {
+  modalRef: RefObject<HTMLDialogElement>;
+  weekSpan: number;
+  chosenConsultants: Consultant[];
+}) {
+  const weekSpanOptions = ["8 uker", "12 uker", "26 uker"];
+  const [selectedWeekSpan, setSelectedWeekSpan] = useState<number>(8);
+  return (
+    <LargeModal
+      modalRef={modalRef}
+      engagementName="Designbistand"
+      customerName="Akva Group"
+      type={BookingType.Offer}
+      showCloseButton={true}
+    >
+      <div className="flex flex-col gap-6">
+        <div className="flex justify-end">
+          <div className="flex flex-row gap-2">
+            <DropDown
+              startingOption={
+                selectedWeekSpan
+                  ? selectedWeekSpan + " uker"
+                  : weekSpanOptions[0]
+              }
+              dropDownOptions={weekSpanOptions}
+              dropDownFunction={setSelectedWeekSpan}
+            />
+            <ActionButton
+              variant="secondary"
+              onClick={() => setSelectedWeekSpan(46)}
+            >
+              Nåværende uke
+            </ActionButton>
+            <IconActionButton
+              variant={"secondary"}
+              icon={<ArrowLeft />}
+              onClick={() => setSelectedWeekSpan(selectedWeekSpan - 1)}
+            />
+            <IconActionButton
+              variant={"secondary"}
+              icon={<ArrowRight />}
+              onClick={() => setSelectedWeekSpan(selectedWeekSpan + 1)}
+            />
+          </div>
+        </div>
+        <table
+          className={`w-full ${
+            selectedWeekSpan > 23
+              ? "min-w-[1400px]"
+              : selectedWeekSpan > 11
+              ? "min-w-[850px]"
+              : "min-w-[700px]"
+          } table-fixed`}
+        >
+          <colgroup>
+            <col span={1} className="w-8" />
+            <col span={1} className="w-[190px]" />
+            {chosenConsultants
+              .at(0)
+              ?.bookings?.map((booking, index) => <col key={index} span={1} />)}
+          </colgroup>
+          <thead>
+            <tr className="sticky -top-6 bg-white z-10">
+              <th colSpan={2} className="pt-3 pl-2 -left-2 relative bg-white">
+                <div className="flex flex-row gap-3 pb-4 items-center">
+                  <p className="normal-medium ">Konsulenter</p>
+                  <p className="text-primary small-medium rounded-full bg-primary/5 px-2 py-1">
+                    {chosenConsultants?.length}
+                  </p>
+                </div>
+              </th>
+              {chosenConsultants.at(0)?.bookings?.map((booking) => (
+                <th key={booking.weekNumber} className=" px-2 py-1 pt-3 ">
+                  <div className="flex flex-col gap-1">
+                    {isCurrentWeek(booking.weekNumber, booking.year) ? (
+                      <div className="flex flex-row gap-2 items-center justify-end">
+                        {booking.bookingModel.totalHolidayHours > 0 && (
+                          <InfoPill
+                            text={booking.bookingModel.totalHolidayHours.toFixed(
+                              1,
+                            )}
+                            icon={<Calendar size="12" />}
+                            colors={"bg-holiday text-holiday_darker w-fit"}
+                            variant={selectedWeekSpan < 24 ? "wide" : "medium"}
+                          />
+                        )}
+                        <div className="h-2 w-2 rounded-full bg-primary" />
+
+                        <p className="normal-medium text-right">
+                          {booking.weekNumber}
+                        </p>
+                      </div>
+                    ) : (
+                      <div
+                        className={`flex justify-end ${
+                          selectedWeekSpan >= 26
+                            ? "min-h-[30px] flex-col mb-2 gap-[1px] items-end"
+                            : "flex-row gap-2"
+                        }`}
+                      >
+                        {booking.bookingModel.totalHolidayHours > 0 && (
+                          <InfoPill
+                            text={booking.bookingModel.totalHolidayHours.toFixed(
+                              1,
+                            )}
+                            icon={<Calendar size="12" />}
+                            colors={"bg-holiday text-holiday_darker w-fit"}
+                            variant={selectedWeekSpan < 24 ? "wide" : "medium"}
+                          />
+                        )}
+                        <p className="normal text-right">
+                          {booking.weekNumber}
+                        </p>
+                      </div>
+                    )}
+
+                    <p
+                      className={`xsmall text-black/75 text-right ${
+                        selectedWeekSpan >= 26 && "hidden"
+                      }`}
+                    >
+                      {booking.dateString}
+                    </p>
+                  </div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {chosenConsultants?.map((consultant) => (
+              <AddEngagementHoursRow
+                key={consultant.id}
+                consultant={consultant}
+                weekSpan={selectedWeekSpan}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </LargeModal>
+  );
+}
+
+function AddEngagementHoursRow({
+  consultant,
+  weekSpan,
+}: {
+  consultant: Consultant;
+  weekSpan: number;
+}) {
+  return (
+    <tr>
+      <td>
+        <div className="flex justify-center items-center w-8 h-8 bg-offer rounded-lg">
+          <Briefcase className="text-black w-4 h-4" />
+        </div>
+      </td>
+      <td>
+        <p className="text-black text-start small pl-2">{consultant.name}</p>
+      </td>
+      {Array.from({ length: weekSpan }, (_, index) => (
+        <td key={index} className=" p-0.5">
+          <div className="flex justify-end items-center bg-offer/30  rounded-lg h-full">
+            <p className="small-medium text-black/75 p-2">0</p>
+          </div>
+        </td>
+      ))}
+    </tr>
   );
 }
 
@@ -669,7 +611,7 @@ function DetailedBookingRows(props: {
             detailedBooking.bookingDetails.type,
           )}`}
         >
-          {getIconByBookingType(detailedBooking.bookingDetails.type)}
+          {getIconByBookingType(detailedBooking.bookingDetails.type, 16)}
         </div>
         <div className="flex flex-col justify-center">
           <p
@@ -707,38 +649,6 @@ function DetailedBookingRows(props: {
         ))}
     </tr>
   );
-}
-
-interface updateBookingHoursProps {
-  hours: number;
-  bookingType: BookingType;
-  organisationUrl: string;
-  consultantId: string;
-  bookingId: string;
-  startWeek: number;
-  endWeek?: number;
-}
-
-async function setDetailedBookingHours(props: updateBookingHoursProps) {
-  const url = `/${props.organisationUrl}/bemanning/api/updateHours`;
-  const body: updateBookingHoursBody = {
-    hours: props.hours,
-    bookingType: props.bookingType,
-    consultantId: props.consultantId,
-    bookingId: props.bookingId,
-    startWeek: props.startWeek,
-    endWeek: props.endWeek,
-  };
-
-  try {
-    const data = await fetch(url, {
-      method: "put",
-      body: JSON.stringify(body),
-    });
-    return (await data.json()) as Consultant;
-  } catch (e) {
-    console.error("Error updating staffing", e);
-  }
 }
 
 function DetailedBookingCell({
@@ -947,59 +857,4 @@ function DetailedBookingCell({
       </div>
     </td>
   );
-}
-
-function getInfopillVariantByColumnCount(count: number): InfoPillVariant {
-  switch (true) {
-    case 26 <= count:
-      return "narrow";
-    case 12 <= count && count < 26:
-      return "medium";
-    case count < 12:
-      return "wide";
-    default:
-      return "wide";
-  }
-}
-
-function upsertConsultantBooking(old: Consultant[], res?: Consultant) {
-  if (!res) return old;
-
-  const consultantToUpdate = old.find((c) => c.id === res.id);
-  if (!consultantToUpdate || !res) return old;
-
-  consultantToUpdate.bookings = consultantToUpdate.bookings ?? [];
-  res.bookings?.map((booking) => {
-    const bookingIndex = consultantToUpdate.bookings.findIndex(
-      (b) => b.year == booking.year && b.weekNumber == booking.weekNumber,
-    );
-    if (bookingIndex !== -1 && res.bookings) {
-      consultantToUpdate.bookings[bookingIndex] = booking;
-    }
-
-    consultantToUpdate.detailedBooking =
-      consultantToUpdate.detailedBooking ?? [];
-  });
-  if (res.detailedBooking) {
-    res.detailedBooking.map((detailedBooking) => {
-      const detailedBookingIndex = consultantToUpdate.detailedBooking.findIndex(
-        (db) =>
-          db.bookingDetails.projectId ==
-          detailedBooking.bookingDetails.projectId,
-      );
-      detailedBooking.hours.map((hour) => {
-        const hoursIndex = consultantToUpdate.detailedBooking[
-          detailedBookingIndex
-        ].hours.findIndex((h) => h.week == hour.week);
-        consultantToUpdate.detailedBooking[detailedBookingIndex].hours[
-          hoursIndex
-        ] = hour;
-      });
-    });
-  }
-
-  const consultantIndex = old.findIndex((c) => c.id === `${res.id}`);
-  old[consultantIndex] = consultantToUpdate;
-
-  return [...old];
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import BaseModal from "../BaseModal";
+import BaseModal from "./BaseModal";
 import { Check, Plus } from "react-feather";
 import { EasyModalHeader } from "./EasyModalHeader";
 import ActionButton from "../Buttons/ActionButton";

@@ -1,7 +1,7 @@
 "use client";
 
 import { RefObject } from "react";
-import BaseModal from "../BaseModal";
+import BaseModal from "./BaseModal";
 import { Check } from "react-feather";
 import { EasyModalHeader } from "./EasyModalHeader";
 import ActionButton from "../Buttons/ActionButton";
