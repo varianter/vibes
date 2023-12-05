@@ -123,8 +123,6 @@ export function AddEngagementForm({
     event.preventDefault();
     event.stopPropagation();
     // Add your submission logic here
-    console.log(event);
-    console.log("Form submitted!");
 
     const body: EngagementWriteModel = {
       consultantIds: selectedConsultants?.map((c) => Number(c.value)), // Solid existing
@@ -133,6 +131,8 @@ export function AddEngagementForm({
       projectState: radioValue,
       isBillable: isFakturerbar,
     };
+
+    console.log(body);
 
     const result = await submitAddEngagementForm(body);
 

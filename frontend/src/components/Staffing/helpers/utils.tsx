@@ -39,6 +39,17 @@ export function getIconByProjectState(
   }
 }
 
+export function getColorByProjectState(type: ProjectState): string {
+  switch (type) {
+    case ProjectState.Offer:
+      return "bg-offer";
+    case ProjectState.Order:
+      return "bg-primary/[3%]";
+    default:
+      return "";
+  }
+}
+
 export function getIconByBookingType(
   type: BookingType,
   size: number,
