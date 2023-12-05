@@ -1,4 +1,5 @@
 import { ProjectWithCustomerModel } from "@/types";
+import { getIconByProjectState } from "../Staffing/helpers/utils";
 
 export function LargeModalHeader({
   project,
@@ -7,9 +8,9 @@ export function LargeModalHeader({
 }) {
   return (
     <div className="flex flex-row gap-3 items-center">
-      {/* <div className="w-[60px] h-[60px] bg-offer rounded-lg flex justify-center items-center"> */}
-      {/* {getIconProjectType(type, 32)} */}
-      {/* </div> */}
+      <div className="w-[60px] h-[60px] bg-offer rounded-lg flex justify-center items-center">
+        {getIconByProjectState(32, project?.projectState)}
+      </div>
       <div className="flex flex-col justify-center">
         <h1>{project?.projectName}</h1>
         <div className="flex flex-row gap-2 items-center">
