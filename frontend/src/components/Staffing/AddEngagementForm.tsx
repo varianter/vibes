@@ -136,16 +136,16 @@ export function AddEngagementForm({
 
     const result = await submitAddEngagementForm(body);
 
-    if (result) {
-      setProject(result);
-    }
-
     console.log(result);
 
-    //TODO: Need to close the add engagement modal before opening the large modal
-    closeEngagementModal();
-    openModal();
-
+    if (result) {
+      setProject(result);
+      //TODO: Need to close the add engagement modal before opening the large modal
+      closeEngagementModal();
+      openModal();
+    }
+    else {
+      console.error("Error adding engagement");
     // TODO: Legg på noe post-greier her
   }
 
