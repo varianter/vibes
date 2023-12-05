@@ -14,6 +14,7 @@ export default async function NavBar() {
       </div>
       <div className="flex flex-row gap-4 items-center">
         <NavBarOrganisationDropdown organisations={orgs} />
+        <div className="w-[1px] h-8 bg-white/20" />
         <NavBarUserIcon />
       </div>
     </div>
