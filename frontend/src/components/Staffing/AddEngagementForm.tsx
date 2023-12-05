@@ -143,9 +143,7 @@ export function AddEngagementForm({
       //TODO: Need to close the add engagement modal before opening the large modal
       closeEngagementModal();
       openModal();
-    }
-    else {
-      console.error("Error adding engagement");
+    } else console.error("Error adding engagement");
     // TODO: Legg på noe post-greier her
   }
 
