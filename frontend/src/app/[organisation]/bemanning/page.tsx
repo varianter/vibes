@@ -1,4 +1,8 @@
-import { Consultant, Department } from "@/types";
+import {
+  Consultant,
+  Department,
+  EngagementPerCustomerReadModel,
+} from "@/types";
 import { ConsultantFilterProvider } from "@/hooks/ConsultantFilterProvider";
 import { parseYearWeekFromUrlString } from "@/data/urlUtils";
 import React from "react";
@@ -31,10 +35,16 @@ export default async function Bemanning({
       `organisations/${params.organisation}/departments`,
     )) ?? [];
 
+  const customers =
+    (await fetchWithToken<EngagementPerCustomerReadModel[]>(
+      `${params.organisation}/projects`,
+    )) ?? [];
+
   return (
     <ConsultantFilterProvider
       consultants={consultants}
       departments={departments}
+      customers={customers}
     >
       <StaffingContent />
     </ConsultantFilterProvider>

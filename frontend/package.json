@@ -12,6 +12,7 @@
     "generate-types": "npx swagger-typescript-api -p http://localhost:7172/swagger/v0/swagger.json -o ./src -n swagger-types.ts --no-client"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.17",
     "@types/node": "20.5.9",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
@@ -27,6 +28,7 @@
     "react-dom": "^18.2.0",
     "react-feather": "^2.0.10",
     "react-query": "^3.39.3",
+    "react-select": "^5.8.0",
     "tailwindcss": "^3.3.3",
     "typescript": "5.2.2"
   },

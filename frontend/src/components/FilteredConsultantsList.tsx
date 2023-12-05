@@ -6,6 +6,7 @@ import { useUrlRouteFilter } from "@/hooks/staffing/useUrlRouteFilter";
 import InfoPill from "./InfoPill";
 import { Calendar } from "react-feather";
 import StaffingSums from "./StaffingSums";
+import React from "react";
 
 export default function StaffingTable() {
   const {

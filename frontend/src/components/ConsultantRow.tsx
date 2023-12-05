@@ -7,10 +7,22 @@ import {
   WeeklyHours,
   updateBookingHoursBody,
 } from "@/types";
-import { ReactElement, useContext, useEffect, useRef, useState } from "react";
+import React, {
+  ChangeEvent,
+  FormEvent,
+  ReactElement,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+  RefObject,
+} from "react";
 import {
   AlertTriangle,
+  ArrowLeft,
+  ArrowRight,
   Briefcase,
+  Calendar,
   ChevronDown,
   Coffee,
   FileText,
@@ -20,10 +32,17 @@ import {
   Sun,
 } from "react-feather";
 import InfoPill, { InfoPillVariant } from "./InfoPill";
-import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { usePathname } from "next/navigation";
 import { useModal } from "@/hooks/useModal";
-import EasyModal from "./EasyModal/EasyModal";
+import EasyModal from "./Modals/EasyModal";
+import ReactSelect, { SelectOption } from "./ReactSelect";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
+import { MultiValue } from "react-select";
+import { LargeModal } from "./Modals/LargeModal";
+import DropDown from "./DropDown";
+import ActionButton from "./Buttons/ActionButton";
+import IconActionButton from "./Buttons/IconActionButton";
+import { DateTime } from "luxon";
 
 export default function ConsultantRows({
   consultant,
@@ -32,12 +51,9 @@ export default function ConsultantRows({
 }) {
   const [isListElementVisible, setIsListElementVisible] = useState(false);
   const [isRowHovered, setIsRowHovered] = useState(false);
-  const [isAddStaffingHovered, setIsAddStaffingHovered] = useState(false);
   const [hoveredRowWeek, setHoveredRowWeek] = useState(-1);
 
   const columnCount = consultant.bookings.length ?? 0;
-
-  const { openModal, modalRef } = useModal();
 
   function toggleListElementVisibility() {
     setIsListElementVisible(!isListElementVisible);
@@ -108,36 +124,415 @@ export default function ConsultantRows({
         ))}
       {isListElementVisible && (
         <tr>
-          <td className={`${"border-l-secondary border-l-2"}`}></td>
-          <td>
-            <button
-              onClick={openModal}
-              className="flex flex-row items-center gap-2"
-              onMouseEnter={() => setIsAddStaffingHovered(true)}
-              onMouseLeave={() => setIsAddStaffingHovered(false)}
-            >
-              <span
-                className={`w-8 h-8 flex justify-center items-center rounded bg-primary/0 ${
-                  isAddStaffingHovered && "bg-primary/10"
-                }`}
-              >
-                <Plus size={16} className="text-primary" />
-              </span>
-
-              <p className="small text-primary">Legg til bemanning</p>
-            </button>
-            <EasyModal
-              modalRef={modalRef}
-              title={"Nytt Engasjement"}
-              onClose={() => console.log("onClose")}
-              showCloseButton
-            >
-              <div className="h-[300px]"></div>
-            </EasyModal>
-          </td>
+          <AddStaffingCell />
         </tr>
       )}
     </>
+  );
+}
+
+function AddStaffingCell(): ReactElement {
+  const { closeModal, openModal, modalRef } = useModal({
+    closeOnBackdropClick: true,
+  });
+  const [isAddStaffingHovered, setIsAddStaffingHovered] = useState(false);
+
+  return (
+    <>
+      <td className={`${"border-l-secondary border-l-2"}`}></td>
+      <td>
+        <AddEngagementForm
+          closeEngagementModal={closeModal}
+          easyModalRef={modalRef}
+        />
+
+        <button
+          onClick={openModal}
+          className="flex flex-row items-center gap-2"
+          onMouseEnter={() => setIsAddStaffingHovered(true)}
+          onMouseLeave={() => setIsAddStaffingHovered(false)}
+        >
+          <span
+            className={`w-8 h-8 flex justify-center items-center rounded bg-primary/0 ${
+              isAddStaffingHovered && "bg-primary/10"
+            }`}
+          >
+            <Plus size={16} className="text-primary" />
+          </span>
+
+          <p className="small text-primary">Legg til bemanning</p>
+        </button>
+      </td>
+    </>
+  );
+}
+
+function AddEngagementForm({
+  closeEngagementModal,
+  easyModalRef,
+}: {
+  closeEngagementModal: () => void;
+  easyModalRef: RefObject<HTMLDialogElement>;
+}) {
+  const { openModal, modalRef } = useModal({
+    closeOnBackdropClick: false,
+  });
+  const { customers, consultants } = useContext(FilteredContext);
+  // State for select components
+  const [selectedCustomer, setSelectedCustomer] = useState<SelectOption | null>(
+    null,
+  );
+  const [selectedEngagement, setSelectedEngagement] =
+    useState<SelectOption | null>(null);
+
+  const [selectedConsultants, setSelectedConsultants] =
+    useState<MultiValue<SelectOption> | null>(null);
+
+  const customerOptions = customers.map(
+    (c) =>
+      ({
+        value: `${c.customerId}`,
+        label: `${c.customerName}`,
+      }) as SelectOption,
+  );
+
+  const projectOptions =
+    customers
+      .find((c) => c.customerId == selectedCustomer?.value)
+      ?.engagements?.map(
+        (e) =>
+          ({
+            value: `${e.engagementId}`,
+            label: `${e.engagementName}`,
+          }) as SelectOption,
+      ) ?? [];
+
+  const consultantOptions =
+    consultants.map(
+      (c) =>
+        ({
+          value: `${c.id}`,
+          label: `${c.name}`,
+        }) as SelectOption,
+    ) ?? [];
+
+  // State for radio button group
+  const [radioValue, setRadioValue] = useState("Tilbud");
+
+  // State for toggle
+  const [isFakturerbar, setIsFakturerbar] = useState(false);
+
+  // Handler for select components
+  function handleSelectedCustomerChange(newCustomer: SelectOption) {
+    setSelectedCustomer(newCustomer);
+    setSelectedEngagement(null);
+  }
+
+  function handleSelectedEngagementChange(newValue: SelectOption) {
+    setSelectedEngagement(newValue);
+  }
+
+  // Handler for radio button group
+  function handleRadioChange(event: ChangeEvent<HTMLInputElement>) {
+    setRadioValue(event.target.value);
+  }
+
+  // Handler for toggle
+  function handleToggleChange() {
+    setIsFakturerbar(!isFakturerbar);
+  }
+
+  // Handler for form submission
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    // Add your submission logic here
+    console.log(event);
+    console.log("Form submitted!");
+
+    //TODO: Need to close the add engagement modal before opening the large modal
+    event.preventDefault();
+    closeEngagementModal();
+    openModal();
+
+    // TODO: Legg på noe post-greier her
+  }
+
+  return (
+    <>
+      <EasyModal
+        modalRef={easyModalRef}
+        title={"Legg til engasjement"}
+        showCloseButton={true}
+      >
+        <div className="min-h-[300px]">
+          <form onSubmit={handleSubmit}>
+            <div className="flex flex-col gap-6 pt-6 h-96">
+              {/* Selected Customer */}
+              <div className="flex flex-col gap-2">
+                <p className="small text-black">Konsulenter</p>
+                <ReactSelect
+                  options={consultantOptions}
+                  selectedMultipleOptionsValue={selectedConsultants}
+                  onMultipleOptionsChange={setSelectedConsultants}
+                  isMultipleOptions={true}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <p className="small text-black">Kunde</p>
+                <ReactSelect
+                  options={customerOptions}
+                  selectedSingleOptionValue={selectedCustomer}
+                  onSingleOptionChange={handleSelectedCustomerChange}
+                  isMultipleOptions={false}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <p className="small text-black">Engasjement</p>
+                <ReactSelect
+                  options={projectOptions}
+                  onSingleOptionChange={handleSelectedEngagementChange}
+                  selectedSingleOptionValue={selectedEngagement}
+                  isMultipleOptions={false}
+                />
+              </div>
+              {/* Radio Button Group */}
+              <div className="flex flex-row gap-4">
+                <label className="flex gap-2 normal items-center">
+                  <input
+                    type="radio"
+                    value="Tilbud"
+                    checked={radioValue === "Tilbud"}
+                    onChange={handleRadioChange}
+                  />
+                  Tilbud
+                </label>
+                <label className="flex gap-2 normal items-center">
+                  <input
+                    type="radio"
+                    value="Ordre"
+                    checked={radioValue === "Ordre"}
+                    onChange={handleRadioChange}
+                  />
+                  Ordre
+                </label>
+              </div>
+              {/* Toggle (Checkbox) */}
+              <label className="flex flex-row justify-between items-center">
+                Fakturerbart
+                <div
+                  className={`rounded-full w-[52px] h-7 flex items-center  ${
+                    isFakturerbar ? "bg-primary" : "bg-black/20"
+                  }`}
+                  onClick={handleToggleChange}
+                >
+                  <div
+                    className={`m-[2px] bg-white rounded-full w-6 h-6 ${
+                      isFakturerbar && " translate-x-6"
+                    }`}
+                  ></div>
+                </div>
+              </label>
+            </div>
+
+            {/* Submit Button */}
+            <button type="submit">Submit</button>
+          </form>
+        </div>
+      </EasyModal>
+      <AddEngagementHoursModal
+        modalRef={modalRef}
+        weekSpan={8}
+        chosenConsultants={consultants.slice(0, 3)}
+      />
+    </>
+  );
+}
+
+function generateWeekList(
+  firstVisibleDay: DateTime,
+  numberofWeeks: number,
+): DateTime[] | (() => DateTime[]) {
+  let numbers = [];
+  for (let i = 0; i < numberofWeeks; i++) {
+    numbers.push(firstVisibleDay.plus({ weeks: i }));
+  }
+  return numbers;
+}
+
+function AddEngagementHoursModal({
+  modalRef,
+  chosenConsultants,
+}: {
+  modalRef: RefObject<HTMLDialogElement>;
+  weekSpan: number;
+  chosenConsultants: Consultant[];
+}) {
+  const weekSpanOptions = ["8 uker", "12 uker", "26 uker"];
+  const [selectedWeekSpan, setSelectedWeekSpan] = useState<number>(8);
+  const [firstVisibleDay, setFirstVisibleDay] = useState<DateTime>(
+    DateTime.now(),
+  );
+
+  function setWeekSpan(weekSpanString: string) {
+    const weekSpanNum = parseInt(weekSpanString.split(" ")[0]);
+    setSelectedWeekSpan(weekSpanNum);
+  }
+
+  const [weekList, setWeekList] = useState<DateTime[]>(
+    generateWeekList(firstVisibleDay, selectedWeekSpan),
+  );
+
+  useEffect(() => {
+    setWeekList(generateWeekList(firstVisibleDay, selectedWeekSpan));
+  }, [firstVisibleDay, selectedWeekSpan]);
+
+  return (
+    <LargeModal
+      modalRef={modalRef}
+      engagementName="Designbistand"
+      customerName="Akva Group"
+      type={BookingType.Offer}
+      showCloseButton={true}
+    >
+      <div className="flex flex-col gap-6">
+        <div className="flex justify-end">
+          <div className="flex flex-row gap-2">
+            <DropDown
+              startingOption={
+                selectedWeekSpan
+                  ? selectedWeekSpan + " uker"
+                  : weekSpanOptions[0]
+              }
+              dropDownOptions={weekSpanOptions}
+              dropDownFunction={setWeekSpan}
+            />
+            <ActionButton
+              variant="secondary"
+              onClick={() => setFirstVisibleDay(DateTime.now())}
+            >
+              Nåværende uke
+            </ActionButton>
+            <IconActionButton
+              variant={"secondary"}
+              icon={<ArrowLeft />}
+              onClick={() =>
+                setFirstVisibleDay(
+                  firstVisibleDay.minus({ week: selectedWeekSpan - 1 }),
+                )
+              }
+            />
+            <IconActionButton
+              variant={"secondary"}
+              icon={<ArrowRight />}
+              onClick={() =>
+                setFirstVisibleDay(
+                  firstVisibleDay.plus({ week: selectedWeekSpan - 1 }),
+                )
+              }
+            />
+          </div>
+        </div>
+        <table
+          className={`w-full ${
+            selectedWeekSpan > 23
+              ? "min-w-[1400px]"
+              : selectedWeekSpan > 11
+              ? "min-w-[850px]"
+              : "min-w-[700px]"
+          } table-fixed`}
+        >
+          <colgroup>
+            <col span={1} className="w-8" />
+            <col span={1} className="w-[190px]" />
+            {weekList.map((booking, index) => (
+              <col key={index} span={1} />
+            ))}
+          </colgroup>
+          <thead>
+            <tr className="sticky -top-6 bg-white z-10">
+              <th colSpan={2} className="pt-3 pl-2 -left-2 relative bg-white">
+                <div className="flex flex-row gap-3 pb-4 items-center">
+                  <p className="normal-medium ">Konsulenter</p>
+                  <p className="text-primary small-medium rounded-full bg-primary/5 px-2 py-1">
+                    {chosenConsultants?.length}
+                  </p>
+                </div>
+              </th>
+              {weekList.map((day) => (
+                <th key={day.weekNumber} className=" px-2 py-1 pt-3 ">
+                  <div className="flex flex-col gap-1">
+                    <div
+                      className={`flex justify-end ${
+                        selectedWeekSpan >= 26
+                          ? "min-h-[30px] flex-col mb-2 gap-[1px] items-end"
+                          : "flex-row gap-2"
+                      }`}
+                    >
+                      <p className="normal text-right">{day.weekNumber}</p>
+                    </div>
+                    <p
+                      className={`xsmall text-black/75 text-right ${
+                        selectedWeekSpan >= 26 && "hidden"
+                      }`}
+                    >
+                      {(day.day < 10 ? "0" + day.day : day.day) +
+                        "." +
+                        day.month +
+                        " - " +
+                        (day.plus({ days: 4 }).day < 10
+                          ? "0" + day.plus({ days: 4 }).day
+                          : day.plus({ days: 4 }).day) +
+                        "." +
+                        day.plus({ days: 4 }).month}
+                    </p>
+                  </div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {chosenConsultants?.map((consultant) => (
+              <AddEngagementHoursRow
+                key={consultant.id}
+                consultant={consultant}
+                weekList={weekList}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </LargeModal>
+  );
+}
+
+function AddEngagementHoursRow({
+  consultant,
+  weekList,
+}: {
+  consultant: Consultant;
+  weekList: DateTime[];
+}) {
+  return (
+    <tr>
+      <td>
+        <div className="flex justify-center items-center w-8 h-8 bg-offer rounded-lg">
+          <Briefcase className="text-black w-4 h-4" />
+        </div>
+      </td>
+      <td>
+        <p className="text-black text-start small pl-2">{consultant.name}</p>
+      </td>
+      {weekList.map((day) => (
+        /*Notat til senere:
+        day er første dagen i den gitte uka, og dette tallet kan bli brukt til å finne ukenr og år når man skal sende/lagre dataen om timene. 
+        Kan gjøre at vi må håndtere ting forskjellig når vi skal redigere et engasjement
+      */
+        <td key={day.weekNumber} className=" p-0.5">
+          <div className="flex justify-end items-center bg-offer/30  rounded-lg h-full">
+            <p className="small-medium text-black/75 p-2">0</p>
+          </div>
+        </td>
+      ))}
+    </tr>
   );
 }
 
@@ -158,18 +553,21 @@ function getColorByStaffingType(type: BookingType): string {
   }
 }
 
-function getIconByBookingType(type: BookingType): ReactElement {
+export function getIconByBookingType(
+  type: BookingType,
+  size: number,
+): ReactElement {
   switch (type) {
     case BookingType.Offer:
-      return <FileText size={16} className="text-primary_darker" />;
+      return <FileText size={size} className="text-primary_darker" />;
     case BookingType.Booking:
-      return <Briefcase size={16} className="text-black" />;
+      return <Briefcase size={size} className="text-black" />;
     case BookingType.Vacation:
-      return <Sun size={16} className="text-vacation_darker" />;
+      return <Sun size={size} className="text-vacation_darker" />;
     case BookingType.PlannedAbsence:
-      return <Moon size={16} className="text-absence_darker" />;
+      return <Moon size={size} className="text-absence_darker" />;
     case BookingType.Available:
-      return <Coffee size={16} className="text-available_darker" />;
+      return <Coffee size={size} className="text-available_darker" />;
     default:
       return <></>;
   }
@@ -372,7 +770,7 @@ function HoveredWeek(props: {
                   detailedBooking.bookingDetails.type,
                 )}`}
               >
-                {getIconByBookingType(detailedBooking.bookingDetails.type)}
+                {getIconByBookingType(detailedBooking.bookingDetails.type, 16)}
               </div>
               <div className="flex flex-col">
                 <p
@@ -438,7 +836,7 @@ function DetailedBookingRows(props: {
             detailedBooking.bookingDetails.type,
           )}`}
         >
-          {getIconByBookingType(detailedBooking.bookingDetails.type)}
+          {getIconByBookingType(detailedBooking.bookingDetails.type, 16)}
         </div>
         <div className="flex flex-col justify-center">
           <p

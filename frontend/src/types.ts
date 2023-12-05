@@ -108,6 +108,29 @@ export type Week = {
   weekNumber: number;
 };
 
+export interface EngagementPerCustomerReadModel {
+  /** @format int32 */
+  customerId?: number;
+  customerName?: string | null;
+  engagements?: EngagementReadModel[] | null;
+}
+
+export interface EngagementReadModel {
+  /** @format int32 */
+  engagementId?: number;
+  engagementName?: string | null;
+  state?: ProjectState;
+  isBillable?: boolean;
+}
+
+export enum ProjectState {
+  Closed = "Closed",
+  Order = "Order",
+  Lost = "Lost",
+  Offer = "Offer",
+  Active = "Active",
+}
+
 export enum Degree {
   Master = "Master",
   Bachelor = "Bachelor",

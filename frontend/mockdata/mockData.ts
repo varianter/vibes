@@ -1,6 +1,8 @@
 import {
   Consultant,
   Department,
+  EngagementPerCustomerReadModel,
+  EngagementReadModel,
   Organisation,
   WeeklyBookingReadModel,
 } from "@/types";
@@ -47,5 +49,13 @@ export const MockOrganisations: Organisation[] = [
   {
     name: "My Organisation",
     urlKey: "my-org",
+  },
+];
+
+export const MockEngagements: EngagementPerCustomerReadModel[] = [
+  {
+    customerId: 1,
+    customerName: "TestCustomer",
+    engagements: [],
   },
 ];
