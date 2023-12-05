@@ -13,6 +13,7 @@ export type ActionButtonProps = {
   disabled?: boolean;
   iconBtn?: boolean;
   small?: boolean;
+  type?: "button" | "submit" | "reset";
 };
 
 export default function ActionButton({
@@ -26,6 +27,7 @@ export default function ActionButton({
   disabled = false,
   iconBtn = false,
   small = false,
+  type = "button",
 }: ActionButtonProps) {
   const variantClass =
     {
@@ -47,6 +49,7 @@ export default function ActionButton({
     <BaseButton
       className={` ${variantClass} ${disabledClass} ${fullWidthClass} ${buttonShapeClass} ${className}`}
       onClick={onClick}
+      type={type}
     >
       <IconBox small={small}>{iconLeft}</IconBox>
       {children}
