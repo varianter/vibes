@@ -1,4 +1,5 @@
 using Api.Organisation;
+using Api.Projects;
 using Core.DomainModels;
 using Database.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
@@ -291,5 +292,56 @@ public class StorageService
         _dbContext.SaveChanges();
         _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
     }
-    
+    public Customer UpdateOrCreateCustomer(Organization org, string customerName, string orgUrlKey)
+    {
+        var customer = _dbContext.Customer.SingleOrDefault(c => c.Name == customerName);
+
+        if (customer is null)
+        {
+            customer = new Customer
+            {
+                Name = customerName,
+                Organization = org,
+                Projects = new List<Project>()
+            };
+
+            _dbContext.Customer.Add(customer);
+        }
+        _dbContext.SaveChanges();
+        _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
+
+        return customer;
+    }
+
+    public Project UpdateOrCreateProject(Customer customer, EngagementWriteModel payload, string orgUrlKey)
+    {
+        var project = _dbContext.Project.SingleOrDefault(p => p.Name == payload.ProjectName);
+        
+        if (project is null)
+        {
+                project = new Project
+                {
+                    Customer = customer,
+                    State = payload.BookingType,
+                    Staffings = new List<Staffing>(),
+                    Consultants = new List<Consultant>(),
+                    Name = payload.ProjectName,
+                    IsBillable = payload.IsBillable
+                };
+
+                _dbContext.Project.Add(project);
+        }
+        
+        else
+        {
+            project.State = payload.BookingType;
+            project.IsBillable = payload.IsBillable;
+        }
+        
+        _dbContext.SaveChanges();
+        _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
+
+        return project;
+    }
+
 }
