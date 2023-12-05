@@ -1,4 +1,5 @@
 using Api.Organisation;
+using Api.Projects;
 using Core.DomainModels;
 using Database.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
@@ -290,6 +291,16 @@ public class StorageService
         
         _dbContext.SaveChanges();
         _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
+    }
+
+
+    public Project UpdateProjectState(Project project, EngagementWriteModel engagementWriteModel, string orgUrlKey)
+    {
+        project.State = engagementWriteModel.State;
+        _dbContext.SaveChanges();
+        _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
+
+        return project;
     }
     
 }
