@@ -4,6 +4,9 @@
 const nextConfig = {
   distDir: "build",
   swcMinify: true,
+  experimental: {
+    serverActions: true,
+  },
 };
 
 module.exports = nextConfig;
