@@ -138,13 +138,14 @@ export function AddEngagementForm({
 
     console.log(result);
 
+    // TODO: This is a simplified mockup.
     if (result) {
       setProject(result);
-      //TODO: Need to close the add engagement modal before opening the large modal
       closeEngagementModal();
       openModal();
+      // TODO: Futher logic for the changes in openModal *here*
     } else console.error("Error adding engagement");
-    // TODO: Legg på noe post-greier her
+    // TODO: #370 - Error handling for snackbars here
   }
 
   return (
