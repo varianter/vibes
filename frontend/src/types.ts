@@ -147,10 +147,10 @@ export interface updateBookingHoursBody {
 }
 
 export interface ProjectWithCustomerModel {
-  projectName?: string | null;
-  customerName?: string | null;
-  projectState?: ProjectState;
-  isBillable?: boolean;
+  projectName: string;
+  customerName: string;
+  projectState: ProjectState;
+  isBillable: boolean;
 }
 
 export interface EngagementWriteModel {

@@ -16,7 +16,7 @@ export function AddEngagementHoursModal({
   modalRef: RefObject<HTMLDialogElement>;
   weekSpan: number;
   chosenConsultants: Consultant[];
-  project: ProjectWithCustomerModel | null;
+  project?: ProjectWithCustomerModel;
 }) {
   const weekSpanOptions = ["8 uker", "12 uker", "26 uker"];
   const [selectedWeekSpan, setSelectedWeekSpan] = useState<number>(8);
@@ -38,13 +38,7 @@ export function AddEngagementHoursModal({
   }, [firstVisibleDay, selectedWeekSpan]);
 
   return (
-    <LargeModal
-      modalRef={modalRef}
-      engagementName={project?.projectName ?? "Project name"}
-      customerName={project?.customerName ?? "Customer name"}
-      projectState={project?.projectState ?? null}
-      showCloseButton={true}
-    >
+    <LargeModal modalRef={modalRef} project={project} showCloseButton={true}>
       <div className="flex flex-col gap-6">
         <div className="flex justify-end">
           <div className="flex flex-row gap-2">

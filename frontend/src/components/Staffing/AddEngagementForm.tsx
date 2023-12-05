@@ -43,7 +43,9 @@ export function AddEngagementForm({
   const [selectedConsultants, setSelectedConsultants] =
     useState<MultiValue<SelectOption> | null>(null);
 
-  const [project, setProject] = useState<ProjectWithCustomerModel | null>(null);
+  const [project, setProject] = useState<
+    ProjectWithCustomerModel | undefined
+  >();
 
   const customerOptions = customers.map(
     (c) =>

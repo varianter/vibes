@@ -1,13 +1,9 @@
-import { ProjectState } from "@/types";
+import { ProjectWithCustomerModel } from "@/types";
 
 export function LargeModalHeader({
-  engagementName,
-  customerName,
-  type,
+  project,
 }: {
-  engagementName: string;
-  customerName: string;
-  type: ProjectState;
+  project?: ProjectWithCustomerModel;
 }) {
   return (
     <div className="flex flex-row gap-3 items-center">
@@ -15,11 +11,11 @@ export function LargeModalHeader({
       {/* {getIconProjectType(type, 32)} */}
       {/* </div> */}
       <div className="flex flex-col justify-center">
-        <h1>{engagementName}</h1>
+        <h1>{project?.projectName}</h1>
         <div className="flex flex-row gap-2 items-center">
-          <p className="normal text-black">{customerName}</p>
+          <p className="normal text-black">{project?.customerName}</p>
           <div className="w-1 h-1 rounded-full bg-black"></div>
-          <p className="normal text-black">{type}</p>
+          <p className="normal text-black">{project?.projectState}</p>
         </div>
       </div>
     </div>
