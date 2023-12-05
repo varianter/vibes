@@ -1,9 +1,9 @@
 "use client";
-import ConsultantRows from "./ConsultantRow";
+import ConsultantRows from "./Staffing/ConsultantRow";
 import { isCurrentWeek } from "@/hooks/staffing/dateTools";
 import { useConsultantsFilter } from "@/hooks/staffing/useConsultantsFilter";
 import { useUrlRouteFilter } from "@/hooks/staffing/useUrlRouteFilter";
-import InfoPill from "./InfoPill";
+import InfoPill from "./Staffing/InfoPill";
 import { Calendar } from "react-feather";
 import StaffingSums from "./StaffingSums";
 import React from "react";

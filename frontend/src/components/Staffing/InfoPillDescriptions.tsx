@@ -1,4 +1,4 @@
-import InfoPill from "@/components/InfoPill";
+import InfoPill from "@/components/Staffing/InfoPill";
 import {
   AlertTriangle,
   Briefcase,
