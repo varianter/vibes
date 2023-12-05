@@ -5,6 +5,7 @@ import {
 import {
   MockConsultants,
   MockDepartments,
+  MockEngagements,
   MockOrganisations,
 } from "../../mockdata/mockData";
 
@@ -91,6 +92,9 @@ function mockedCall<T>(path: string): Promise<T> {
     }
     if (path.includes("organisations")) {
       resolve(MockOrganisations as T);
+    }
+    if (path.includes("projects")) {
+      resolve(MockEngagements as T);
     }
   });
 }
