@@ -4,7 +4,7 @@ import { IconBox } from "./IconBox";
 
 export type ActionButtonProps = {
   variant: "primary" | "secondary" | "terniary";
-  onClick: () => void;
+  onClick?: () => void;
   children?: React.ReactNode;
   iconLeft?: React.ReactNode;
   iconRight?: React.ReactNode;

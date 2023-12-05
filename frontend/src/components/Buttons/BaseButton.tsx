@@ -7,7 +7,7 @@ export default function BaseButton({
   disabled = false,
   type = "button",
 }: {
-  onClick: () => void;
+  onClick?: () => void;
   className: string;
   children: React.ReactNode;
   disabled?: boolean;
