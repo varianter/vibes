@@ -39,7 +39,7 @@ export function getIconByProjectState(
   }
 }
 
-export function getColorByProjectState(type: ProjectState): string {
+export function getColorByProjectState(type?: ProjectState): string {
   switch (type) {
     case ProjectState.Offer:
       return "bg-offer";

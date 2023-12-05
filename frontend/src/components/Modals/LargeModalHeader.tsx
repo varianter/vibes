@@ -1,7 +1,6 @@
 import { ProjectWithCustomerModel } from "@/types";
 import {
   getColorByProjectState,
-  getColorByStaffingType,
   getIconByProjectState,
 } from "../Staffing/helpers/utils";
 
@@ -10,7 +9,7 @@ export function LargeModalHeader({
 }: {
   project?: ProjectWithCustomerModel;
 }) {
-  const projectStateColor = getColorByProjectState(project.projectState);
+  const projectStateColor = getColorByProjectState(project?.projectState);
 
   return (
     <div className="flex flex-row gap-3 items-center">
