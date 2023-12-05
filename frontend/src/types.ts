@@ -154,9 +154,9 @@ export interface ProjectWithCustomerModel {
 }
 
 export interface EngagementWriteModel {
-  consultantIds?: number[] | null;
-  bookingType?: ProjectState;
+  consultantIds?: number[];
+  projectState?: ProjectState;
   isBillable?: boolean;
-  projectName?: string | null;
-  customerName?: string | null;
+  projectName?: string;
+  customerName?: string;
 }

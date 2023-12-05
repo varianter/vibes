@@ -130,7 +130,7 @@ export function AddEngagementForm({
       consultantIds: selectedConsultants?.map((c) => Number(c.value)), // Solid existing
       customerName: selectedCustomer?.label,
       projectName: selectedEngagement?.label,
-      bookingType: radioValue,
+      projectState: radioValue,
       isBillable: isFakturerbar,
     };
 
