@@ -318,9 +318,9 @@ public class StorageService
         return customer;
     }
 
-    public Project UpdateProjectState(Project project, EngagementWriteModel engagementWriteModel, string orgUrlKey)
+    public Project UpdateProjectState(Project project, UpdateProjectWriteModel updateProjectWriteModel, string orgUrlKey)
     {
-        project.State = engagementWriteModel.BookingType;
+        project.State = updateProjectWriteModel.ProjectState;
         _dbContext.SaveChanges();
         _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
 

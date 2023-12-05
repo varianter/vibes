@@ -1,4 +1,5 @@
 using Api.Common;
+using Api.StaffingController;
 using Core.DomainModels;
 using Database.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
@@ -41,26 +42,30 @@ public class ProjectController : ControllerBase
             .ToList();
     }
 
-    [HttpPatch]
-    public ActionResult<ProjectWithCustomerModel> Patch([FromRoute] string orgUrlKey, [FromBody] EngagementWriteModel engagementWriteModel)
+    [HttpPut]
+    [Route("updateState")]
+    public ActionResult<List<ConsultantReadModel>> Put([FromRoute] string orgUrlKey, [FromBody] UpdateProjectWriteModel projectWriteModel)
     {
         var selectedOrgId = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
-        var customer = _context.Customer.SingleOrDefault(c => c.Name == engagementWriteModel.CustomerName);
-        var engagement = _context.Project.SingleOrDefault(p => p.Name == engagementWriteModel.ProjectName && p.Customer == customer);
-        if (selectedOrgId is null || customer is null || engagement is null) return BadRequest();
+        var engagement = _context.Project.Include(p=>p.Consultants).SingleOrDefault(p => p.Id == projectWriteModel.EngagementId);
+        if (selectedOrgId is null || engagement is null) return BadRequest();
         
         var service = new StorageService(_cache, _context);
         try
         {
-            engagement =  service.UpdateProjectState(engagement, engagementWriteModel, orgUrlKey);
+            service.UpdateProjectState(engagement, projectWriteModel, orgUrlKey);
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
             throw;
         }
+        
+        var selectedWeek = new Week(projectWriteModel.StartYear, projectWriteModel.StartWeek);
 
-        return new ProjectWithCustomerModel(engagement.Name, engagementWriteModel.CustomerName, engagement.State, false);
+        var weekSet = selectedWeek.GetNextWeeks(projectWriteModel.WeekSpan);
+
+        return new ReadModelFactory(service).GetConsultantReadModelForWeeks(engagement.Consultants.Select(c=>c.Id).ToList(), weekSet);
 
     }
 

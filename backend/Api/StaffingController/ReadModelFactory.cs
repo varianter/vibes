@@ -43,6 +43,21 @@ public class ReadModelFactory
         return new ConsultantReadModel(consultant, readModel.Bookings,
             readModel.DetailedBooking, readModel.IsOccupied);
     }
+    
+    public List<ConsultantReadModel> GetConsultantReadModelForWeeks( List<int> consultantIds, List<Week> weeks)
+    {
+        var consultants = new List<ConsultantReadModel>();
+        foreach (int i in consultantIds)
+        {
+            var consultant = _storageService.LoadConsultantForWeekSet(i, weeks);
+            var readModel = MapToReadModelList(consultant, weeks);
+
+            consultants.Add(new ConsultantReadModel(consultant, readModel.Bookings,
+                readModel.DetailedBooking, readModel.IsOccupied));
+        }
+
+        return consultants;
+    }
 
     public static ConsultantReadModel MapToReadModelList(
         Consultant consultant,

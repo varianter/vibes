@@ -2,23 +2,60 @@ import {
   BookingType,
   Consultant,
   DetailedBooking,
+  ProjectState,
   updateBookingHoursBody,
+  updateProjectStateBody,
   WeeklyHours,
 } from "@/types";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   getColorByStaffingType,
   getIconByBookingType,
+  updateProjects,
   upsertConsultantBooking,
 } from "@/components/Staffing/helpers/utils";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { usePathname } from "next/navigation";
 import { Minus, Plus } from "react-feather";
+import { useOutsideClick } from "@/hooks/useOutsideClick";
+import { parseYearWeekFromString } from "@/data/urlUtils";
+
+async function updateProjectState(
+  organisationName: string,
+  detailedBooking: DetailedBooking,
+  state: ProjectState,
+) {
+  const url = `/${organisationName}/bemanning/api/projects/updateState`;
+  const yearWeek = parseYearWeekFromString(
+    detailedBooking.hours[0].week.toString() || undefined,
+  );
+
+  const body: updateProjectStateBody = {
+    engagementId: detailedBooking.bookingDetails.projectId,
+    projectState: state,
+    isBillable: false,
+    startWeek: yearWeek?.weekNumber || 0,
+    startYear: yearWeek?.year || 0,
+    weekSpan: detailedBooking.hours.length,
+  };
+
+  try {
+    const data = await fetch(url, {
+      method: "put",
+      body: JSON.stringify(body),
+    });
+    return (await data.json()) as Consultant[];
+  } catch (e) {
+    console.error("Error updating projectState", e);
+  }
+}
 
 export function DetailedBookingRows(props: {
   consultant: Consultant;
   detailedBooking: DetailedBooking;
 }) {
+  const { setConsultants } = useContext(FilteredContext);
+
   const { consultant, detailedBooking } = props;
   const [hourDragValue, setHourDragValue] = useState<number | undefined>(
     undefined,
@@ -31,19 +68,61 @@ export function DetailedBookingRows(props: {
   );
   const [isRowHovered, setIsRowHovered] = useState(false);
 
+  const [editOfferDropdownIsOpen, setEditOfferDropdownIsOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  const organisationName = usePathname().split("/")[1];
+
+  useOutsideClick(menuRef, () => {
+    if (editOfferDropdownIsOpen) setEditOfferDropdownIsOpen(false);
+  });
+
+  function changeState(state: ProjectState) {
+    updateProjectState(organisationName, detailedBooking, state).then((res) => {
+      setConsultants((old) => [
+        // Use spread to make a new list, forcing a re-render
+        ...updateProjects(old, res),
+      ]);
+    });
+  }
+
   return (
     <tr
       key={`${consultant.id}-details-${detailedBooking.bookingDetails.customerName}`}
       className="h-fit"
     >
       <td className="border-l-secondary border-l-2"></td>
-      <td className="flex flex-row gap-2 justify-start">
-        <div
+      <td className="flex flex-row gap-2 justify-start relative" ref={menuRef}>
+        <button
           className={`h-8 w-8 flex justify-center items-center rounded ${getColorByStaffingType(
             detailedBooking.bookingDetails.type,
           )}`}
+          onClick={() => setEditOfferDropdownIsOpen(true)}
+          disabled={detailedBooking.bookingDetails.type != BookingType.Offer}
         >
           {getIconByBookingType(detailedBooking.bookingDetails.type, 16)}
+        </button>
+        <div
+          className={`w-full z-50 bg-white flex flex-col p-1 absolute top-full mt-1 rounded-lg dropdown-shadow ${
+            !editOfferDropdownIsOpen && "hidden"
+          }`}
+        >
+          <button
+            className="hover:bg-primary/10 px-3 py-2 rounded flex flex-row gap-3 items-center "
+            onClick={() => changeState(ProjectState.Active)}
+          >
+            <p className="h-6 flex items-center normal-semibold text-primary">
+              Vunnet
+            </p>
+          </button>
+          <button
+            className="hover:bg-primary/10 px-3 py-2 rounded flex flex-row gap-3 items-center "
+            onClick={() => changeState(ProjectState.Lost)}
+          >
+            <p className="h-6 flex items-center normal-semibold text-primary">
+              Tapt
+            </p>
+          </button>
         </div>
         <div className="flex flex-col justify-center">
           <p
