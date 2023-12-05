@@ -5,7 +5,7 @@ namespace Core.DomainModels;
 public class Project
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public required int Id { get; set; }
+    public int Id { get; set; }
 
     public required Customer Customer { get; set; }
 
@@ -16,6 +16,9 @@ public class Project
     public required List<Staffing> Staffings { get; set; } = new();
 
     public required string Name { get; set; }
+    
+    public required bool IsBillable { get; set; }
+
 }
 
 public enum ProjectState
