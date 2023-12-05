@@ -1,5 +1,5 @@
 import React, { RefObject, useEffect, useState } from "react";
-import { BookingType, Consultant } from "@/types";
+import { Consultant, ProjectWithCustomerModel } from "@/types";
 import { DateTime } from "luxon";
 import { generateWeekList } from "@/components/Staffing/helpers/GenerateWeekList";
 import { LargeModal } from "@/components/Modals/LargeModal";
@@ -11,10 +11,12 @@ import { ArrowLeft, ArrowRight, Briefcase } from "react-feather";
 export function AddEngagementHoursModal({
   modalRef,
   chosenConsultants,
+  project,
 }: {
   modalRef: RefObject<HTMLDialogElement>;
   weekSpan: number;
   chosenConsultants: Consultant[];
+  project: ProjectWithCustomerModel | null;
 }) {
   const weekSpanOptions = ["8 uker", "12 uker", "26 uker"];
   const [selectedWeekSpan, setSelectedWeekSpan] = useState<number>(8);
@@ -38,9 +40,9 @@ export function AddEngagementHoursModal({
   return (
     <LargeModal
       modalRef={modalRef}
-      engagementName="Designbistand"
-      customerName="Akva Group"
-      type={BookingType.Offer}
+      engagementName={project?.projectName ?? "Project name"}
+      customerName={project?.customerName ?? "Customer name"}
+      projectState={project?.projectState ?? null}
       showCloseButton={true}
     >
       <div className="flex flex-col gap-6">

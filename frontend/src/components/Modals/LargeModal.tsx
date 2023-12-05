@@ -3,7 +3,7 @@ import BaseModal from "./BaseModal";
 import { Check } from "react-feather";
 import ActionButton from "../Buttons/ActionButton";
 import { LargeModalHeader } from "./LargeModalHeader";
-import { BookingType } from "@/types";
+import { ProjectState } from "@/types";
 
 export interface EasyModalProps {
   children: React.ReactNode;
@@ -12,7 +12,7 @@ export interface EasyModalProps {
   showCloseButton?: true;
   engagementName: string;
   customerName: string;
-  type: BookingType;
+  projectState: ProjectState | null;
 }
 
 export function LargeModal(props: EasyModalProps) {
@@ -23,7 +23,7 @@ export function LargeModal(props: EasyModalProps) {
     showCloseButton,
     engagementName,
     customerName,
-    type,
+    projectState,
   } = props;
 
   const dialogElement = modalRef?.current;
@@ -39,7 +39,7 @@ export function LargeModal(props: EasyModalProps) {
         <LargeModalHeader
           engagementName={engagementName}
           customerName={customerName}
-          type={type}
+          type={projectState}
         />
         <div className="flex-1">{children}</div>
         <div className="flex justify-end">

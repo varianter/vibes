@@ -1,6 +1,4 @@
-import { BookingType } from "@/types";
-
-import { getIconByBookingType } from "@/components/Staffing/helpers/utils";
+import { ProjectState } from "@/types";
 
 export function LargeModalHeader({
   engagementName,
@@ -9,13 +7,13 @@ export function LargeModalHeader({
 }: {
   engagementName: string;
   customerName: string;
-  type: BookingType;
+  type: ProjectState;
 }) {
   return (
     <div className="flex flex-row gap-3 items-center">
-      <div className="w-[60px] h-[60px] bg-offer rounded-lg flex justify-center items-center">
-        {getIconByBookingType(type, 32)}
-      </div>
+      {/* <div className="w-[60px] h-[60px] bg-offer rounded-lg flex justify-center items-center"> */}
+      {/* {getIconProjectType(type, 32)} */}
+      {/* </div> */}
       <div className="flex flex-col justify-center">
         <h1>{engagementName}</h1>
         <div className="flex flex-row gap-2 items-center">

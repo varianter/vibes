@@ -43,6 +43,8 @@ export function AddEngagementForm({
   const [selectedConsultants, setSelectedConsultants] =
     useState<MultiValue<SelectOption> | null>(null);
 
+  const [project, setProject] = useState<ProjectWithCustomerModel | null>(null);
+
   const customerOptions = customers.map(
     (c) =>
       ({
@@ -98,7 +100,7 @@ export function AddEngagementForm({
   }
 
   async function submitAddEngagementForm(body: EngagementWriteModel) {
-    const url = `/${organisationName}/bemanning/api/engagements`;
+    const url = `/${organisationName}/bemanning/api/projects`;
 
     try {
       const data = await fetch(url, {
@@ -115,15 +117,16 @@ export function AddEngagementForm({
 
   // Handler for form submission
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    // Needed to prevent the form from refreshing the page
+    event.preventDefault();
+    event.stopPropagation();
     // Add your submission logic here
     console.log(event);
     console.log("Form submitted!");
 
     const body: EngagementWriteModel = {
       consultantIds: selectedConsultants?.map((c) => Number(c.value)), // Solid existing
-      customerId: Number(selectedCustomer?.value),
       customerName: selectedCustomer?.label,
-      engagementId: Number(selectedEngagement?.value),
       projectName: selectedEngagement?.label,
       bookingType: radioValue,
       isBillable: isFakturerbar,
@@ -131,10 +134,13 @@ export function AddEngagementForm({
 
     const result = await submitAddEngagementForm(body);
 
+    if (result) {
+      setProject(result);
+    }
+
     console.log(result);
 
     //TODO: Need to close the add engagement modal before opening the large modal
-    event.preventDefault();
     closeEngagementModal();
     openModal();
 
@@ -218,12 +224,7 @@ export function AddEngagementForm({
               </label>
             </div>
 
-            <ActionButton
-              variant="primary"
-              type="submit"
-              fullWidth
-              onClick={() => {}}
-            >
+            <ActionButton variant="primary" fullWidth type="submit">
               Legg til engasjement
             </ActionButton>
           </form>
@@ -232,6 +233,7 @@ export function AddEngagementForm({
       <AddEngagementHoursModal
         modalRef={modalRef}
         weekSpan={8}
+        project={project}
         chosenConsultants={consultants.slice(0, 3)}
       />
     </>
