@@ -34,7 +34,7 @@ export default function StaffingTable() {
         <col span={1} className="w-[190px]" />
         {filteredConsultants
           .at(0)
-          ?.bookings.map((x, index: number) => <col key={index} span={1} />)}
+          ?.bookings.map((_, index) => <col key={index} span={1} />)}
       </colgroup>
       <thead>
         <tr className="sticky -top-6 bg-white z-10">
