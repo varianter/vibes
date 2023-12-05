@@ -1,7 +1,7 @@
 "use client";
 
 import { RefObject } from "react";
-import BaseModal from "../BaseModal";
+import BaseModal from "./BaseModal";
 import { Check } from "react-feather";
 import { EasyModalHeader } from "./EasyModalHeader";
 import ActionButton from "../Buttons/ActionButton";
@@ -42,14 +42,8 @@ function EasyModal(props: EasyModalProps) {
         <div className="space-y-2">{children}</div>
 
         <div className="space-y-2 space-x-2">
-          <ActionButton
-            variant="primary"
-            onClick={handleSave}
-            small
-            fullWidth
-            iconLeft={<Check />}
-          >
-            Lagre
+          <ActionButton variant="primary" onClick={handleSave} fullWidth>
+            Legg til
           </ActionButton>
         </div>
       </div>

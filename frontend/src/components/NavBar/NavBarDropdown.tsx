@@ -27,16 +27,18 @@ export default function NavBarDropdown(props: { initial: string }) {
           </p>
         </button>
         <div
-          className={`absolute right-0 top-[48px] z-50 rounded text-primary bg-white flex flex-col w-[138px] shadow-xl p-1 ${
+          className={`absolute right-0 top-[48px] z-50 rounded-lg text-primary bg-white flex flex-col w-[138px] shadow-xl p-1 ${
             !isOpen && "hidden"
           }`}
         >
           <button
-            className="px-3 py-2 rounded flex flex-row gap-3 hover:bg-primary/10"
+            className="hover:bg-primary/10 px-3 py-2 rounded flex flex-row gap-3 items-center "
             onClick={() => signOut()}
           >
-            <LogOut className="w-4 h-4" />
-            <p className="normal">Logg ut</p>
+            <LogOut className="w-6 h-6" />
+            <p className="h-6 flex items-center normal-semibold text-primary">
+              Logg ut
+            </p>
           </button>
         </div>
       </div>
