@@ -125,7 +125,6 @@ export function AddEngagementForm({
     // Add your submission logic here
 
     const body: EngagementWriteModel = {
-      consultantIds: selectedConsultants?.map((c) => Number(c.value)), // Solid existing
       customerName: selectedCustomer?.label,
       projectName: selectedEngagement?.label,
       projectState: radioValue,

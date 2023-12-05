@@ -7,7 +7,7 @@ public record EngagementPerCustomerReadModel(int CustomerId, string CustomerName
 
 public record EngagementReadModel(int EngagementId, string EngagementName, ProjectState ProjectState, bool IsBillable);
 
-public record EngagementWriteModel(List<int> ConsultantIds, ProjectState ProjectState,
+public record EngagementWriteModel(ProjectState ProjectState,
     bool IsBillable, string ProjectName, string CustomerName);
 
 public record ProjectWithCustomerModel(string ProjectName, string CustomerName, ProjectState ProjectState, bool IsBillable);
