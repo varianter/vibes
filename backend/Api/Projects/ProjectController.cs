@@ -1,3 +1,4 @@
+using Api.Common;
 using Core.DomainModels;
 using Database.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
@@ -39,9 +40,47 @@ public class ProjectController : ControllerBase
                         new EngagementReadModel(e.Id, e.Name, e.State, false)).ToList()))
             .ToList();
     }
+
+    [HttpPut]
+    public ActionResult<ProjectWithCustomerModel> Put([FromRoute] string orgUrlKey,
+        [FromBody] EngagementWriteModel body)
+    {
+        var service = new StorageService(_cache, _context);
+
+        var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
+        if (selectedOrg is null) return BadRequest("Selected org not found");
+
+        var customer = service.UpdateOrCreateCustomer(selectedOrg, body.CustomerName, orgUrlKey);
+
+        var project = _context.Project
+            .Include(p => p.Customer)
+            .SingleOrDefault(p => p.Customer.Name == body.CustomerName
+                                  && p.IsBillable == body.IsBillable
+                                  && p.Name == body.ProjectName
+                                  && p.State == body.BookingType
+            );
+
+        if (project is null)
+        {
+            project = new Project
+            {
+                Customer = customer,
+                State = body.BookingType,
+                Staffings = new List<Staffing>(),
+                Consultants = new List<Consultant>(),
+                Name = body.ProjectName,
+                IsBillable = body.IsBillable
+            };
+            
+            _context.Project.Add(project);
+        }
+
+        _context.SaveChanges();
+        service.ClearConsultantCache(orgUrlKey);
+
+        var responseModel =
+            new ProjectWithCustomerModel(project.Name, customer.Name, project.State, project.IsBillable);
+
+        return Ok(responseModel);
+    }
 }
-
-public record EngagementPerCustomerReadModel(int CustomerId, string CustomerName,
-    List<EngagementReadModel> Engagements);
-
-public record EngagementReadModel(int EngagementId, string EngagementName, ProjectState State, bool IsBillable);
