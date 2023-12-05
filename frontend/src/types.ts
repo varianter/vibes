@@ -150,7 +150,7 @@ export interface ProjectWithConsultantsReadModel {
   projectName?: string | null;
   customerName?: string | null;
   bookingType?: ProjectState;
-  consultants?: ConsultantReadModel[] | null;
+  consultants?: Consultant[] | null;
   isBillable?: boolean;
 }
 
@@ -160,27 +160,4 @@ export interface EngagementWriteModel {
   isBillable?: boolean;
   projectName?: string | null;
   customerName?: string | null;
-}
-
-export enum ProjectState {
-  Closed = "Closed",
-  Order = "Order",
-  Lost = "Lost",
-  Offer = "Offer",
-  Active = "Active",
-}
-
-export interface ConsultantReadModel {
-  /** @format int32 */
-  id?: number;
-  name?: string | null;
-  email?: string | null;
-  competences?: string[] | null;
-  department?: string | null;
-  /** @format int32 */
-  yearsOfExperience?: number;
-  degree?: Degree;
-  bookings?: BookedHoursPerWeek[] | null;
-  detailedBooking?: DetailedBooking[] | null;
-  isOccupied?: boolean;
 }
