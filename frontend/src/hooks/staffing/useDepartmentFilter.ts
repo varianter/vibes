@@ -1,4 +1,4 @@
-import { Department } from "@/types";
+import { DepartmentReadModel } from "@/api-types";
 import { useCallback, useContext, useEffect } from "react";
 import { useUrlRouteFilter } from "./useUrlRouteFilter";
 import { toggleValueFromFilter } from "./UrlStringFilter";
@@ -12,10 +12,10 @@ export function useDepartmentFilter() {
   const filteredDepartments = departmentFilter
     .split(",")
     .map((id) => departments.find((d) => d.id === id))
-    .filter((dept) => dept !== undefined) as Department[];
+    .filter((dept) => dept !== undefined) as DepartmentReadModel[];
 
   const toggleDepartmentFilter = useCallback(
-    (d: Department) => {
+    (d: DepartmentReadModel) => {
       const newDepartmentFilter = toggleValueFromFilter(departmentFilter, d.id);
       updateRoute({ departments: newDepartmentFilter });
     },

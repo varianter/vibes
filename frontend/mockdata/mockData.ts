@@ -1,25 +1,25 @@
 import {
-  Consultant,
-  Department,
+  ConsultantReadModel,
+  Degree,
+  DepartmentReadModel,
   EngagementPerCustomerReadModel,
-  EngagementReadModel,
-  Organisation,
+  OrganisationReadModel,
   WeeklyBookingReadModel,
-} from "@/types";
+} from "@/api-types";
 
 const MockWeeklyBookingReadModel: WeeklyBookingReadModel = {
   totalHolidayHours: 0,
   totalOverbooking: 0,
-  totalPlannedAbstences: 0,
+  totalPlannedAbsences: 0,
   totalSellableTime: 0,
   totalBillable: 0,
   totalOffered: 0,
   totalVacationHours: 0,
 };
 
-export const MockConsultants: Consultant[] = [
+export const MockConsultants: ConsultantReadModel[] = [
   {
-    id: "id",
+    id: 1,
     name: "Test Consultant",
     email: "test@company.io",
     competences: ["Frontend"],
@@ -30,22 +30,24 @@ export const MockConsultants: Consultant[] = [
         weekNumber: 10,
         dateString: "",
         bookingModel: MockWeeklyBookingReadModel,
+        sortableWeek: 202310,
       },
     ],
     yearsOfExperience: 23,
     detailedBooking: [],
     isOccupied: true,
+    degree: Degree.Bachelor,
   },
 ];
 
-export const MockDepartments: Department[] = [
+export const MockDepartments: DepartmentReadModel[] = [
   {
     id: "myDepartment",
     name: "My Department",
   },
 ];
 
-export const MockOrganisations: Organisation[] = [
+export const MockOrganisations: OrganisationReadModel[] = [
   {
     name: "My Organisation",
     urlKey: "my-org",

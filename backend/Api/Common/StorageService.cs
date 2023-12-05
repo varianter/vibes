@@ -53,21 +53,22 @@ public class StorageService
 
         return consultant;
     }
-    
+
     public Consultant LoadConsultantForWeekSet(int consultantId, List<Week> weeks)
-    { 
+    {
         var consultant = _dbContext.Consultant
             .Include(c => c.Department)
             .ThenInclude(d => d.Organization)
             .Single(c => c.Id == consultantId);
-        
+
 
         consultant.Staffings = _dbContext.Staffing.Where(staffing =>
                 weeks.Contains(staffing.Week) && staffing.ConsultantId == consultantId).Include(s => s.Project)
             .ThenInclude(p => p.Customer).ToList();
 
         consultant.PlannedAbsences = _dbContext.PlannedAbsence
-            .Where(absence => weeks.Contains(absence.Week) && absence.ConsultantId == consultantId).Include(a => a.Absence)
+            .Where(absence => weeks.Contains(absence.Week) && absence.ConsultantId == consultantId)
+            .Include(a => a.Absence)
             .ToList();
 
         consultant.Vacations = _dbContext.Vacation.Where(vacation => vacation.ConsultantId == consultantId).ToList();
@@ -128,16 +129,10 @@ public class StorageService
         return hydratedConsultants;
     }
 
-    private async Task<List<Consultant>> LoadConsultantsFromDbAsync(string orgUrlKey)
-    {
-        return await Task.Run(() => LoadConsultantsFromDb(orgUrlKey));
-    }
-
     private Staffing CreateStaffing(StaffingKey staffingKey, double hours)
     {
-        var consultant = _dbContext.Consultant.Find(staffingKey.ConsultantId);
-        var project = _dbContext.Project
-            .Find(staffingKey.ProjectId);
+        var consultant = _dbContext.Consultant.Single(c => c.Id == staffingKey.ConsultantId);
+        var project = _dbContext.Project.Single(p => p.Id == staffingKey.ProjectId);
 
         var staffing = new Staffing
         {
@@ -153,9 +148,8 @@ public class StorageService
 
     private PlannedAbsence CreateAbsence(PlannedAbsenceKey plannedAbsenceKey, double hours)
     {
-        var consultant = _dbContext.Consultant.Find(plannedAbsenceKey.ConsultantId);
-        var absence = _dbContext.Absence
-            .Find(plannedAbsenceKey.AbsenceId);
+        var consultant = _dbContext.Consultant.Single(c => c.Id == plannedAbsenceKey.ConsultantId);
+        var absence = _dbContext.Absence.Single(a => a.Id == plannedAbsenceKey.AbsenceId);
 
         var plannedAbsence = new PlannedAbsence
         {
@@ -184,7 +178,6 @@ public class StorageService
 
         _dbContext.SaveChanges();
         ClearConsultantCache(orgUrlKey);
-
     }
 
 
@@ -204,37 +197,38 @@ public class StorageService
         ClearConsultantCache(orgUrlKey);
     }
 
-    public void UpdateOrCreateStaffings(int consultantId, int projectId, List<Week> weeks, double hours, string orgUrlKey)
+    public void UpdateOrCreateStaffings(int consultantId, int projectId, List<Week> weeks, double hours,
+        string orgUrlKey)
     {
-        var consultant = _dbContext.Consultant.Find(consultantId);
-        var project = _dbContext.Project
-            .Find(projectId);
+        var consultant = _dbContext.Consultant.Single(c => c.Id == consultantId);
+        var project = _dbContext.Project.Single(p => p.Id == projectId);
 
         var org = _dbContext.Organization.FirstOrDefault(o => o.UrlKey == orgUrlKey);
-        
+
         foreach (var week in weeks)
         {
             var newHours = hours;
             if (org != null)
             {
                 var holidayHours = org.GetTotalHolidayHoursOfWeek(week);
-                var vacations = _dbContext.Vacation.Where(v=>v.ConsultantId.Equals(consultantId)).ToList();
-                var vacationHours = vacations.Count(v=> week.ContainsDate(v.Date)) * org.HoursPerWorkday;
-                    var plannedAbsenceHours = _dbContext.PlannedAbsence.Where(pa => pa.Week.Equals(week) && pa.ConsultantId.Equals(consultantId))
+                var vacations = _dbContext.Vacation.Where(v => v.ConsultantId.Equals(consultantId)).ToList();
+                var vacationHours = vacations.Count(v => week.ContainsDate(v.Date)) * org.HoursPerWorkday;
+                var plannedAbsenceHours = _dbContext.PlannedAbsence
+                    .Where(pa => pa.Week.Equals(week) && pa.ConsultantId.Equals(consultantId))
                     .Select(pa => pa.Hours).Sum();
 
                 var total = holidayHours + vacationHours + plannedAbsenceHours;
 
-                newHours = (hours+total > org.HoursPerWorkday*5) 
-                    ? Math.Max(org.HoursPerWorkday*5 - total, 0) 
+                newHours = hours + total > org.HoursPerWorkday * 5
+                    ? Math.Max(org.HoursPerWorkday * 5 - total, 0)
                     : hours;
             }
+
             var staffing = _dbContext.Staffing
                 .FirstOrDefault(s => s.ProjectId.Equals(projectId)
                                      && s.ConsultantId.Equals(consultantId)
                                      && s.Week.Equals(week));
             if (staffing is null)
-            {
                 _dbContext.Add(new Staffing
                 {
                     ProjectId = projectId,
@@ -242,23 +236,22 @@ public class StorageService
                     ConsultantId = consultantId,
                     Consultant = consultant,
                     Hours = newHours,
-                    Week = week,
+                    Week = week
                 });
-            }
             else
                 staffing.Hours = newHours;
         }
+
         _dbContext.SaveChanges();
         ClearConsultantCache(orgUrlKey);
-
     }
 
 
-    public void UpdateOrCreatePlannedAbsences(int consultantId, int absenceId, List<Week> weeks, double hours, string orgUrlKey)
+    public void UpdateOrCreatePlannedAbsences(int consultantId, int absenceId, List<Week> weeks, double hours,
+        string orgUrlKey)
     {
-        var consultant = _dbContext.Consultant.Find(consultantId);
-        var absence = _dbContext.Absence
-            .Find(absenceId);
+        var consultant = _dbContext.Consultant.Single(c => c.Id == consultantId);
+        var absence = _dbContext.Absence.Single(a => a.Id == absenceId);
 
         var org = _dbContext.Organization.FirstOrDefault(o => o.UrlKey == orgUrlKey);
         foreach (var week in weeks)
@@ -268,17 +261,16 @@ public class StorageService
             {
                 var holidayHours = org.GetTotalHolidayHoursOfWeek(week);
                 newHours = holidayHours + hours > org.HoursPerWorkday * 5
-                    ? Math.Max(org.HoursPerWorkday*5 - holidayHours, 0)
+                    ? Math.Max(org.HoursPerWorkday * 5 - holidayHours, 0)
                     : hours;
             }
-            
+
             var plannedAbsence = _dbContext.PlannedAbsence
                 .FirstOrDefault(pa => pa.AbsenceId.Equals(absenceId)
                                       && pa.ConsultantId.Equals(consultantId)
                                       && pa.Week.Equals(week));
-            
+
             if (plannedAbsence is null)
-            {   
                 _dbContext.Add(new PlannedAbsence
                 {
                     AbsenceId = absenceId,
@@ -288,14 +280,14 @@ public class StorageService
                     Hours = newHours,
                     Week = week
                 });
-            }
             else
                 plannedAbsence.Hours = newHours;
         }
-        
+
         _dbContext.SaveChanges();
         ClearConsultantCache(orgUrlKey);
     }
+
     public Customer UpdateOrCreateCustomer(Organization org, string customerName, string orgUrlKey)
     {
         var customer = _dbContext.Customer.SingleOrDefault(c => c.Name == customerName);
@@ -311,6 +303,7 @@ public class StorageService
 
             _dbContext.Customer.Add(customer);
         }
+
         _dbContext.SaveChanges();
         ClearConsultantCache(orgUrlKey);
 

@@ -7,6 +7,7 @@ import InfoPill from "./Staffing/InfoPill";
 import { Calendar } from "react-feather";
 import StaffingSums from "./StaffingSums";
 import React from "react";
+import { BookedHoursPerWeek } from "@/api-types";
 
 export default function StaffingTable() {
   const {
@@ -33,7 +34,7 @@ export default function StaffingTable() {
         <col span={1} className="w-[190px]" />
         {filteredConsultants
           .at(0)
-          ?.bookings?.map((booking, index) => <col key={index} span={1} />)}
+          ?.bookings.map((x, index: number) => <col key={index} span={1} />)}
       </colgroup>
       <thead>
         <tr className="sticky -top-6 bg-white z-10">
@@ -45,55 +46,61 @@ export default function StaffingTable() {
               </p>
             </div>
           </th>
-          {filteredConsultants.at(0)?.bookings?.map((booking) => (
-            <th key={booking.weekNumber} className=" px-2 py-1 pt-3 ">
-              <div className="flex flex-col gap-1">
-                {isCurrentWeek(booking.weekNumber, booking.year) ? (
-                  <div className="flex flex-row gap-2 items-center justify-end">
-                    {booking.bookingModel.totalHolidayHours > 0 && (
-                      <InfoPill
-                        text={booking.bookingModel.totalHolidayHours.toFixed(1)}
-                        icon={<Calendar size="12" />}
-                        colors={"bg-holiday text-holiday_darker w-fit"}
-                        variant={weekSpan < 24 ? "wide" : "medium"}
-                      />
-                    )}
-                    <div className="h-2 w-2 rounded-full bg-primary" />
+          {filteredConsultants
+            .at(0)
+            ?.bookings.map((booking: BookedHoursPerWeek) => (
+              <th key={booking.weekNumber} className=" px-2 py-1 pt-3 ">
+                <div className="flex flex-col gap-1">
+                  {isCurrentWeek(booking.weekNumber, booking.year) ? (
+                    <div className="flex flex-row gap-2 items-center justify-end">
+                      {booking.bookingModel.totalHolidayHours > 0 && (
+                        <InfoPill
+                          text={booking.bookingModel.totalHolidayHours.toFixed(
+                            1,
+                          )}
+                          icon={<Calendar size="12" />}
+                          colors={"bg-holiday text-holiday_darker w-fit"}
+                          variant={weekSpan < 24 ? "wide" : "medium"}
+                        />
+                      )}
+                      <div className="h-2 w-2 rounded-full bg-primary" />
 
-                    <p className="normal-medium text-right">
-                      {booking.weekNumber}
-                    </p>
-                  </div>
-                ) : (
-                  <div
-                    className={`flex justify-end ${
-                      weekSpan >= 26
-                        ? "min-h-[30px] flex-col mb-2 gap-[1px] items-end"
-                        : "flex-row gap-2"
+                      <p className="normal-medium text-right">
+                        {booking.weekNumber}
+                      </p>
+                    </div>
+                  ) : (
+                    <div
+                      className={`flex justify-end ${
+                        weekSpan >= 26
+                          ? "min-h-[30px] flex-col mb-2 gap-[1px] items-end"
+                          : "flex-row gap-2"
+                      }`}
+                    >
+                      {booking.bookingModel.totalHolidayHours > 0 && (
+                        <InfoPill
+                          text={booking.bookingModel.totalHolidayHours.toFixed(
+                            1,
+                          )}
+                          icon={<Calendar size="12" />}
+                          colors={"bg-holiday text-holiday_darker w-fit"}
+                          variant={weekSpan < 24 ? "wide" : "medium"}
+                        />
+                      )}
+                      <p className="normal text-right">{booking.weekNumber}</p>
+                    </div>
+                  )}
+
+                  <p
+                    className={`xsmall text-black/75 text-right ${
+                      weekSpan >= 26 && "hidden"
                     }`}
                   >
-                    {booking.bookingModel.totalHolidayHours > 0 && (
-                      <InfoPill
-                        text={booking.bookingModel.totalHolidayHours.toFixed(1)}
-                        icon={<Calendar size="12" />}
-                        colors={"bg-holiday text-holiday_darker w-fit"}
-                        variant={weekSpan < 24 ? "wide" : "medium"}
-                      />
-                    )}
-                    <p className="normal text-right">{booking.weekNumber}</p>
-                  </div>
-                )}
-
-                <p
-                  className={`xsmall text-black/75 text-right ${
-                    weekSpan >= 26 && "hidden"
-                  }`}
-                >
-                  {booking.dateString}
-                </p>
-              </div>
-            </th>
-          ))}
+                    {booking.dateString}
+                  </p>
+                </div>
+              </th>
+            ))}
         </tr>
       </thead>
       <tbody>

@@ -1,10 +1,10 @@
 import {
   BookingType,
-  Consultant,
+  ConsultantReadModel,
   DetailedBooking,
-  updateBookingHoursBody,
+  StaffingWriteModel,
   WeeklyHours,
-} from "@/types";
+} from "@/api-types";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   getColorByStaffingType,
@@ -16,7 +16,7 @@ import { usePathname } from "next/navigation";
 import { Minus, Plus } from "react-feather";
 
 export function DetailedBookingRows(props: {
-  consultant: Consultant;
+  consultant: ConsultantReadModel;
   detailedBooking: DetailedBooking;
 }) {
   const { consultant, detailedBooking } = props;
@@ -87,21 +87,22 @@ interface updateBookingHoursProps {
   hours: number;
   bookingType: BookingType;
   organisationUrl: string;
-  consultantId: string;
-  bookingId: string;
+  consultantId: number;
+  bookingId: number;
   startWeek: number;
   endWeek?: number;
 }
 
 async function setDetailedBookingHours(props: updateBookingHoursProps) {
   const url = `/${props.organisationUrl}/bemanning/api/updateHours`;
-  const body: updateBookingHoursBody = {
+  const body: StaffingWriteModel = {
     hours: props.hours,
-    bookingType: props.bookingType,
+    type: props.bookingType,
     consultantId: props.consultantId,
-    bookingId: props.bookingId,
+    engagementId: props.bookingId,
     startWeek: props.startWeek,
-    endWeek: props.endWeek,
+    startYear: 2023, // TODO: Fix mismatch between front- and backend types
+    //endWeek: props.endWeek,
   };
 
   try {
@@ -109,7 +110,7 @@ async function setDetailedBookingHours(props: updateBookingHoursProps) {
       method: "put",
       body: JSON.stringify(body),
     });
-    return (await data.json()) as Consultant;
+    return (await data.json()) as ConsultantReadModel;
   } catch (e) {
     console.error("Error updating staffing", e);
   }
@@ -130,7 +131,7 @@ function DetailedBookingCell({
 }: {
   detailedBooking: DetailedBooking;
   detailedBookingHours: WeeklyHours;
-  consultant: Consultant;
+  consultant: ConsultantReadModel;
   hourDragValue: number | undefined;
   currentDragWeek: number | undefined;
   startDragWeek: number | undefined;

@@ -1,6 +1,6 @@
 import { putWithToken } from "@/data/apiCallsWithToken";
 import { parseYearWeekFromString } from "@/data/urlUtils";
-import { StaffingWriteModel, updateBookingHoursBody } from "@/types";
+import { SeveralStaffingWriteModel, StaffingWriteModel } from "@/api-types";
 import { NextResponse } from "next/server";
 
 export async function PUT(
@@ -8,7 +8,7 @@ export async function PUT(
   { params }: { params: { organisation: string } },
 ) {
   const orgUrlKey = params.organisation;
-  const requestBody = (await request.json()) as updateBookingHoursBody;
+  const requestBody = (await request.json()) as SeveralStaffingWriteModel;
 
   const startWeek = parseYearWeekFromString(
     requestBody.startWeek.toString() || undefined,
@@ -18,10 +18,10 @@ export async function PUT(
     requestBody.endWeek?.toString() || undefined,
   );
 
-  const body: StaffingWriteModel = {
-    type: requestBody.bookingType,
+  const body: SeveralStaffingWriteModel = {
+    type: requestBody.type,
     consultantId: Number(requestBody.consultantId),
-    engagementId: Number(requestBody.bookingId),
+    engagementId: Number(requestBody.engagementId),
     startYear: startWeek?.year ?? 0,
     startWeek: startWeek?.weekNumber ?? 0,
     endYear: endWeek?.year ?? 0,

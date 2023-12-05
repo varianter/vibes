@@ -22,8 +22,7 @@ builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServe
 builder.Services.AddMemoryCache();
 
 builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-        { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
+    .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 builder.Services.AddEndpointsApiExplorer();
 
 
@@ -34,6 +33,7 @@ builder.Services.AddSwaggerGen(genOptions =>
 {
     genOptions.SwaggerDoc("v0", new OpenApiInfo { Title = "Vibes API", Version = "v0" });
     genOptions.ConfigureSwaggerAuthentication(adOptions);
+    genOptions.SupportNonNullableReferenceTypes();
 });
 
 var app = builder.Build();

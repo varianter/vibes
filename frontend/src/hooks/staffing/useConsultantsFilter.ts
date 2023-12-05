@@ -1,10 +1,11 @@
-import { YearRange, Consultant } from "@/types";
+import { YearRange } from "@/types";
 import { useUrlRouteFilter } from "./useUrlRouteFilter";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { useContext, useEffect, useState } from "react";
 import { useYearsXpFilter } from "./useYearsXpFilter";
 import { useAvailabilityFilter } from "./useAvailabilityFilter";
 import { usePathname } from "next/navigation";
+import { ConsultantReadModel } from "@/api-types";
 
 async function getNumWorkHours(
   setNumWorkHours: Function,
@@ -73,7 +74,7 @@ function filterConsultants({
   search: string;
   departmentFilter: string;
   yearFilter: YearRange[];
-  consultants: Consultant[];
+  consultants: ConsultantReadModel[];
   availabilityFilterOn: Boolean;
 }) {
   let newFilteredConsultants = consultants;
@@ -102,7 +103,10 @@ function filterConsultants({
   return newFilteredConsultants;
 }
 
-function inYearRanges(consultant: Consultant, yearRanges: YearRange[]) {
+function inYearRanges(
+  consultant: ConsultantReadModel,
+  yearRanges: YearRange[],
+) {
   for (const range of yearRanges) {
     if (
       consultant.yearsOfExperience >= range.start &&
@@ -119,7 +123,7 @@ interface WeeklyTotal {
 }
 
 function setWeeklyTotalBillable(
-  filteredConsultants: Consultant[],
+  filteredConsultants: ConsultantReadModel[],
 ): WeeklyTotal {
   const weeklyTotalBillable = new Map<number, number>();
   const weeklyTotalBillableAndOffered = new Map<number, number>();
@@ -159,7 +163,7 @@ function setWeeklyTotalBillable(
 }
 
 function setWeeklyInvoiceRate(
-  filteredConsultants: Consultant[],
+  filteredConsultants: ConsultantReadModel[],
   weeklyTotalBillable: Map<number, number>,
   numWorkHours: number,
 ) {
@@ -174,7 +178,7 @@ function setWeeklyInvoiceRate(
           let consultantAvailableWeekHours =
             numWorkHours -
             booking.bookingModel.totalHolidayHours -
-            booking.bookingModel.totalPlannedAbstences -
+            booking.bookingModel.totalPlannedAbsences -
             booking.bookingModel.totalVacationHours;
 
           totalAvailableWeekHours += consultantAvailableWeekHours;

@@ -1,16 +1,16 @@
 "use client";
 
 import {
-  Consultant,
-  Department,
+  ConsultantReadModel,
+  DepartmentReadModel,
   EngagementPerCustomerReadModel,
-} from "@/types";
+} from "@/api-types";
 import React, { createContext, ReactNode, useEffect, useState } from "react";
 
 type FilterContextType = {
-  consultants: Consultant[];
-  setConsultants: React.Dispatch<React.SetStateAction<Consultant[]>>;
-  departments: Department[];
+  consultants: ConsultantReadModel[];
+  setConsultants: React.Dispatch<React.SetStateAction<ConsultantReadModel[]>>;
+  departments: DepartmentReadModel[];
   customers: EngagementPerCustomerReadModel[];
   isDisabledHotkeys: Boolean;
   setIsDisabledHotkeys: React.Dispatch<React.SetStateAction<boolean>>;
@@ -26,8 +26,8 @@ export const FilteredContext = createContext<FilterContextType>({
 });
 
 export function ConsultantFilterProvider(props: {
-  consultants: Consultant[];
-  departments: Department[];
+  consultants: ConsultantReadModel[];
+  departments: DepartmentReadModel[];
   customers: EngagementPerCustomerReadModel[];
   children: ReactNode;
 }) {

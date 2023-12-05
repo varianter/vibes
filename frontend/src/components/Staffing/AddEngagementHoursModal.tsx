@@ -1,5 +1,5 @@
 import React, { RefObject, useEffect, useState } from "react";
-import { BookingType, Consultant } from "@/types";
+import { BookingType, ConsultantReadModel } from "@/api-types";
 import { DateTime } from "luxon";
 import { generateWeekList } from "@/components/Staffing/helpers/GenerateWeekList";
 import { LargeModal } from "@/components/Modals/LargeModal";
@@ -14,7 +14,7 @@ export function AddEngagementHoursModal({
 }: {
   modalRef: RefObject<HTMLDialogElement>;
   weekSpan: number;
-  chosenConsultants: Consultant[];
+  chosenConsultants: ConsultantReadModel[];
 }) {
   const weekSpanOptions = ["8 uker", "12 uker", "26 uker"];
   const [selectedWeekSpan, setSelectedWeekSpan] = useState<number>(8);
@@ -158,7 +158,7 @@ function AddEngagementHoursRow({
   consultant,
   weekList,
 }: {
-  consultant: Consultant;
+  consultant: ConsultantReadModel;
   weekList: DateTime[];
 }) {
   return (

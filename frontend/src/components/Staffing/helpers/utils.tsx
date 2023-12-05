@@ -1,4 +1,4 @@
-import { BookingType, Consultant, DetailedBooking } from "@/types";
+import { BookingType, ConsultantReadModel, DetailedBooking } from "@/api-types";
 import React, { ReactElement } from "react";
 import { Briefcase, Coffee, FileText, Moon, Sun } from "react-feather";
 import { InfoPillVariant } from "@/components/Staffing/InfoPill";
@@ -67,7 +67,10 @@ export function getInfopillVariantByColumnCount(
   }
 }
 
-export function upsertConsultantBooking(old: Consultant[], res?: Consultant) {
+export function upsertConsultantBooking(
+  old: ConsultantReadModel[],
+  res?: ConsultantReadModel,
+) {
   if (!res) return old;
 
   const consultantToUpdate = old.find((c) => c.id === res.id);
@@ -103,7 +106,7 @@ export function upsertConsultantBooking(old: Consultant[], res?: Consultant) {
     });
   }
 
-  const consultantIndex = old.findIndex((c) => c.id === `${res.id}`);
+  const consultantIndex = old.findIndex((c) => c.id === res.id);
   old[consultantIndex] = consultantToUpdate;
 
   return [...old];

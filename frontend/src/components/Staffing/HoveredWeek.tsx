@@ -1,4 +1,4 @@
-import { BookingType, Consultant } from "@/types";
+import { BookingType, ConsultantReadModel } from "@/api-types";
 import {
   getColorByStaffingType,
   getIconByBookingType,
@@ -8,7 +8,7 @@ import React from "react";
 
 export function HoveredWeek(props: {
   hoveredRowWeek: number;
-  consultant: Consultant;
+  consultant: ConsultantReadModel;
   isLastCol: boolean;
   isSecondLastCol: boolean;
   columnCount: number;
@@ -35,7 +35,7 @@ export function HoveredWeek(props: {
         type: BookingType.Available,
         projectName: "",
         customerName: "Ledig Tid",
-        projectId: "",
+        projectId: 0,
       },
       hours: [
         {

@@ -1,8 +1,8 @@
 import {
-  Consultant,
-  Department,
+  ConsultantReadModel,
+  DepartmentReadModel,
   EngagementPerCustomerReadModel,
-} from "@/types";
+} from "@/api-types";
 import { ConsultantFilterProvider } from "@/hooks/ConsultantFilterProvider";
 import { parseYearWeekFromUrlString } from "@/data/urlUtils";
 import React from "react";
@@ -22,7 +22,7 @@ export default async function Bemanning({
   const weekSpan = searchParams.weekSpan || undefined;
 
   const consultants =
-    (await fetchWithToken<Consultant[]>(
+    (await fetchWithToken<ConsultantReadModel[]>(
       `${params.organisation}/consultants${
         selectedWeek
           ? `?Year=${selectedWeek.year}&Week=${selectedWeek.weekNumber}`
@@ -31,7 +31,7 @@ export default async function Bemanning({
     )) ?? [];
 
   const departments =
-    (await fetchWithToken<Department[]>(
+    (await fetchWithToken<DepartmentReadModel[]>(
       `organisations/${params.organisation}/departments`,
     )) ?? [];
 

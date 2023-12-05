@@ -1,7 +1,7 @@
 import React from "react";
 import Select, { MultiValue } from "react-select";
 
-export type SelectOption = { value: string; label: string };
+export type SelectOption = { value: string | number; label: string };
 
 export default function ReactSelect({
   options,

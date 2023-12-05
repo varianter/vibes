@@ -1,9 +1,13 @@
 "use client";
-import { Organisation } from "@/types";
+import { OrganisationReadModel } from "@/api-types";
 import ActionButton from "./Buttons/ActionButton";
 import { setOrganisationInCookie } from "../hooks/setOrganisationInCookies";
 
-export default function OrganisationButton({ org }: { org: Organisation }) {
+export default function OrganisationButton({
+  org,
+}: {
+  org: OrganisationReadModel;
+}) {
   return (
     <ActionButton
       variant="secondary"

@@ -1,4 +1,4 @@
-import { BookingType } from "@/types";
+import { BookingType } from "@/api-types";
 
 import { getIconByBookingType } from "@/components/Staffing/helpers/utils";
 
