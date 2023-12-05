@@ -42,11 +42,11 @@ public class ProjectController : ControllerBase
     }
 
     [HttpPatch]
-    public ActionResult<EngagementWriteModel> Patch([FromRoute] string orgUrlKey, [FromBody] EngagementWriteModel engagementWriteModel)
+    public ActionResult<ProjectWithCustomerModel> Patch([FromRoute] string orgUrlKey, [FromBody] EngagementWriteModel engagementWriteModel)
     {
         var selectedOrgId = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         var customer = _context.Customer.SingleOrDefault(c => c.Name == engagementWriteModel.CustomerName);
-        var engagement = _context.Project.SingleOrDefault(p => p.Name == engagementWriteModel.EngagementName && p.Customer == customer);
+        var engagement = _context.Project.SingleOrDefault(p => p.Name == engagementWriteModel.ProjectName && p.Customer == customer);
         if (selectedOrgId is null || customer is null || engagement is null) return BadRequest();
         
         var service = new StorageService(_cache, _context);
@@ -60,17 +60,9 @@ public class ProjectController : ControllerBase
             throw;
         }
 
-        return new EngagementWriteModel(engagement.Id, engagement.Name, engagementWriteModel.CustomerName, engagement.State, false);
+        return new ProjectWithCustomerModel(engagement.Name, engagementWriteModel.CustomerName, engagement.State, false);
 
     }
-
-
-public record EngagementPerCustomerReadModel(int CustomerId, string CustomerName,
-    List<EngagementReadModel> Engagements);
-
-public record EngagementReadModel(int EngagementId, string EngagementName, ProjectState State, bool IsBillable);
-
-public record EngagementWriteModel(int? EngagementId, string EngagementName, string CustomerName, ProjectState State, bool? IsBillable);
 
 
     [HttpPut]

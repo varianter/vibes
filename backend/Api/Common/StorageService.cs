@@ -320,7 +320,7 @@ public class StorageService
 
     public Project UpdateProjectState(Project project, EngagementWriteModel engagementWriteModel, string orgUrlKey)
     {
-        project.State = engagementWriteModel.State;
+        project.State = engagementWriteModel.BookingType;
         _dbContext.SaveChanges();
         _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
 
