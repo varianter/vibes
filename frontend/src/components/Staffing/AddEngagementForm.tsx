@@ -236,7 +236,9 @@ export function AddEngagementForm({
         modalRef={modalRef}
         weekSpan={8}
         project={project}
-        chosenConsultants={consultants.slice(0, 3)}
+        chosenConsultants={consultants.filter(
+          (c) => selectedConsultants?.some((sc) => sc.value == c.id.toString()),
+        )}
       />
     </>
   );
