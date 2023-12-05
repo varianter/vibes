@@ -1,5 +1,4 @@
 using Api.Organisation;
-using Api.Projects;
 using Core.DomainModels;
 using Database.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
