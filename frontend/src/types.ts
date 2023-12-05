@@ -146,11 +146,10 @@ export interface updateBookingHoursBody {
   endWeek?: number;
 }
 
-export interface ProjectWithConsultantsReadModel {
+export interface ProjectWithCustomerModel {
   projectName?: string | null;
   customerName?: string | null;
   bookingType?: ProjectState;
-  consultants?: Consultant[] | null;
   isBillable?: boolean;
 }
 

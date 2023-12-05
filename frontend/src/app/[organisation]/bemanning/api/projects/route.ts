@@ -1,5 +1,5 @@
 import { putWithToken } from "@/data/apiCallsWithToken";
-import { EngagementWriteModel, ProjectWithConsultantsReadModel } from "@/types";
+import { EngagementWriteModel, ProjectWithCustomerModel } from "@/types";
 import { NextResponse } from "next/server";
 
 export async function PUT(
@@ -10,7 +10,7 @@ export async function PUT(
   const requestBody = (await request.json()) as EngagementWriteModel;
 
   const engagement = await putWithToken<
-    ProjectWithConsultantsReadModel,
+    ProjectWithCustomerModel,
     EngagementWriteModel
   >(endpointUrl, requestBody);
 
