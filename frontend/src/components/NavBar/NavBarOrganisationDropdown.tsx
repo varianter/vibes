@@ -5,6 +5,7 @@ import { Organisation } from "@/types";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Check, ChevronDown, ChevronUp } from "react-feather";
+import { setOrganisationInCookie } from "../../hooks/setOrganisationInCookies";
 
 export default function NavBarOrganisationDropdown({
   organisations,
@@ -54,9 +55,7 @@ export default function NavBarOrganisationDropdown({
                   key={index}
                   className="hover:bg-primary/10 px-3 py-2 rounded flex flex-row justify-between items-center "
                   href={`/${organisation.urlKey}/bemanning`}
-                  onClick={() =>
-                    localStorage.setItem("chosenUrlKey", organisation.urlKey)
-                  }
+                  onClick={() => setOrganisationInCookie(organisation.urlKey)}
                 >
                   <p className="h-6 flex items-center normal-semibold text-primary">
                     {organisation.name}
