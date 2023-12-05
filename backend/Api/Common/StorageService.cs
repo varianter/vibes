@@ -312,36 +312,4 @@ public class StorageService
 
         return customer;
     }
-
-    public Project UpdateOrCreateProject(Customer customer, EngagementWriteModel payload, string orgUrlKey)
-    {
-        var project = _dbContext.Project.SingleOrDefault(p => p.Name == payload.ProjectName);
-        
-        if (project is null)
-        {
-                project = new Project
-                {
-                    Customer = customer,
-                    State = payload.BookingType,
-                    Staffings = new List<Staffing>(),
-                    Consultants = new List<Consultant>(),
-                    Name = payload.ProjectName,
-                    IsBillable = payload.IsBillable
-                };
-
-                _dbContext.Project.Add(project);
-        }
-        
-        else
-        {
-            project.State = payload.BookingType;
-            project.IsBillable = payload.IsBillable;
-        }
-        
-        _dbContext.SaveChanges();
-        _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
-
-        return project;
-    }
-
 }

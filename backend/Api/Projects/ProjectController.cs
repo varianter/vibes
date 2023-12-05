@@ -44,7 +44,7 @@ public class ProjectController : ControllerBase
     }
 
     [HttpPut]
-    public ActionResult<ProjectWithConsultantsReadModel> Put([FromRoute] string orgUrlKey,
+    public ActionResult<ProjectWithCustomerModel> Put([FromRoute] string orgUrlKey,
         [FromBody] EngagementWriteModel body)
     {
         var service = new StorageService(_cache, _context);
@@ -53,65 +53,36 @@ public class ProjectController : ControllerBase
         if (selectedOrg is null) return BadRequest("Selected org not found");
 
         var customer = service.UpdateOrCreateCustomer(selectedOrg, body.CustomerName, orgUrlKey);
-        var project = service.UpdateOrCreateProject(customer, body, orgUrlKey);
 
-        var consultants = _context.Consultant.Where(c => body.ConsultantIds.Contains(c.Id)).ToList();
-        if (!consultants.Any()) return BadRequest("No consultant-ids match in db");
+        var project = _context.Project
+            .Include(p => p.Customer)
+            .SingleOrDefault(p => p.Customer.Name == body.CustomerName
+                                  && p.IsBillable == body.IsBillable
+                                  && p.Name == body.ProjectName
+                                  && p.State == body.BookingType
+            );
 
-        // Adding consultants to project
-        // TODO : What if consultants exists from before on project?
-        project.Consultants.AddRange(consultants);
-
-        var nextWeekSet = FillProjectWeekWithConsultants(consultants, project);
+        if (project is null)
+        {
+            project = new Project
+            {
+                Customer = customer,
+                State = body.BookingType,
+                Staffings = new List<Staffing>(),
+                Consultants = new List<Consultant>(),
+                Name = body.ProjectName,
+                IsBillable = body.IsBillable
+            };
+            
+            _context.Project.Add(project);
+        }
 
         _context.SaveChanges();
         _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
 
-        var readModels = new ReadModelFactory(service).GetConsultantReadModelsForWeeks(orgUrlKey, nextWeekSet);
-
-        var filteredConsultants = readModels.Where(c => body.ConsultantIds.Contains(c.Id)).ToList();
-
-        var responseModel = new ProjectWithConsultantsReadModel(project.Name, customer.Name, project.State,
-            filteredConsultants, project.IsBillable);
+        var responseModel =
+            new ProjectWithCustomerModel(project.Name, customer.Name, project.State, project.IsBillable);
 
         return Ok(responseModel);
     }
-
-    private List<Week> FillProjectWeekWithConsultants(List<Consultant> consultants, Project project)
-    {
-        var thisWeek = Week.FromDateTime(DateTime.Now);
-        var nextWeekSet = thisWeek.GetNextWeeks(8);
-
-        const double emptyHours = 37.5;
-
-        foreach (var consultant in consultants)
-        {
-            foreach (var week in nextWeekSet)
-            {
-                var staffing = _context.Staffing
-                    .FirstOrDefault(s => s.ProjectId.Equals(project.Id)
-                                         && s.ConsultantId.Equals(consultant.Id)
-                                         && s.Week.Equals(week));
-                if (staffing is null)
-                {
-                    _context.Add(new Staffing
-                    {
-                        ProjectId = project.Id,
-                        Project = project,
-                        ConsultantId = consultant.Id,
-                        Consultant = consultant,
-                        Week = week,
-                        Hours = emptyHours
-                    });
-                }
-                else
-                    staffing.Hours = emptyHours;
-            }
-        }
-
-        return nextWeekSet;
-    }
 }
-
-
-
