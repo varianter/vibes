@@ -1,5 +1,6 @@
 import { BookingType } from "@/types";
-import { getIconByBookingType } from "../ConsultantRow";
+
+import { getIconByBookingType } from "@/components/Staffing/helpers/utils";
 
 export function LargeModalHeader({
   engagementName,

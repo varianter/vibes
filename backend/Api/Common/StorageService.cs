@@ -19,6 +19,11 @@ public class StorageService
         _dbContext = context;
     }
 
+    public void ClearConsultantCache(string orgUrlKey)
+    {
+        _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
+    }
+
     public List<Consultant> LoadConsultants(string orgUrlKey)
     {
         if (_cache.TryGetValue<List<Consultant>>($"{ConsultantCacheKey}/{orgUrlKey}", out var consultants))
@@ -179,7 +184,7 @@ public class StorageService
             staffing.Hours = hours;
 
         _dbContext.SaveChanges();
-        _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
+        ClearConsultantCache(orgUrlKey);
 
     }
 
@@ -197,7 +202,7 @@ public class StorageService
             plannedAbsence.Hours = hours;
 
         _dbContext.SaveChanges();
-        _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
+        ClearConsultantCache(orgUrlKey);
     }
 
     public void UpdateOrCreateStaffings(int consultantId, int projectId, List<Week> weeks, double hours, string orgUrlKey)
@@ -245,7 +250,7 @@ public class StorageService
                 staffing.Hours = newHours;
         }
         _dbContext.SaveChanges();
-        _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
+        ClearConsultantCache(orgUrlKey);
 
     }
 
@@ -290,9 +295,28 @@ public class StorageService
         }
         
         _dbContext.SaveChanges();
-        _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
+        ClearConsultantCache(orgUrlKey);
     }
+    public Customer UpdateOrCreateCustomer(Organization org, string customerName, string orgUrlKey)
+    {
+        var customer = _dbContext.Customer.SingleOrDefault(c => c.Name == customerName);
 
+        if (customer is null)
+        {
+            customer = new Customer
+            {
+                Name = customerName,
+                Organization = org,
+                Projects = new List<Project>()
+            };
+
+            _dbContext.Customer.Add(customer);
+        }
+        _dbContext.SaveChanges();
+        ClearConsultantCache(orgUrlKey);
+
+        return customer;
+    }
 
     public Project UpdateProjectState(Project project, EngagementWriteModel engagementWriteModel, string orgUrlKey)
     {

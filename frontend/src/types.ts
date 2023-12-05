@@ -145,3 +145,18 @@ export interface updateBookingHoursBody {
   startWeek: number;
   endWeek?: number;
 }
+
+export interface ProjectWithCustomerModel {
+  projectName?: string | null;
+  customerName?: string | null;
+  bookingType?: ProjectState;
+  isBillable?: boolean;
+}
+
+export interface EngagementWriteModel {
+  consultantIds?: number[] | null;
+  bookingType?: ProjectState;
+  isBillable?: boolean;
+  projectName?: string | null;
+  customerName?: string | null;
+}
