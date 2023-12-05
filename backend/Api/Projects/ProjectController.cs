@@ -77,7 +77,7 @@ public class ProjectController : ControllerBase
         }
 
         _context.SaveChanges();
-        _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
+        service.ClearConsultantCache(orgUrlKey);
 
         var responseModel =
             new ProjectWithCustomerModel(project.Name, customer.Name, project.State, project.IsBillable);
