@@ -15,7 +15,6 @@ public class ProjectController : ControllerBase
 {
     private readonly IMemoryCache _cache;
     private readonly ApplicationContext _context;
-    private const string ConsultantCacheKey = "consultantCacheKey";
 
     public ProjectController(ApplicationContext context, IMemoryCache cache)
     {
