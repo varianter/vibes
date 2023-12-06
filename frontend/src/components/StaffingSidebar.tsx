@@ -32,6 +32,7 @@ export default function StaffingSidebar({
           <ExperienceFilter />
         </div>
       )}
+      {!isSidebarOpen && <SearchBarComponent hidden={!isSidebarOpen} />}
     </div>
   );
 }

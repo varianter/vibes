@@ -29,10 +29,10 @@ export function AddEngagementForm({
   const { openModal, modalRef } = useModal({
     closeOnBackdropClick: false,
   });
+  const { customers, consultants, setIsDisabledHotkeys } =
+    useContext(FilteredContext);
 
   const organisationName = usePathname().split("/")[1];
-
-  const { customers, consultants } = useContext(FilteredContext);
   // State for select components
   const [selectedCustomer, setSelectedCustomer] = useState<SelectOption | null>(
     null,
@@ -142,6 +142,8 @@ export function AddEngagementForm({
       setProject(result);
       closeEngagementModal();
       openModal();
+      setIsDisabledHotkeys(true);
+
       // TODO: Futher logic for the changes in openModal *here*
     } else console.error("Error adding engagement");
     // TODO: #370 - Error handling for snackbars here
@@ -153,6 +155,7 @@ export function AddEngagementForm({
         modalRef={easyModalRef}
         title={"Legg til engasjement"}
         showCloseButton={true}
+        onClose={() => setIsDisabledHotkeys(false)}
       >
         <div className="min-h-[300px]">
           <form onSubmit={handleSubmit}>

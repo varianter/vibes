@@ -1,13 +1,16 @@
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useContext, useState } from "react";
 import { useModal } from "@/hooks/useModal";
 import { AddEngagementForm } from "@/components/Staffing/AddEngagementForm";
 import { Plus } from "react-feather";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
 export function AddStaffingCell(): ReactElement {
   const { closeModal, openModal, modalRef } = useModal({
     closeOnBackdropClick: true,
   });
   const [isAddStaffingHovered, setIsAddStaffingHovered] = useState(false);
+
+  const { setIsDisabledHotkeys } = useContext(FilteredContext);
 
   return (
     <>
@@ -19,7 +22,10 @@ export function AddStaffingCell(): ReactElement {
         />
 
         <button
-          onClick={openModal}
+          onClick={() => {
+            openModal();
+            setIsDisabledHotkeys(true);
+          }}
           className="flex flex-row items-center gap-2"
           onMouseEnter={() => setIsAddStaffingHovered(true)}
           onMouseLeave={() => setIsAddStaffingHovered(false)}
