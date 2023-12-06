@@ -1,6 +1,7 @@
 {
   "extends": ["next"],
   "rules": {
-    "func-style": ["error", "declaration"]
+    "func-style": ["error", "declaration"],
+    "max-params": ["error", 4]
   }
 }
