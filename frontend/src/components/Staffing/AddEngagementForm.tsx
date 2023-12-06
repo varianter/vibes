@@ -121,8 +121,6 @@ export function AddEngagementForm({
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     // Needed to prevent the form from refreshing the page
     event.preventDefault();
-    closeEngagementModal();
-    openModal();
     event.stopPropagation();
     // Add your submission logic here
 
