@@ -38,6 +38,17 @@ public class Consultant
             return currentAcademicYear - GraduationYear ?? currentAcademicYear;
         }
     }
+
+    public double WorkedHoursInWeek(Week week)
+    {
+        var holidayHours = Department.Organization.GetTotalHolidayHoursOfWeek(week);
+        var vacationHours = Vacations.Count(v => week.ContainsDate(v.Date)) * Department.Organization.HoursPerWorkday;
+        var plannedAbsenceHours = PlannedAbsences
+            .Where(pa => pa.Week.Equals(week))
+            .Select(pa => pa.Hours).Sum();
+
+        return Department.Organization.HoursPerWorkday * 5 - (holidayHours + vacationHours + plannedAbsenceHours);
+    }
 }
 
 public class Competence
