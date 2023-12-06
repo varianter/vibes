@@ -22,7 +22,8 @@ export function AddEngagementForm({
   const { openModal, modalRef } = useModal({
     closeOnBackdropClick: false,
   });
-  const { customers, consultants } = useContext(FilteredContext);
+  const { customers, consultants, setIsDisabledHotkeys } =
+    useContext(FilteredContext);
   // State for select components
   const [selectedCustomer, setSelectedCustomer] = useState<SelectOption | null>(
     null,
@@ -97,6 +98,7 @@ export function AddEngagementForm({
     event.preventDefault();
     closeEngagementModal();
     openModal();
+    setIsDisabledHotkeys(true);
 
     // TODO: Legg på noe post-greier her
   }
@@ -107,6 +109,7 @@ export function AddEngagementForm({
         modalRef={easyModalRef}
         title={"Legg til engasjement"}
         showCloseButton={true}
+        onClose={() => setIsDisabledHotkeys(false)}
       >
         <div className="min-h-[300px]">
           <form onSubmit={handleSubmit}>

@@ -1,4 +1,4 @@
-import React, { RefObject, useEffect, useState } from "react";
+import React, { RefObject, useContext, useEffect, useState } from "react";
 import { BookingType, Consultant } from "@/types";
 import { DateTime } from "luxon";
 import { generateWeekList } from "@/components/Staffing/helpers/GenerateWeekList";
@@ -7,6 +7,7 @@ import DropDown from "@/components/DropDown";
 import ActionButton from "@/components/Buttons/ActionButton";
 import IconActionButton from "@/components/Buttons/IconActionButton";
 import { ArrowLeft, ArrowRight, Briefcase } from "react-feather";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
 export function AddEngagementHoursModal({
   modalRef,
@@ -35,6 +36,8 @@ export function AddEngagementHoursModal({
     setWeekList(generateWeekList(firstVisibleDay, selectedWeekSpan));
   }, [firstVisibleDay, selectedWeekSpan]);
 
+  const { setIsDisabledHotkeys } = useContext(FilteredContext);
+
   return (
     <LargeModal
       modalRef={modalRef}
@@ -42,6 +45,7 @@ export function AddEngagementHoursModal({
       customerName="Akva Group"
       type={BookingType.Offer}
       showCloseButton={true}
+      onClose={() => setIsDisabledHotkeys(false)}
     >
       <div className="flex flex-col gap-6">
         <div className="flex justify-end">
