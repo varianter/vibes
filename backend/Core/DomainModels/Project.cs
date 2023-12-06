@@ -16,21 +16,19 @@ public class Project
     public required List<Staffing> Staffings { get; set; } = new();
 
     public required string Name { get; set; }
-    
+
     public required bool IsBillable { get; set; }
 
-    public Project MergeEngagement(Project otherEngagement)
+    public void MergeEngagement(Project otherEngagement)
     {
         otherEngagement.Staffings.ForEach(s =>
         {
             var crashStaffing = Staffings.SingleOrDefault(staffing =>
-                s.ConsultantId == staffing.ConsultantId && s.Week == staffing.Week);
+                s.ConsultantId == staffing.ConsultantId && s.Week.Equals(staffing.Week));
+
             if (crashStaffing is not null)
-            {
-                crashStaffing.Hours = s.Hours;
-            }
+                crashStaffing.Hours += s.Hours;
             else
-            {
                 Staffings.Add(new Staffing
                 {
                     ProjectId = Id,
@@ -38,15 +36,11 @@ public class Project
                     ConsultantId = s.ConsultantId,
                     Consultant = s.Consultant,
                     Week = s.Week,
-                    Hours = s.Hours,
+                    Hours = s.Hours
                 });
-            }
             ;
-
         });
-        return this;
     }
-
 }
 
 public enum ProjectState
@@ -55,5 +49,7 @@ public enum ProjectState
     Order,
     Lost,
     Offer,
+
+    [Obsolete("'Active' is no longer used. Please use 'Order' instead")]
     Active
 }
