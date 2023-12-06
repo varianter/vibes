@@ -14,6 +14,7 @@ import {
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { usePathname } from "next/navigation";
 import { Minus, Plus } from "react-feather";
+import { updateBookingHoursBody } from "@/types";
 
 export function DetailedBookingRows(props: {
   consultant: ConsultantReadModel;
@@ -88,21 +89,20 @@ interface updateBookingHoursProps {
   bookingType: BookingType;
   organisationUrl: string;
   consultantId: number;
-  bookingId: number;
+  bookingId: string;
   startWeek: number;
   endWeek?: number;
 }
 
 async function setDetailedBookingHours(props: updateBookingHoursProps) {
   const url = `/${props.organisationUrl}/bemanning/api/updateHours`;
-  const body: StaffingWriteModel = {
+  const body: updateBookingHoursBody = {
     hours: props.hours,
-    type: props.bookingType,
-    consultantId: props.consultantId,
-    engagementId: props.bookingId,
+    bookingType: props.bookingType,
+    consultantId: `${props.consultantId}`,
+    bookingId: props.bookingId,
     startWeek: props.startWeek,
-    startYear: 2023, // TODO: Fix mismatch between front- and backend types
-    //endWeek: props.endWeek,
+    endWeek: props.endWeek,
   };
 
   try {
@@ -160,7 +160,7 @@ function DetailedBookingCell({
         bookingType: detailedBooking.bookingDetails.type,
         organisationUrl: organisationName,
         consultantId: consultant.id,
-        bookingId: detailedBooking.bookingDetails.projectId,
+        bookingId: `${detailedBooking.bookingDetails.projectId}`,
         startWeek: detailedBookingHours.week,
       }).then((res) => {
         setConsultants((old) => [
@@ -197,7 +197,7 @@ function DetailedBookingCell({
       bookingType: detailedBooking.bookingDetails.type,
       organisationUrl: organisationName,
       consultantId: consultant.id,
-      bookingId: detailedBooking.bookingDetails.projectId,
+      bookingId: `${detailedBooking.bookingDetails.projectId}`,
       startWeek: startDragWeek,
       endWeek: currentDragWeek,
     }).then((res) => {
