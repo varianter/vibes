@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using System.Configuration;
 using Api.Common;
 using Core.DomainModels;
 using Database.DatabaseContext;
@@ -138,23 +136,19 @@ public class ConsultantController : ControllerBase
 }
 
 public record StaffingWriteModel(
-    [property: Required] BookingType Type,
-    [property: Required] int ConsultantId,
-    [property: Required] int EngagementId,
-    [property: Required] int StartYear,
-    [property: Required] int StartWeek,
-    [property: LongValidator(MinValue = 0, MaxValue = 100)]
-    [property: Required]
+    BookingType Type,
+    int ConsultantId,
+    int EngagementId,
+    int StartYear,
+    int StartWeek,
     double Hours);
 
 public record SeveralStaffingWriteModel(
-    [property: Required] BookingType Type,
-    [property: Required] int ConsultantId,
-    [property: Required] int EngagementId,
-    [property: Required] int StartYear,
-    [property: Required] int StartWeek,
-    [property: Required] int EndYear,
-    [property: Required] int EndWeek,
-    [property: LongValidator(MinValue = 0, MaxValue = 100)]
-    [property: Required]
+    BookingType Type,
+    int ConsultantId,
+    int EngagementId,
+    int StartYear,
+    int StartWeek,
+    int EndYear,
+    int EndWeek,
     double Hours);
