@@ -11,6 +11,13 @@ import ReactSelect, { SelectOption } from "@/components/ReactSelect";
 import { MultiValue } from "react-select";
 import EasyModal from "@/components/Modals/EasyModal";
 import { AddEngagementHoursModal } from "@/components/Staffing/AddEngagementHoursModal";
+import {
+  EngagementWriteModel,
+  ProjectState,
+  ProjectWithCustomerModel,
+} from "@/types";
+import { usePathname } from "next/navigation";
+import ActionButton from "../Buttons/ActionButton";
 
 export function AddEngagementForm({
   closeEngagementModal,
@@ -22,6 +29,9 @@ export function AddEngagementForm({
   const { openModal, modalRef } = useModal({
     closeOnBackdropClick: false,
   });
+
+  const organisationName = usePathname().split("/")[1];
+
   const { customers, consultants } = useContext(FilteredContext);
   // State for select components
   const [selectedCustomer, setSelectedCustomer] = useState<SelectOption | null>(
@@ -32,6 +42,10 @@ export function AddEngagementForm({
 
   const [selectedConsultants, setSelectedConsultants] =
     useState<MultiValue<SelectOption> | null>(null);
+
+  const [project, setProject] = useState<
+    ProjectWithCustomerModel | undefined
+  >();
 
   const customerOptions = customers.map(
     (c) =>
@@ -62,7 +76,7 @@ export function AddEngagementForm({
     ) ?? [];
 
   // State for radio button group
-  const [radioValue, setRadioValue] = useState("Tilbud");
+  const [radioValue, setRadioValue] = useState(ProjectState.Offer);
 
   // State for toggle
   const [isFakturerbar, setIsFakturerbar] = useState(false);
@@ -79,7 +93,7 @@ export function AddEngagementForm({
 
   // Handler for radio button group
   function handleRadioChange(event: ChangeEvent<HTMLInputElement>) {
-    setRadioValue(event.target.value);
+    setRadioValue(event.target.value as ProjectState);
   }
 
   // Handler for toggle
@@ -87,18 +101,50 @@ export function AddEngagementForm({
     setIsFakturerbar(!isFakturerbar);
   }
 
+  async function submitAddEngagementForm(body: EngagementWriteModel) {
+    const url = `/${organisationName}/bemanning/api/projects`;
+
+    try {
+      const data = await fetch(url, {
+        method: "put",
+        body: JSON.stringify({
+          ...body,
+        }),
+      });
+      return (await data.json()) as ProjectWithCustomerModel;
+    } catch (e) {
+      console.error("Error updating staffing", e);
+    }
+  }
+
   // Handler for form submission
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    // Add your submission logic here
-    console.log(event);
-    console.log("Form submitted!");
-
-    //TODO: Need to close the add engagement modal before opening the large modal
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    // Needed to prevent the form from refreshing the page
     event.preventDefault();
-    closeEngagementModal();
-    openModal();
+    event.stopPropagation();
+    // Add your submission logic here
 
-    // TODO: Legg på noe post-greier her
+    const body: EngagementWriteModel = {
+      customerName: selectedCustomer?.label,
+      projectName: selectedEngagement?.label,
+      projectState: radioValue,
+      isBillable: isFakturerbar,
+    };
+
+    console.log(body);
+
+    const result = await submitAddEngagementForm(body);
+
+    console.log(result);
+
+    // TODO: This is a simplified mockup.
+    if (result) {
+      setProject(result);
+      closeEngagementModal();
+      openModal();
+      // TODO: Futher logic for the changes in openModal *here*
+    } else console.error("Error adding engagement");
+    // TODO: #370 - Error handling for snackbars here
   }
 
   return (
@@ -144,8 +190,8 @@ export function AddEngagementForm({
                 <label className="flex gap-2 normal items-center">
                   <input
                     type="radio"
-                    value="Tilbud"
-                    checked={radioValue === "Tilbud"}
+                    value={ProjectState.Offer}
+                    checked={radioValue === ProjectState.Offer}
                     onChange={handleRadioChange}
                   />
                   Tilbud
@@ -153,8 +199,8 @@ export function AddEngagementForm({
                 <label className="flex gap-2 normal items-center">
                   <input
                     type="radio"
-                    value="Ordre"
-                    checked={radioValue === "Ordre"}
+                    value={ProjectState.Order}
+                    checked={radioValue === ProjectState.Order}
                     onChange={handleRadioChange}
                   />
                   Ordre
@@ -178,15 +224,19 @@ export function AddEngagementForm({
               </label>
             </div>
 
-            {/* Submit Button */}
-            <button type="submit">Submit</button>
+            <ActionButton variant="primary" fullWidth type="submit">
+              Legg til engasjement
+            </ActionButton>
           </form>
         </div>
       </EasyModal>
       <AddEngagementHoursModal
         modalRef={modalRef}
         weekSpan={8}
-        chosenConsultants={consultants.slice(0, 3)}
+        project={project}
+        chosenConsultants={consultants.filter(
+          (c) => selectedConsultants?.some((sc) => sc.value == c.id.toString()),
+        )}
       />
     </>
   );
