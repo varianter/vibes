@@ -6,7 +6,7 @@ public class Staffing
 {
     public required int ProjectId { get; set; }
 
-    public required Project Project { get; set; } = null!;
+    public required Engagement Engagement { get; set; } = null!;
     
     public required int ConsultantId { get; set; }
 

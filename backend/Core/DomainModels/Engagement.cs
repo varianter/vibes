@@ -2,14 +2,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Core.DomainModels;
 
-public class Project
+public class Engagement
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
     public required Customer Customer { get; set; }
 
-    public required ProjectState State { get; set; }
+    public required EngagementState State { get; set; }
 
     public List<Consultant> Consultants { get; set; } = new();
 
@@ -21,7 +21,7 @@ public class Project
 
 }
 
-public enum ProjectState
+public enum EngagementState
 {
     Closed,
     Order,

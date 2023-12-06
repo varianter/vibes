@@ -19,7 +19,7 @@ public class ApplicationContext : DbContext
     public DbSet<PlannedAbsence> PlannedAbsence { get; set; } = null!;
     public DbSet<Vacation> Vacation { get; set; } = null!;
     public DbSet<Customer> Customer { get; set; } = null!;
-    public DbSet<Project> Project { get; set; } = null!;
+    public DbSet<Engagement> Project { get; set; } = null!;
     public DbSet<Staffing> Staffing { get; set; } = null!;
 
 
@@ -53,7 +53,7 @@ public class ApplicationContext : DbContext
             .HasMany(customer => customer.Projects)
             .WithOne(project => project.Customer);
 
-        modelBuilder.Entity<Project>()
+        modelBuilder.Entity<Engagement>()
             .Property(project => project.State)
             .HasConversion<string>();
 
@@ -63,7 +63,7 @@ public class ApplicationContext : DbContext
         modelBuilder.Entity<PlannedAbsence>()
             .HasKey(plannedAbsence => new PlannedAbsenceKey(plannedAbsence.AbsenceId, plannedAbsence.ConsultantId, plannedAbsence.Week));
         
-        modelBuilder.Entity<Project>()
+        modelBuilder.Entity<Engagement>()
             .HasMany(p => p.Consultants)
             .WithMany(c => c.Projects)
             .UsingEntity<Staffing>(
@@ -71,7 +71,7 @@ public class ApplicationContext : DbContext
                     .WithMany(c => c.Staffings)
                     .OnDelete(DeleteBehavior.ClientCascade),
                 staffing => staffing
-                    .HasOne<Project>(s => s.Project)
+                    .HasOne<Engagement>(s => s.Engagement)
                     .WithMany(c => c.Staffings)
                     .OnDelete(DeleteBehavior.Cascade)
             );

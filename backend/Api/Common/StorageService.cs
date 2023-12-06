@@ -42,7 +42,7 @@ public class StorageService
             .Single(c => c.Id == consultantId);
 
         consultant.Staffings = _dbContext.Staffing.Where(staffing =>
-                staffing.Week.Equals(week) && staffing.ConsultantId == consultantId).Include(s => s.Project)
+                staffing.Week.Equals(week) && staffing.ConsultantId == consultantId).Include(s => s.Engagement)
             .ThenInclude(p => p.Customer).ToList();
 
         consultant.PlannedAbsences = _dbContext.PlannedAbsence
@@ -63,7 +63,7 @@ public class StorageService
         
 
         consultant.Staffings = _dbContext.Staffing.Where(staffing =>
-                weeks.Contains(staffing.Week) && staffing.ConsultantId == consultantId).Include(s => s.Project)
+                weeks.Contains(staffing.Week) && staffing.ConsultantId == consultantId).Include(s => s.Engagement)
             .ThenInclude(p => p.Customer).ToList();
 
         consultant.PlannedAbsences = _dbContext.PlannedAbsence
@@ -92,7 +92,7 @@ public class StorageService
 
         var staffingPrConsultant = _dbContext.Staffing
             .Include(s => s.Consultant)
-            .Include(staffing => staffing.Project)
+            .Include(staffing => staffing.Engagement)
             .ThenInclude(project => project.Customer)
             .GroupBy(staffing => staffing.Consultant.Id)
             .ToDictionary(group => group.Key, grouping => grouping.ToList());
@@ -142,7 +142,7 @@ public class StorageService
         var staffing = new Staffing
         {
             ProjectId = staffingKey.ProjectId,
-            Project = project,
+            Engagement = project,
             ConsultantId = staffingKey.ConsultantId,
             Consultant = consultant,
             Hours = hours,
@@ -238,7 +238,7 @@ public class StorageService
                 _dbContext.Add(new Staffing
                 {
                     ProjectId = projectId,
-                    Project = project,
+                    Engagement = project,
                     ConsultantId = consultantId,
                     Consultant = consultant,
                     Hours = newHours,
@@ -306,7 +306,7 @@ public class StorageService
             {
                 Name = customerName,
                 Organization = org,
-                Projects = new List<Project>()
+                Projects = new List<Engagement>()
             };
 
             _dbContext.Customer.Add(customer);

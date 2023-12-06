@@ -62,7 +62,7 @@ public class ProjectController : ControllerBase
 
         if (project is null)
         {
-            project = new Project
+            project = new Engagement
             {
                 Customer = customer,
                 State = body.BookingType,

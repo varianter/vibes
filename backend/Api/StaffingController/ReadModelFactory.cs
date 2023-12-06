@@ -84,12 +84,12 @@ public class ReadModelFactory
 
         // var billableProjects = UniqueWorkTypes(projects, billableStaffing);
         var billableBookings = consultant.Staffings
-            .Where(staffing => staffing.Project.State == ProjectState.Active)
+            .Where(staffing => staffing.Engagement.State == EngagementState.Active)
             .Where(staffing => weekSet.Contains(staffing.Week))
-            .GroupBy(staffing => staffing.Project.Name)
+            .GroupBy(staffing => staffing.Engagement.Name)
             .Select(grouping => new DetailedBooking(
-                new BookingDetails(grouping.Key, BookingType.Booking, grouping.First().Project.Customer.Name,
-                    grouping.First().Project.Id),
+                new BookingDetails(grouping.Key, BookingType.Booking, grouping.First().Engagement.Customer.Name,
+                    grouping.First().Engagement.Id),
                 weekSet.Select(week =>
                     new WeeklyHours(
                         week.ToSortableInt(), grouping
@@ -99,12 +99,12 @@ public class ReadModelFactory
             ));
 
         var offeredBookings = consultant.Staffings
-            .Where(staffing => staffing.Project.State == ProjectState.Offer)
+            .Where(staffing => staffing.Engagement.State == EngagementState.Offer)
             .Where(staffing => weekSet.Contains(staffing.Week))
-            .GroupBy(staffing => staffing.Project.Name)
+            .GroupBy(staffing => staffing.Engagement.Name)
             .Select(grouping => new DetailedBooking(
-                new BookingDetails(grouping.Key, BookingType.Offer, grouping.First().Project.Customer.Name,
-                    grouping.First().Project.Id),
+                new BookingDetails(grouping.Key, BookingType.Offer, grouping.First().Engagement.Customer.Name,
+                    grouping.First().Engagement.Id),
                 weekSet.Select(week =>
                     new WeeklyHours(
                         week.ToSortableInt(),
