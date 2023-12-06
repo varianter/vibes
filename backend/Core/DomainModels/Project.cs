@@ -19,6 +19,34 @@ public class Project
     
     public required bool IsBillable { get; set; }
 
+    public Project MergeEngagement(Project otherEngagement)
+    {
+        otherEngagement.Staffings.ForEach(s =>
+        {
+            var crashStaffing = Staffings.SingleOrDefault(staffing =>
+                s.ConsultantId == staffing.ConsultantId && s.Week == staffing.Week);
+            if (crashStaffing is not null)
+            {
+                crashStaffing.Hours = s.Hours;
+            }
+            else
+            {
+                Staffings.Add(new Staffing
+                {
+                    ProjectId = Id,
+                    Project = this,
+                    ConsultantId = s.ConsultantId,
+                    Consultant = s.Consultant,
+                    Week = s.Week,
+                    Hours = s.Hours,
+                });
+            }
+            ;
+
+        });
+        return this;
+    }
+
 }
 
 public enum ProjectState

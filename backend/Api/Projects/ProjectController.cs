@@ -46,14 +46,12 @@ public class ProjectController : ControllerBase
     [Route("updateState")]
     public ActionResult<List<ConsultantReadModel>> Put([FromRoute] string orgUrlKey, [FromBody] UpdateProjectWriteModel projectWriteModel)
     {
-        var selectedOrgId = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
-        var engagement = _context.Project.Include(p=>p.Consultants).SingleOrDefault(p => p.Id == projectWriteModel.EngagementId);
-        if (selectedOrgId is null || engagement is null) return BadRequest();
         
         var service = new StorageService(_cache, _context);
+        Project engagement = null;
         try
         {
-            service.UpdateProjectState(engagement, projectWriteModel, orgUrlKey);
+           engagement= service.UpdateProjectState( engagementId: projectWriteModel.EngagementId, projectState: projectWriteModel.ProjectState, orgUrlKey);
         }
         catch (Exception e)
         {

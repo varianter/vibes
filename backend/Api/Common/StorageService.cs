@@ -318,13 +318,40 @@ public class StorageService
         return customer;
     }
 
-    public Project UpdateProjectState(Project project, UpdateProjectWriteModel updateProjectWriteModel, string orgUrlKey)
+    public Project UpdateProjectState(int engagementId, ProjectState projectState, string orgUrlKey)
     {
-        project.State = updateProjectWriteModel.ProjectState;
-        _dbContext.SaveChanges();
+        var engagement = _dbContext.Project
+            .Include(p => p.Customer)
+            .Include(p=>p.Staffings)
+            .Include(p => p.Consultants)
+            .SingleOrDefault(p => p.Id == engagementId);
+        var similarEngagement = _dbContext.Project
+            .Include(p => p.Customer)
+            .Include(p => p.Staffings)
+            .Include(p=> p.Consultants)
+            .SingleOrDefault(p => p.Customer == engagement.Customer && p.Name == engagement.Name && p.Id != engagementId);
+        if (similarEngagement is not null && similarEngagement.State == projectState)
+        {
+            similarEngagement.MergeEngagement(engagement);
+            _dbContext.SaveChanges();
+            foreach (var staffing in engagement.Staffings)
+            {
+                _dbContext.Remove(staffing);
+            }
+            _dbContext.SaveChanges();
+            engagement = similarEngagement;
+            
+
+        }
+        else
+        {
+            engagement.State = projectState;
+            _dbContext.SaveChanges();
+        }
+        
         _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
 
-        return project;
+        return engagement;
     }
     
 }
