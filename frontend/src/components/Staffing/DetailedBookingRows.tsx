@@ -107,6 +107,9 @@ export function DetailedBookingRows(props: {
             !editOfferDropdownIsOpen && "hidden"
           }`}
         >
+          <p className="xsmall px-3 py-2 text-black">
+            Hvordan endte dette tilbudet?
+          </p>
           <button
             className="hover:bg-primary/10 px-3 py-2 rounded flex flex-row gap-3 items-center "
             onClick={() => changeState(ProjectState.Active)}
@@ -116,11 +119,22 @@ export function DetailedBookingRows(props: {
             </p>
           </button>
           <button
-            className="hover:bg-primary/10 px-3 py-2 rounded flex flex-row gap-3 items-center "
+            className="hover:bg-primary/10 px-3 py-2 rounded flex flex-row gap-3 items-center"
             onClick={() => changeState(ProjectState.Lost)}
           >
             <p className="h-6 flex items-center normal-semibold text-primary">
               Tapt
+            </p>
+          </button>
+          <div className="border-b border-primary/10 my-1" />
+          <button
+            className="hover:bg-primary/10 px-3 py-2 rounded flex flex-row gap-3 items-center"
+            onClick={() => console.log("Fjern")}
+            disabled
+          >
+            <Minus className="h-6 w-6 text-primary" />
+            <p className="h-6 flex items-center normal-semibold text-primary">
+              Fjern fra engasjement
             </p>
           </button>
         </div>
