@@ -158,22 +158,6 @@ export function AddEngagementForm({
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6 pt-6 h-96">
               {/* Selected Customer */}
-              <div className="flex flex-col gap-2">
-                <p className="small text-black">Konsulenter</p>
-                <ReactSelect
-                  options={consultantOptions}
-                  selectedMultipleOptionsValue={selectedConsultants}
-                  onMultipleOptionsChange={setSelectedConsultants}
-                  isMultipleOptions={true}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <p className="small text-black">Kunde</p>
-                <ReactSelect
-                  options={customerOptions}
-                  selectedSingleOptionValue={selectedCustomer}
-                  onSingleOptionChange={handleSelectedCustomerChange}
-                  isMultipleOptions={false}
                 />
               </div>
               <div className="flex flex-col gap-2">

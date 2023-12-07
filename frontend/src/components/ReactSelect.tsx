@@ -1,4 +1,5 @@
-import React from "react";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
+import { useContext } from "react";
 import Select, { MultiValue } from "react-select";
 
 export type SelectOption = { value: string; label: string };
@@ -10,6 +11,8 @@ export default function ReactSelect({
   onSingleOptionChange,
   onMultipleOptionsChange,
   isMultipleOptions = false,
+  isDisabled = false,
+  placeHolderText = "Velg...",
 }: {
   options: SelectOption[];
   selectedSingleOptionValue?: SelectOption | null;
@@ -17,11 +20,19 @@ export default function ReactSelect({
   onSingleOptionChange?: (arg: SelectOption) => void;
   onMultipleOptionsChange?: (arg: MultiValue<SelectOption>) => void;
   isMultipleOptions?: boolean;
+  isDisabled?: boolean;
+  placeHolderText?: string;
 }) {
+  const { setCloseModalOnBackdropClick } = useContext(FilteredContext);
+
   return (
     <Select
+      onFocus={() => setCloseModalOnBackdropClick(false)}
+      onBlur={() => setCloseModalOnBackdropClick(true)}
+      placeholder={placeHolderText}
       isMulti={isMultipleOptions}
       options={options}
+      isDisabled={isDisabled}
       value={
         isMultipleOptions
           ? selectedMultipleOptionsValue
@@ -32,7 +43,24 @@ export default function ReactSelect({
           ? onMultipleOptionsChange?.(a as MultiValue<SelectOption>)
           : onSingleOptionChange?.(a as SelectOption);
       }}
-      classNames={{ menu: () => "max-h-[120px] bg-white overflow-hidden" }}
+      styles={{
+        valueContainer: (base) => ({
+          ...base,
+          overflowX: "scroll",
+          flexWrap: "unset",
+          "::-webkit-scrollbar": {
+            display: "none",
+          },
+        }),
+        multiValue: (base) => ({
+          ...base,
+          flex:
+            selectedMultipleOptionsValue?.length &&
+            selectedMultipleOptionsValue?.length >= 2
+              ? "1 0 auto"
+              : "",
+        }),
+      }}
     />
   );
 }
