@@ -353,4 +353,18 @@ public class StorageService
 
         return engagement;
     }
+
+    public Project? GetProjectById(int id)
+    {
+        return _dbContext.Project.Find(id);
+    }
+    
+    public Project GetProjectWithOrganisationById(int id)
+    {
+        return _dbContext.Project
+            .Where(p=>p.Id == id)
+            .Include(p=>p.Customer)
+            .ThenInclude(c=> c.Organization)
+            .Single(p=> p.Id == id);
+    }
 }

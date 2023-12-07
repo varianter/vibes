@@ -64,13 +64,17 @@ public class ProjectController : ControllerBase
     public ActionResult<List<ConsultantReadModel>> Put([FromRoute] string orgUrlKey,
         [FromBody] UpdateProjectWriteModel projectWriteModel)
     {
-        // TODO: Litt validering her for å sjekke at orgUrlKey stemmer (prosjektene du prøver å endre tilhører den organisasjonen)
-        // TODO: Valider at engasjementet finnes 
+        // Merk: Service kommer snart via Dependency Injection, da slipper å lage ny hele tiden
+        var service = new StorageService(_cache, _context);
+
+        if (!ProjectControllerValidator.ValidateUpdateProjectWriteModel(projectWriteModel, service, orgUrlKey))
+        {
+            return BadRequest("Error in data");
+        }
 
         try
         {
             Project engagement;
-            //Notat: Dette jeg mente med at det leses litt lettere "Hvis vi har en match, flett prosjektene"
             if (EngagementHasSoftMatch(projectWriteModel.EngagementId))
             {
                 engagement = MergeProjects(projectWriteModel.EngagementId);
@@ -90,8 +94,7 @@ public class ProjectController : ControllerBase
             var selectedWeek = new Week(projectWriteModel.StartYear, projectWriteModel.StartWeek);
             var weekSet = selectedWeek.GetNextWeeks(projectWriteModel.WeekSpan);
 
-            // Merk: Service kommer snart via Dependency Injection, da slipper å lage ny hele tiden
-            var service = new StorageService(_cache, _context);
+            
 
             service.ClearConsultantCache(orgUrlKey);
 
