@@ -112,7 +112,7 @@ export function DetailedBookingRows(props: {
           </p>
           <button
             className="hover:bg-primary/10 px-3 py-2 rounded flex flex-row gap-3 items-center "
-            onClick={() => changeState(ProjectState.Active)}
+            onClick={() => changeState(ProjectState.Order)}
           >
             <p className="h-6 flex items-center normal-semibold text-primary">
               Vunnet
