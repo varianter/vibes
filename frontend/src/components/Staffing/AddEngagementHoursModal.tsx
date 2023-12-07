@@ -61,8 +61,15 @@ export function AddEngagementHoursModal({
     setWeekList(generateWeekList(firstVisibleDay, selectedWeekSpan));
   }, [firstVisibleDay, selectedWeekSpan]);
 
+  const { setIsDisabledHotkeys } = useContext(FilteredContext);
+
   return (
-    <LargeModal modalRef={modalRef} project={project} showCloseButton={true}>
+    <LargeModal
+      modalRef={modalRef}
+      project={project}
+      showCloseButton={true}
+      onClose={() => setIsDisabledHotkeys(false)}
+    >
       <div className="flex flex-col gap-6">
         <div className="flex justify-end">
           <div className="flex flex-row gap-2">
