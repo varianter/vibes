@@ -86,7 +86,7 @@ export default function ConsultantRows({
         ))}
       {isListElementVisible && (
         <tr>
-          <AddStaffingCell />
+          <AddStaffingCell consultant={consultant} />
         </tr>
       )}
     </>
