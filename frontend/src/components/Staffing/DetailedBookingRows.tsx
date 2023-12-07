@@ -88,18 +88,18 @@ interface updateBookingHoursProps {
   bookingType: BookingType;
   organisationUrl: string;
   consultantId: string;
-  bookingId: string;
+  projectId: string;
   startWeek: number;
   endWeek?: number;
 }
 
-async function setDetailedBookingHours(props: updateBookingHoursProps) {
+export async function setDetailedBookingHours(props: updateBookingHoursProps) {
   const url = `/${props.organisationUrl}/bemanning/api/updateHours`;
   const body: updateBookingHoursBody = {
     hours: props.hours,
     bookingType: props.bookingType,
     consultantId: props.consultantId,
-    bookingId: props.bookingId,
+    projectId: props.projectId,
     startWeek: props.startWeek,
     endWeek: props.endWeek,
   };
@@ -159,7 +159,7 @@ function DetailedBookingCell({
         bookingType: detailedBooking.bookingDetails.type,
         organisationUrl: organisationName,
         consultantId: consultant.id,
-        bookingId: detailedBooking.bookingDetails.projectId,
+        projectId: detailedBooking.bookingDetails.projectId,
         startWeek: detailedBookingHours.week,
       }).then((res) => {
         setConsultants((old) => [
@@ -196,7 +196,7 @@ function DetailedBookingCell({
       bookingType: detailedBooking.bookingDetails.type,
       organisationUrl: organisationName,
       consultantId: consultant.id,
-      bookingId: detailedBooking.bookingDetails.projectId,
+      projectId: detailedBooking.bookingDetails.projectId,
       startWeek: startDragWeek,
       endWeek: currentDragWeek,
     }).then((res) => {

@@ -84,7 +84,7 @@ public class ReadModelFactory
 
         // var billableProjects = UniqueWorkTypes(projects, billableStaffing);
         var billableBookings = consultant.Staffings
-            .Where(staffing => staffing.Project.State == ProjectState.Active)
+            .Where(staffing => staffing.Project.State == ProjectState.Order)
             .Where(staffing => weekSet.Contains(staffing.Week))
             .GroupBy(staffing => staffing.Project.Name)
             .Select(grouping => new DetailedBooking(

@@ -21,7 +21,7 @@ export async function PUT(
   const body: StaffingWriteModel = {
     type: requestBody.bookingType,
     consultantId: Number(requestBody.consultantId),
-    engagementId: Number(requestBody.bookingId),
+    engagementId: Number(requestBody.projectId),
     startYear: startWeek?.year ?? 0,
     startWeek: startWeek?.weekNumber ?? 0,
     endYear: endWeek?.year ?? 0,

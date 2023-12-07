@@ -10,4 +10,4 @@ public record EngagementReadModel(int EngagementId, string EngagementName, Proje
 public record EngagementWriteModel(ProjectState ProjectState,
     bool IsBillable, string ProjectName, string CustomerName);
 
-public record ProjectWithCustomerModel(string ProjectName, string CustomerName, ProjectState ProjectState, bool IsBillable);
+public record ProjectWithCustomerModel(string ProjectName, string CustomerName, ProjectState ProjectState, bool IsBillable, int ProjectId);

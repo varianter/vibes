@@ -141,7 +141,7 @@ export interface updateBookingHoursBody {
   hours: number;
   bookingType: BookingType;
   consultantId: string;
-  bookingId: string;
+  projectId: string;
   startWeek: number;
   endWeek?: number;
 }
@@ -151,6 +151,7 @@ export interface ProjectWithCustomerModel {
   customerName: string;
   projectState: ProjectState;
   isBillable: boolean;
+  projectId: string;
 }
 
 export interface EngagementWriteModel {

@@ -1,13 +1,28 @@
-import React, { RefObject, useContext, useEffect, useState } from "react";
-import { Consultant, ProjectWithCustomerModel } from "@/types";
+import React, {
+  RefObject,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import {
+  BookingType,
+  Consultant,
+  ProjectState,
+  ProjectWithCustomerModel,
+} from "@/types";
 import { DateTime } from "luxon";
 import { generateWeekList } from "@/components/Staffing/helpers/GenerateWeekList";
 import { LargeModal } from "@/components/Modals/LargeModal";
 import DropDown from "@/components/DropDown";
 import ActionButton from "@/components/Buttons/ActionButton";
 import IconActionButton from "@/components/Buttons/IconActionButton";
-import { ArrowLeft, ArrowRight, Briefcase } from "react-feather";
+import { ArrowLeft, ArrowRight, Minus, Plus } from "react-feather";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
+import { setDetailedBookingHours } from "./DetailedBookingRows";
+import { usePathname, useRouter } from "next/navigation";
+import { getColorByStaffingType, getIconByBookingType } from "./helpers/utils";
 
 export function AddEngagementHoursModal({
   modalRef,
@@ -40,12 +55,16 @@ export function AddEngagementHoursModal({
 
   const { setIsDisabledHotkeys } = useContext(FilteredContext);
 
+  const router = useRouter();
+
   return (
     <LargeModal
       modalRef={modalRef}
       project={project}
       showCloseButton={true}
-      onClose={() => setIsDisabledHotkeys(false)}
+      onClose={() => {
+        setIsDisabledHotkeys(false), router.refresh();
+      }}
     >
       <div className="flex flex-col gap-6">
         <div className="flex justify-end">
@@ -149,6 +168,7 @@ export function AddEngagementHoursModal({
                 key={consultant.id}
                 consultant={consultant}
                 weekList={weekList}
+                project={project}
               />
             ))}
           </tbody>
@@ -158,34 +178,326 @@ export function AddEngagementHoursModal({
   );
 }
 
+function generateHoursDictionary(weekList: DateTime[]) {
+  let dictionary: { [id: number]: number } = {};
+  weekList.map((d) => (dictionary = { ...dictionary, [dayToWeek(d)]: 0 }));
+  return dictionary;
+}
+
+function generateMoreHoursDictionary(
+  weekList: DateTime[],
+  dic: { [id: number]: number },
+) {
+  weekList.map(
+    (d) =>
+      (dic = {
+        ...dic,
+        [dayToWeek(d)]: dic[dayToWeek(d)] || 0,
+      }),
+  );
+  return dic;
+}
+
 function AddEngagementHoursRow({
   consultant,
   weekList,
+  project,
 }: {
   consultant: Consultant;
   weekList: DateTime[];
+  project?: ProjectWithCustomerModel;
 }) {
+  const [hourDragValue, setHourDragValue] = useState<number | undefined>(
+    undefined,
+  );
+  const [startDragWeek, setStartDragWeek] = useState<number | undefined>(
+    undefined,
+  );
+  const [currentDragWeek, setCurrentDragWeek] = useState<number | undefined>(
+    undefined,
+  );
+  const [isRowHovered, setIsRowHovered] = useState(false);
+
+  const [hoursDictionary, setHoursDictionary] = useState(
+    generateHoursDictionary(weekList),
+  ); //FLytt ett hakk opp?
+
+  console.log(generateMoreHoursDictionary(weekList, hoursDictionary));
+
+  function updateHoursDictionary(consultant?: Consultant) {
+    if (!consultant) return;
+
+    consultant.detailedBooking?.map((booking) => {
+      if (booking.bookingDetails.projectId == project?.projectId) {
+        booking.hours.map((hours) =>
+          setHoursDictionary((hoursDictionary) => ({
+            ...hoursDictionary,
+            [hours.week]: hours.hours,
+          })),
+        );
+      }
+    });
+  }
+
   return (
     <tr>
       <td>
-        <div className="flex justify-center items-center w-8 h-8 bg-offer rounded-lg">
-          <Briefcase className="text-black w-4 h-4" />
+        <div
+          className={`flex justify-center items-center w-8 h-8 ${getColorByStaffingType(
+            getBookingTypeFromProjectState(project?.projectState),
+          )} rounded-lg`}
+        >
+          {getIconByBookingType(
+            getBookingTypeFromProjectState(project?.projectState),
+            16,
+          )}
         </div>
       </td>
       <td>
         <p className="text-black text-start small pl-2">{consultant.name}</p>
       </td>
       {weekList.map((day) => (
-        /*Notat til senere:
-        day er første dagen i den gitte uka, og dette tallet kan bli brukt til å finne ukenr og år når man skal sende/lagre dataen om timene.
-        Kan gjøre at vi må håndtere ting forskjellig når vi skal redigere et engasjement
-      */
-        <td key={day.weekNumber} className=" p-0.5">
-          <div className="flex justify-end items-center bg-offer/30  rounded-lg h-full">
-            <p className="small-medium text-black/75 p-2">0</p>
-          </div>
-        </td>
+        <DetailedBookingCell
+          key={dayToWeek(day)}
+          project={project}
+          consultant={consultant}
+          hourDragValue={hourDragValue}
+          currentDragWeek={currentDragWeek}
+          startDragWeek={startDragWeek}
+          setHourDragValue={setHourDragValue}
+          setStartDragWeek={setStartDragWeek}
+          setCurrentDragWeek={setCurrentDragWeek}
+          isRowHovered={isRowHovered}
+          setIsRowHovered={setIsRowHovered}
+          numWeeks={weekList.length}
+          firstDayInWeek={day}
+          initHours={hoursDictionary[dayToWeek(day)]}
+          updateHoursDictionary={updateHoursDictionary}
+        />
       ))}
     </tr>
   );
+}
+
+function DetailedBookingCell({
+  project,
+  consultant,
+  hourDragValue,
+  setHourDragValue,
+  currentDragWeek,
+  startDragWeek,
+  setStartDragWeek,
+  setCurrentDragWeek,
+  isRowHovered,
+  setIsRowHovered,
+  numWeeks,
+  firstDayInWeek,
+  initHours,
+  updateHoursDictionary,
+}: {
+  project?: ProjectWithCustomerModel;
+  consultant: Consultant;
+  hourDragValue: number | undefined;
+  currentDragWeek: number | undefined;
+  startDragWeek: number | undefined;
+  setHourDragValue: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setStartDragWeek: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setCurrentDragWeek: React.Dispatch<React.SetStateAction<number | undefined>>;
+  isRowHovered: boolean;
+  setIsRowHovered: React.Dispatch<React.SetStateAction<boolean>>;
+  numWeeks: number;
+  firstDayInWeek: DateTime;
+  initHours: number;
+  updateHoursDictionary: (res?: Consultant) => void;
+}) {
+  const [hours, setHours] = useState(initHours);
+  const [isChangingHours, setIsChangingHours] = useState(false);
+  const [oldHours, setOldHours] = useState(0);
+  const { setIsDisabledHotkeys } = useContext(FilteredContext);
+
+  const [isInputFocused, setIsInputFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const organisationName = usePathname().split("/")[1];
+
+  function updateSingularHours() {
+    setIsDisabledHotkeys(false);
+    if (oldHours != hours && hourDragValue == undefined) {
+      setOldHours(hours);
+      setDetailedBookingHours({
+        hours: hours,
+        bookingType: getBookingTypeFromProjectState(project?.projectState),
+        organisationUrl: organisationName,
+        consultantId: consultant.id,
+        projectId: project?.projectId || "",
+        startWeek: dayToWeek(firstDayInWeek),
+      }).then((res) => {
+        updateHoursDictionary(res);
+      });
+    }
+  }
+
+  useEffect(() => {
+    if (!isRowHovered && inputRef.current) {
+      inputRef.current.blur();
+    }
+  }, [isRowHovered]);
+
+  function updateDragHours() {
+    setIsDisabledHotkeys(false);
+    if (
+      hourDragValue == undefined ||
+      startDragWeek == undefined ||
+      currentDragWeek == undefined ||
+      startDragWeek == currentDragWeek
+    ) {
+      return;
+    }
+    setOldHours(hours);
+    setDetailedBookingHours({
+      hours: hourDragValue,
+      bookingType: getBookingTypeFromProjectState(project?.projectState),
+      organisationUrl: organisationName,
+      consultantId: consultant.id,
+      projectId: project?.projectId || "",
+      startWeek: startDragWeek,
+      endWeek: currentDragWeek,
+    }).then((res) => {
+      updateHoursDictionary(res);
+    });
+  }
+
+  useEffect(() => {
+    setHours(initHours);
+    setOldHours(initHours);
+  }, [initHours]);
+
+  function checkIfMarked() {
+    if (startDragWeek == undefined || currentDragWeek == undefined)
+      return false;
+    if (startDragWeek > currentDragWeek) {
+      return (
+        dayToWeek(firstDayInWeek) >= currentDragWeek &&
+        dayToWeek(firstDayInWeek) <= startDragWeek
+      );
+    }
+    return (
+      dayToWeek(firstDayInWeek) <= currentDragWeek &&
+      dayToWeek(firstDayInWeek) >= startDragWeek
+    );
+  }
+
+  return (
+    <td className="h-8 p-0.5">
+      <div
+        className={`flex justify-end items-center bg-offer/30 border rounded-lg h-full ${
+          hours == 0 && "bg-opacity-30"
+        } ${getColorByStaffingType(
+          getBookingTypeFromProjectState(project?.projectState) ??
+            BookingType.Offer,
+        )} ${
+          isInputFocused || checkIfMarked()
+            ? "border-primary"
+            : "border-transparent hover:border-primary/30"
+        }`}
+        onMouseEnter={() => {
+          setIsChangingHours(true);
+          setIsRowHovered(true);
+        }}
+        onMouseLeave={() => {
+          setIsRowHovered(false);
+          setIsChangingHours(false);
+          !isInputFocused && updateSingularHours();
+        }}
+      >
+        {isChangingHours && numWeeks <= 12 && (
+          <button
+            tabIndex={-1}
+            disabled={hours == 0}
+            className={`my-1 p-1 rounded-full ${
+              hours > 0 && "hover:bg-primary/10"
+            }  hidden ${numWeeks <= 8 && "md:flex"} ${
+              numWeeks <= 12 && "lg:flex"
+            }  `}
+            onClick={() => {
+              setHours(Math.max(hours - 7.5, 0));
+            }}
+          >
+            <Minus
+              className={`w-4 h-4 text-primary ${
+                hours == 0 && "text-primary/50"
+              }`}
+            />
+          </button>
+        )}
+
+        <input
+          ref={inputRef}
+          type="number"
+          min="0"
+          step="7.5"
+          value={hours}
+          draggable={true}
+          onChange={(e) =>
+            hourDragValue == undefined && setHours(Number(e.target.value))
+          }
+          onFocus={(e) => {
+            e.target.select();
+            setIsInputFocused(true);
+            setIsDisabledHotkeys(true);
+          }}
+          onBlur={() => {
+            updateSingularHours();
+            setIsInputFocused(false);
+            setIsDisabledHotkeys(false);
+          }}
+          onDragStart={() => {
+            setHourDragValue(hours),
+              setStartDragWeek(dayToWeek(firstDayInWeek));
+          }}
+          onDragEnterCapture={() => {
+            setCurrentDragWeek(dayToWeek(firstDayInWeek));
+          }}
+          onDragEnd={() => {
+            updateDragHours();
+            setHourDragValue(undefined);
+            setCurrentDragWeek(undefined);
+            setStartDragWeek(undefined);
+          }}
+          className={`small-medium rounded w-full p-2 bg-transparent focus:outline-none min-w-[24px] ${
+            isChangingHours && numWeeks <= 12 ? "text-center" : "text-right"
+          } ${hours == 0 && "text-black/75"} `}
+        ></input>
+        {isChangingHours && numWeeks <= 12 && (
+          <button
+            tabIndex={-1}
+            className={`my-1 p-1 rounded-full hover:bg-primary/10 hidden ${
+              numWeeks <= 8 && "md:flex"
+            } ${numWeeks <= 12 && "lg:flex"} `}
+            onClick={() => {
+              setHours(hours + 7.5);
+            }}
+          >
+            <Plus className="w-4 h-4 text-primary" />
+          </button>
+        )}
+      </div>
+    </td>
+  );
+}
+
+function dayToWeek(day: DateTime) {
+  return day.year * 100 + day.weekNumber;
+}
+
+function getBookingTypeFromProjectState(projectState?: ProjectState) {
+  switch (projectState) {
+    case ProjectState.Order:
+      return BookingType.Booking;
+    case ProjectState.Active: //Fjern når vi har slutta og brukt Active
+      return BookingType.Booking;
+    case ProjectState.Offer:
+      return BookingType.Offer;
+    default:
+      return BookingType.Offer;
+  }
 }

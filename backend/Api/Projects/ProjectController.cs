@@ -79,7 +79,7 @@ public class ProjectController : ControllerBase
         service.ClearConsultantCache(orgUrlKey);
 
         var responseModel =
-            new ProjectWithCustomerModel(project.Name, customer.Name, project.State, project.IsBillable);
+            new ProjectWithCustomerModel(project.Name, customer.Name, project.State, project.IsBillable, project.Id);
 
         return Ok(responseModel);
     }
