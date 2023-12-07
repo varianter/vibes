@@ -29,12 +29,19 @@ export function AddEngagementHoursModal({
 
   const { consultants } = useContext(FilteredContext);
 
-  const [consultantList, setConsultantList] =
+  const [selectedConsultants, setSelectedConsultants] =
     useState<Consultant[]>(chosenConsultants);
 
+  console.log({ selectedConsultants });
+
+  const remainingConsultants = consultants.filter(
+    (c) => !selectedConsultants.find((c2) => c2.id == c.id),
+  );
+
   function handleAddConsultant(option: SelectOption) {
-    const consultant = consultants.find((c) => c.id == option.value);
-    if (consultant) setConsultantList([...consultantList, consultant]);
+    const consultant = remainingConsultants.find((c) => c.id == option.value);
+    if (consultant)
+      setSelectedConsultants([...selectedConsultants, consultant]);
   }
 
   function setWeekSpan(weekSpanString: string) {
@@ -45,6 +52,10 @@ export function AddEngagementHoursModal({
   const [weekList, setWeekList] = useState<DateTime[]>(
     generateWeekList(firstVisibleDay, selectedWeekSpan),
   );
+
+  useEffect(() => {
+    setSelectedConsultants(chosenConsultants);
+  }, [chosenConsultants]);
 
   useEffect(() => {
     setWeekList(generateWeekList(firstVisibleDay, selectedWeekSpan));
@@ -112,7 +123,7 @@ export function AddEngagementHoursModal({
                 <div className="flex flex-row gap-3 pb-4 items-center">
                   <p className="normal-medium ">Konsulenter</p>
                   <p className="text-primary small-medium rounded-full bg-primary/5 px-2 py-1">
-                    {consultantList?.length}
+                    {selectedConsultants?.length}
                   </p>
                 </div>
               </th>
@@ -149,7 +160,7 @@ export function AddEngagementHoursModal({
             </tr>
           </thead>
           <tbody>
-            {consultantList?.map((consultant) => (
+            {selectedConsultants?.map((consultant) => (
               <AddEngagementHoursRow
                 key={consultant.id}
                 consultant={consultant}
@@ -157,7 +168,10 @@ export function AddEngagementHoursModal({
               />
             ))}
             <tr>
-              <AddConsultantCell onAddConsultant={handleAddConsultant} />
+              <AddConsultantCell
+                onAddConsultant={handleAddConsultant}
+                consultantList={remainingConsultants}
+              />
             </tr>
           </tbody>
         </table>
