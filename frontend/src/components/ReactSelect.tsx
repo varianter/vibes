@@ -32,7 +32,7 @@ export default function ReactSelect({
           ? onMultipleOptionsChange?.(a as MultiValue<SelectOption>)
           : onSingleOptionChange?.(a as SelectOption);
       }}
-      classNames={{ menu: () => "max-h-[120px] bg-white overflow-hidden" }}
+      classNames={{ menu: () => "bg-white overflow-hidden" }}
     />
   );
 }
