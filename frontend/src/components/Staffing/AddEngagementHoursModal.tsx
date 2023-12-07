@@ -7,6 +7,7 @@ import DropDown from "@/components/DropDown";
 import ActionButton from "@/components/Buttons/ActionButton";
 import IconActionButton from "@/components/Buttons/IconActionButton";
 import { ArrowLeft, ArrowRight, Briefcase } from "react-feather";
+import { AddConsultantCell } from "./AddConsultantCell";
 
 export function AddEngagementHoursModal({
   modalRef,
@@ -143,6 +144,9 @@ export function AddEngagementHoursModal({
                 weekList={weekList}
               />
             ))}
+            <tr>
+              <AddConsultantCell />
+            </tr>
           </tbody>
         </table>
       </div>
