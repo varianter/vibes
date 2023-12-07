@@ -1,4 +1,4 @@
-import React, { RefObject, useEffect, useState } from "react";
+import React, { RefObject, useContext, useEffect, useState } from "react";
 import { Consultant, ProjectWithCustomerModel } from "@/types";
 import { DateTime } from "luxon";
 import { generateWeekList } from "@/components/Staffing/helpers/GenerateWeekList";
@@ -8,6 +8,8 @@ import ActionButton from "@/components/Buttons/ActionButton";
 import IconActionButton from "@/components/Buttons/IconActionButton";
 import { ArrowLeft, ArrowRight, Briefcase } from "react-feather";
 import { AddConsultantCell } from "./AddConsultantCell";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
+import { SelectOption } from "../ReactSelect";
 
 export function AddEngagementHoursModal({
   modalRef,
@@ -24,6 +26,16 @@ export function AddEngagementHoursModal({
   const [firstVisibleDay, setFirstVisibleDay] = useState<DateTime>(
     DateTime.now(),
   );
+
+  const { consultants } = useContext(FilteredContext);
+
+  const [consultantList, setConsultantList] =
+    useState<Consultant[]>(chosenConsultants);
+
+  function handleAddConsultant(option: SelectOption) {
+    const consultant = consultants.find((c) => c.id == option.value);
+    if (consultant) setConsultantList([...consultantList, consultant]);
+  }
 
   function setWeekSpan(weekSpanString: string) {
     const weekSpanNum = parseInt(weekSpanString.split(" ")[0]);
@@ -100,7 +112,7 @@ export function AddEngagementHoursModal({
                 <div className="flex flex-row gap-3 pb-4 items-center">
                   <p className="normal-medium ">Konsulenter</p>
                   <p className="text-primary small-medium rounded-full bg-primary/5 px-2 py-1">
-                    {chosenConsultants?.length}
+                    {consultantList?.length}
                   </p>
                 </div>
               </th>
@@ -137,7 +149,7 @@ export function AddEngagementHoursModal({
             </tr>
           </thead>
           <tbody>
-            {chosenConsultants?.map((consultant) => (
+            {consultantList?.map((consultant) => (
               <AddEngagementHoursRow
                 key={consultant.id}
                 consultant={consultant}
@@ -145,7 +157,7 @@ export function AddEngagementHoursModal({
               />
             ))}
             <tr>
-              <AddConsultantCell />
+              <AddConsultantCell onAddConsultant={handleAddConsultant} />
             </tr>
           </tbody>
         </table>

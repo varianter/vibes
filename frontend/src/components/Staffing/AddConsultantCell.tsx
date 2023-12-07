@@ -12,7 +12,9 @@ import { useModal } from "@/hooks/useModal";
 import EasyModal from "../Modals/EasyModal";
 import ActionButton from "../Buttons/ActionButton";
 
-export function AddConsultantCell(): ReactElement {
+export function AddConsultantCell(props: {
+  onAddConsultant: (option: SelectOption) => void;
+}): ReactElement {
   const [isAddStaffingHovered, setIsAddConsultantHovered] = useState(false);
 
   const { closeModal, openModal, modalRef } = useModal({
@@ -26,6 +28,7 @@ export function AddConsultantCell(): ReactElement {
         <AddConsultantModal
           closeConsultantModal={closeModal}
           easyModalRef={modalRef}
+          onAddConsultant={props.onAddConsultant}
         />
         <button
           onClick={openModal}
@@ -51,6 +54,7 @@ export function AddConsultantCell(): ReactElement {
 interface AddConsultantModalProps {
   closeConsultantModal: () => void;
   easyModalRef: RefObject<HTMLDialogElement>;
+  onAddConsultant: (option: SelectOption) => void;
 }
 
 function AddConsultantModal(props: AddConsultantModalProps): ReactElement {
@@ -74,6 +78,10 @@ function AddConsultantModal(props: AddConsultantModalProps): ReactElement {
     event.preventDefault();
     event.stopPropagation();
 
+    props.onAddConsultant(selectedConsultant!);
+
+    // Cleanup
+    setSelectedConsultant(null);
     closeConsultantModal();
   }
 
