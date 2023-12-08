@@ -4,10 +4,11 @@ import { AddEngagementForm } from "@/components/Staffing/AddEngagementForm";
 import { Plus } from "react-feather";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
-export function AddStaffingCell(): ReactElement {
-  const { closeModal, openModal, modalRef } = useModal({
-    closeOnBackdropClick: true,
-  });
+export function AddStaffingCell({
+  openModal,
+}: {
+  openModal: () => void;
+}): ReactElement {
   const [isAddStaffingHovered, setIsAddStaffingHovered] = useState(false);
 
   const { setIsDisabledHotkeys } = useContext(FilteredContext);
@@ -16,11 +17,6 @@ export function AddStaffingCell(): ReactElement {
     <>
       <td className={`${"border-l-secondary border-l-2"}`}></td>
       <td>
-        <AddEngagementForm
-          closeEngagementModal={closeModal}
-          easyModalRef={modalRef}
-        />
-
         <button
           onClick={() => {
             openModal();

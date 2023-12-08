@@ -56,7 +56,7 @@ export function AddEngagementHoursModal({
     DateTime.now(),
   );
 
-  const { consultants } = useContext(FilteredContext);
+  const { consultants, setIsDisabledHotkeys } = useContext(FilteredContext);
 
   const [selectedConsultants, setSelectedConsultants] =
     useState<Consultant[]>(chosenConsultants);
@@ -64,6 +64,22 @@ export function AddEngagementHoursModal({
   const remainingConsultants = consultants.filter(
     (c) => !selectedConsultants.find((c2) => c2.id == c.id),
   );
+
+  const [weekList, setWeekList] = useState<DateTime[]>(
+    generateWeekList(firstVisibleDay, selectedWeekSpan),
+  );
+
+  const [consultantsWHours, setConsultantsWHours] = useState<
+    ConsultantWithWeekHours[]
+  >([]);
+
+  /*useEffect(() => {
+    setSelectedConsultants(chosenConsultants);
+  }, [chosenConsultants]);*/
+
+  useEffect(() => {
+    setWeekList(generateWeekList(firstVisibleDay, selectedWeekSpan));
+  }, [firstVisibleDay, selectedWeekSpan]);
 
   function handleAddConsultant(option: SelectOption) {
     const consultant = remainingConsultants.find((c) => c.id == option.value);
@@ -76,38 +92,19 @@ export function AddEngagementHoursModal({
     setSelectedWeekSpan(weekSpanNum);
   }
 
-  const [weekList, setWeekList] = useState<DateTime[]>(
-    generateWeekList(firstVisibleDay, selectedWeekSpan),
-  );
+  console.log(selectedConsultants);
 
-  useEffect(() => {
-    setSelectedConsultants(chosenConsultants);
-  }, [chosenConsultants]);
-
-  useEffect(() => {
-    setWeekList(generateWeekList(firstVisibleDay, selectedWeekSpan));
-  }, [firstVisibleDay, selectedWeekSpan]);
-
-  const { setIsDisabledHotkeys } = useContext(FilteredContext);
-  const [consultantsWHours, setConsultantsWHours] = useState<
-    ConsultantWithWeekHours[]
-  >([]);
-
-  useEffect(
+  /*useEffect(
     () =>
       setConsultantsWHours(
         generateConsultatsWithHours(
           weekList,
-          chosenConsultants,
+          selectedConsultants,
           project?.projectId || "",
         ),
       ),
-    [chosenConsultants, project?.projectId, weekList],
-  );
-
-  function updateHours(res?: Consultant) {
-    upsertConsultantBooking(chosenConsultants, res);
-  }
+    [selectedConsultants, project?.projectId, weekList],
+  );*/
 
   return (
     <LargeModal
@@ -223,7 +220,6 @@ export function AddEngagementHoursModal({
                   consultantsWHours.find((c) => c.consultantId == consultant.id)
                     ?.weekWithHours || []
                 }
-                updateHours={updateHours}
               />
             ))}
             <tr>
@@ -244,13 +240,11 @@ function AddEngagementHoursRow({
   weekList,
   project,
   weekHours,
-  updateHours,
 }: {
   consultant: Consultant;
   weekList: DateTime[];
   project?: ProjectWithCustomerModel;
   weekHours: WeekWithHours[];
-  updateHours: (res?: Consultant) => void;
 }) {
   const [hourDragValue, setHourDragValue] = useState<number | undefined>(
     undefined,
@@ -299,7 +293,6 @@ function AddEngagementHoursRow({
             initHours={
               weekHours.find((w) => w.week == dayToWeek(day))?.hours || 0
             }
-            updateHours={updateHours}
           />
         </>
       ))}
@@ -321,7 +314,6 @@ function DetailedBookingCell({
   numWeeks,
   firstDayInWeek,
   initHours,
-  updateHours,
 }: {
   project?: ProjectWithCustomerModel;
   consultant: Consultant;
@@ -336,7 +328,6 @@ function DetailedBookingCell({
   numWeeks: number;
   firstDayInWeek: DateTime;
   initHours: number;
-  updateHours: (res?: Consultant) => void;
 }) {
   const [hours, setHours] = useState(initHours);
   const [isChangingHours, setIsChangingHours] = useState(false);
@@ -358,9 +349,7 @@ function DetailedBookingCell({
         consultantId: consultant.id,
         projectId: project?.projectId || "",
         startWeek: dayToWeek(firstDayInWeek),
-      }).then((res) => {
-        updateHours(res);
-      });
+      }).then((res) => {});
     }
   }
 
@@ -389,9 +378,7 @@ function DetailedBookingCell({
       projectId: project?.projectId || "",
       startWeek: startDragWeek,
       endWeek: currentDragWeek,
-    }).then((res) => {
-      updateHours(res);
-    });
+    }).then((res) => {});
   }
 
   useEffect(() => {
@@ -535,6 +522,7 @@ function generateConsultatsWithHours(
   chosenConsultants: Consultant[],
   projectId: string,
 ) {
+  console.log("HEi");
   const consultantsWHours: ConsultantWithWeekHours[] = [];
   chosenConsultants.map((c) => {
     const consultant: ConsultantWithWeekHours = {
