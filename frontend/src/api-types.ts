@@ -181,3 +181,17 @@ export interface WeeklyHours {
   /** @format double */
   hours: number;
 }
+
+export interface ProjectWithCustomerModel {
+  projectName: string;
+  customerName: string;
+  projectState: ProjectState;
+  isBillable: boolean;
+}
+
+export interface EngagementWriteModel {
+  projectState?: ProjectState;
+  isBillable?: boolean;
+  projectName?: string;
+  customerName?: string;
+}

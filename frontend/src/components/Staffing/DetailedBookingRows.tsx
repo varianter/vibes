@@ -30,7 +30,7 @@ async function updateProjectState(
   );
 
   const body: updateProjectStateBody = {
-    engagementId: detailedBooking.bookingDetails.projectId,
+    engagementId: `${detailedBooking.bookingDetails.projectId}`,
     projectState: state,
     isBillable: false,
     startWeek: yearWeek?.weekNumber || 0,

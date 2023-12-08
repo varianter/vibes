@@ -2,13 +2,13 @@ import React, { ReactElement, useContext, useState } from "react";
 import { useModal } from "@/hooks/useModal";
 import { AddEngagementForm } from "@/components/Staffing/AddEngagementForm";
 import { Plus } from "react-feather";
-import { Consultant } from "@/types";
+import { ConsultantReadModel } from "@/api-types";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
 export function AddStaffingCell({
   consultant,
 }: {
-  consultant: Consultant;
+  consultant: ConsultantReadModel;
 }): ReactElement {
   const { closeModalOnBackdropClick } = useContext(FilteredContext);
   const { closeModal, openModal, modalRef } = useModal({
