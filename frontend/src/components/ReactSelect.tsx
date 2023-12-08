@@ -13,6 +13,7 @@ export default function ReactSelect({
   isMultipleOptions = false,
   isDisabled = false,
   placeHolderText = "Velg...",
+  isClearable = false,
 }: {
   options: SelectOption[];
   selectedSingleOptionValue?: SelectOption | null;
@@ -22,6 +23,7 @@ export default function ReactSelect({
   isMultipleOptions?: boolean;
   isDisabled?: boolean;
   placeHolderText?: string;
+  isClearable?: boolean;
 }) {
   const { setCloseModalOnBackdropClick } = useContext(FilteredContext);
 
@@ -33,6 +35,7 @@ export default function ReactSelect({
       isMulti={isMultipleOptions}
       options={options}
       isDisabled={isDisabled}
+      isClearable={isClearable}
       value={
         isMultipleOptions
           ? selectedMultipleOptionsValue
