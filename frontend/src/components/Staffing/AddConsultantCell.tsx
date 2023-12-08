@@ -18,16 +18,7 @@ export function AddConsultantCell(props: {
 
   return (
     <>
-      <td>
-        <span
-          className={`w-8 h-8 flex justify-center items-center rounded bg-primary/0 ${
-            isAddStaffingHovered && "bg-primary/10"
-          }`}
-        >
-          <Plus size={16} className="text-primary" />
-        </span>
-      </td>
-      <td>
+      <td colSpan={2}>
         <AddConsultantModal
           closeConsultantModal={closeModal}
           easyModalRef={modalRef}
@@ -40,7 +31,14 @@ export function AddConsultantCell(props: {
           onMouseEnter={() => setIsAddConsultantHovered(true)}
           onMouseLeave={() => setIsAddConsultantHovered(false)}
         >
-          <p className="small text-primary text-start small pl-2">
+          <span
+            className={`w-8 h-8 flex justify-center items-center rounded-lg bg-primary/0 ${
+              isAddStaffingHovered && "bg-primary/10"
+            }`}
+          >
+            <Plus size={16} className="text-primary" />
+          </span>
+          <p className="small text-primary text-start small ">
             Legg til konsulent
           </p>
         </button>
