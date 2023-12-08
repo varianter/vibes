@@ -42,7 +42,7 @@ public class StorageService
             .Single(c => c.Id == consultantId);
 
         consultant.Staffings = _dbContext.Staffing.Where(staffing =>
-                staffing.Week.Equals(week) && staffing.ConsultantId == consultantId).Include(s => s.Project)
+                staffing.Week.Equals(week) && staffing.ConsultantId == consultantId).Include(s => s.Engagement)
             .ThenInclude(p => p.Customer).ToList();
 
         consultant.PlannedAbsences = _dbContext.PlannedAbsence
@@ -63,7 +63,7 @@ public class StorageService
 
 
         consultant.Staffings = _dbContext.Staffing.Where(staffing =>
-                weeks.Contains(staffing.Week) && staffing.ConsultantId == consultantId).Include(s => s.Project)
+                weeks.Contains(staffing.Week) && staffing.ConsultantId == consultantId).Include(s => s.Engagement)
             .ThenInclude(p => p.Customer).ToList();
 
         consultant.PlannedAbsences = _dbContext.PlannedAbsence
@@ -93,7 +93,7 @@ public class StorageService
 
         var staffingPrConsultant = _dbContext.Staffing
             .Include(s => s.Consultant)
-            .Include(staffing => staffing.Project)
+            .Include(staffing => staffing.Engagement)
             .ThenInclude(project => project.Customer)
             .GroupBy(staffing => staffing.Consultant.Id)
             .ToDictionary(group => group.Key, grouping => grouping.ToList());
@@ -138,12 +138,12 @@ public class StorageService
     {
         var consultant = _dbContext.Consultant.Find(staffingKey.ConsultantId);
         var project = _dbContext.Project
-            .Find(staffingKey.ProjectId);
+            .Find(staffingKey.EngagementId);
 
         var staffing = new Staffing
         {
-            ProjectId = staffingKey.ProjectId,
-            Project = project,
+            EngagementId = staffingKey.EngagementId,
+            Engagement = project,
             ConsultantId = staffingKey.ConsultantId,
             Consultant = consultant,
             Hours = hours,
@@ -173,7 +173,7 @@ public class StorageService
     public void UpdateOrCreateStaffing(StaffingKey staffingKey, double hours, string orgUrlKey)
     {
         var staffing = _dbContext.Staffing
-            .FirstOrDefault(s => s.ProjectId.Equals(staffingKey.ProjectId)
+            .FirstOrDefault(s => s.EngagementId.Equals(staffingKey.EngagementId)
                                  && s.ConsultantId.Equals(staffingKey.ConsultantId)
                                  && s.Week.Equals(staffingKey.Week));
 
@@ -233,14 +233,14 @@ public class StorageService
             }
 
             var staffing = _dbContext.Staffing
-                .FirstOrDefault(s => s.ProjectId.Equals(projectId)
+                .FirstOrDefault(s => s.EngagementId.Equals(projectId)
                                      && s.ConsultantId.Equals(consultantId)
                                      && s.Week.Equals(week));
             if (staffing is null)
                 _dbContext.Add(new Staffing
                 {
-                    ProjectId = projectId,
-                    Project = project,
+                    EngagementId = projectId,
+                    Engagement = project,
                     ConsultantId = consultantId,
                     Consultant = consultant,
                     Hours = newHours,
@@ -307,7 +307,7 @@ public class StorageService
             {
                 Name = customerName,
                 Organization = org,
-                Projects = new List<Project>()
+                Projects = new List<Engagement>()
             };
 
             _dbContext.Customer.Add(customer);
@@ -319,7 +319,7 @@ public class StorageService
         return customer;
     }
 
-    public Project UpdateProjectState(int engagementId, ProjectState projectState, string orgUrlKey)
+    public Engagement UpdateProjectState(int engagementId, EngagementState projectState, string orgUrlKey)
     {
         var engagement = _dbContext.Project
             .Include(p => p.Customer)
@@ -354,17 +354,17 @@ public class StorageService
         return engagement;
     }
 
-    public Project? GetProjectById(int id)
+    public Engagement? GetProjectById(int id)
     {
         return _dbContext.Project.Find(id);
     }
-    
-    public Project GetProjectWithOrganisationById(int id)
+
+    public Engagement GetProjectWithOrganisationById(int id)
     {
         return _dbContext.Project
-            .Where(p=>p.Id == id)
-            .Include(p=>p.Customer)
-            .ThenInclude(c=> c.Organization)
-            .Single(p=> p.Id == id);
+            .Where(p => p.Id == id)
+            .Include(p => p.Customer)
+            .ThenInclude(c => c.Organization)
+            .Single(p => p.Id == id);
     }
 }

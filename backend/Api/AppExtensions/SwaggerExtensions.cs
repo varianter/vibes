@@ -2,7 +2,7 @@ using Api.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Api.BuildHelpers;
+namespace Api.AppExtensions;
 
 public static class SwaggerExtensions
 {

@@ -206,6 +206,35 @@ namespace Database.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Core.DomainModels.Engagement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsBillable")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Project");
+                });
+
             modelBuilder.Entity("Core.DomainModels.Organization", b =>
                 {
                     b.Property<string>("Id")
@@ -270,38 +299,9 @@ namespace Database.Migrations
                     b.ToTable("PlannedAbsence");
                 });
 
-            modelBuilder.Entity("Core.DomainModels.Project", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsBillable")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("State")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.ToTable("Project");
-                });
-
             modelBuilder.Entity("Core.DomainModels.Staffing", b =>
                 {
-                    b.Property<int>("ProjectId")
+                    b.Property<int>("EngagementId")
                         .HasColumnType("int");
 
                     b.Property<int>("ConsultantId")
@@ -313,7 +313,7 @@ namespace Database.Migrations
                     b.Property<double>("Hours")
                         .HasColumnType("float");
 
-                    b.HasKey("ProjectId", "ConsultantId", "Week");
+                    b.HasKey("EngagementId", "ConsultantId", "Week");
 
                     b.HasIndex("ConsultantId");
 
@@ -400,6 +400,17 @@ namespace Database.Migrations
                     b.Navigation("Organization");
                 });
 
+            modelBuilder.Entity("Core.DomainModels.Engagement", b =>
+                {
+                    b.HasOne("Core.DomainModels.Customer", "Customer")
+                        .WithMany("Projects")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
             modelBuilder.Entity("Core.DomainModels.PlannedAbsence", b =>
                 {
                     b.HasOne("Core.DomainModels.Absence", "Absence")
@@ -419,17 +430,6 @@ namespace Database.Migrations
                     b.Navigation("Consultant");
                 });
 
-            modelBuilder.Entity("Core.DomainModels.Project", b =>
-                {
-                    b.HasOne("Core.DomainModels.Customer", "Customer")
-                        .WithMany("Projects")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-                });
-
             modelBuilder.Entity("Core.DomainModels.Staffing", b =>
                 {
                     b.HasOne("Core.DomainModels.Consultant", "Consultant")
@@ -438,15 +438,15 @@ namespace Database.Migrations
                         .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
-                    b.HasOne("Core.DomainModels.Project", "Project")
+                    b.HasOne("Core.DomainModels.Engagement", "Engagement")
                         .WithMany("Staffings")
-                        .HasForeignKey("ProjectId")
+                        .HasForeignKey("EngagementId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Consultant");
 
-                    b.Navigation("Project");
+                    b.Navigation("Engagement");
                 });
 
             modelBuilder.Entity("Core.DomainModels.Vacation", b =>
@@ -479,6 +479,11 @@ namespace Database.Migrations
                     b.Navigation("Consultants");
                 });
 
+            modelBuilder.Entity("Core.DomainModels.Engagement", b =>
+                {
+                    b.Navigation("Staffings");
+                });
+
             modelBuilder.Entity("Core.DomainModels.Organization", b =>
                 {
                     b.Navigation("AbsenceTypes");
@@ -486,11 +491,6 @@ namespace Database.Migrations
                     b.Navigation("Customers");
 
                     b.Navigation("Departments");
-                });
-
-            modelBuilder.Entity("Core.DomainModels.Project", b =>
-                {
-                    b.Navigation("Staffings");
                 });
 #pragma warning restore 612, 618
         }
