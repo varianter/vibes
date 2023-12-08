@@ -68,7 +68,7 @@ public class Tests
         var customer = Substitute.For<Customer>();
         customer.Name = "TestCustomer";
         project.Customer = customer;
-        project.State = ProjectState.Active;
+        project.State = ProjectState.Order;
 
 
         // TODO: Change this to update consultant data

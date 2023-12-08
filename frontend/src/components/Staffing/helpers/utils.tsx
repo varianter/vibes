@@ -138,3 +138,14 @@ export function upsertConsultantBooking(old: Consultant[], res?: Consultant) {
 
   return [...old];
 }
+
+export function updateProjects(old: Consultant[], res?: Consultant[]) {
+  if (!res) return old;
+
+  res.map((consultant) => {
+    const consultantIndex = old.findIndex((c) => c.id === consultant.id);
+    old[consultantIndex] = consultant;
+  });
+
+  return [...old];
+}

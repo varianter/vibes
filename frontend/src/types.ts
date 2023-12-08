@@ -159,3 +159,12 @@ export interface EngagementWriteModel {
   projectName?: string;
   customerName?: string;
 }
+
+export interface updateProjectStateBody {
+  engagementId: string;
+  projectState: ProjectState;
+  isBillable: boolean;
+  startWeek: number;
+  startYear: number;
+  weekSpan: number;
+}
