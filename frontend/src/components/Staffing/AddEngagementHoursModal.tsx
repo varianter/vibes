@@ -24,6 +24,16 @@ import { setDetailedBookingHours } from "./DetailedBookingRows";
 import { usePathname, useRouter } from "next/navigation";
 import { getColorByStaffingType, getIconByBookingType } from "./helpers/utils";
 
+interface WeekWithHours {
+  week: number;
+  hours: number;
+}
+
+interface ConsultantWithWeekHours {
+  consultantId: number;
+  weekWithHours: WeekWithHours[];
+}
+
 export function AddEngagementHoursModal({
   modalRef,
   chosenConsultants,
