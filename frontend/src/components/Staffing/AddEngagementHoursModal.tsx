@@ -32,8 +32,6 @@ export function AddEngagementHoursModal({
   const [selectedConsultants, setSelectedConsultants] =
     useState<Consultant[]>(chosenConsultants);
 
-  console.log({ selectedConsultants });
-
   const remainingConsultants = consultants.filter(
     (c) => !selectedConsultants.find((c2) => c2.id == c.id),
   );

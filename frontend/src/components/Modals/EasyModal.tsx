@@ -36,19 +36,20 @@ function EasyModal(props: EasyModalProps) {
   }
 
   const dialogBaseWidth = width ? `w-[${width}]` : "w-[331px]";
-  const dialogBaseHeight = height ? `w-[${height}]` : "w-[232px]";
+  const dialogBaseHeight = height ? `h-[${height}]` : "w-[232px]";
 
   return (
-    <BaseModal modalRef={modalRef} classNames={classNames}>
-      <div className={`${dialogBaseWidth} ${dialogBaseHeight}`}>
-        <EasyModalHeader
-          title={title}
-          handleClose={handleClose}
-          showCloseButton={showCloseButton}
-        />
+    <BaseModal
+      modalRef={modalRef}
+      classNames={`${dialogBaseWidth} ${dialogBaseHeight} ${classNames}`}
+    >
+      <EasyModalHeader
+        title={title}
+        handleClose={handleClose}
+        showCloseButton={showCloseButton}
+      />
 
-        <div className="space-y-2 z-10">{children}</div>
-      </div>
+      <div className="space-y-2 z-10">{children}</div>
     </BaseModal>
   );
 }
