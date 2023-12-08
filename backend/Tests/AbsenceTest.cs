@@ -68,7 +68,7 @@ public class Tests
         var customer = Substitute.For<Customer>();
         customer.Name = "TestCustomer";
         project.Customer = customer;
-        project.State = EngagementState.Active;
+        project.State = EngagementState.Order;
 
 
         // TODO: Change this to update consultant data
@@ -99,7 +99,7 @@ public class Tests
                 Consultant = consultant,
                 Hours = staffedHours,
                 Week = week,
-                ProjectId = project.Id,
+                EngagementId = project.Id,
                 ConsultantId = consultant.Id
             });
 

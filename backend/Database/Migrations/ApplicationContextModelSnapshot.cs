@@ -301,7 +301,7 @@ namespace Database.Migrations
 
             modelBuilder.Entity("Core.DomainModels.Staffing", b =>
                 {
-                    b.Property<int>("ProjectId")
+                    b.Property<int>("EngagementId")
                         .HasColumnType("int");
 
                     b.Property<int>("ConsultantId")
@@ -310,17 +310,12 @@ namespace Database.Migrations
                     b.Property<int>("Week")
                         .HasColumnType("int");
 
-                    b.Property<int>("EngagementId")
-                        .HasColumnType("int");
-
                     b.Property<double>("Hours")
                         .HasColumnType("float");
 
-                    b.HasKey("ProjectId", "ConsultantId", "Week");
+                    b.HasKey("EngagementId", "ConsultantId", "Week");
 
                     b.HasIndex("ConsultantId");
-
-                    b.HasIndex("EngagementId");
 
                     b.ToTable("Staffing");
                 });

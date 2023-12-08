@@ -1,4 +1,9 @@
-import { BookingType, Consultant, DetailedBooking } from "@/types";
+import {
+  BookingType,
+  Consultant,
+  DetailedBooking,
+  ProjectState,
+} from "@/types";
 import React, { ReactElement } from "react";
 import { Briefcase, Coffee, FileText, Moon, Sun } from "react-feather";
 import { InfoPillVariant } from "@/components/Staffing/InfoPill";
@@ -15,6 +20,31 @@ export function getColorByStaffingType(type: BookingType): string {
       return "bg-absence";
     case BookingType.Available:
       return "bg-available";
+    default:
+      return "";
+  }
+}
+
+export function getIconByProjectState(
+  size: number,
+  state?: ProjectState,
+): ReactElement {
+  switch (state) {
+    case ProjectState.Offer:
+      return <FileText size={size} className="text-primary_darker" />;
+    case ProjectState.Order:
+      return <Briefcase size={size} className="text-black" />;
+    default:
+      return <></>;
+  }
+}
+
+export function getColorByProjectState(type?: ProjectState): string {
+  switch (type) {
+    case ProjectState.Offer:
+      return "bg-offer";
+    case ProjectState.Order:
+      return "bg-primary/[3%]";
     default:
       return "";
   }
@@ -105,6 +135,17 @@ export function upsertConsultantBooking(old: Consultant[], res?: Consultant) {
 
   const consultantIndex = old.findIndex((c) => c.id === `${res.id}`);
   old[consultantIndex] = consultantToUpdate;
+
+  return [...old];
+}
+
+export function updateProjects(old: Consultant[], res?: Consultant[]) {
+  if (!res) return old;
+
+  res.map((consultant) => {
+    const consultantIndex = old.findIndex((c) => c.id === consultant.id);
+    old[consultantIndex] = consultant;
+  });
 
   return [...old];
 }

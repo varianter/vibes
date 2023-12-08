@@ -16,9 +16,31 @@ public class Engagement
     public required List<Staffing> Staffings { get; set; } = new();
 
     public required string Name { get; set; }
-    
+
     public required bool IsBillable { get; set; }
 
+    public void MergeEngagement(Engagement otherEngagement)
+    {
+        otherEngagement.Staffings.ForEach(s =>
+        {
+            var crashStaffing = Staffings.SingleOrDefault(staffing =>
+                s.ConsultantId == staffing.ConsultantId && s.Week.Equals(staffing.Week));
+
+            if (crashStaffing is not null)
+                crashStaffing.Hours += s.Hours;
+            else
+                Staffings.Add(new Staffing
+                {
+                    EngagementId = Id,
+                    Engagement = this,
+                    ConsultantId = s.ConsultantId,
+                    Consultant = s.Consultant,
+                    Week = s.Week,
+                    Hours = s.Hours
+                });
+            ;
+        });
+    }
 }
 
 public enum EngagementState
@@ -27,5 +49,7 @@ public enum EngagementState
     Order,
     Lost,
     Offer,
+
+    [Obsolete("'Active' is no longer used. Please use 'Order' instead")]
     Active
 }

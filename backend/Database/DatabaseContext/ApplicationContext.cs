@@ -58,11 +58,12 @@ public class ApplicationContext : DbContext
             .HasConversion<string>();
 
         modelBuilder.Entity<Staffing>()
-            .HasKey(staffing => new StaffingKey(staffing.ProjectId, staffing.ConsultantId, staffing.Week));
-        
+            .HasKey(staffing => new StaffingKey(staffing.EngagementId, staffing.ConsultantId, staffing.Week));
+
         modelBuilder.Entity<PlannedAbsence>()
-            .HasKey(plannedAbsence => new PlannedAbsenceKey(plannedAbsence.AbsenceId, plannedAbsence.ConsultantId, plannedAbsence.Week));
-        
+            .HasKey(plannedAbsence =>
+                new PlannedAbsenceKey(plannedAbsence.AbsenceId, plannedAbsence.ConsultantId, plannedAbsence.Week));
+
         modelBuilder.Entity<Engagement>()
             .HasMany(p => p.Consultants)
             .WithMany(c => c.Projects)

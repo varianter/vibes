@@ -24,7 +24,7 @@ public class ReadModelFactory
             .Select(consultant => MapToReadModelList(consultant, weeks))
             .ToList();
     }
-    
+
 
     public ConsultantReadModel GetConsultantReadModelForWeek(int consultantId, Week week)
     {
@@ -32,16 +32,31 @@ public class ReadModelFactory
         var readModel = MapToReadModelList(consultant, new List<Week> { week });
 
         return new ConsultantReadModel(consultant, new List<BookedHoursPerWeek> { readModel.Bookings.First() },
-           new List<DetailedBooking> { readModel.DetailedBooking.First() }, readModel.IsOccupied);
+            new List<DetailedBooking> { readModel.DetailedBooking.First() }, readModel.IsOccupied);
     }
-    
-    public ConsultantReadModel GetConsultantReadModelForWeeks( int consultantId, List<Week> weeks)
+
+    public ConsultantReadModel GetConsultantReadModelForWeeks(int consultantId, List<Week> weeks)
     {
         var consultant = _storageService.LoadConsultantForWeekSet(consultantId, weeks);
         var readModel = MapToReadModelList(consultant, weeks);
 
         return new ConsultantReadModel(consultant, readModel.Bookings,
             readModel.DetailedBooking, readModel.IsOccupied);
+    }
+
+    public List<ConsultantReadModel> GetConsultantReadModelForWeeks(List<int> consultantIds, List<Week> weeks)
+    {
+        var consultants = new List<ConsultantReadModel>();
+        foreach (var i in consultantIds)
+        {
+            var consultant = _storageService.LoadConsultantForWeekSet(i, weeks);
+            var readModel = MapToReadModelList(consultant, weeks);
+
+            consultants.Add(new ConsultantReadModel(consultant, readModel.Bookings,
+                readModel.DetailedBooking, readModel.IsOccupied));
+        }
+
+        return consultants;
     }
 
     public static ConsultantReadModel MapToReadModelList(
@@ -84,7 +99,7 @@ public class ReadModelFactory
 
         // var billableProjects = UniqueWorkTypes(projects, billableStaffing);
         var billableBookings = consultant.Staffings
-            .Where(staffing => staffing.Engagement.State == EngagementState.Active)
+            .Where(staffing => staffing.Engagement.State == EngagementState.Order)
             .Where(staffing => weekSet.Contains(staffing.Week))
             .GroupBy(staffing => staffing.Engagement.Name)
             .Select(grouping => new DetailedBooking(
