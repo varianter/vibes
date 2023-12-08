@@ -166,7 +166,7 @@ public class ProjectController : ControllerBase
             .SingleOrDefault(p => p.Customer.Name == body.CustomerName
                                   && p.IsBillable == body.IsBillable
                                   && p.Name == body.ProjectName
-                                  && p.State == body.BookingType
+                                  && p.State == body.ProjectState
             );
 
         if (project is null)
@@ -174,7 +174,7 @@ public class ProjectController : ControllerBase
             project = new Project
             {
                 Customer = customer,
-                State = body.BookingType,
+                State = body.ProjectState,
                 Staffings = new List<Staffing>(),
                 Consultants = new List<Consultant>(),
                 Name = body.ProjectName,
