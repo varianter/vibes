@@ -9,7 +9,7 @@ import IconActionButton from "@/components/Buttons/IconActionButton";
 import { ArrowLeft, ArrowRight, Briefcase } from "react-feather";
 import { AddConsultantCell } from "./AddConsultantCell";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
-import { SelectOption } from "../ReactSelect";
+import { SelectOption } from "../ComboBox";
 
 export function AddEngagementHoursModal({
   modalRef,

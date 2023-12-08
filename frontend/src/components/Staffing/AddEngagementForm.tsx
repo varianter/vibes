@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { useModal } from "@/hooks/useModal";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
-import ReactSelect, { SelectOption } from "@/components/ReactSelect";
+import ComboBox, { SelectOption } from "@/components/ComboBox";
 import { MultiValue } from "react-select";
 import EasyModal from "@/components/Modals/EasyModal";
 import { AddEngagementHoursModal } from "@/components/Staffing/AddEngagementHoursModal";
@@ -181,7 +181,7 @@ export function AddEngagementForm({
             {/* Selected Customer */}
             <div className="flex flex-col gap-2">
               <p className="small text-black">Konsulenter</p>
-              <ReactSelect
+              <ComboBox
                 options={consultantOptions}
                 selectedMultipleOptionsValue={selectedConsultants}
                 onMultipleOptionsChange={setSelectedConsultants}
@@ -191,7 +191,7 @@ export function AddEngagementForm({
             </div>
             <div className="flex flex-col gap-2">
               <p className="small text-black">Kunde</p>
-              <ReactSelect
+              <ComboBox
                 options={customerOptions}
                 selectedSingleOptionValue={selectedCustomer}
                 onSingleOptionChange={handleSelectedCustomerChange}
@@ -202,7 +202,7 @@ export function AddEngagementForm({
             </div>
             <div className="flex flex-col gap-2">
               <p className="small text-black">Engasjement</p>
-              <ReactSelect
+              <ComboBox
                 options={projectOptions}
                 onSingleOptionChange={handleSelectedEngagementChange}
                 selectedSingleOptionValue={selectedEngagement}

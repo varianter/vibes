@@ -1,6 +1,6 @@
 import React, { ReactElement, useState } from "react";
 import { Plus } from "react-feather";
-import { SelectOption } from "@/components/ReactSelect";
+import { SelectOption } from "@/components/ComboBox";
 import { useModal } from "@/hooks/useModal";
 
 import { Consultant } from "@/types";

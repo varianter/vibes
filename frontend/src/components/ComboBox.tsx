@@ -4,7 +4,7 @@ import Select, { MultiValue } from "react-select";
 
 export type SelectOption = { value: string; label: string };
 
-export default function ReactSelect({
+export default function ComboBox({
   options,
   selectedSingleOptionValue,
   selectedMultipleOptionsValue,
