@@ -10,6 +10,7 @@ export default function ReactSelect({
   onSingleOptionChange,
   onMultipleOptionsChange,
   isMultipleOptions = false,
+  isClearable = false,
 }: {
   options: SelectOption[];
   selectedSingleOptionValue?: SelectOption | null;
@@ -17,11 +18,13 @@ export default function ReactSelect({
   onSingleOptionChange?: (arg: SelectOption) => void;
   onMultipleOptionsChange?: (arg: MultiValue<SelectOption>) => void;
   isMultipleOptions?: boolean;
+  isClearable?: boolean;
 }) {
   return (
     <Select
       isMulti={isMultipleOptions}
       options={options}
+      isClearable={isClearable}
       value={
         isMultipleOptions
           ? selectedMultipleOptionsValue
@@ -32,7 +35,7 @@ export default function ReactSelect({
           ? onMultipleOptionsChange?.(a as MultiValue<SelectOption>)
           : onSingleOptionChange?.(a as SelectOption);
       }}
-      classNames={{ menu: () => "max-h-[120px] bg-white overflow-hidden" }}
+      classNames={{ menu: () => "bg-white overflow-hidden" }}
     />
   );
 }
