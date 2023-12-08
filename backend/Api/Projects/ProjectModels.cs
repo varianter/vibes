@@ -11,3 +11,5 @@ public record EngagementWriteModel(ProjectState ProjectState,
     bool IsBillable, string ProjectName, string CustomerName);
 
 public record ProjectWithCustomerModel(string ProjectName, string CustomerName, ProjectState ProjectState, bool IsBillable, int ProjectId);
+
+public record UpdateProjectWriteModel(int EngagementId, ProjectState ProjectState, int StartYear, int StartWeek, int WeekSpan );

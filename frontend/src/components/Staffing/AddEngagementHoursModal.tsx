@@ -21,6 +21,9 @@ import { ArrowLeft, ArrowRight, Minus, Plus } from "react-feather";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { setDetailedBookingHours } from "./DetailedBookingRows";
 import { usePathname } from "next/navigation";
+import { SelectOption } from "../ReactSelect";
+import { AddConsultantCell } from "./AddConsultantCell";
+
 import {
   getColorByStaffingType,
   getIconByBookingType,
@@ -53,6 +56,21 @@ export function AddEngagementHoursModal({
     DateTime.now(),
   );
 
+  const { consultants } = useContext(FilteredContext);
+
+  const [selectedConsultants, setSelectedConsultants] =
+    useState<Consultant[]>(chosenConsultants);
+
+  const remainingConsultants = consultants.filter(
+    (c) => !selectedConsultants.find((c2) => c2.id == c.id),
+  );
+
+  function handleAddConsultant(option: SelectOption) {
+    const consultant = remainingConsultants.find((c) => c.id == option.value);
+    if (consultant)
+      setSelectedConsultants([...selectedConsultants, consultant]);
+  }
+
   function setWeekSpan(weekSpanString: string) {
     const weekSpanNum = parseInt(weekSpanString.split(" ")[0]);
     setSelectedWeekSpan(weekSpanNum);
@@ -61,6 +79,10 @@ export function AddEngagementHoursModal({
   const [weekList, setWeekList] = useState<DateTime[]>(
     generateWeekList(firstVisibleDay, selectedWeekSpan),
   );
+
+  useEffect(() => {
+    setSelectedConsultants(chosenConsultants);
+  }, [chosenConsultants]);
 
   useEffect(() => {
     setWeekList(generateWeekList(firstVisibleDay, selectedWeekSpan));
@@ -154,7 +176,7 @@ export function AddEngagementHoursModal({
                 <div className="flex flex-row gap-3 pb-4 items-center">
                   <p className="normal-medium ">Konsulenter</p>
                   <p className="text-primary small-medium rounded-full bg-primary/5 px-2 py-1">
-                    {chosenConsultants?.length}
+                    {selectedConsultants?.length}
                   </p>
                 </div>
               </th>
@@ -191,7 +213,7 @@ export function AddEngagementHoursModal({
             </tr>
           </thead>
           <tbody>
-            {chosenConsultants?.map((consultant) => (
+            {selectedConsultants?.map((consultant) => (
               <AddEngagementHoursRow
                 key={consultant.id}
                 consultant={consultant}
@@ -204,6 +226,12 @@ export function AddEngagementHoursModal({
                 updateHours={updateHours}
               />
             ))}
+            <tr>
+              <AddConsultantCell
+                onAddConsultant={handleAddConsultant}
+                consultantList={remainingConsultants}
+              />
+            </tr>
           </tbody>
         </table>
       </div>
