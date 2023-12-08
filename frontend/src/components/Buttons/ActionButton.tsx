@@ -53,7 +53,9 @@ export default function ActionButton({
   return (
     <BaseButton
       className={`${variantClass} ${disabledClass} ${fullWidthClass} ${buttonShapeClass} ${className}`}
-      onClick={() => !disabled && onClick}
+      onClick={() => {
+        !disabled && onClick && onClick();
+      }}
       type={type}
     >
       <IconBox small={small}>{iconLeft}</IconBox>
