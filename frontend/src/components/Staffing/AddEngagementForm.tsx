@@ -174,7 +174,9 @@ export function AddEngagementForm({
         }}
       >
         <form
-          onSubmit={() => selectedEngagement == null && handleSubmit}
+          onSubmit={(e) => {
+            selectedEngagement != null && handleSubmit(e);
+          }}
           className="h-full flex flex-col gap-6"
         >
           <div className="flex flex-col gap-6 pt-6">
