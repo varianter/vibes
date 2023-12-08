@@ -51,9 +51,9 @@ export function AddEngagementHoursModal({
     generateWeekList(firstVisibleDay, selectedWeekSpan),
   );
 
-  useEffect(() => {
-    setSelectedConsultants(chosenConsultants);
-  }, [chosenConsultants]);
+  //useEffect(() => {
+  //  setSelectedConsultants(chosenConsultants);
+  //}, [chosenConsultants]);
 
   useEffect(() => {
     setWeekList(generateWeekList(firstVisibleDay, selectedWeekSpan));
