@@ -12,7 +12,10 @@ function BaseModal(props: BaseModalProps) {
   const { children, modalRef, classNames } = props;
 
   return (
-    <dialog ref={modalRef} className={`rounded-lg p-4 ${classNames}`}>
+    <dialog
+      ref={modalRef}
+      className={`rounded-lg p-4 overflow-visible ${classNames}`}
+    >
       {children}
     </dialog>
   );

@@ -9,5 +9,5 @@ public class Customer
 
     public required string Name { get; set; }
     public required Organization Organization { get; set; }
-    public required List<Project> Projects { get; set; }
+    public required List<Engagement> Projects { get; set; }
 }

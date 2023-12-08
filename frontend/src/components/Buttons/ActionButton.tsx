@@ -4,7 +4,7 @@ import { IconBox } from "./IconBox";
 
 export type ActionButtonProps = {
   variant: "primary" | "secondary" | "terniary";
-  onClick: () => void;
+  onClick?: () => void;
   children?: React.ReactNode;
   iconLeft?: React.ReactNode;
   iconRight?: React.ReactNode;
@@ -13,6 +13,7 @@ export type ActionButtonProps = {
   disabled?: boolean;
   iconBtn?: boolean;
   small?: boolean;
+  type?: "button" | "submit" | "reset";
 };
 
 export default function ActionButton({
@@ -26,16 +27,22 @@ export default function ActionButton({
   disabled = false,
   iconBtn = false,
   small = false,
+  type = "button",
 }: ActionButtonProps) {
   const variantClass =
     {
-      primary: "bg-primary text-white hover:bg-primary_darker",
-      secondary:
-        "bg-white text-primary border border-primary/50 hover:bg-primary/10 hover:border-primary",
-      terniary: "bg-white text-primary hover:bg-primary/10",
+      primary: `bg-primary text-white ${
+        !disabled && "hover:bg-primary_darker"
+      }`,
+      secondary: `bg-white text-primary border border-primary/50 ${
+        !disabled && "hover:border-primary"
+      }`,
+      terniary: `bg-white text-primary ${
+        !disabled && "hover:bg-primary/10 hover:bg-primary/10"
+      }`,
     }[variant] ?? "Default";
 
-  const disabledClass = disabled ? "bg-opacity-50" : "";
+  const disabledClass = disabled ? "bg-opacity-50 cursor-default" : "";
   const fullWidthClass = fullWidth ? "w-full" : "";
   const buttonShapeClass = iconBtn
     ? small
@@ -45,8 +52,9 @@ export default function ActionButton({
 
   return (
     <BaseButton
-      className={` ${variantClass} ${disabledClass} ${fullWidthClass} ${buttonShapeClass} ${className}`}
-      onClick={onClick}
+      className={`${variantClass} ${disabledClass} ${fullWidthClass} ${buttonShapeClass} ${className}`}
+      onClick={() => !disabled && onClick}
+      type={type}
     >
       <IconBox small={small}>{iconLeft}</IconBox>
       {children}

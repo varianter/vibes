@@ -12,8 +12,10 @@ type FilterContextType = {
   setConsultants: React.Dispatch<React.SetStateAction<ConsultantReadModel[]>>;
   departments: DepartmentReadModel[];
   customers: EngagementPerCustomerReadModel[];
-  isDisabledHotkeys: Boolean;
+  isDisabledHotkeys: boolean;
   setIsDisabledHotkeys: React.Dispatch<React.SetStateAction<boolean>>;
+  closeModalOnBackdropClick: boolean;
+  setCloseModalOnBackdropClick: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const FilteredContext = createContext<FilterContextType>({
@@ -23,6 +25,8 @@ export const FilteredContext = createContext<FilterContextType>({
   customers: [],
   isDisabledHotkeys: false,
   setIsDisabledHotkeys: () => {},
+  closeModalOnBackdropClick: true,
+  setCloseModalOnBackdropClick: () => {},
 });
 
 export function ConsultantFilterProvider(props: {
@@ -32,6 +36,8 @@ export function ConsultantFilterProvider(props: {
   children: ReactNode;
 }) {
   const [isDisabledHotkeys, setIsDisabledHotkeys] = useState(false);
+  const [closeModalOnBackdropClick, setCloseModalOnBackdropClick] =
+    useState(true);
   const [consultants, setConsultants] = useState(props.consultants ?? []);
 
   useEffect(() => setConsultants(props.consultants), [props.consultants]);
@@ -42,6 +48,8 @@ export function ConsultantFilterProvider(props: {
         ...props,
         isDisabledHotkeys,
         setIsDisabledHotkeys,
+        closeModalOnBackdropClick,
+        setCloseModalOnBackdropClick,
         consultants,
         setConsultants,
       }}

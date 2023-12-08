@@ -2,9 +2,7 @@
 
 import { RefObject } from "react";
 import BaseModal from "./BaseModal";
-import { Check } from "react-feather";
 import { EasyModalHeader } from "./EasyModalHeader";
-import ActionButton from "../Buttons/ActionButton";
 
 export interface EasyModalProps {
   children: React.ReactNode;
@@ -13,10 +11,22 @@ export interface EasyModalProps {
   modalRef: RefObject<HTMLDialogElement>;
   showCloseButton?: true;
   title: string;
+  width?: string;
+  height?: string;
+  classNames?: string;
 }
 
 function EasyModal(props: EasyModalProps) {
-  const { children, onClose, onSave, modalRef, showCloseButton, title } = props;
+  const {
+    children,
+    onClose,
+    modalRef,
+    showCloseButton,
+    title,
+    width,
+    height,
+    classNames = "",
+  } = props;
 
   const dialogElement = modalRef?.current;
 
@@ -25,28 +35,21 @@ function EasyModal(props: EasyModalProps) {
     dialogElement?.close();
   }
 
-  function handleSave() {
-    onSave?.();
-    dialogElement?.close();
-  }
+  const dialogBaseWidth = width ? `w-[${width}]` : "w-[331px]";
+  const dialogBaseHeight = height ? `h-[${height}]` : "w-[232px]";
 
   return (
-    <BaseModal modalRef={modalRef}>
-      <div className="w-[332px]">
-        <EasyModalHeader
-          title={title}
-          handleClose={handleClose}
-          showCloseButton={showCloseButton}
-        />
+    <BaseModal
+      modalRef={modalRef}
+      classNames={`${dialogBaseWidth} ${dialogBaseHeight} ${classNames}`}
+    >
+      <EasyModalHeader
+        title={title}
+        handleClose={handleClose}
+        showCloseButton={showCloseButton}
+      />
 
-        <div className="space-y-2">{children}</div>
-
-        <div className="space-y-2 space-x-2">
-          <ActionButton variant="primary" onClick={handleSave} fullWidth>
-            Legg til
-          </ActionButton>
-        </div>
-      </div>
+      <div className="space-y-2 z-10">{children}</div>
     </BaseModal>
   );
 }

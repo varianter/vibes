@@ -1,5 +1,5 @@
-import React, { RefObject, useEffect, useState } from "react";
-import { BookingType, ConsultantReadModel } from "@/api-types";
+import React, { RefObject, useEffect, useState , useContext} from "react";
+import { BookingType, ConsultantReadModel, ProjectWithCustomerModel } from "@/api-types";
 import { DateTime } from "luxon";
 import { generateWeekList } from "@/components/Staffing/helpers/GenerateWeekList";
 import { LargeModal } from "@/components/Modals/LargeModal";
@@ -7,20 +7,40 @@ import DropDown from "@/components/DropDown";
 import ActionButton from "@/components/Buttons/ActionButton";
 import IconActionButton from "@/components/Buttons/IconActionButton";
 import { ArrowLeft, ArrowRight, Briefcase } from "react-feather";
+import { AddConsultantCell } from "./AddConsultantCell";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
+import { SelectOption } from "../ComboBox";
 
 export function AddEngagementHoursModal({
   modalRef,
   chosenConsultants,
+  project,
 }: {
   modalRef: RefObject<HTMLDialogElement>;
   weekSpan: number;
   chosenConsultants: ConsultantReadModel[];
+  project?: ProjectWithCustomerModel;
 }) {
   const weekSpanOptions = ["8 uker", "12 uker", "26 uker"];
   const [selectedWeekSpan, setSelectedWeekSpan] = useState<number>(8);
   const [firstVisibleDay, setFirstVisibleDay] = useState<DateTime>(
     DateTime.now(),
   );
+
+  const { consultants } = useContext(FilteredContext);
+
+  const [selectedConsultants, setSelectedConsultants] =
+    useState<ConsultantReadModel[]>(chosenConsultants);
+
+  const remainingConsultants = consultants.filter(
+    (c) => !selectedConsultants.find((c2) => c2.id == c.id),
+  );
+
+  function handleAddConsultant(option: SelectOption) {
+    const consultant = remainingConsultants.find((c) => c.id == option.value);
+    if (consultant)
+      setSelectedConsultants([...selectedConsultants, consultant]);
+  }
 
   function setWeekSpan(weekSpanString: string) {
     const weekSpanNum = parseInt(weekSpanString.split(" ")[0]);
@@ -32,16 +52,21 @@ export function AddEngagementHoursModal({
   );
 
   useEffect(() => {
+    setSelectedConsultants(chosenConsultants);
+  }, [chosenConsultants]);
+
+  useEffect(() => {
     setWeekList(generateWeekList(firstVisibleDay, selectedWeekSpan));
   }, [firstVisibleDay, selectedWeekSpan]);
+
+  const { setIsDisabledHotkeys } = useContext(FilteredContext);
 
   return (
     <LargeModal
       modalRef={modalRef}
-      engagementName="Designbistand"
-      customerName="Akva Group"
-      type={BookingType.Offer}
+      project={project}
       showCloseButton={true}
+      onClose={() => setIsDisabledHotkeys(false)}
     >
       <div className="flex flex-col gap-6">
         <div className="flex justify-end">
@@ -103,7 +128,7 @@ export function AddEngagementHoursModal({
                 <div className="flex flex-row gap-3 pb-4 items-center">
                   <p className="normal-medium ">Konsulenter</p>
                   <p className="text-primary small-medium rounded-full bg-primary/5 px-2 py-1">
-                    {chosenConsultants?.length}
+                    {selectedConsultants?.length}
                   </p>
                 </div>
               </th>
@@ -140,13 +165,19 @@ export function AddEngagementHoursModal({
             </tr>
           </thead>
           <tbody>
-            {chosenConsultants?.map((consultant) => (
+            {selectedConsultants?.map((consultant) => (
               <AddEngagementHoursRow
                 key={consultant.id}
                 consultant={consultant}
                 weekList={weekList}
               />
             ))}
+            <tr>
+              <AddConsultantCell
+                onAddConsultant={handleAddConsultant}
+                consultantList={remainingConsultants}
+              />
+            </tr>
           </tbody>
         </table>
       </div>

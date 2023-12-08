@@ -42,7 +42,7 @@ public class StorageService
             .Single(c => c.Id == consultantId);
 
         consultant.Staffings = _dbContext.Staffing.Where(staffing =>
-                staffing.Week.Equals(week) && staffing.ConsultantId == consultantId).Include(s => s.Project)
+                staffing.Week.Equals(week) && staffing.ConsultantId == consultantId).Include(s => s.Engagement)
             .ThenInclude(p => p.Customer).ToList();
 
         consultant.PlannedAbsences = _dbContext.PlannedAbsence
@@ -63,7 +63,7 @@ public class StorageService
 
 
         consultant.Staffings = _dbContext.Staffing.Where(staffing =>
-                weeks.Contains(staffing.Week) && staffing.ConsultantId == consultantId).Include(s => s.Project)
+                weeks.Contains(staffing.Week) && staffing.ConsultantId == consultantId).Include(s => s.Engagement)
             .ThenInclude(p => p.Customer).ToList();
 
         consultant.PlannedAbsences = _dbContext.PlannedAbsence
@@ -93,7 +93,7 @@ public class StorageService
 
         var staffingPrConsultant = _dbContext.Staffing
             .Include(s => s.Consultant)
-            .Include(staffing => staffing.Project)
+            .Include(staffing => staffing.Engagement)
             .ThenInclude(project => project.Customer)
             .GroupBy(staffing => staffing.Consultant.Id)
             .ToDictionary(group => group.Key, grouping => grouping.ToList());
@@ -132,12 +132,12 @@ public class StorageService
     private Staffing CreateStaffing(StaffingKey staffingKey, double hours)
     {
         var consultant = _dbContext.Consultant.Single(c => c.Id == staffingKey.ConsultantId);
-        var project = _dbContext.Project.Single(p => p.Id == staffingKey.ProjectId);
+        var project = _dbContext.Project.Single(p => p.Id == staffingKey.EngagementId);
 
         var staffing = new Staffing
         {
-            ProjectId = staffingKey.ProjectId,
-            Project = project,
+            EngagementId = staffingKey.EngagementId,
+            Engagement = project,
             ConsultantId = staffingKey.ConsultantId,
             Consultant = consultant,
             Hours = hours,
@@ -166,7 +166,7 @@ public class StorageService
     public void UpdateOrCreateStaffing(StaffingKey staffingKey, double hours, string orgUrlKey)
     {
         var staffing = _dbContext.Staffing
-            .FirstOrDefault(s => s.ProjectId.Equals(staffingKey.ProjectId)
+            .FirstOrDefault(s => s.EngagementId.Equals(staffingKey.EngagementId)
                                  && s.ConsultantId.Equals(staffingKey.ConsultantId)
                                  && s.Week.Equals(staffingKey.Week));
 
@@ -225,14 +225,14 @@ public class StorageService
             }
 
             var staffing = _dbContext.Staffing
-                .FirstOrDefault(s => s.ProjectId.Equals(projectId)
+                .FirstOrDefault(s => s.EngagementId.Equals(projectId)
                                      && s.ConsultantId.Equals(consultantId)
                                      && s.Week.Equals(week));
             if (staffing is null)
                 _dbContext.Add(new Staffing
                 {
-                    ProjectId = projectId,
-                    Project = project,
+                    EngagementId = projectId,
+                    Engagement = project,
                     ConsultantId = consultantId,
                     Consultant = consultant,
                     Hours = newHours,
@@ -298,7 +298,7 @@ public class StorageService
             {
                 Name = customerName,
                 Organization = org,
-                Projects = new List<Project>()
+                Projects = new List<Engagement>()
             };
 
             _dbContext.Customer.Add(customer);
@@ -308,5 +308,54 @@ public class StorageService
         ClearConsultantCache(orgUrlKey);
 
         return customer;
+    }
+
+    public Engagement UpdateProjectState(int engagementId, EngagementState projectState, string orgUrlKey)
+    {
+        var engagement = _dbContext.Project
+            .Include(p => p.Customer)
+            .Include(p => p.Staffings)
+            .Include(p => p.Consultants)
+            .SingleOrDefault(p => p.Id == engagementId);
+        var similarEngagement = _dbContext.Project
+            //.Include(p => p.Customer)
+            .Include(p => p.Staffings)
+            //.Include(p=> p.Consultants)
+            .SingleOrDefault(
+                p => p.Customer == engagement.Customer && p.Name == engagement.Name && p.Id != engagementId);
+
+        if (similarEngagement is not null && similarEngagement.State == projectState)
+        {
+            similarEngagement.MergeEngagement(engagement);
+            //_dbContext.SaveChanges();
+            //foreach (var staffing in engagement.Staffings) _dbContext.Remove(staffing);
+            _dbContext.Project.Remove(_dbContext.Project.Find(engagement.Id));
+            _dbContext.SaveChanges();
+
+            //engagement = similarEngagement;
+        }
+        else
+        {
+            engagement.State = projectState;
+            _dbContext.SaveChanges();
+        }
+
+        _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
+
+        return engagement;
+    }
+
+    public Engagement? GetProjectById(int id)
+    {
+        return _dbContext.Project.Find(id);
+    }
+
+    public Engagement GetProjectWithOrganisationById(int id)
+    {
+        return _dbContext.Project
+            .Where(p => p.Id == id)
+            .Include(p => p.Customer)
+            .ThenInclude(c => c.Organization)
+            .Single(p => p.Id == id);
     }
 }

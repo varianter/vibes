@@ -1,4 +1,4 @@
-import { BookingType } from "@/api-types";
+import { BookingType, ProjectState } from "@/api-types";
 
 export type YearRange = {
   label: string;
@@ -19,4 +19,27 @@ export interface updateBookingHoursBody {
   bookingId: string;
   startWeek: number;
   endWeek?: number;
+}
+
+export interface ProjectWithCustomerModel {
+  projectName: string;
+  customerName: string;
+  projectState: ProjectState;
+  isBillable: boolean;
+}
+
+export interface EngagementWriteModel {
+  projectState?: ProjectState;
+  isBillable?: boolean;
+  projectName?: string;
+  customerName?: string;
+}
+
+export interface updateProjectStateBody {
+  engagementId: string;
+  projectState: ProjectState;
+  isBillable: boolean;
+  startWeek: number;
+  startYear: number;
+  weekSpan: number;
 }

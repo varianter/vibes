@@ -1,13 +1,22 @@
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useContext, useState } from "react";
 import { useModal } from "@/hooks/useModal";
 import { AddEngagementForm } from "@/components/Staffing/AddEngagementForm";
 import { Plus } from "react-feather";
+import { Consultant } from "@/types";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
-export function AddStaffingCell(): ReactElement {
+export function AddStaffingCell({
+  consultant,
+}: {
+  consultant: Consultant;
+}): ReactElement {
+  const { closeModalOnBackdropClick } = useContext(FilteredContext);
   const { closeModal, openModal, modalRef } = useModal({
-    closeOnBackdropClick: true,
+    closeOnBackdropClick: closeModalOnBackdropClick,
   });
   const [isAddStaffingHovered, setIsAddStaffingHovered] = useState(false);
+
+  const { setIsDisabledHotkeys } = useContext(FilteredContext);
 
   return (
     <>
@@ -16,10 +25,14 @@ export function AddStaffingCell(): ReactElement {
         <AddEngagementForm
           closeEngagementModal={closeModal}
           easyModalRef={modalRef}
+          consultant={consultant}
         />
 
         <button
-          onClick={openModal}
+          onClick={() => {
+            openModal();
+            setIsDisabledHotkeys(true);
+          }}
           className="flex flex-row items-center gap-2"
           onMouseEnter={() => setIsAddStaffingHovered(true)}
           onMouseLeave={() => setIsAddStaffingHovered(false)}

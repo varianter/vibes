@@ -131,7 +131,6 @@ public class ConsultantController : ControllerBase
 
         return new ReadModelFactory(service).GetConsultantReadModelForWeeks(
             severalStaffingWriteModel.ConsultantId, weekSet);
-        ;
     }
 }
 

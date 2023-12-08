@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-using Api.BuildHelpers;
+using Api.AppExtensions;
 using Api.Options;
 using Database.DatabaseContext;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -37,6 +37,8 @@ builder.Services.AddSwaggerGen(genOptions =>
 });
 
 var app = builder.Build();
+
+app.ApplyMigrations();
 
 app.UsePathBase("/v0");
 app.MapControllers();
