@@ -1,6 +1,5 @@
 import React, {
   RefObject,
-  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -21,8 +20,12 @@ import IconActionButton from "@/components/Buttons/IconActionButton";
 import { ArrowLeft, ArrowRight, Minus, Plus } from "react-feather";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { setDetailedBookingHours } from "./DetailedBookingRows";
-import { usePathname, useRouter } from "next/navigation";
-import { getColorByStaffingType, getIconByBookingType } from "./helpers/utils";
+import { usePathname } from "next/navigation";
+import {
+  getColorByStaffingType,
+  getIconByBookingType,
+  upsertConsultantBooking,
+} from "./helpers/utils";
 
 interface WeekWithHours {
   week: number;
@@ -30,7 +33,7 @@ interface WeekWithHours {
 }
 
 interface ConsultantWithWeekHours {
-  consultantId: number;
+  consultantId: string;
   weekWithHours: WeekWithHours[];
 }
 
@@ -64,17 +67,32 @@ export function AddEngagementHoursModal({
   }, [firstVisibleDay, selectedWeekSpan]);
 
   const { setIsDisabledHotkeys } = useContext(FilteredContext);
+  const [consultantsWHours, setConsultantsWHours] = useState<
+    ConsultantWithWeekHours[]
+  >([]);
 
-  const router = useRouter();
+  useEffect(
+    () =>
+      setConsultantsWHours(
+        generateConsultatsWithHours(
+          weekList,
+          chosenConsultants,
+          project?.projectId || "",
+        ),
+      ),
+    [chosenConsultants, project?.projectId, weekList],
+  );
+
+  function updateHours(res?: Consultant) {
+    upsertConsultantBooking(chosenConsultants, res);
+  }
 
   return (
     <LargeModal
       modalRef={modalRef}
       project={project}
       showCloseButton={true}
-      onClose={() => {
-        setIsDisabledHotkeys(false), router.refresh();
-      }}
+      onClose={() => setIsDisabledHotkeys(false)}
     >
       <div className="flex flex-col gap-6">
         <div className="flex justify-end">
@@ -179,6 +197,11 @@ export function AddEngagementHoursModal({
                 consultant={consultant}
                 weekList={weekList}
                 project={project}
+                weekHours={
+                  consultantsWHours.find((c) => c.consultantId == consultant.id)
+                    ?.weekWithHours || []
+                }
+                updateHours={updateHours}
               />
             ))}
           </tbody>
@@ -188,34 +211,18 @@ export function AddEngagementHoursModal({
   );
 }
 
-function generateHoursDictionary(weekList: DateTime[]) {
-  let dictionary: { [id: number]: number } = {};
-  weekList.map((d) => (dictionary = { ...dictionary, [dayToWeek(d)]: 0 }));
-  return dictionary;
-}
-
-function generateMoreHoursDictionary(
-  weekList: DateTime[],
-  dic: { [id: number]: number },
-) {
-  weekList.map(
-    (d) =>
-      (dic = {
-        ...dic,
-        [dayToWeek(d)]: dic[dayToWeek(d)] || 0,
-      }),
-  );
-  return dic;
-}
-
 function AddEngagementHoursRow({
   consultant,
   weekList,
   project,
+  weekHours,
+  updateHours,
 }: {
   consultant: Consultant;
   weekList: DateTime[];
   project?: ProjectWithCustomerModel;
+  weekHours: WeekWithHours[];
+  updateHours: (res?: Consultant) => void;
 }) {
   const [hourDragValue, setHourDragValue] = useState<number | undefined>(
     undefined,
@@ -227,27 +234,6 @@ function AddEngagementHoursRow({
     undefined,
   );
   const [isRowHovered, setIsRowHovered] = useState(false);
-
-  const [hoursDictionary, setHoursDictionary] = useState(
-    generateHoursDictionary(weekList),
-  ); //FLytt ett hakk opp?
-
-  console.log(generateMoreHoursDictionary(weekList, hoursDictionary));
-
-  function updateHoursDictionary(consultant?: Consultant) {
-    if (!consultant) return;
-
-    consultant.detailedBooking?.map((booking) => {
-      if (booking.bookingDetails.projectId == project?.projectId) {
-        booking.hours.map((hours) =>
-          setHoursDictionary((hoursDictionary) => ({
-            ...hoursDictionary,
-            [hours.week]: hours.hours,
-          })),
-        );
-      }
-    });
-  }
 
   return (
     <tr>
@@ -267,23 +253,27 @@ function AddEngagementHoursRow({
         <p className="text-black text-start small pl-2">{consultant.name}</p>
       </td>
       {weekList.map((day) => (
-        <DetailedBookingCell
-          key={dayToWeek(day)}
-          project={project}
-          consultant={consultant}
-          hourDragValue={hourDragValue}
-          currentDragWeek={currentDragWeek}
-          startDragWeek={startDragWeek}
-          setHourDragValue={setHourDragValue}
-          setStartDragWeek={setStartDragWeek}
-          setCurrentDragWeek={setCurrentDragWeek}
-          isRowHovered={isRowHovered}
-          setIsRowHovered={setIsRowHovered}
-          numWeeks={weekList.length}
-          firstDayInWeek={day}
-          initHours={hoursDictionary[dayToWeek(day)]}
-          updateHoursDictionary={updateHoursDictionary}
-        />
+        <>
+          <DetailedBookingCell
+            key={dayToWeek(day)}
+            project={project}
+            consultant={consultant}
+            hourDragValue={hourDragValue}
+            currentDragWeek={currentDragWeek}
+            startDragWeek={startDragWeek}
+            setHourDragValue={setHourDragValue}
+            setStartDragWeek={setStartDragWeek}
+            setCurrentDragWeek={setCurrentDragWeek}
+            isRowHovered={isRowHovered}
+            setIsRowHovered={setIsRowHovered}
+            numWeeks={weekList.length}
+            firstDayInWeek={day}
+            initHours={
+              weekHours.find((w) => w.week == dayToWeek(day))?.hours || 0
+            }
+            updateHours={updateHours}
+          />
+        </>
       ))}
     </tr>
   );
@@ -303,7 +293,7 @@ function DetailedBookingCell({
   numWeeks,
   firstDayInWeek,
   initHours,
-  updateHoursDictionary,
+  updateHours,
 }: {
   project?: ProjectWithCustomerModel;
   consultant: Consultant;
@@ -318,7 +308,7 @@ function DetailedBookingCell({
   numWeeks: number;
   firstDayInWeek: DateTime;
   initHours: number;
-  updateHoursDictionary: (res?: Consultant) => void;
+  updateHours: (res?: Consultant) => void;
 }) {
   const [hours, setHours] = useState(initHours);
   const [isChangingHours, setIsChangingHours] = useState(false);
@@ -341,7 +331,7 @@ function DetailedBookingCell({
         projectId: project?.projectId || "",
         startWeek: dayToWeek(firstDayInWeek),
       }).then((res) => {
-        updateHoursDictionary(res);
+        updateHours(res);
       });
     }
   }
@@ -372,7 +362,7 @@ function DetailedBookingCell({
       startWeek: startDragWeek,
       endWeek: currentDragWeek,
     }).then((res) => {
-      updateHoursDictionary(res);
+      updateHours(res);
     });
   }
 
@@ -510,4 +500,29 @@ function getBookingTypeFromProjectState(projectState?: ProjectState) {
     default:
       return BookingType.Offer;
   }
+}
+
+function generateConsultatsWithHours(
+  weekList: DateTime[],
+  chosenConsultants: Consultant[],
+  projectId: string,
+) {
+  const consultantsWHours: ConsultantWithWeekHours[] = [];
+  chosenConsultants.map((c) => {
+    const consultant: ConsultantWithWeekHours = {
+      consultantId: c.id,
+      weekWithHours: [],
+    };
+    weekList.map((d) => {
+      const initHours = c.detailedBooking
+        .find((db) => db.bookingDetails.projectId == projectId)
+        ?.hours.find((h) => h.week == dayToWeek(d))?.hours;
+      consultant.weekWithHours.push({
+        week: dayToWeek(d),
+        hours: initHours || 0,
+      });
+    });
+    consultantsWHours.push(consultant);
+  });
+  return consultantsWHours;
 }
