@@ -16,6 +16,8 @@ export function AddStaffingCell({
   });
   const [isAddStaffingHovered, setIsAddStaffingHovered] = useState(false);
 
+  const { setIsDisabledHotkeys } = useContext(FilteredContext);
+
   return (
     <>
       <td className={`${"border-l-secondary border-l-2"}`}></td>
@@ -27,7 +29,10 @@ export function AddStaffingCell({
         />
 
         <button
-          onClick={openModal}
+          onClick={() => {
+            openModal();
+            setIsDisabledHotkeys(true);
+          }}
           className="flex flex-row items-center gap-2"
           onMouseEnter={() => setIsAddStaffingHovered(true)}
           onMouseLeave={() => setIsAddStaffingHovered(false)}
