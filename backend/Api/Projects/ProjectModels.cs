@@ -22,3 +22,6 @@ public record ProjectWithCustomerModel(
     [property: Required] string CustomerName,
     [property: Required] EngagementState BookingType,
     [property: Required] bool IsBillable);
+
+public record UpdateProjectWriteModel(int EngagementId, EngagementState ProjectState, int StartYear, int StartWeek,
+    int WeekSpan);

@@ -1,7 +1,4 @@
-import {
-  BookingType,
-  ProjectState,
-} from "@/api-types";
+import { BookingType, ProjectState } from "@/api-types";
 import React, { ReactElement } from "react";
 import { Briefcase, Coffee, FileText, Moon, Sun } from "react-feather";
 import { InfoPillVariant } from "@/components/Staffing/InfoPill";
@@ -141,7 +138,10 @@ export function upsertConsultantBooking(
   return [...old];
 }
 
-export function updateProjects(old: ConsultantReadModel[], res?: ConsultantReadModel[]) {
+export function updateProjects(
+  old: ConsultantReadModel[],
+  res?: ConsultantReadModel[],
+) {
   if (!res) return old;
 
   res.map((consultant) => {

@@ -1,5 +1,9 @@
-import React, { RefObject, useEffect, useState , useContext} from "react";
-import { BookingType, ConsultantReadModel, ProjectWithCustomerModel } from "@/api-types";
+import React, { RefObject, useEffect, useState, useContext } from "react";
+import {
+  BookingType,
+  ConsultantReadModel,
+  ProjectWithCustomerModel,
+} from "@/api-types";
 import { DateTime } from "luxon";
 import { generateWeekList } from "@/components/Staffing/helpers/GenerateWeekList";
 import { LargeModal } from "@/components/Modals/LargeModal";
