@@ -1,4 +1,4 @@
-import { EngagementState, BookingType, ConsultantReadModel } from "@/api-types";
+import { BookingType, ConsultantReadModel, EngagementState } from "@/api-types";
 import { ConsultantWithWeekHours } from "@/types";
 import { DateTime } from "luxon";
 
@@ -12,6 +12,8 @@ export function getBookingTypeFromProjectState(projectState?: EngagementState) {
       return BookingType.Booking;
     case EngagementState.Offer:
       return BookingType.Offer;
+    case EngagementState.Absence:
+      return BookingType.PlannedAbsence;
     default:
       return BookingType.Offer;
   }

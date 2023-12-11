@@ -14,6 +14,8 @@ namespace Api.Projects;
 [ApiController]
 public class ProjectController : ControllerBase
 {
+    private const string AbsenceCustomerName = "Permisjoner";
+
     private readonly IMemoryCache _cache;
     private readonly ApplicationContext _context;
 
@@ -30,7 +32,11 @@ public class ProjectController : ControllerBase
         var selectedOrgId = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrgId is null) return BadRequest();
 
-        return _context.Project.Include(project => project.Customer)
+        var absenceReadModels = new EngagementPerCustomerReadModel(-1, AbsenceCustomerName,
+            _context.Absence.Select(absence =>
+                new EngagementReadModel(absence.Id, absence.Name, EngagementState.Absence, false)).ToList());
+
+        var projectReadModels = _context.Project.Include(project => project.Customer)
             .Where(project => project.Customer.Organization.UrlKey == orgUrlKey)
             .GroupBy(project => project.Customer)
             .Select(a =>
@@ -40,6 +46,9 @@ public class ProjectController : ControllerBase
                     a.Select(e =>
                         new EngagementReadModel(e.Id, e.Name, e.State, false)).ToList()))
             .ToList();
+
+        projectReadModels.Add(absenceReadModels);
+        return projectReadModels;
     }
 
     [HttpDelete]
@@ -153,6 +162,9 @@ public class ProjectController : ControllerBase
         var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrg is null) return BadRequest("Selected org not found");
 
+        if (body.CustomerName == AbsenceCustomerName)
+            return Ok(HandleAbsenceChange(body));
+
         var customer = service.UpdateOrCreateCustomer(selectedOrg, body.CustomerName, orgUrlKey);
 
         var project = _context.Project
@@ -185,5 +197,12 @@ public class ProjectController : ControllerBase
             new ProjectWithCustomerModel(project.Name, customer.Name, project.State, project.IsBillable, project.Id);
 
         return Ok(responseModel);
+    }
+
+    private ProjectWithCustomerModel HandleAbsenceChange(EngagementWriteModel body)
+    {
+        var absence = _context.Absence.Single(a => a.Name == body.ProjectName);
+        return new ProjectWithCustomerModel(absence.Name, AbsenceCustomerName, EngagementState.Absence, false,
+            absence.Id);
     }
 }

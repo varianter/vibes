@@ -11,8 +11,8 @@ import { MultiValue } from "react-select";
 import EasyModal from "@/components/Modals/EasyModal";
 import {
   ConsultantReadModel,
-  EngagementWriteModel,
   EngagementState,
+  EngagementWriteModel,
   ProjectWithCustomerModel,
 } from "@/api-types";
 import { usePathname } from "next/navigation";
@@ -30,7 +30,6 @@ export function AddEngagementForm({
   easyModalRef: RefObject<HTMLDialogElement>;
   consultant: ConsultantReadModel;
 }) {
-  const { closeModalOnBackdropClick } = useContext(FilteredContext);
   const { customers, consultants, setIsDisabledHotkeys } =
     useContext(FilteredContext);
 
@@ -50,9 +49,7 @@ export function AddEngagementForm({
   const [selectedConsultants, setSelectedConsultants] =
     useState<MultiValue<SelectOption> | null>([selectedConsultant]);
 
-  const [project, setProject] = useState<
-    ProjectWithCustomerModel | undefined
-  >();
+  const [_, setProject] = useState<ProjectWithCustomerModel | undefined>();
 
   const customerOptions = customers.map(
     (c) =>
@@ -87,6 +84,9 @@ export function AddEngagementForm({
 
   // State for toggle
   const [isFakturerbar, setIsFakturerbar] = useState(true);
+
+  // Hardcoded, based on ID from backend. Hopefully we can find a more graceful solution in the future
+  const isAbsence = selectedCustomer?.value == -1;
 
   // Handler for select components
   function handleSelectedCustomerChange(newCustomer: SelectOption) {
@@ -134,7 +134,7 @@ export function AddEngagementForm({
     const body: EngagementWriteModel = {
       customerName: selectedCustomer?.label,
       projectName: selectedEngagement?.label,
-      bookingType: radioValue,
+      bookingType: isAbsence ? radioValue : EngagementState.Absence,
       isBillable: isFakturerbar,
     };
 
@@ -215,51 +215,59 @@ export function AddEngagementForm({
                 isDisabled={selectedCustomer == null}
               />
             </div>
-            {/* Radio Button Group */}
-            <div
-              className={`flex flex-row gap-4 ${
-                selectedEngagement == null && "hidden"
-              }`}
-            >
-              <label className="flex gap-2 normal items-center">
-                <input
-                  type="radio"
-                  value={EngagementState.Offer}
-                  checked={radioValue === EngagementState.Offer}
-                  onChange={handleRadioChange}
-                />
-                Tilbud
-              </label>
-              <label className="flex gap-2 normal items-center">
-                <input
-                  type="radio"
-                  value={EngagementState.Order}
-                  checked={radioValue === EngagementState.Order}
-                  onChange={handleRadioChange}
-                />
-                Ordre
-              </label>
-            </div>
-            {/* Toggle (Checkbox) */}
-            <label
-              className={`flex flex-row justify-between items-center normal ${
-                selectedEngagement == null && "hidden"
-              }`}
-            >
-              Fakturerbart
-              <div
-                className={`rounded-full w-[52px] h-7 flex items-center  ${
-                  isFakturerbar ? "bg-primary" : "bg-black/20"
-                }`}
-                onClick={handleToggleChange}
-              >
+
+            {!isAbsence && (
+              <>
+                {/* Radio Button Group */}
+
                 <div
-                  className={`m-[2px] bg-white rounded-full w-6 h-6 ${
-                    isFakturerbar && " translate-x-6"
+                  className={`flex flex-row gap-4 ${
+                    selectedEngagement == null && "hidden"
                   }`}
-                ></div>
-              </div>
-            </label>
+                >
+                  <label className="flex gap-2 normal items-center">
+                    <input
+                      type="radio"
+                      value={EngagementState.Offer}
+                      checked={radioValue === EngagementState.Offer}
+                      onChange={handleRadioChange}
+                      disabled={selectedCustomer?.value == -1}
+                    />
+                    Tilbud
+                  </label>
+                  <label className="flex gap-2 normal items-center">
+                    <input
+                      type="radio"
+                      value={EngagementState.Order}
+                      checked={radioValue === EngagementState.Order}
+                      onChange={handleRadioChange}
+                      disabled={isAbsence}
+                    />
+                    Ordre
+                  </label>
+                </div>
+                {/* Toggle (Checkbox) */}
+                <label
+                  className={`flex flex-row justify-between items-center normal ${
+                    selectedEngagement == null && "hidden"
+                  }`}
+                >
+                  Fakturerbart
+                  <div
+                    className={`rounded-full w-[52px] h-7 flex items-center  ${
+                      isFakturerbar ? "bg-primary" : "bg-black/20"
+                    }`}
+                    onClick={handleToggleChange}
+                  >
+                    <div
+                      className={`m-[2px] bg-white rounded-full w-6 h-6 ${
+                        isFakturerbar && " translate-x-6"
+                      }`}
+                    ></div>
+                  </div>
+                </label>
+              </>
+            )}
           </div>
 
           <ActionButton
