@@ -8,10 +8,8 @@ import { AddStaffingCell } from "@/components/Staffing/AddStaffingCell";
 
 export default function ConsultantRows({
   consultant,
-  openModal,
 }: {
   consultant: Consultant;
-  openModal: () => void;
 }) {
   const [isListElementVisible, setIsListElementVisible] = useState(false);
   const [isRowHovered, setIsRowHovered] = useState(false);

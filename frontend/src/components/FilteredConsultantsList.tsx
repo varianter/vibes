@@ -7,8 +7,6 @@ import InfoPill from "./Staffing/InfoPill";
 import { Calendar } from "react-feather";
 import StaffingSums from "./StaffingSums";
 import React from "react";
-import { useModal } from "@/hooks/useModal";
-import { AddEngagementForm } from "./Staffing/AddEngagementForm";
 
 export default function StaffingTable() {
   const {
@@ -19,10 +17,6 @@ export default function StaffingTable() {
   } = useConsultantsFilter();
 
   const { weekSpan } = useUrlRouteFilter();
-
-  const { closeModal, openModal, modalRef } = useModal({
-    closeOnBackdropClick: true,
-  });
 
   console.log("rerender");
 
@@ -111,11 +105,7 @@ export default function StaffingTable() {
         </thead>
         <tbody>
           {filteredConsultants?.map((consultant) => (
-            <ConsultantRows
-              key={consultant.id}
-              consultant={consultant}
-              openModal={openModal}
-            />
+            <ConsultantRows key={consultant.id} consultant={consultant} />
           ))}
         </tbody>
         <StaffingSums
@@ -124,11 +114,6 @@ export default function StaffingTable() {
           weeklyInvoiceRates={weeklyInvoiceRates}
         />
       </table>
-
-      <AddEngagementForm
-        closeEngagementModal={closeModal}
-        easyModalRef={modalRef}
-      />
     </>
   );
 }
