@@ -36,11 +36,11 @@ export function AddEngagementHoursModal({
     generateWeekList(firstVisibleDay, selectedWeekSpan),
   );
 
-  const [consultantsWHours, setConsultantsWHours] = useState<
+  const [selectedConsultants, setSelectedConsultants] = useState<
     ConsultantWithWeekHours[]
   >([]);
 
-  const [consultantsWHoursCreated, setConsultantsWHoursCreated] =
+  const [selectedConsultantsFirstEdited, setSelectedConsultantsFirstEdited] =
     useState(false);
 
   useEffect(() => {
@@ -48,15 +48,15 @@ export function AddEngagementHoursModal({
   }, [firstVisibleDay, selectedWeekSpan]);
 
   const remainingConsultants = consultants.filter(
-    (c) => !consultantsWHours.find((c2) => c2.consultant.id == c.id),
+    (c) => !selectedConsultants.find((c2) => c2.consultant.id == c.id),
   );
 
   function handleAddConsultant(option: SelectOption) {
     const consultant = remainingConsultants.find((c) => c.id == option.value);
     if (consultant) {
-      setConsultantsWHours([
+      setSelectedConsultants([
         ...addNewConsultatWHours(
-          consultantsWHours,
+          selectedConsultants,
           consultant,
           project?.projectId || 0,
         ),
@@ -70,17 +70,17 @@ export function AddEngagementHoursModal({
   }
 
   useEffect(() => {
-    if (project != undefined && consultantsWHoursCreated == false) {
-      setConsultantsWHours(
+    if (project != undefined && selectedConsultantsFirstEdited == false) {
+      setSelectedConsultants(
         generateConsultatsWithHours(
           weekList,
           chosenConsultants,
           project?.projectId || 0,
         ),
       );
-      setConsultantsWHoursCreated(true);
+      setSelectedConsultantsFirstEdited(true);
     }
-  }, [chosenConsultants, consultantsWHoursCreated, project, weekList]);
+  }, [chosenConsultants, selectedConsultantsFirstEdited, project, weekList]);
 
   const router = useRouter();
 
@@ -153,7 +153,7 @@ export function AddEngagementHoursModal({
                 <div className="flex flex-row gap-3 pb-4 items-center">
                   <p className="normal-medium ">Konsulenter</p>
                   <p className="text-primary small-medium rounded-full bg-primary/5 px-2 py-1">
-                    {consultantsWHours?.length}
+                    {selectedConsultants?.length}
                   </p>
                 </div>
               </th>
@@ -190,7 +190,7 @@ export function AddEngagementHoursModal({
             </tr>
           </thead>
           <tbody>
-            {consultantsWHours?.map((consultant) => (
+            {selectedConsultants?.map((consultant) => (
               <AddEngagementHoursRow
                 key={consultant.consultant.id}
                 consultant={consultant.consultant}
