@@ -4,7 +4,7 @@ import { AddEngagementForm } from "@/components/Staffing/AddEngagementForm";
 import { Plus } from "react-feather";
 import { ConsultantReadModel, ProjectWithCustomerModel } from "@/api-types";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
-import { AddEngagementHoursModal } from "./AddEngagementHoursModal";
+import { AddEngagementHoursModal } from "./AddEngagementHoursModal/AddEngagementHoursModal";
 
 export function AddStaffingCell({
   consultant,
