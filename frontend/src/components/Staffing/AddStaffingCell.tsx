@@ -2,8 +2,10 @@ import React, { ReactElement, useContext, useState } from "react";
 import { useModal } from "@/hooks/useModal";
 import { AddEngagementForm } from "@/components/Staffing/AddEngagementForm";
 import { Plus } from "react-feather";
-import { Consultant } from "@/types";
+import { Consultant, ProjectWithCustomerModel } from "@/types";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
+import { Project } from "@playwright/test";
+import { AddEngagementHoursModal } from "./AddEngagementHoursModal";
 
 export function AddStaffingCell({
   consultant,
@@ -11,26 +13,48 @@ export function AddStaffingCell({
   consultant: Consultant;
 }): ReactElement {
   const { closeModalOnBackdropClick } = useContext(FilteredContext);
-  const { closeModal, openModal, modalRef } = useModal({
+  const {
+    closeModal: closeAddEngagementModal,
+    openModal: openAddEngagementModal,
+    modalRef: addEngagementModalRef,
+  } = useModal({
     closeOnBackdropClick: closeModalOnBackdropClick,
   });
+
+  const {
+    closeModal: closeStaffEngagementModal,
+    openModal: openStaffEngagementModal,
+    modalRef: staffEngagementModalRef,
+  } = useModal({
+    closeOnBackdropClick: closeModalOnBackdropClick,
+  });
+
   const [isAddStaffingHovered, setIsAddStaffingHovered] = useState(false);
 
+  const [selectedConsultants, setSelectedConsultants] =
+    useState<Consultant[]>();
+  const [selectedProject, setSelectedProject] =
+    useState<ProjectWithCustomerModel>();
+
   const { setIsDisabledHotkeys } = useContext(FilteredContext);
+
+  function handleNewEngagement(
+    project: ProjectWithCustomerModel,
+    consultantList: Consultant[],
+  ) {
+    closeAddEngagementModal();
+    setSelectedConsultants(consultantList);
+    setSelectedProject(project);
+    openStaffEngagementModal();
+  }
 
   return (
     <>
       <td className={`${"border-l-secondary border-l-2"}`}></td>
       <td>
-        <AddEngagementForm
-          closeEngagementModal={closeModal}
-          easyModalRef={modalRef}
-          consultant={consultant}
-        />
-
         <button
           onClick={() => {
-            openModal();
+            openAddEngagementModal();
             setIsDisabledHotkeys(true);
           }}
           className="flex flex-row items-center gap-2"
@@ -47,6 +71,19 @@ export function AddStaffingCell({
 
           <p className="small text-primary">Legg til bemanning</p>
         </button>
+
+        <AddEngagementForm
+          closeEngagementModal={handleNewEngagement}
+          easyModalRef={addEngagementModalRef}
+          consultant={consultant}
+        />
+
+        <AddEngagementHoursModal
+          modalRef={staffEngagementModalRef}
+          weekSpan={8}
+          project={selectedProject}
+          chosenConsultants={selectedConsultants ?? []}
+        />
       </td>
     </>
   );

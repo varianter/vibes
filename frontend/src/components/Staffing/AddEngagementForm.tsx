@@ -3,6 +3,7 @@ import React, {
   FormEvent,
   RefObject,
   useContext,
+  useEffect,
   useState,
 } from "react";
 import { useModal } from "@/hooks/useModal";
@@ -25,14 +26,14 @@ export function AddEngagementForm({
   easyModalRef,
   consultant,
 }: {
-  closeEngagementModal: () => void;
+  closeEngagementModal: (
+    project: ProjectWithCustomerModel,
+    selectedConsultants: Consultant[],
+  ) => void;
   easyModalRef: RefObject<HTMLDialogElement>;
   consultant: Consultant;
 }) {
   const { closeModalOnBackdropClick } = useContext(FilteredContext);
-  const { openModal, modalRef } = useModal({
-    closeOnBackdropClick: closeModalOnBackdropClick,
-  });
   const { customers, consultants, setIsDisabledHotkeys } =
     useContext(FilteredContext);
 
@@ -145,8 +146,12 @@ export function AddEngagementForm({
     // TODO: This is a simplified mockup.
     if (result) {
       setProject(result);
-      closeEngagementModal();
-      openModal();
+      closeEngagementModal(
+        result,
+        consultants.filter(
+          (c) => selectedConsultants?.some((sc) => sc.value == c.id.toString()),
+        ),
+      );
       setIsDisabledHotkeys(true);
 
       // TODO: Futher logic for the changes in openModal *here*
@@ -270,14 +275,6 @@ export function AddEngagementForm({
           </ActionButton>
         </form>
       </EasyModal>
-      <AddEngagementHoursModal
-        modalRef={modalRef}
-        weekSpan={8}
-        project={project}
-        chosenConsultants={consultants.filter(
-          (c) => selectedConsultants?.some((sc) => sc.value == c.id.toString()),
-        )}
-      />
     </>
   );
 }

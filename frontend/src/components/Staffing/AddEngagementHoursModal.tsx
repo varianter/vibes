@@ -20,14 +20,10 @@ import IconActionButton from "@/components/Buttons/IconActionButton";
 import { ArrowLeft, ArrowRight, Minus, Plus } from "react-feather";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { setDetailedBookingHours } from "./DetailedBookingRows";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { AddConsultantCell } from "./AddConsultantCell";
 
-import {
-  getColorByStaffingType,
-  getIconByBookingType,
-  upsertConsultantBooking,
-} from "./helpers/utils";
+import { getColorByStaffingType, getIconByBookingType } from "./helpers/utils";
 
 interface WeekWithHours {
   week: number;
@@ -35,7 +31,7 @@ interface WeekWithHours {
 }
 
 interface ConsultantWithWeekHours {
-  consultantId: string;
+  consultant: Consultant;
   weekWithHours: WeekWithHours[];
 }
 import { SelectOption } from "../ComboBox";
@@ -59,7 +55,9 @@ export function AddEngagementHoursModal({
   const { consultants, setIsDisabledHotkeys } = useContext(FilteredContext);
 
   const [selectedConsultants, setSelectedConsultants] =
-    useState<Consultant[]>(chosenConsultants);
+    useState(chosenConsultants);
+
+  const [consultantsFirstUpdated, setConsultantsFirstUpdated] = useState(false);
 
   const remainingConsultants = consultants.filter(
     (c) => !selectedConsultants.find((c2) => c2.id == c.id),
@@ -73,9 +71,15 @@ export function AddEngagementHoursModal({
     ConsultantWithWeekHours[]
   >([]);
 
-  /*useEffect(() => {
-    setSelectedConsultants(chosenConsultants);
-  }, [chosenConsultants]);*/
+  const [consultantsWHoursCreated, setConsultantsWHoursCreated] =
+    useState(false);
+
+  useEffect(() => {
+    if (project != undefined && consultantsFirstUpdated == false) {
+      setSelectedConsultants(chosenConsultants);
+      setConsultantsFirstUpdated(true);
+    }
+  }, [chosenConsultants, consultantsFirstUpdated, project]);
 
   useEffect(() => {
     setWeekList(generateWeekList(firstVisibleDay, selectedWeekSpan));
@@ -83,8 +87,16 @@ export function AddEngagementHoursModal({
 
   function handleAddConsultant(option: SelectOption) {
     const consultant = remainingConsultants.find((c) => c.id == option.value);
-    if (consultant)
+    if (consultant) {
       setSelectedConsultants([...selectedConsultants, consultant]);
+      setConsultantsWHours(
+        addNewConsultatWHours(
+          consultantsWHours,
+          consultant,
+          project?.projectId || "",
+        ),
+      );
+    }
   }
 
   function setWeekSpan(weekSpanString: string) {
@@ -92,26 +104,35 @@ export function AddEngagementHoursModal({
     setSelectedWeekSpan(weekSpanNum);
   }
 
-  console.log(selectedConsultants);
-
-  /*useEffect(
-    () =>
+  useEffect(() => {
+    if (consultantsWHoursCreated == false && consultantsFirstUpdated) {
       setConsultantsWHours(
         generateConsultatsWithHours(
           weekList,
           selectedConsultants,
           project?.projectId || "",
         ),
-      ),
-    [selectedConsultants, project?.projectId, weekList],
-  );*/
+      );
+      setConsultantsWHoursCreated(true);
+    }
+  }, [
+    selectedConsultants,
+    project?.projectId,
+    weekList,
+    consultantsFirstUpdated,
+    consultantsWHoursCreated,
+  ]);
+
+  const router = useRouter();
 
   return (
     <LargeModal
       modalRef={modalRef}
       project={project}
       showCloseButton={true}
-      onClose={() => setIsDisabledHotkeys(false)}
+      onClose={() => {
+        setIsDisabledHotkeys(false), router.refresh();
+      }}
     >
       <div className="flex flex-col gap-6">
         <div className="flex justify-end">
@@ -216,10 +237,9 @@ export function AddEngagementHoursModal({
                 consultant={consultant}
                 weekList={weekList}
                 project={project}
-                weekHours={
-                  consultantsWHours.find((c) => c.consultantId == consultant.id)
-                    ?.weekWithHours || []
-                }
+                consultantWWeekHours={consultantsWHours.find(
+                  (c) => c.consultant.id == consultant.id,
+                )}
               />
             ))}
             <tr>
@@ -239,12 +259,12 @@ function AddEngagementHoursRow({
   consultant,
   weekList,
   project,
-  weekHours,
+  consultantWWeekHours,
 }: {
   consultant: Consultant;
   weekList: DateTime[];
   project?: ProjectWithCustomerModel;
-  weekHours: WeekWithHours[];
+  consultantWWeekHours?: ConsultantWithWeekHours;
 }) {
   const [hourDragValue, setHourDragValue] = useState<number | undefined>(
     undefined,
@@ -256,6 +276,42 @@ function AddEngagementHoursRow({
     undefined,
   );
   const [isRowHovered, setIsRowHovered] = useState(false);
+  const [consultantWHours, setConsultantsWHours] = useState<
+    ConsultantWithWeekHours | undefined
+  >(consultantWWeekHours);
+
+  function updateHours(res?: Consultant) {
+    if (!res) {
+      return;
+    }
+    const consultant: ConsultantWithWeekHours = consultantWHours || {
+      consultant: res,
+      weekWithHours: [],
+    };
+    weekList.map((d) => {
+      const resHours = findProjectHours(res, d);
+
+      const hoursForWeek = consultant.weekWithHours.find(
+        (w) => w.week == dayToWeek(d),
+      );
+
+      if (hoursForWeek) {
+        hoursForWeek.hours = resHours || hoursForWeek.hours || 0;
+      } else {
+        consultant.weekWithHours.push({
+          week: dayToWeek(d),
+          hours: resHours || 0,
+        });
+      }
+    });
+    setConsultantsWHours({ ...consultant });
+  }
+
+  function findProjectHours(consultant: Consultant, day: DateTime) {
+    return consultant?.detailedBooking
+      .find((db) => db.bookingDetails.projectId == project?.projectId)
+      ?.hours.find((h) => h.week == dayToWeek(day))?.hours;
+  }
 
   return (
     <tr>
@@ -275,26 +331,27 @@ function AddEngagementHoursRow({
         <p className="text-black text-start small pl-2">{consultant.name}</p>
       </td>
       {weekList.map((day) => (
-        <>
-          <DetailedBookingCell
-            key={dayToWeek(day)}
-            project={project}
-            consultant={consultant}
-            hourDragValue={hourDragValue}
-            currentDragWeek={currentDragWeek}
-            startDragWeek={startDragWeek}
-            setHourDragValue={setHourDragValue}
-            setStartDragWeek={setStartDragWeek}
-            setCurrentDragWeek={setCurrentDragWeek}
-            isRowHovered={isRowHovered}
-            setIsRowHovered={setIsRowHovered}
-            numWeeks={weekList.length}
-            firstDayInWeek={day}
-            initHours={
-              weekHours.find((w) => w.week == dayToWeek(day))?.hours || 0
-            }
-          />
-        </>
+        <DetailedBookingCell
+          key={dayToWeek(day)}
+          project={project}
+          consultant={consultant}
+          hourDragValue={hourDragValue}
+          currentDragWeek={currentDragWeek}
+          startDragWeek={startDragWeek}
+          setHourDragValue={setHourDragValue}
+          setStartDragWeek={setStartDragWeek}
+          setCurrentDragWeek={setCurrentDragWeek}
+          isRowHovered={isRowHovered}
+          setIsRowHovered={setIsRowHovered}
+          numWeeks={weekList.length}
+          firstDayInWeek={day}
+          initHours={
+            consultantWHours?.weekWithHours.find(
+              (w) => w.week == dayToWeek(day),
+            )?.hours || 0
+          }
+          updateHours={updateHours}
+        />
       ))}
     </tr>
   );
@@ -314,6 +371,7 @@ function DetailedBookingCell({
   numWeeks,
   firstDayInWeek,
   initHours,
+  updateHours,
 }: {
   project?: ProjectWithCustomerModel;
   consultant: Consultant;
@@ -328,6 +386,7 @@ function DetailedBookingCell({
   numWeeks: number;
   firstDayInWeek: DateTime;
   initHours: number;
+  updateHours: (res: Consultant | undefined) => void;
 }) {
   const [hours, setHours] = useState(initHours);
   const [isChangingHours, setIsChangingHours] = useState(false);
@@ -349,7 +408,9 @@ function DetailedBookingCell({
         consultantId: consultant.id,
         projectId: project?.projectId || "",
         startWeek: dayToWeek(firstDayInWeek),
-      }).then((res) => {});
+      }).then((res) => {
+        updateHours(res);
+      });
     }
   }
 
@@ -378,7 +439,9 @@ function DetailedBookingCell({
       projectId: project?.projectId || "",
       startWeek: startDragWeek,
       endWeek: currentDragWeek,
-    }).then((res) => {});
+    }).then((res) => {
+      updateHours(res);
+    });
   }
 
   useEffect(() => {
@@ -522,11 +585,10 @@ function generateConsultatsWithHours(
   chosenConsultants: Consultant[],
   projectId: string,
 ) {
-  console.log("HEi");
   const consultantsWHours: ConsultantWithWeekHours[] = [];
   chosenConsultants.map((c) => {
     const consultant: ConsultantWithWeekHours = {
-      consultantId: c.id,
+      consultant: c,
       weekWithHours: [],
     };
     weekList.map((d) => {
@@ -539,6 +601,56 @@ function generateConsultatsWithHours(
       });
     });
     consultantsWHours.push(consultant);
+  });
+  return consultantsWHours;
+}
+
+function addNewConsultatWHours(
+  old: ConsultantWithWeekHours[],
+  consultant: Consultant,
+  projectId: string,
+) {
+  const newConsultantConsultantWithWeekHours: ConsultantWithWeekHours = {
+    consultant: consultant,
+    weekWithHours: [],
+  };
+  old[0].weekWithHours.map((d) => {
+    const initHours = consultant.detailedBooking
+      .find((db) => db.bookingDetails.projectId == projectId)
+      ?.hours.find((h) => h.week == d.week)?.hours;
+    newConsultantConsultantWithWeekHours.weekWithHours.push({
+      week: d.week,
+      hours: initHours || 0,
+    });
+  });
+  old.push(newConsultantConsultantWithWeekHours);
+  return old;
+}
+
+function addMoreWeeks(
+  weekList: DateTime[],
+  old: ConsultantWithWeekHours[],
+  projectId: string,
+) {
+  const consultantsWHours: ConsultantWithWeekHours[] = [];
+  old.map((c) => {
+    weekList.map((d) => {
+      const consultant: ConsultantWithWeekHours = {
+        consultant: c.consultant,
+        weekWithHours: [],
+      };
+      const initHours = c.consultant.detailedBooking
+        .find((db) => db.bookingDetails.projectId == projectId)
+        ?.hours.find((h) => h.week == dayToWeek(d))?.hours;
+      c.weekWithHours.push({
+        week: dayToWeek(d),
+        hours:
+          c.weekWithHours.find((w) => w.week == dayToWeek(d))?.hours ||
+          initHours ||
+          0,
+      });
+      consultantsWHours.push(consultant);
+    });
   });
   return consultantsWHours;
 }

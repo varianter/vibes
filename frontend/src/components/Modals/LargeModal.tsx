@@ -24,7 +24,7 @@ export function LargeModal(props: EasyModalProps) {
   }
 
   return (
-    <BaseModal modalRef={modalRef} classNames="h-[640px] max-w-[1200px]">
+    <BaseModal modalRef={modalRef} classNames="h-[640px] ">
       <div className="flex flex-col h-full">
         <LargeModalHeader project={project} />
         <div className="flex-1">{children}</div>

@@ -18,8 +18,6 @@ export default function StaffingTable() {
 
   const { weekSpan } = useUrlRouteFilter();
 
-  console.log("rerender");
-
   return (
     <>
       <table
