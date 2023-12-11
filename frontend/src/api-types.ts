@@ -103,7 +103,6 @@ export enum EngagementState {
 }
 
 export interface EngagementWriteModel {
-  consultantIds?: number[];
   bookingType?: EngagementState;
   isBillable?: boolean;
   projectName?: string;

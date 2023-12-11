@@ -14,7 +14,7 @@ public record EngagementReadModel(
     [property: Required] EngagementState BookingType,
     [property: Required] bool IsBillable);
 
-public record EngagementWriteModel(List<int> ConsultantIds, EngagementState BookingType,
+public record EngagementWriteModel( EngagementState BookingType,
     bool IsBillable, string ProjectName, string CustomerName);
 
 public record ProjectWithCustomerModel(

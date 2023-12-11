@@ -79,7 +79,6 @@ export function AddStaffingCell({
 
         <AddEngagementHoursModal
           modalRef={staffEngagementModalRef}
-          weekSpan={8}
           project={selectedProject}
           chosenConsultants={selectedConsultants ?? []}
         />

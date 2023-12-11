@@ -42,7 +42,6 @@ export function AddEngagementHoursModal({
   project,
 }: {
   modalRef: RefObject<HTMLDialogElement>;
-  weekSpan: number;
   chosenConsultants: ConsultantReadModel[];
   project?: ProjectWithCustomerModel;
 }) {
@@ -315,17 +314,15 @@ function AddEngagementHoursRow({
 
   return (
     <tr>
-      <td>
-        <div
-          className={`flex justify-center items-center w-8 h-8 ${getColorByStaffingType(
-            getBookingTypeFromProjectState(project?.bookingType),
-          )} rounded-lg`}
-        >
-          {getIconByBookingType(
-            getBookingTypeFromProjectState(project?.bookingType),
-            16,
-          )}
-        </div>
+      <td
+        className={`flex justify-center items-center w-8 h-8 ${getColorByStaffingType(
+          getBookingTypeFromProjectState(project?.bookingType),
+        )} rounded-lg`}
+      >
+        {getIconByBookingType(
+          getBookingTypeFromProjectState(project?.bookingType),
+          16,
+        )}
       </td>
       <td>
         <p className="text-black text-start small pl-2">{consultant.name}</p>
