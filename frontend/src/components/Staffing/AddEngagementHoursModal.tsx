@@ -53,15 +53,6 @@ export function AddEngagementHoursModal({
 
   const { consultants, setIsDisabledHotkeys } = useContext(FilteredContext);
 
-  const [selectedConsultants, setSelectedConsultants] =
-    useState(chosenConsultants);
-
-  const [consultantsFirstUpdated, setConsultantsFirstUpdated] = useState(false);
-
-  const remainingConsultants = consultants.filter(
-    (c) => !selectedConsultants.find((c2) => c2.id == c.id),
-  );
-
   const [weekList, setWeekList] = useState<DateTime[]>(
     generateWeekList(firstVisibleDay, selectedWeekSpan),
   );
@@ -74,27 +65,23 @@ export function AddEngagementHoursModal({
     useState(false);
 
   useEffect(() => {
-    if (project != undefined && consultantsFirstUpdated == false) {
-      setSelectedConsultants(chosenConsultants);
-      setConsultantsFirstUpdated(true);
-    }
-  }, [chosenConsultants, consultantsFirstUpdated, project]);
-
-  useEffect(() => {
     setWeekList(generateWeekList(firstVisibleDay, selectedWeekSpan));
   }, [firstVisibleDay, selectedWeekSpan]);
+
+  const remainingConsultants = consultants.filter(
+    (c) => !consultantsWHours.find((c2) => c2.consultant.id == c.id),
+  );
 
   function handleAddConsultant(option: SelectOption) {
     const consultant = remainingConsultants.find((c) => c.id == option.value);
     if (consultant) {
-      setSelectedConsultants([...selectedConsultants, consultant]);
-      setConsultantsWHours(
-        addNewConsultatWHours(
+      setConsultantsWHours([
+        ...addNewConsultatWHours(
           consultantsWHours,
           consultant,
           project?.projectId || 0,
         ),
-      );
+      ]);
     }
   }
 
@@ -104,23 +91,17 @@ export function AddEngagementHoursModal({
   }
 
   useEffect(() => {
-    if (consultantsWHoursCreated == false && consultantsFirstUpdated) {
+    if (project != undefined && consultantsWHoursCreated == false) {
       setConsultantsWHours(
         generateConsultatsWithHours(
           weekList,
-          selectedConsultants,
+          chosenConsultants,
           project?.projectId || 0,
         ),
       );
       setConsultantsWHoursCreated(true);
     }
-  }, [
-    selectedConsultants,
-    project?.projectId,
-    weekList,
-    consultantsFirstUpdated,
-    consultantsWHoursCreated,
-  ]);
+  }, [chosenConsultants, consultantsWHoursCreated, project, weekList]);
 
   const router = useRouter();
 
@@ -193,7 +174,7 @@ export function AddEngagementHoursModal({
                 <div className="flex flex-row gap-3 pb-4 items-center">
                   <p className="normal-medium ">Konsulenter</p>
                   <p className="text-primary small-medium rounded-full bg-primary/5 px-2 py-1">
-                    {selectedConsultants?.length}
+                    {consultantsWHours?.length}
                   </p>
                 </div>
               </th>
@@ -230,15 +211,13 @@ export function AddEngagementHoursModal({
             </tr>
           </thead>
           <tbody>
-            {selectedConsultants?.map((consultant) => (
+            {consultantsWHours?.map((consultant) => (
               <AddEngagementHoursRow
-                key={consultant.id}
-                consultant={consultant}
+                key={consultant.consultant.id}
+                consultant={consultant.consultant}
                 weekList={weekList}
                 project={project}
-                consultantWWeekHours={consultantsWHours.find(
-                  (c) => c.consultant.id == consultant.id,
-                )}
+                consultantWWeekHours={consultant}
               />
             ))}
             <tr>
