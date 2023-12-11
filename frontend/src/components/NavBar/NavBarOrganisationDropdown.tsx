@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef, useState } from "react";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
-import { Organisation } from "@/types";
+import { OrganisationReadModel } from "@/api-types";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Check, ChevronDown, ChevronUp } from "react-feather";
@@ -10,7 +10,7 @@ import { setOrganisationInCookie } from "../../hooks/setOrganisationInCookies";
 export default function NavBarOrganisationDropdown({
   organisations,
 }: {
-  organisations: Organisation[];
+  organisations: OrganisationReadModel[];
 }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 

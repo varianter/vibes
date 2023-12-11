@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "prettier:ci": "prettier --check . ",
-    "generate-types": "npx swagger-typescript-api -p http://localhost:7172/swagger/v0/swagger.json -o ./src -n swagger-types.ts --no-client"
+    "generate-types": "npx swagger-typescript-api -p http://localhost:7172/swagger/v0/swagger.json -o ./src -n api-types.ts --no-client"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.17",

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Database.DatabaseContext;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -46,6 +47,6 @@ public class OrganisationController : ControllerBase
     }
 }
 
-public record DepartmentReadModel(string Id, string Name, int? Hotkey);
+public record DepartmentReadModel([property: Required] string Id, [property: Required] string Name, int? Hotkey);
 
-public record OrganisationReadModel(string Name, string UrlKey);
+public record OrganisationReadModel([property: Required] string Name, [property: Required] string UrlKey);

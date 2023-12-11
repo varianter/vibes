@@ -3,7 +3,7 @@ import BaseModal from "./BaseModal";
 import { Check } from "react-feather";
 import ActionButton from "../Buttons/ActionButton";
 import { LargeModalHeader } from "./LargeModalHeader";
-import { ProjectWithCustomerModel } from "@/types";
+import { ProjectWithCustomerModel } from "@/api-types";
 
 export interface EasyModalProps {
   children: React.ReactNode;

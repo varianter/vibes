@@ -129,16 +129,10 @@ public class StorageService
         return hydratedConsultants;
     }
 
-    private async Task<List<Consultant>> LoadConsultantsFromDbAsync(string orgUrlKey)
-    {
-        return await Task.Run(() => LoadConsultantsFromDb(orgUrlKey));
-    }
-
     private Staffing CreateStaffing(StaffingKey staffingKey, double hours)
     {
-        var consultant = _dbContext.Consultant.Find(staffingKey.ConsultantId);
-        var project = _dbContext.Project
-            .Find(staffingKey.EngagementId);
+        var consultant = _dbContext.Consultant.Single(c => c.Id == staffingKey.ConsultantId);
+        var project = _dbContext.Project.Single(p => p.Id == staffingKey.EngagementId);
 
         var staffing = new Staffing
         {
@@ -154,9 +148,8 @@ public class StorageService
 
     private PlannedAbsence CreateAbsence(PlannedAbsenceKey plannedAbsenceKey, double hours)
     {
-        var consultant = _dbContext.Consultant.Find(plannedAbsenceKey.ConsultantId);
-        var absence = _dbContext.Absence
-            .Find(plannedAbsenceKey.AbsenceId);
+        var consultant = _dbContext.Consultant.Single(c => c.Id == plannedAbsenceKey.ConsultantId);
+        var absence = _dbContext.Absence.Single(a => a.Id == plannedAbsenceKey.AbsenceId);
 
         var plannedAbsence = new PlannedAbsence
         {
@@ -207,9 +200,8 @@ public class StorageService
     public void UpdateOrCreateStaffings(int consultantId, int projectId, List<Week> weeks, double hours,
         string orgUrlKey)
     {
-        var consultant = _dbContext.Consultant.Find(consultantId);
-        var project = _dbContext.Project
-            .Find(projectId);
+        var consultant = _dbContext.Consultant.Single(c => c.Id == consultantId);
+        var project = _dbContext.Project.Single(p => p.Id == projectId);
 
         var org = _dbContext.Organization.FirstOrDefault(o => o.UrlKey == orgUrlKey);
 
@@ -258,9 +250,8 @@ public class StorageService
     public void UpdateOrCreatePlannedAbsences(int consultantId, int absenceId, List<Week> weeks, double hours,
         string orgUrlKey)
     {
-        var consultant = _dbContext.Consultant.Find(consultantId);
-        var absence = _dbContext.Absence
-            .Find(absenceId);
+        var consultant = _dbContext.Consultant.Single(c => c.Id == consultantId);
+        var absence = _dbContext.Absence.Single(a => a.Id == absenceId);
 
         var org = _dbContext.Organization.FirstOrDefault(o => o.UrlKey == orgUrlKey);
         foreach (var week in weeks)

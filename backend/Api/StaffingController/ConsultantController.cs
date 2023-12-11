@@ -1,4 +1,3 @@
-using System.Configuration;
 using Api.Common;
 using Core.DomainModels;
 using Database.DatabaseContext;
@@ -96,32 +95,33 @@ public class ConsultantController : ControllerBase
         var service = new StorageService(_cache, _context);
 
         if (!StaffingControllerValidator.ValidateStaffingWriteModel(severalStaffingWriteModel, service, orgUrlKey))
-        {
             return BadRequest();
-        }
 
         var startWeek = new Week(severalStaffingWriteModel.StartYear, severalStaffingWriteModel.StartWeek);
         var endWeek = new Week(severalStaffingWriteModel.EndYear, severalStaffingWriteModel.EndWeek);
 
-        var weekSet = startWeek.CompareTo(endWeek) < 0 ? startWeek.GetNextWeeks(endWeek) : endWeek.GetNextWeeks(startWeek);
+        var weekSet = startWeek.CompareTo(endWeek) < 0
+            ? startWeek.GetNextWeeks(endWeek)
+            : endWeek.GetNextWeeks(startWeek);
         try
         {
-
-                switch (severalStaffingWriteModel.Type)
-                {
-                    case BookingType.Booking:
-                    case BookingType.Offer:
-                        service.UpdateOrCreateStaffings(severalStaffingWriteModel.ConsultantId, severalStaffingWriteModel.EngagementId, weekSet, severalStaffingWriteModel.Hours, orgUrlKey);
-                        break;
-                    case BookingType.PlannedAbsence:
-                        service.UpdateOrCreatePlannedAbsences(severalStaffingWriteModel.ConsultantId, severalStaffingWriteModel.EngagementId, weekSet, severalStaffingWriteModel.Hours, orgUrlKey);
-                        break;
-                    case BookingType.Vacation:
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(severalStaffingWriteModel.Type), severalStaffingWriteModel.Type, "Invalid bookingType");
-                }
-
+            switch (severalStaffingWriteModel.Type)
+            {
+                case BookingType.Booking:
+                case BookingType.Offer:
+                    service.UpdateOrCreateStaffings(severalStaffingWriteModel.ConsultantId,
+                        severalStaffingWriteModel.EngagementId, weekSet, severalStaffingWriteModel.Hours, orgUrlKey);
+                    break;
+                case BookingType.PlannedAbsence:
+                    service.UpdateOrCreatePlannedAbsences(severalStaffingWriteModel.ConsultantId,
+                        severalStaffingWriteModel.EngagementId, weekSet, severalStaffingWriteModel.Hours, orgUrlKey);
+                    break;
+                case BookingType.Vacation:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(severalStaffingWriteModel.Type),
+                        severalStaffingWriteModel.Type, "Invalid bookingType");
+            }
         }
         catch (Exception e)
         {
@@ -130,14 +130,24 @@ public class ConsultantController : ControllerBase
         }
 
         return new ReadModelFactory(service).GetConsultantReadModelForWeeks(
-            severalStaffingWriteModel.ConsultantId, weekSet );
+            severalStaffingWriteModel.ConsultantId, weekSet);
     }
 }
 
-public record StaffingWriteModel(BookingType Type, int ConsultantId, int EngagementId, int StartYear, int StartWeek,
-   [property: LongValidator(MinValue = 0, MaxValue = 100)]
+public record StaffingWriteModel(
+    BookingType Type,
+    int ConsultantId,
+    int EngagementId,
+    int StartYear,
+    int StartWeek,
     double Hours);
 
-public record SeveralStaffingWriteModel(BookingType Type, int ConsultantId, int EngagementId, int StartYear, int StartWeek, int EndYear, int EndWeek,
-    [property: LongValidator(MinValue = 0, MaxValue = 100)]
+public record SeveralStaffingWriteModel(
+    BookingType Type,
+    int ConsultantId,
+    int EngagementId,
+    int StartYear,
+    int StartWeek,
+    int EndYear,
+    int EndWeek,
     double Hours);

@@ -1,7 +1,8 @@
 import { putWithToken } from "@/data/apiCallsWithToken";
 import { parseYearWeekFromString } from "@/data/urlUtils";
-import { StaffingWriteModel, updateBookingHoursBody } from "@/types";
+import { SeveralStaffingWriteModel, StaffingWriteModel } from "@/api-types";
 import { NextResponse } from "next/server";
+import { updateBookingHoursBody } from "@/types";
 
 export async function PUT(
   request: Request,
@@ -18,7 +19,7 @@ export async function PUT(
     requestBody.endWeek?.toString() || undefined,
   );
 
-  const body: StaffingWriteModel = {
+  const body: StaffingWriteModel | SeveralStaffingWriteModel = {
     type: requestBody.bookingType,
     consultantId: Number(requestBody.consultantId),
     engagementId: Number(requestBody.bookingId),

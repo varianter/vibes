@@ -1,4 +1,4 @@
-import { Consultant } from "@/types";
+import { ConsultantReadModel } from "@/api-types";
 import { RefObject, ReactElement, useState, FormEvent } from "react";
 import ActionButton from "../Buttons/ActionButton";
 import EasyModal from "../Modals/EasyModal";
@@ -8,7 +8,7 @@ interface AddConsultantModalProps {
   closeConsultantModal: () => void;
   easyModalRef: RefObject<HTMLDialogElement>;
   onAddConsultant: (option: SelectOption) => void;
-  consultantList: Consultant[];
+  consultantList: ConsultantReadModel[];
 }
 
 export function AddConsultantModal(

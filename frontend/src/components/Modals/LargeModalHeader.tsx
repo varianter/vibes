@@ -1,4 +1,4 @@
-import { ProjectWithCustomerModel } from "@/types";
+import { ProjectWithCustomerModel } from "@/api-types";
 import {
   getColorByProjectState,
   getIconByProjectState,

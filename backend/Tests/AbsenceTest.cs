@@ -109,7 +109,7 @@ public class Tests
         Assert.Multiple(() =>
         {
             Assert.That(bookingModel.TotalBillable, Is.EqualTo(staffedHours));
-            Assert.That(bookingModel.TotalPlannedAbstences, Is.EqualTo(plannedAbsenceHours));
+            Assert.That(bookingModel.TotalPlannedAbsences, Is.EqualTo(plannedAbsenceHours));
             Assert.That(bookingModel.TotalHolidayHours, Is.EqualTo(numberOfHolidays * 7.5));
             Assert.That(bookingModel.TotalSellableTime, Is.EqualTo(expectedSellableHours));
         });
@@ -176,6 +176,6 @@ public class Tests
         var bookedHours = ReadModelFactory.MapToReadModelList(consultant, new List<Week> { week }).Bookings.First()
             .BookingModel;
 
-        Assert.That(bookedHours.TotalPlannedAbstences, Is.EqualTo(30));
+        Assert.That(bookedHours.TotalPlannedAbsences, Is.EqualTo(30));
     }
 }

@@ -3,12 +3,12 @@ import { Plus } from "react-feather";
 import { SelectOption } from "@/components/ComboBox";
 import { useModal } from "@/hooks/useModal";
 
-import { Consultant } from "@/types";
 import { AddConsultantModal } from "./AddConsultantModal";
+import { ConsultantReadModel } from "@/api-types";
 
 export function AddConsultantCell(props: {
   onAddConsultant: (option: SelectOption) => void;
-  consultantList: Consultant[];
+  consultantList: ConsultantReadModel[];
 }): ReactElement {
   const [isAddStaffingHovered, setIsAddConsultantHovered] = useState(false);
 

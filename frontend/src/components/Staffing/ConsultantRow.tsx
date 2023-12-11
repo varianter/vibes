@@ -1,5 +1,5 @@
 "use client";
-import { Consultant } from "@/types";
+import { ConsultantReadModel } from "@/api-types";
 import React, { useState } from "react";
 import { ChevronDown } from "react-feather";
 import { DetailedBookingRows } from "@/components/Staffing/DetailedBookingRows";
@@ -9,7 +9,7 @@ import { AddStaffingCell } from "@/components/Staffing/AddStaffingCell";
 export default function ConsultantRows({
   consultant,
 }: {
-  consultant: Consultant;
+  consultant: ConsultantReadModel;
 }) {
   const [isListElementVisible, setIsListElementVisible] = useState(false);
   const [isRowHovered, setIsRowHovered] = useState(false);
@@ -60,7 +60,7 @@ export default function ConsultantRows({
             </p>
           </div>
         </td>
-        {consultant.bookings?.map((b, index) => (
+        {consultant.bookings.map((b, index) => (
           <WeekCell
             key={index}
             bookedHoursPerWeek={b}

@@ -1,12 +1,10 @@
 import {
   BookingType,
-  Consultant,
+  ConsultantReadModel,
   DetailedBooking,
   ProjectState,
-  updateBookingHoursBody,
-  updateProjectStateBody,
   WeeklyHours,
-} from "@/types";
+} from "@/api-types";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   getColorByStaffingType,
@@ -17,6 +15,7 @@ import {
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { usePathname } from "next/navigation";
 import { Minus, Plus } from "react-feather";
+import { updateBookingHoursBody, updateProjectStateBody } from "@/types";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { parseYearWeekFromString } from "@/data/urlUtils";
 
@@ -31,7 +30,7 @@ async function updateProjectState(
   );
 
   const body: updateProjectStateBody = {
-    engagementId: detailedBooking.bookingDetails.projectId,
+    engagementId: `${detailedBooking.bookingDetails.projectId}`,
     projectState: state,
     isBillable: false,
     startWeek: yearWeek?.weekNumber || 0,
@@ -44,14 +43,14 @@ async function updateProjectState(
       method: "put",
       body: JSON.stringify(body),
     });
-    return (await data.json()) as Consultant[];
+    return (await data.json()) as ConsultantReadModel[];
   } catch (e) {
     console.error("Error updating projectState", e);
   }
 }
 
 export function DetailedBookingRows(props: {
-  consultant: Consultant;
+  consultant: ConsultantReadModel;
   detailedBooking: DetailedBooking;
 }) {
   const { setConsultants } = useContext(FilteredContext);
@@ -180,7 +179,7 @@ interface updateBookingHoursProps {
   hours: number;
   bookingType: BookingType;
   organisationUrl: string;
-  consultantId: string;
+  consultantId: number;
   bookingId: string;
   startWeek: number;
   endWeek?: number;
@@ -191,7 +190,7 @@ async function setDetailedBookingHours(props: updateBookingHoursProps) {
   const body: updateBookingHoursBody = {
     hours: props.hours,
     bookingType: props.bookingType,
-    consultantId: props.consultantId,
+    consultantId: `${props.consultantId}`,
     bookingId: props.bookingId,
     startWeek: props.startWeek,
     endWeek: props.endWeek,
@@ -202,7 +201,7 @@ async function setDetailedBookingHours(props: updateBookingHoursProps) {
       method: "put",
       body: JSON.stringify(body),
     });
-    return (await data.json()) as Consultant;
+    return (await data.json()) as ConsultantReadModel;
   } catch (e) {
     console.error("Error updating staffing", e);
   }
@@ -223,7 +222,7 @@ function DetailedBookingCell({
 }: {
   detailedBooking: DetailedBooking;
   detailedBookingHours: WeeklyHours;
-  consultant: Consultant;
+  consultant: ConsultantReadModel;
   hourDragValue: number | undefined;
   currentDragWeek: number | undefined;
   startDragWeek: number | undefined;
@@ -252,7 +251,7 @@ function DetailedBookingCell({
         bookingType: detailedBooking.bookingDetails.type,
         organisationUrl: organisationName,
         consultantId: consultant.id,
-        bookingId: detailedBooking.bookingDetails.projectId,
+        bookingId: `${detailedBooking.bookingDetails.projectId}`,
         startWeek: detailedBookingHours.week,
       }).then((res) => {
         setConsultants((old) => [
@@ -289,7 +288,7 @@ function DetailedBookingCell({
       bookingType: detailedBooking.bookingDetails.type,
       organisationUrl: organisationName,
       consultantId: consultant.id,
-      bookingId: detailedBooking.bookingDetails.projectId,
+      bookingId: `${detailedBooking.bookingDetails.projectId}`,
       startWeek: startDragWeek,
       endWeek: currentDragWeek,
     }).then((res) => {

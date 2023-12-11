@@ -1,5 +1,9 @@
-import React, { RefObject, useContext, useEffect, useState } from "react";
-import { Consultant, ProjectWithCustomerModel } from "@/types";
+import React, { RefObject, useEffect, useState, useContext } from "react";
+import {
+  BookingType,
+  ConsultantReadModel,
+  ProjectWithCustomerModel,
+} from "@/api-types";
 import { DateTime } from "luxon";
 import { generateWeekList } from "@/components/Staffing/helpers/GenerateWeekList";
 import { LargeModal } from "@/components/Modals/LargeModal";
@@ -18,7 +22,7 @@ export function AddEngagementHoursModal({
 }: {
   modalRef: RefObject<HTMLDialogElement>;
   weekSpan: number;
-  chosenConsultants: Consultant[];
+  chosenConsultants: ConsultantReadModel[];
   project?: ProjectWithCustomerModel;
 }) {
   const weekSpanOptions = ["8 uker", "12 uker", "26 uker"];
@@ -30,7 +34,7 @@ export function AddEngagementHoursModal({
   const { consultants } = useContext(FilteredContext);
 
   const [selectedConsultants, setSelectedConsultants] =
-    useState<Consultant[]>(chosenConsultants);
+    useState<ConsultantReadModel[]>(chosenConsultants);
 
   const remainingConsultants = consultants.filter(
     (c) => !selectedConsultants.find((c2) => c2.id == c.id),
@@ -189,7 +193,7 @@ function AddEngagementHoursRow({
   consultant,
   weekList,
 }: {
-  consultant: Consultant;
+  consultant: ConsultantReadModel;
   weekList: DateTime[];
 }) {
   return (

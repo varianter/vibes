@@ -1,6 +1,7 @@
 import { putWithToken } from "@/data/apiCallsWithToken";
-import { Consultant, updateProjectStateBody } from "@/types";
+import { updateProjectStateBody } from "@/types";
 import { NextResponse } from "next/server";
+import { ConsultantReadModel } from "@/api-types";
 
 export async function PUT(
   request: Request,
@@ -10,7 +11,7 @@ export async function PUT(
   const requestBody = (await request.json()) as updateProjectStateBody;
 
   const project =
-    (await putWithToken<Consultant[], updateProjectStateBody>(
+    (await putWithToken<ConsultantReadModel[], updateProjectStateBody>(
       `${orgUrlKey}/projects/updateState`,
       requestBody,
     )) ?? [];
