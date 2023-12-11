@@ -1,18 +1,28 @@
+using System.ComponentModel.DataAnnotations;
 using Core.DomainModels;
 
 namespace Api.Projects;
 
-public record EngagementPerCustomerReadModel(int CustomerId, string CustomerName,
-    List<EngagementReadModel> Engagements);
+public record EngagementPerCustomerReadModel(
+    [property: Required] int CustomerId,
+    [property: Required] string CustomerName,
+    [property: Required] List<EngagementReadModel> Engagements);
 
-public record EngagementReadModel(int EngagementId, string EngagementName, EngagementState ProjectState,
-    bool IsBillable);
+public record EngagementReadModel(
+    [property: Required] int EngagementId,
+    [property: Required] string EngagementName,
+    [property: Required] EngagementState BookingType,
+    [property: Required] bool IsBillable);
 
-public record EngagementWriteModel(EngagementState ProjectState,
+public record EngagementWriteModel(List<int> ConsultantIds, EngagementState BookingType,
     bool IsBillable, string ProjectName, string CustomerName);
 
-public record ProjectWithCustomerModel(string ProjectName, string CustomerName, EngagementState ProjectState,
-    bool IsBillable, int ProjectId);
+public record ProjectWithCustomerModel(
+    [property: Required] string ProjectName,
+    [property: Required] string CustomerName,
+    [property: Required] EngagementState BookingType,
+    [property: Required] bool IsBillable,
+    [property: Required] int ProjectId);
 
 public record UpdateProjectWriteModel(int EngagementId, EngagementState ProjectState, int StartYear, int StartWeek,
     int WeekSpan);

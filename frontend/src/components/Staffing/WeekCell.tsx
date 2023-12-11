@@ -1,4 +1,4 @@
-import { BookedHoursPerWeek, Consultant } from "@/types";
+import { BookedHoursPerWeek, ConsultantReadModel } from "@/api-types";
 import { HoveredWeek } from "@/components/Staffing/HoveredWeek";
 import InfoPill from "@/components/Staffing/InfoPill";
 import { AlertTriangle, Coffee, FileText, Sun } from "react-feather";
@@ -9,7 +9,7 @@ export function WeekCell(props: {
   bookedHoursPerWeek: BookedHoursPerWeek;
   isListElementVisible: boolean;
   setIsListElementVisible: Function;
-  consultant: Consultant;
+  consultant: ConsultantReadModel;
   setHoveredRowWeek: (number: number) => void;
   hoveredRowWeek: number;
   columnCount: number;
@@ -36,7 +36,7 @@ export function WeekCell(props: {
   if (bookedHoursPerWeek.bookingModel.totalOverbooking > 0) {
     pillNumber++;
   }
-  if (bookedHoursPerWeek.bookingModel.totalPlannedAbstences > 0) {
+  if (bookedHoursPerWeek.bookingModel.totalPlannedAbsences > 0) {
     pillNumber++;
   }
   if (bookedHoursPerWeek.bookingModel.totalVacationHours > 0) {

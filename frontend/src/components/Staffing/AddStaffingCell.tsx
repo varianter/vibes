@@ -2,7 +2,7 @@ import React, { ReactElement, useContext, useState } from "react";
 import { useModal } from "@/hooks/useModal";
 import { AddEngagementForm } from "@/components/Staffing/AddEngagementForm";
 import { Plus } from "react-feather";
-import { Consultant, ProjectWithCustomerModel } from "@/types";
+import { ConsultantReadModel, ProjectWithCustomerModel } from "@/api-types";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { Project } from "@playwright/test";
 import { AddEngagementHoursModal } from "./AddEngagementHoursModal";
@@ -10,7 +10,7 @@ import { AddEngagementHoursModal } from "./AddEngagementHoursModal";
 export function AddStaffingCell({
   consultant,
 }: {
-  consultant: Consultant;
+  consultant: ConsultantReadModel;
 }): ReactElement {
   const { closeModalOnBackdropClick } = useContext(FilteredContext);
   const {
@@ -32,7 +32,7 @@ export function AddStaffingCell({
   const [isAddStaffingHovered, setIsAddStaffingHovered] = useState(false);
 
   const [selectedConsultants, setSelectedConsultants] =
-    useState<Consultant[]>();
+    useState<ConsultantReadModel[]>();
   const [selectedProject, setSelectedProject] =
     useState<ProjectWithCustomerModel>();
 
@@ -40,7 +40,7 @@ export function AddStaffingCell({
 
   function handleNewEngagement(
     project: ProjectWithCustomerModel,
-    consultantList: Consultant[],
+    consultantList: ConsultantReadModel[],
   ) {
     closeAddEngagementModal();
     setSelectedConsultants(consultantList);

@@ -1,12 +1,10 @@
 import {
   BookingType,
-  Consultant,
+  ConsultantReadModel,
   DetailedBooking,
-  ProjectState,
-  updateBookingHoursBody,
-  updateProjectStateBody,
+  EngagementState,
   WeeklyHours,
-} from "@/types";
+} from "@/api-types";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   getColorByStaffingType,
@@ -17,13 +15,14 @@ import {
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { usePathname } from "next/navigation";
 import { Minus, Plus } from "react-feather";
+import { updateBookingHoursBody, updateProjectStateBody } from "@/types";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { parseYearWeekFromString } from "@/data/urlUtils";
 
 async function updateProjectState(
   organisationName: string,
   detailedBooking: DetailedBooking,
-  state: ProjectState,
+  state: EngagementState,
 ) {
   const url = `/${organisationName}/bemanning/api/projects/updateState`;
   const yearWeek = parseYearWeekFromString(
@@ -31,7 +30,7 @@ async function updateProjectState(
   );
 
   const body: updateProjectStateBody = {
-    engagementId: detailedBooking.bookingDetails.projectId,
+    engagementId: `${detailedBooking.bookingDetails.projectId}`,
     projectState: state,
     isBillable: false,
     startWeek: yearWeek?.weekNumber || 0,
@@ -44,14 +43,14 @@ async function updateProjectState(
       method: "put",
       body: JSON.stringify(body),
     });
-    return (await data.json()) as Consultant[];
+    return (await data.json()) as ConsultantReadModel[];
   } catch (e) {
     console.error("Error updating projectState", e);
   }
 }
 
 export function DetailedBookingRows(props: {
-  consultant: Consultant;
+  consultant: ConsultantReadModel;
   detailedBooking: DetailedBooking;
 }) {
   const { setConsultants } = useContext(FilteredContext);
@@ -77,7 +76,7 @@ export function DetailedBookingRows(props: {
     if (editOfferDropdownIsOpen) setEditOfferDropdownIsOpen(false);
   });
 
-  function changeState(state: ProjectState) {
+  function changeState(state: EngagementState) {
     updateProjectState(organisationName, detailedBooking, state).then((res) => {
       setConsultants((old) => [
         // Use spread to make a new list, forcing a re-render
@@ -112,7 +111,7 @@ export function DetailedBookingRows(props: {
           </p>
           <button
             className="hover:bg-primary/10 px-3 py-2 rounded flex flex-row gap-3 items-center "
-            onClick={() => changeState(ProjectState.Order)}
+            onClick={() => changeState(EngagementState.Order)}
           >
             <p className="h-6 flex items-center normal-semibold text-primary">
               Vunnet
@@ -120,7 +119,7 @@ export function DetailedBookingRows(props: {
           </button>
           <button
             className="hover:bg-primary/10 px-3 py-2 rounded flex flex-row gap-3 items-center"
-            onClick={() => changeState(ProjectState.Lost)}
+            onClick={() => changeState(EngagementState.Lost)}
           >
             <p className="h-6 flex items-center normal-semibold text-primary">
               Tapt
@@ -180,8 +179,8 @@ interface updateBookingHoursProps {
   hours: number;
   bookingType: BookingType;
   organisationUrl: string;
-  consultantId: string;
-  projectId: string;
+  consultantId: number;
+  bookingId: string;
   startWeek: number;
   endWeek?: number;
 }
@@ -191,8 +190,8 @@ export async function setDetailedBookingHours(props: updateBookingHoursProps) {
   const body: updateBookingHoursBody = {
     hours: props.hours,
     bookingType: props.bookingType,
-    consultantId: props.consultantId,
-    projectId: props.projectId,
+    consultantId: `${props.consultantId}`,
+    projectId: props.bookingId,
     startWeek: props.startWeek,
     endWeek: props.endWeek,
   };
@@ -202,7 +201,7 @@ export async function setDetailedBookingHours(props: updateBookingHoursProps) {
       method: "put",
       body: JSON.stringify(body),
     });
-    return (await data.json()) as Consultant;
+    return (await data.json()) as ConsultantReadModel;
   } catch (e) {
     console.error("Error updating staffing", e);
   }
@@ -223,7 +222,7 @@ function DetailedBookingCell({
 }: {
   detailedBooking: DetailedBooking;
   detailedBookingHours: WeeklyHours;
-  consultant: Consultant;
+  consultant: ConsultantReadModel;
   hourDragValue: number | undefined;
   currentDragWeek: number | undefined;
   startDragWeek: number | undefined;
@@ -252,7 +251,7 @@ function DetailedBookingCell({
         bookingType: detailedBooking.bookingDetails.type,
         organisationUrl: organisationName,
         consultantId: consultant.id,
-        projectId: detailedBooking.bookingDetails.projectId,
+        bookingId: `${detailedBooking.bookingDetails.projectId}`,
         startWeek: detailedBookingHours.week,
       }).then((res) => {
         setConsultants((old) => [
@@ -289,7 +288,7 @@ function DetailedBookingCell({
       bookingType: detailedBooking.bookingDetails.type,
       organisationUrl: organisationName,
       consultantId: consultant.id,
-      projectId: detailedBooking.bookingDetails.projectId,
+      bookingId: `${detailedBooking.bookingDetails.projectId}`,
       startWeek: startDragWeek,
       endWeek: currentDragWeek,
     }).then((res) => {

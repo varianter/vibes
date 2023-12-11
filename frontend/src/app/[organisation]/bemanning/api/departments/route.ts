@@ -1,5 +1,5 @@
 import { fetchWithToken } from "@/data/apiCallsWithToken";
-import { Department } from "@/types";
+import { DepartmentReadModel } from "@/api-types";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
@@ -7,7 +7,7 @@ export async function GET(request: Request) {
   const organisationName = searchParams.get("organisationName") || "";
 
   const departments =
-    (await fetchWithToken<Department[]>(
+    (await fetchWithToken<DepartmentReadModel[]>(
       `organisations/${organisationName}/departments`,
     )) ?? [];
 

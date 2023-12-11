@@ -79,7 +79,6 @@ public class ProjectController : ControllerBase
             }
             else
             {
-                // TODO: Gjerne flytt dette ut i en egen metode også. Kanskje storageservice? 
                 engagement = _context.Project
                     .Include(p => p.Consultants)
                     .Include(p => p.Staffings)
@@ -107,7 +106,6 @@ public class ProjectController : ControllerBase
 
     private bool EngagementHasSoftMatch(int id)
     {
-        // TODO: Noe usikker på hvor denne metoden skal være. Om du har en bedre idé, gjerne flytt den :) 
         var engagementToChange = _context.Project
             .Include(p => p.Customer)
             .Single(p => p.Id == id);
@@ -120,7 +118,6 @@ public class ProjectController : ControllerBase
 
     private Engagement MergeProjects(int id)
     {
-        // TODO: Noe usikker på hvor denne metoden skal være. Om du har en bedre idé, gjerne flytt den :) 
         var engagementToChange = _context.Project
             .Include(p => p.Staffings)
             .Include(p => p.Customer)
@@ -163,7 +160,7 @@ public class ProjectController : ControllerBase
             .SingleOrDefault(p => p.Customer.Name == body.CustomerName
                                   && p.IsBillable == body.IsBillable
                                   && p.Name == body.ProjectName
-                                  && p.State == body.ProjectState
+                                  && p.State == body.BookingType
             );
 
         if (project is null)
@@ -171,7 +168,7 @@ public class ProjectController : ControllerBase
             project = new Engagement
             {
                 Customer = customer,
-                State = body.ProjectState,
+                State = body.BookingType,
                 Staffings = new List<Staffing>(),
                 Consultants = new List<Consultant>(),
                 Name = body.ProjectName,

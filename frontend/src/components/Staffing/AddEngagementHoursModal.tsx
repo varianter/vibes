@@ -1,16 +1,16 @@
 import React, {
   RefObject,
-  useContext,
   useEffect,
-  useRef,
   useState,
+  useContext,
+  useRef,
 } from "react";
 import {
   BookingType,
-  Consultant,
-  ProjectState,
+  ConsultantReadModel,
+  EngagementState,
   ProjectWithCustomerModel,
-} from "@/types";
+} from "@/api-types";
 import { DateTime } from "luxon";
 import { generateWeekList } from "@/components/Staffing/helpers/GenerateWeekList";
 import { LargeModal } from "@/components/Modals/LargeModal";
@@ -31,7 +31,7 @@ interface WeekWithHours {
 }
 
 interface ConsultantWithWeekHours {
-  consultant: Consultant;
+  consultant: ConsultantReadModel;
   weekWithHours: WeekWithHours[];
 }
 import { SelectOption } from "../ComboBox";
@@ -43,7 +43,7 @@ export function AddEngagementHoursModal({
 }: {
   modalRef: RefObject<HTMLDialogElement>;
   weekSpan: number;
-  chosenConsultants: Consultant[];
+  chosenConsultants: ConsultantReadModel[];
   project?: ProjectWithCustomerModel;
 }) {
   const weekSpanOptions = ["8 uker", "12 uker", "26 uker"];
@@ -93,7 +93,7 @@ export function AddEngagementHoursModal({
         addNewConsultatWHours(
           consultantsWHours,
           consultant,
-          project?.projectId || "",
+          project?.projectId || 0,
         ),
       );
     }
@@ -110,7 +110,7 @@ export function AddEngagementHoursModal({
         generateConsultatsWithHours(
           weekList,
           selectedConsultants,
-          project?.projectId || "",
+          project?.projectId || 0,
         ),
       );
       setConsultantsWHoursCreated(true);
@@ -261,7 +261,7 @@ function AddEngagementHoursRow({
   project,
   consultantWWeekHours,
 }: {
-  consultant: Consultant;
+  consultant: ConsultantReadModel;
   weekList: DateTime[];
   project?: ProjectWithCustomerModel;
   consultantWWeekHours?: ConsultantWithWeekHours;
@@ -280,7 +280,7 @@ function AddEngagementHoursRow({
     ConsultantWithWeekHours | undefined
   >(consultantWWeekHours);
 
-  function updateHours(res?: Consultant) {
+  function updateHours(res?: ConsultantReadModel) {
     if (!res) {
       return;
     }
@@ -307,7 +307,7 @@ function AddEngagementHoursRow({
     setConsultantsWHours({ ...consultant });
   }
 
-  function findProjectHours(consultant: Consultant, day: DateTime) {
+  function findProjectHours(consultant: ConsultantReadModel, day: DateTime) {
     return consultant?.detailedBooking
       .find((db) => db.bookingDetails.projectId == project?.projectId)
       ?.hours.find((h) => h.week == dayToWeek(day))?.hours;
@@ -318,11 +318,11 @@ function AddEngagementHoursRow({
       <td>
         <div
           className={`flex justify-center items-center w-8 h-8 ${getColorByStaffingType(
-            getBookingTypeFromProjectState(project?.projectState),
+            getBookingTypeFromProjectState(project?.bookingType),
           )} rounded-lg`}
         >
           {getIconByBookingType(
-            getBookingTypeFromProjectState(project?.projectState),
+            getBookingTypeFromProjectState(project?.bookingType),
             16,
           )}
         </div>
@@ -374,7 +374,7 @@ function DetailedBookingCell({
   updateHours,
 }: {
   project?: ProjectWithCustomerModel;
-  consultant: Consultant;
+  consultant: ConsultantReadModel;
   hourDragValue: number | undefined;
   currentDragWeek: number | undefined;
   startDragWeek: number | undefined;
@@ -386,7 +386,7 @@ function DetailedBookingCell({
   numWeeks: number;
   firstDayInWeek: DateTime;
   initHours: number;
-  updateHours: (res: Consultant | undefined) => void;
+  updateHours: (res: ConsultantReadModel | undefined) => void;
 }) {
   const [hours, setHours] = useState(initHours);
   const [isChangingHours, setIsChangingHours] = useState(false);
@@ -403,10 +403,10 @@ function DetailedBookingCell({
       setOldHours(hours);
       setDetailedBookingHours({
         hours: hours,
-        bookingType: getBookingTypeFromProjectState(project?.projectState),
+        bookingType: getBookingTypeFromProjectState(project?.bookingType),
         organisationUrl: organisationName,
         consultantId: consultant.id,
-        projectId: project?.projectId || "",
+        bookingId: `${project?.projectId}`,
         startWeek: dayToWeek(firstDayInWeek),
       }).then((res) => {
         updateHours(res);
@@ -433,10 +433,10 @@ function DetailedBookingCell({
     setOldHours(hours);
     setDetailedBookingHours({
       hours: hourDragValue,
-      bookingType: getBookingTypeFromProjectState(project?.projectState),
+      bookingType: getBookingTypeFromProjectState(project?.bookingType),
       organisationUrl: organisationName,
       consultantId: consultant.id,
-      projectId: project?.projectId || "",
+      bookingId: `${project?.projectId}`,
       startWeek: startDragWeek,
       endWeek: currentDragWeek,
     }).then((res) => {
@@ -470,7 +470,7 @@ function DetailedBookingCell({
         className={`flex justify-end items-center bg-offer/30 border rounded-lg h-full ${
           hours == 0 && "bg-opacity-30"
         } ${getColorByStaffingType(
-          getBookingTypeFromProjectState(project?.projectState) ??
+          getBookingTypeFromProjectState(project?.bookingType) ??
             BookingType.Offer,
         )} ${
           isInputFocused || checkIfMarked()
@@ -567,13 +567,11 @@ function dayToWeek(day: DateTime) {
   return day.year * 100 + day.weekNumber;
 }
 
-function getBookingTypeFromProjectState(projectState?: ProjectState) {
+function getBookingTypeFromProjectState(projectState?: EngagementState) {
   switch (projectState) {
-    case ProjectState.Order:
+    case EngagementState.Order:
       return BookingType.Booking;
-    case ProjectState.Active: //Fjern når vi har slutta og brukt Active
-      return BookingType.Booking;
-    case ProjectState.Offer:
+    case EngagementState.Offer:
       return BookingType.Offer;
     default:
       return BookingType.Offer;
@@ -582,8 +580,8 @@ function getBookingTypeFromProjectState(projectState?: ProjectState) {
 
 function generateConsultatsWithHours(
   weekList: DateTime[],
-  chosenConsultants: Consultant[],
-  projectId: string,
+  chosenConsultants: ConsultantReadModel[],
+  projectId: number,
 ) {
   const consultantsWHours: ConsultantWithWeekHours[] = [];
   chosenConsultants.map((c) => {
@@ -607,8 +605,8 @@ function generateConsultatsWithHours(
 
 function addNewConsultatWHours(
   old: ConsultantWithWeekHours[],
-  consultant: Consultant,
-  projectId: string,
+  consultant: ConsultantReadModel,
+  projectId: number,
 ) {
   const newConsultantConsultantWithWeekHours: ConsultantWithWeekHours = {
     consultant: consultant,
@@ -625,32 +623,4 @@ function addNewConsultatWHours(
   });
   old.push(newConsultantConsultantWithWeekHours);
   return old;
-}
-
-function addMoreWeeks(
-  weekList: DateTime[],
-  old: ConsultantWithWeekHours[],
-  projectId: string,
-) {
-  const consultantsWHours: ConsultantWithWeekHours[] = [];
-  old.map((c) => {
-    weekList.map((d) => {
-      const consultant: ConsultantWithWeekHours = {
-        consultant: c.consultant,
-        weekWithHours: [],
-      };
-      const initHours = c.consultant.detailedBooking
-        .find((db) => db.bookingDetails.projectId == projectId)
-        ?.hours.find((h) => h.week == dayToWeek(d))?.hours;
-      c.weekWithHours.push({
-        week: dayToWeek(d),
-        hours:
-          c.weekWithHours.find((w) => w.week == dayToWeek(d))?.hours ||
-          initHours ||
-          0,
-      });
-      consultantsWHours.push(consultant);
-    });
-  });
-  return consultantsWHours;
 }

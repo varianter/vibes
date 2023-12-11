@@ -1,11 +1,12 @@
 import NavBarLink from "./NavBarLink";
 import NavBarUserIcon from "./NavBarUserIcon";
 import { fetchWithToken } from "@/data/apiCallsWithToken";
-import { Organisation } from "@/types";
+import { OrganisationReadModel } from "@/api-types";
 import NavBarOrganisationDropdown from "./NavBarOrganisationDropdown";
 
 export default async function NavBar() {
-  const orgs = (await fetchWithToken<Organisation[]>("organisations")) ?? [];
+  const orgs =
+    (await fetchWithToken<OrganisationReadModel[]>("organisations")) ?? [];
 
   return (
     <div className="bg-primary w-full flex flex-row justify-between header px-4">

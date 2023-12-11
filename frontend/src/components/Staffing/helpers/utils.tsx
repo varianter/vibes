@@ -1,12 +1,8 @@
-import {
-  BookingType,
-  Consultant,
-  DetailedBooking,
-  ProjectState,
-} from "@/types";
+import { BookingType, ProjectState } from "@/api-types";
 import React, { ReactElement } from "react";
 import { Briefcase, Coffee, FileText, Moon, Sun } from "react-feather";
 import { InfoPillVariant } from "@/components/Staffing/InfoPill";
+import { ConsultantReadModel, DetailedBooking } from "@/api-types";
 
 export function getColorByStaffingType(type: BookingType): string {
   switch (type) {
@@ -97,7 +93,10 @@ export function getInfopillVariantByColumnCount(
   }
 }
 
-export function upsertConsultantBooking(old: Consultant[], res?: Consultant) {
+export function upsertConsultantBooking(
+  old: ConsultantReadModel[],
+  res?: ConsultantReadModel,
+) {
   if (!res) return old;
 
   const consultantToUpdate = old.find((c) => c.id === res.id);
@@ -133,13 +132,16 @@ export function upsertConsultantBooking(old: Consultant[], res?: Consultant) {
     });
   }
 
-  const consultantIndex = old.findIndex((c) => c.id === `${res.id}`);
+  const consultantIndex = old.findIndex((c) => c.id === res.id);
   old[consultantIndex] = consultantToUpdate;
 
   return [...old];
 }
 
-export function updateProjects(old: Consultant[], res?: Consultant[]) {
+export function updateProjects(
+  old: ConsultantReadModel[],
+  res?: ConsultantReadModel[],
+) {
   if (!res) return old;
 
   res.map((consultant) => {

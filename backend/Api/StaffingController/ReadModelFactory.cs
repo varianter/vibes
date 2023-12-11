@@ -77,7 +77,7 @@ public class ReadModelFactory
 
         //isOccupied should not include offered or sellable time, as it's sometimes necessary to "double-book"
         var isOccupied = bookingSummary.All(b =>
-            b.BookingModel.TotalBillable + b.BookingModel.TotalPlannedAbstences + b.BookingModel.TotalVacationHours +
+            b.BookingModel.TotalBillable + b.BookingModel.TotalPlannedAbsences + b.BookingModel.TotalVacationHours +
             b.BookingModel.TotalHolidayHours >= hoursPrWeek);
 
         return new ConsultantReadModel(

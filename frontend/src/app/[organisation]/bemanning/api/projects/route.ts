@@ -1,5 +1,5 @@
 import { putWithToken } from "@/data/apiCallsWithToken";
-import { EngagementWriteModel, ProjectWithCustomerModel } from "@/types";
+import { EngagementWriteModel, ProjectWithCustomerModel } from "@/api-types";
 import { NextResponse } from "next/server";
 
 export async function PUT(

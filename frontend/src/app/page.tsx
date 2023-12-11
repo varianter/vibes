@@ -1,12 +1,13 @@
 import OrganisationButton from "@/components/OrganisationButton";
 import { fetchWithToken } from "@/data/apiCallsWithToken";
-import { Organisation } from "@/types";
+import { OrganisationReadModel } from "@/api-types";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function Root() {
-  const orgs = (await fetchWithToken<Organisation[]>("organisations")) ?? [];
+  const orgs =
+    (await fetchWithToken<OrganisationReadModel[]>("organisations")) ?? [];
 
   const cookieStore = cookies();
   const chosenOrg = cookieStore.get("chosenOrg")?.value;

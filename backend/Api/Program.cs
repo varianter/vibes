@@ -33,6 +33,7 @@ builder.Services.AddSwaggerGen(genOptions =>
 {
     genOptions.SwaggerDoc("v0", new OpenApiInfo { Title = "Vibes API", Version = "v0" });
     genOptions.ConfigureSwaggerAuthentication(adOptions);
+    genOptions.SupportNonNullableReferenceTypes();
 });
 
 var app = builder.Build();

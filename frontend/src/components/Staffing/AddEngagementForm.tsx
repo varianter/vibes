@@ -13,11 +13,11 @@ import { MultiValue } from "react-select";
 import EasyModal from "@/components/Modals/EasyModal";
 import { AddEngagementHoursModal } from "@/components/Staffing/AddEngagementHoursModal";
 import {
-  Consultant,
+  ConsultantReadModel,
   EngagementWriteModel,
   ProjectState,
   ProjectWithCustomerModel,
-} from "@/types";
+} from "@/api-types";
 import { usePathname } from "next/navigation";
 import ActionButton from "../Buttons/ActionButton";
 
@@ -31,7 +31,7 @@ export function AddEngagementForm({
     selectedConsultants: Consultant[],
   ) => void;
   easyModalRef: RefObject<HTMLDialogElement>;
-  consultant: Consultant;
+  consultant: ConsultantReadModel;
 }) {
   const { closeModalOnBackdropClick } = useContext(FilteredContext);
   const { customers, consultants, setIsDisabledHotkeys } =
@@ -137,7 +137,7 @@ export function AddEngagementForm({
     const body: EngagementWriteModel = {
       customerName: selectedCustomer?.label,
       projectName: selectedEngagement?.label,
-      projectState: radioValue,
+      bookingType: radioValue,
       isBillable: isFakturerbar,
     };
 
