@@ -1,4 +1,4 @@
-import { BookingType, ProjectState } from "@/api-types";
+import { BookingType, EngagementState } from "@/api-types";
 import React, { ReactElement } from "react";
 import { Briefcase, Coffee, FileText, Moon, Sun } from "react-feather";
 import { InfoPillVariant } from "@/components/Staffing/InfoPill";
@@ -23,23 +23,23 @@ export function getColorByStaffingType(type: BookingType): string {
 
 export function getIconByProjectState(
   size: number,
-  state?: ProjectState,
+  state?: EngagementState,
 ): ReactElement {
   switch (state) {
-    case ProjectState.Offer:
+    case EngagementState.Offer:
       return <FileText size={size} className="text-primary_darker" />;
-    case ProjectState.Order:
+    case EngagementState.Order:
       return <Briefcase size={size} className="text-black" />;
     default:
       return <></>;
   }
 }
 
-export function getColorByProjectState(type?: ProjectState): string {
+export function getColorByProjectState(type?: EngagementState): string {
   switch (type) {
-    case ProjectState.Offer:
+    case EngagementState.Offer:
       return "bg-offer";
-    case ProjectState.Order:
+    case EngagementState.Order:
       return "bg-primary/[3%]";
     default:
       return "";
