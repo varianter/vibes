@@ -2,7 +2,7 @@ import { Consultant } from "@/types";
 import { RefObject, ReactElement, useState, FormEvent } from "react";
 import ActionButton from "../Buttons/ActionButton";
 import EasyModal from "../Modals/EasyModal";
-import ReactSelect, { SelectOption } from "../ReactSelect";
+import ComboBox, { SelectOption } from "../ComboBox";
 
 interface AddConsultantModalProps {
   closeConsultantModal: () => void;
@@ -50,7 +50,7 @@ export function AddConsultantModal(
     >
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col gap-6 pt-6 h-32">
-          <ReactSelect
+          <ComboBox
             options={consultantOptions}
             selectedSingleOptionValue={selectedConsultant}
             onSingleOptionChange={setSelectedConsultant}

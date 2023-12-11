@@ -21,7 +21,6 @@ import { ArrowLeft, ArrowRight, Minus, Plus } from "react-feather";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { setDetailedBookingHours } from "./DetailedBookingRows";
 import { usePathname } from "next/navigation";
-import { SelectOption } from "../ReactSelect";
 import { AddConsultantCell } from "./AddConsultantCell";
 
 import {
@@ -39,6 +38,7 @@ interface ConsultantWithWeekHours {
   consultantId: string;
   weekWithHours: WeekWithHours[];
 }
+import { SelectOption } from "../ComboBox";
 
 export function AddEngagementHoursModal({
   modalRef,

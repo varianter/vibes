@@ -24,7 +24,7 @@ public class ReadModelFactory
             .Select(consultant => MapToReadModelList(consultant, weeks))
             .ToList();
     }
-    
+
 
     public ConsultantReadModel GetConsultantReadModelForWeek(int consultantId, Week week)
     {
@@ -32,10 +32,10 @@ public class ReadModelFactory
         var readModel = MapToReadModelList(consultant, new List<Week> { week });
 
         return new ConsultantReadModel(consultant, new List<BookedHoursPerWeek> { readModel.Bookings.First() },
-           new List<DetailedBooking> { readModel.DetailedBooking.First() }, readModel.IsOccupied);
+            new List<DetailedBooking> { readModel.DetailedBooking.First() }, readModel.IsOccupied);
     }
-    
-    public ConsultantReadModel GetConsultantReadModelForWeeks( int consultantId, List<Week> weeks)
+
+    public ConsultantReadModel GetConsultantReadModelForWeeks(int consultantId, List<Week> weeks)
     {
         var consultant = _storageService.LoadConsultantForWeekSet(consultantId, weeks);
         var readModel = MapToReadModelList(consultant, weeks);
@@ -43,11 +43,11 @@ public class ReadModelFactory
         return new ConsultantReadModel(consultant, readModel.Bookings,
             readModel.DetailedBooking, readModel.IsOccupied);
     }
-    
-    public List<ConsultantReadModel> GetConsultantReadModelForWeeks( List<int> consultantIds, List<Week> weeks)
+
+    public List<ConsultantReadModel> GetConsultantReadModelForWeeks(List<int> consultantIds, List<Week> weeks)
     {
         var consultants = new List<ConsultantReadModel>();
-        foreach (int i in consultantIds)
+        foreach (var i in consultantIds)
         {
             var consultant = _storageService.LoadConsultantForWeekSet(i, weeks);
             var readModel = MapToReadModelList(consultant, weeks);
@@ -99,12 +99,12 @@ public class ReadModelFactory
 
         // var billableProjects = UniqueWorkTypes(projects, billableStaffing);
         var billableBookings = consultant.Staffings
-            .Where(staffing => staffing.Project.State == ProjectState.Order)
+            .Where(staffing => staffing.Engagement.State == EngagementState.Order)
             .Where(staffing => weekSet.Contains(staffing.Week))
-            .GroupBy(staffing => staffing.Project.Name)
+            .GroupBy(staffing => staffing.Engagement.Name)
             .Select(grouping => new DetailedBooking(
-                new BookingDetails(grouping.Key, BookingType.Booking, grouping.First().Project.Customer.Name,
-                    grouping.First().Project.Id),
+                new BookingDetails(grouping.Key, BookingType.Booking, grouping.First().Engagement.Customer.Name,
+                    grouping.First().Engagement.Id),
                 weekSet.Select(week =>
                     new WeeklyHours(
                         week.ToSortableInt(), grouping
@@ -114,12 +114,12 @@ public class ReadModelFactory
             ));
 
         var offeredBookings = consultant.Staffings
-            .Where(staffing => staffing.Project.State == ProjectState.Offer)
+            .Where(staffing => staffing.Engagement.State == EngagementState.Offer)
             .Where(staffing => weekSet.Contains(staffing.Week))
-            .GroupBy(staffing => staffing.Project.Name)
+            .GroupBy(staffing => staffing.Engagement.Name)
             .Select(grouping => new DetailedBooking(
-                new BookingDetails(grouping.Key, BookingType.Offer, grouping.First().Project.Customer.Name,
-                    grouping.First().Project.Id),
+                new BookingDetails(grouping.Key, BookingType.Offer, grouping.First().Engagement.Customer.Name,
+                    grouping.First().Engagement.Id),
                 weekSet.Select(week =>
                     new WeeklyHours(
                         week.ToSortableInt(),

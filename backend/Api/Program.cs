@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-using Api.BuildHelpers;
+using Api.AppExtensions;
 using Api.Options;
 using Database.DatabaseContext;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -22,8 +22,7 @@ builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServe
 builder.Services.AddMemoryCache();
 
 builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-        { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
+    .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 builder.Services.AddEndpointsApiExplorer();
 
 
@@ -37,6 +36,8 @@ builder.Services.AddSwaggerGen(genOptions =>
 });
 
 var app = builder.Build();
+
+app.ApplyMigrations();
 
 app.UsePathBase("/v0");
 app.MapControllers();

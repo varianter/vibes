@@ -68,13 +68,11 @@ public class ProjectController : ControllerBase
         var service = new StorageService(_cache, _context);
 
         if (!ProjectControllerValidator.ValidateUpdateProjectWriteModel(projectWriteModel, service, orgUrlKey))
-        {
             return BadRequest("Error in data");
-        }
 
         try
         {
-            Project engagement;
+            Engagement engagement;
             if (EngagementHasSoftMatch(projectWriteModel.EngagementId))
             {
                 engagement = MergeProjects(projectWriteModel.EngagementId);
@@ -94,7 +92,6 @@ public class ProjectController : ControllerBase
             var selectedWeek = new Week(projectWriteModel.StartYear, projectWriteModel.StartWeek);
             var weekSet = selectedWeek.GetNextWeeks(projectWriteModel.WeekSpan);
 
-            
 
             service.ClearConsultantCache(orgUrlKey);
 
@@ -121,7 +118,7 @@ public class ProjectController : ControllerBase
                      p.Id != id) is not null;
     }
 
-    private Project MergeProjects(int id)
+    private Engagement MergeProjects(int id)
     {
         // TODO: Noe usikker på hvor denne metoden skal være. Om du har en bedre idé, gjerne flytt den :) 
         var engagementToChange = _context.Project
@@ -135,7 +132,7 @@ public class ProjectController : ControllerBase
                 p =>
                     p.Customer == engagementToChange.Customer
                     // Tror vi også bør sjekke det, så vi unngå å flette med gamle tapte prosjekter o.l.
-                    && (p.State == ProjectState.Offer || p.State == ProjectState.Order)
+                    && (p.State == EngagementState.Offer || p.State == EngagementState.Order)
                     && p.Name == engagementToChange.Name
                     && p.Id != id);
 
@@ -171,7 +168,7 @@ public class ProjectController : ControllerBase
 
         if (project is null)
         {
-            project = new Project
+            project = new Engagement
             {
                 Customer = customer,
                 State = body.ProjectState,

@@ -64,11 +64,11 @@ public class Tests
         };
 
         var week = Week.FromDateOnly(mondayDateOnly);
-        var project = Substitute.For<Project>();
+        var project = Substitute.For<Engagement>();
         var customer = Substitute.For<Customer>();
         customer.Name = "TestCustomer";
         project.Customer = customer;
-        project.State = ProjectState.Order;
+        project.State = EngagementState.Order;
 
 
         // TODO: Change this to update consultant data
@@ -95,11 +95,11 @@ public class Tests
         if (staffedHours > 0)
             consultant.Staffings.Add(new Staffing
             {
-                Project = project,
+                Engagement = project,
                 Consultant = consultant,
                 Hours = staffedHours,
                 Week = week,
-                ProjectId = project.Id,
+                EngagementId = project.Id,
                 ConsultantId = consultant.Id
             });
 

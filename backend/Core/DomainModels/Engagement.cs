@@ -2,14 +2,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Core.DomainModels;
 
-public class Project
+public class Engagement
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
     public required Customer Customer { get; set; }
 
-    public required ProjectState State { get; set; }
+    public required EngagementState State { get; set; }
 
     public List<Consultant> Consultants { get; set; } = new();
 
@@ -19,7 +19,7 @@ public class Project
 
     public required bool IsBillable { get; set; }
 
-    public void MergeEngagement(Project otherEngagement)
+    public void MergeEngagement(Engagement otherEngagement)
     {
         otherEngagement.Staffings.ForEach(s =>
         {
@@ -31,8 +31,8 @@ public class Project
             else
                 Staffings.Add(new Staffing
                 {
-                    ProjectId = Id,
-                    Project = this,
+                    EngagementId = Id,
+                    Engagement = this,
                     ConsultantId = s.ConsultantId,
                     Consultant = s.Consultant,
                     Week = s.Week,
@@ -43,7 +43,7 @@ public class Project
     }
 }
 
-public enum ProjectState
+public enum EngagementState
 {
     Closed,
     Order,

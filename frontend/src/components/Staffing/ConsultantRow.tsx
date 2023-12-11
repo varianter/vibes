@@ -88,7 +88,7 @@ export default function ConsultantRows({
         ))}
       {isListElementVisible && (
         <tr>
-          <AddStaffingCell openModal={openModal} />
+          <AddStaffingCell consultant={consultant} />
         </tr>
       )}
     </>
