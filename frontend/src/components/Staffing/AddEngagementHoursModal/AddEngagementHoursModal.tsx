@@ -1,19 +1,19 @@
 import React, { RefObject, useEffect, useState, useContext } from "react";
-import {
-  BookingType,
-  ConsultantReadModel,
-  ProjectWithCustomerModel,
-} from "@/api-types";
+import { ConsultantReadModel, ProjectWithCustomerModel } from "@/api-types";
 import { DateTime } from "luxon";
 import { generateWeekList } from "@/components/Staffing/helpers/GenerateWeekList";
 import { LargeModal } from "@/components/Modals/LargeModal";
 import DropDown from "@/components/DropDown";
 import ActionButton from "@/components/Buttons/ActionButton";
 import IconActionButton from "@/components/Buttons/IconActionButton";
-import { ArrowLeft, ArrowRight, Briefcase } from "react-feather";
-import { AddConsultantCell } from "./AddConsultantCell";
+import { ArrowLeft, ArrowRight } from "react-feather";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
-import { SelectOption } from "../ComboBox";
+import { useRouter } from "next/navigation";
+import { AddConsultantCell } from "../AddConsultantCell";
+import { SelectOption } from "../../ComboBox";
+import { ConsultantWithWeekHours } from "@/types";
+import { addNewConsultatWHours, generateConsultatsWithHours } from "./utils";
+import { AddEngagementHoursRow } from "./AddEngagementHoursRow";
 
 export function AddEngagementHoursModal({
   modalRef,
@@ -21,7 +21,6 @@ export function AddEngagementHoursModal({
   project,
 }: {
   modalRef: RefObject<HTMLDialogElement>;
-  weekSpan: number;
   chosenConsultants: ConsultantReadModel[];
   project?: ProjectWithCustomerModel;
 }) {
@@ -31,19 +30,38 @@ export function AddEngagementHoursModal({
     DateTime.now(),
   );
 
-  const { consultants } = useContext(FilteredContext);
+  const { consultants, setIsDisabledHotkeys } = useContext(FilteredContext);
 
-  const [selectedConsultants, setSelectedConsultants] =
-    useState<ConsultantReadModel[]>(chosenConsultants);
+  const [weekList, setWeekList] = useState<DateTime[]>(
+    generateWeekList(firstVisibleDay, selectedWeekSpan),
+  );
+
+  const [selectedConsultants, setSelectedConsultants] = useState<
+    ConsultantWithWeekHours[]
+  >([]);
+
+  const [selectedConsultantsFirstEdited, setSelectedConsultantsFirstEdited] =
+    useState(false);
+
+  useEffect(() => {
+    setWeekList(generateWeekList(firstVisibleDay, selectedWeekSpan));
+  }, [firstVisibleDay, selectedWeekSpan]);
 
   const remainingConsultants = consultants.filter(
-    (c) => !selectedConsultants.find((c2) => c2.id == c.id),
+    (c) => !selectedConsultants.find((c2) => c2.consultant.id == c.id),
   );
 
   function handleAddConsultant(option: SelectOption) {
     const consultant = remainingConsultants.find((c) => c.id == option.value);
-    if (consultant)
-      setSelectedConsultants([...selectedConsultants, consultant]);
+    if (consultant) {
+      setSelectedConsultants([
+        ...addNewConsultatWHours(
+          selectedConsultants,
+          consultant,
+          project?.projectId || 0,
+        ),
+      ]);
+    }
   }
 
   function setWeekSpan(weekSpanString: string) {
@@ -51,26 +69,29 @@ export function AddEngagementHoursModal({
     setSelectedWeekSpan(weekSpanNum);
   }
 
-  const [weekList, setWeekList] = useState<DateTime[]>(
-    generateWeekList(firstVisibleDay, selectedWeekSpan),
-  );
-
-  //useEffect(() => {
-  //  setSelectedConsultants(chosenConsultants);
-  //}, [chosenConsultants]);
-
   useEffect(() => {
-    setWeekList(generateWeekList(firstVisibleDay, selectedWeekSpan));
-  }, [firstVisibleDay, selectedWeekSpan]);
+    if (project != undefined && selectedConsultantsFirstEdited == false) {
+      setSelectedConsultants(
+        generateConsultatsWithHours(
+          weekList,
+          chosenConsultants,
+          project?.projectId || 0,
+        ),
+      );
+      setSelectedConsultantsFirstEdited(true);
+    }
+  }, [chosenConsultants, selectedConsultantsFirstEdited, project, weekList]);
 
-  const { setIsDisabledHotkeys } = useContext(FilteredContext);
+  const router = useRouter();
 
   return (
     <LargeModal
       modalRef={modalRef}
       project={project}
       showCloseButton={true}
-      onClose={() => setIsDisabledHotkeys(false)}
+      onClose={() => {
+        setIsDisabledHotkeys(false), router.refresh();
+      }}
     >
       <div className="flex flex-col gap-6">
         <div className="flex justify-end">
@@ -171,9 +192,11 @@ export function AddEngagementHoursModal({
           <tbody>
             {selectedConsultants?.map((consultant) => (
               <AddEngagementHoursRow
-                key={consultant.id}
-                consultant={consultant}
+                key={consultant.consultant.id}
+                consultant={consultant.consultant}
                 weekList={weekList}
+                project={project}
+                consultantWWeekHours={consultant}
               />
             ))}
             <tr>
@@ -186,37 +209,5 @@ export function AddEngagementHoursModal({
         </table>
       </div>
     </LargeModal>
-  );
-}
-
-function AddEngagementHoursRow({
-  consultant,
-  weekList,
-}: {
-  consultant: ConsultantReadModel;
-  weekList: DateTime[];
-}) {
-  return (
-    <tr>
-      <td>
-        <div className="flex justify-center items-center w-8 h-8 bg-offer rounded-lg">
-          <Briefcase className="text-black w-4 h-4" />
-        </div>
-      </td>
-      <td>
-        <p className="text-black text-start small pl-2">{consultant.name}</p>
-      </td>
-      {weekList.map((day) => (
-        /*Notat til senere:
-        day er første dagen i den gitte uka, og dette tallet kan bli brukt til å finne ukenr og år når man skal sende/lagre dataen om timene.
-        Kan gjøre at vi må håndtere ting forskjellig når vi skal redigere et engasjement
-      */
-        <td key={day.weekNumber} className=" p-0.5">
-          <div className="flex justify-end items-center bg-offer/30  rounded-lg h-full">
-            <p className="small-medium text-black/75 p-2">0</p>
-          </div>
-        </td>
-      ))}
-    </tr>
   );
 }

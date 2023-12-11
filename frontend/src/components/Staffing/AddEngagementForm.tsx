@@ -5,16 +5,14 @@ import React, {
   useContext,
   useState,
 } from "react";
-import { useModal } from "@/hooks/useModal";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import ComboBox, { SelectOption } from "@/components/ComboBox";
 import { MultiValue } from "react-select";
 import EasyModal from "@/components/Modals/EasyModal";
-import { AddEngagementHoursModal } from "@/components/Staffing/AddEngagementHoursModal";
 import {
   ConsultantReadModel,
   EngagementWriteModel,
-  ProjectState,
+  EngagementState,
   ProjectWithCustomerModel,
 } from "@/api-types";
 import { usePathname } from "next/navigation";
@@ -25,14 +23,14 @@ export function AddEngagementForm({
   easyModalRef,
   consultant,
 }: {
-  closeEngagementModal: () => void;
+  closeEngagementModal: (
+    project: ProjectWithCustomerModel,
+    selectedConsultants: ConsultantReadModel[],
+  ) => void;
   easyModalRef: RefObject<HTMLDialogElement>;
   consultant: ConsultantReadModel;
 }) {
   const { closeModalOnBackdropClick } = useContext(FilteredContext);
-  const { openModal, modalRef } = useModal({
-    closeOnBackdropClick: closeModalOnBackdropClick,
-  });
   const { customers, consultants, setIsDisabledHotkeys } =
     useContext(FilteredContext);
 
@@ -85,7 +83,7 @@ export function AddEngagementForm({
     ) ?? [];
 
   // State for radio button group
-  const [radioValue, setRadioValue] = useState(ProjectState.Offer);
+  const [radioValue, setRadioValue] = useState(EngagementState.Offer);
 
   // State for toggle
   const [isFakturerbar, setIsFakturerbar] = useState(true);
@@ -102,7 +100,7 @@ export function AddEngagementForm({
 
   // Handler for radio button group
   function handleRadioChange(event: ChangeEvent<HTMLInputElement>) {
-    setRadioValue(event.target.value as ProjectState);
+    setRadioValue(event.target.value as EngagementState);
   }
 
   // Handler for toggle
@@ -145,8 +143,12 @@ export function AddEngagementForm({
     // TODO: This is a simplified mockup.
     if (result) {
       setProject(result);
-      closeEngagementModal();
-      openModal();
+      closeEngagementModal(
+        result,
+        consultants.filter(
+          (c) => selectedConsultants?.some((sc) => sc.value == c.id.toString()),
+        ),
+      );
       setIsDisabledHotkeys(true);
 
       // TODO: Futher logic for the changes in openModal *here*
@@ -158,7 +160,7 @@ export function AddEngagementForm({
     setSelectedCustomer(null);
     setSelectedEngagement(null);
     setSelectedConsultants([selectedConsultant]);
-    setRadioValue(ProjectState.Offer);
+    setRadioValue(EngagementState.Offer);
     setIsFakturerbar(false);
   }
 
@@ -222,8 +224,8 @@ export function AddEngagementForm({
               <label className="flex gap-2 normal items-center">
                 <input
                   type="radio"
-                  value={ProjectState.Offer}
-                  checked={radioValue === ProjectState.Offer}
+                  value={EngagementState.Offer}
+                  checked={radioValue === EngagementState.Offer}
                   onChange={handleRadioChange}
                 />
                 Tilbud
@@ -231,8 +233,8 @@ export function AddEngagementForm({
               <label className="flex gap-2 normal items-center">
                 <input
                   type="radio"
-                  value={ProjectState.Order}
-                  checked={radioValue === ProjectState.Order}
+                  value={EngagementState.Order}
+                  checked={radioValue === EngagementState.Order}
                   onChange={handleRadioChange}
                 />
                 Ordre
@@ -270,14 +272,6 @@ export function AddEngagementForm({
           </ActionButton>
         </form>
       </EasyModal>
-      <AddEngagementHoursModal
-        modalRef={modalRef}
-        weekSpan={8}
-        project={project}
-        chosenConsultants={consultants.filter(
-          (c) => selectedConsultants?.some((sc) => sc.value == c.id.toString()),
-        )}
-      />
     </>
   );
 }

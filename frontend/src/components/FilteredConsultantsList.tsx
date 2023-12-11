@@ -7,7 +7,6 @@ import InfoPill from "./Staffing/InfoPill";
 import { Calendar } from "react-feather";
 import StaffingSums from "./StaffingSums";
 import React from "react";
-import { BookedHoursPerWeek } from "@/api-types";
 
 export default function StaffingTable() {
   const {
@@ -20,35 +19,34 @@ export default function StaffingTable() {
   const { weekSpan } = useUrlRouteFilter();
 
   return (
-    <table
-      className={`w-full ${
-        weekSpan > 23
-          ? "min-w-[1400px]"
-          : weekSpan > 11
-          ? "min-w-[850px]"
-          : "min-w-[700px]"
-      } table-fixed`}
-    >
-      <colgroup>
-        <col span={1} className="w-14" />
-        <col span={1} className="w-[190px]" />
-        {filteredConsultants
-          .at(0)
-          ?.bookings.map((_, index) => <col key={index} span={1} />)}
-      </colgroup>
-      <thead>
-        <tr className="sticky -top-6 bg-white z-10">
-          <th colSpan={2} className="pt-3 pl-2 -left-2 relative bg-white">
-            <div className="flex flex-row gap-3 pb-4 items-center">
-              <p className="normal-medium ">Konsulenter</p>
-              <p className="text-primary small-medium rounded-full bg-primary/5 px-2 py-1">
-                {filteredConsultants?.length}
-              </p>
-            </div>
-          </th>
+    <>
+      <table
+        className={`w-full ${
+          weekSpan > 23
+            ? "min-w-[1400px]"
+            : weekSpan > 11
+            ? "min-w-[850px]"
+            : "min-w-[700px]"
+        } table-fixed`}
+      >
+        <colgroup>
+          <col span={1} className="w-14" />
+          <col span={1} className="w-[190px]" />
           {filteredConsultants
             .at(0)
-            ?.bookings.map((booking: BookedHoursPerWeek) => (
+            ?.bookings.map((_, index) => <col key={index} span={1} />)}
+        </colgroup>
+        <thead>
+          <tr className="sticky -top-6 bg-white z-10">
+            <th colSpan={2} className="pt-3 pl-2 -left-2 relative bg-white">
+              <div className="flex flex-row gap-3 pb-4 items-center">
+                <p className="normal-medium ">Konsulenter</p>
+                <p className="text-primary small-medium rounded-full bg-primary/5 px-2 py-1">
+                  {filteredConsultants?.length}
+                </p>
+              </div>
+            </th>
+            {filteredConsultants.at(0)?.bookings?.map((booking) => (
               <th key={booking.weekNumber} className=" px-2 py-1 pt-3 ">
                 <div className="flex flex-col gap-1">
                   {isCurrentWeek(booking.weekNumber, booking.year) ? (
@@ -101,18 +99,19 @@ export default function StaffingTable() {
                 </div>
               </th>
             ))}
-        </tr>
-      </thead>
-      <tbody>
-        {filteredConsultants?.map((consultant) => (
-          <ConsultantRows key={consultant.id} consultant={consultant} />
-        ))}
-      </tbody>
-      <StaffingSums
-        weeklyTotalBillable={weeklyTotalBillable}
-        weeklyTotalBillableAndOffered={weeklyTotalBillableAndOffered}
-        weeklyInvoiceRates={weeklyInvoiceRates}
-      />
-    </table>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredConsultants.map((consultant) => (
+            <ConsultantRows key={consultant.id} consultant={consultant} />
+          ))}
+        </tbody>
+        <StaffingSums
+          weeklyTotalBillable={weeklyTotalBillable}
+          weeklyTotalBillableAndOffered={weeklyTotalBillableAndOffered}
+          weeklyInvoiceRates={weeklyInvoiceRates}
+        />
+      </table>
+    </>
   );
 }

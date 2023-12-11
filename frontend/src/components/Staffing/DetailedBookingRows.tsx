@@ -2,7 +2,7 @@ import {
   BookingType,
   ConsultantReadModel,
   DetailedBooking,
-  ProjectState,
+  EngagementState,
   WeeklyHours,
 } from "@/api-types";
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -22,7 +22,7 @@ import { parseYearWeekFromString } from "@/data/urlUtils";
 async function updateProjectState(
   organisationName: string,
   detailedBooking: DetailedBooking,
-  state: ProjectState,
+  state: EngagementState,
 ) {
   const url = `/${organisationName}/bemanning/api/projects/updateState`;
   const yearWeek = parseYearWeekFromString(
@@ -76,7 +76,7 @@ export function DetailedBookingRows(props: {
     if (editOfferDropdownIsOpen) setEditOfferDropdownIsOpen(false);
   });
 
-  function changeState(state: ProjectState) {
+  function changeState(state: EngagementState) {
     updateProjectState(organisationName, detailedBooking, state).then((res) => {
       setConsultants((old) => [
         // Use spread to make a new list, forcing a re-render
@@ -111,7 +111,7 @@ export function DetailedBookingRows(props: {
           </p>
           <button
             className="hover:bg-primary/10 px-3 py-2 rounded flex flex-row gap-3 items-center "
-            onClick={() => changeState(ProjectState.Order)}
+            onClick={() => changeState(EngagementState.Order)}
           >
             <p className="h-6 flex items-center normal-semibold text-primary">
               Vunnet
@@ -119,7 +119,7 @@ export function DetailedBookingRows(props: {
           </button>
           <button
             className="hover:bg-primary/10 px-3 py-2 rounded flex flex-row gap-3 items-center"
-            onClick={() => changeState(ProjectState.Lost)}
+            onClick={() => changeState(EngagementState.Lost)}
           >
             <p className="h-6 flex items-center normal-semibold text-primary">
               Tapt
@@ -185,13 +185,13 @@ interface updateBookingHoursProps {
   endWeek?: number;
 }
 
-async function setDetailedBookingHours(props: updateBookingHoursProps) {
+export async function setDetailedBookingHours(props: updateBookingHoursProps) {
   const url = `/${props.organisationUrl}/bemanning/api/updateHours`;
   const body: updateBookingHoursBody = {
     hours: props.hours,
     bookingType: props.bookingType,
     consultantId: `${props.consultantId}`,
-    bookingId: props.bookingId,
+    projectId: props.bookingId,
     startWeek: props.startWeek,
     endWeek: props.endWeek,
   };

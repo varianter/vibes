@@ -14,14 +14,15 @@ public record EngagementReadModel(
     [property: Required] EngagementState BookingType,
     [property: Required] bool IsBillable);
 
-public record EngagementWriteModel(List<int> ConsultantIds, EngagementState BookingType,
+public record EngagementWriteModel( EngagementState BookingType,
     bool IsBillable, string ProjectName, string CustomerName);
 
 public record ProjectWithCustomerModel(
     [property: Required] string ProjectName,
     [property: Required] string CustomerName,
     [property: Required] EngagementState BookingType,
-    [property: Required] bool IsBillable);
+    [property: Required] bool IsBillable,
+    [property: Required] int ProjectId);
 
 public record UpdateProjectWriteModel(int EngagementId, EngagementState ProjectState, int StartYear, int StartWeek,
     int WeekSpan);

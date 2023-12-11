@@ -32,7 +32,7 @@ public class ReadModelFactory
         var readModel = MapToReadModelList(consultant, new List<Week> { week });
 
         return new ConsultantReadModel(consultant, new List<BookedHoursPerWeek> { readModel.Bookings.First() },
-            new List<DetailedBooking> { readModel.DetailedBooking.First() }, readModel.IsOccupied);
+             readModel.DetailedBooking.ToList(), readModel.IsOccupied);
     }
 
     public ConsultantReadModel GetConsultantReadModelForWeeks(int consultantId, List<Week> weeks)
