@@ -1,11 +1,13 @@
 using System.Globalization;
 using Api.Common;
+using Core.DomainModels;
 using Database.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Api.VacationsController;
+
 [Authorize]
 [Route("/v0/{orgUrlKey}/vacations")]
 [ApiController]
@@ -38,25 +40,24 @@ public class VacationsController : ControllerBase
 
     [HttpGet]
     [Route("{consultantId}/get")]
-
     public ActionResult<VacationReadModel> GetVacations([FromRoute] string orgUrlKey,
         [FromRoute] int consultantId)
     {
         //TODO: Make year optional search param
-        
+
         var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrg is null) return BadRequest();
-        
+
         var service = new StorageService(_cache, _context);
-        
+
         if (!VacationsValidator.ValidateVacation(consultantId, service, orgUrlKey))
             return BadRequest();
 
         var vacationDays = service.LoadConsultantVacation(consultantId);
         var consultant = service.GetBaseConsultantById(consultantId);
         if (consultant is null) return BadRequest();
-        var vacationMetaData = ReadModelFactory.GetVacationMetaData(selectedOrg, vacationDays, consultant);
-        return ReadModelFactory.MapToReadModel(consultantId, vacationDays, vacationMetaData);
+        var vacationMetaData = new VacationMetaData(consultant, DateOnly.FromDateTime(DateTime.Now));
+        return new VacationReadModel(consultantId, vacationDays, vacationMetaData);
     }
 
     [HttpDelete]
@@ -71,10 +72,10 @@ public class VacationsController : ControllerBase
         if (selectedOrg is null) return BadRequest();
 
         var service = new StorageService(_cache, _context);
-        
+
         if (!VacationsValidator.ValidateVacation(consultantId, service, orgUrlKey))
             return BadRequest();
-        
+
         try
         {
             var dateObject = DateOnly.FromDateTime(DateTime.Parse(date, CultureInfo.InvariantCulture));
@@ -84,19 +85,17 @@ public class VacationsController : ControllerBase
         {
             Console.WriteLine(e);
             return BadRequest("Something went wrong");
-
         }
 
         var vacationDays = service.LoadConsultantVacation(consultantId);
         var consultant = service.GetBaseConsultantById(consultantId);
         if (consultant is null) return BadRequest();
-        var vacationMetaData = ReadModelFactory.GetVacationMetaData(selectedOrg, vacationDays, consultant);
-        return ReadModelFactory.MapToReadModel(consultantId, vacationDays, vacationMetaData);
+        var vacationMetaData = new VacationMetaData(consultant, DateOnly.FromDateTime(DateTime.Now));
+        return new VacationReadModel(consultantId, vacationDays, vacationMetaData);
     }
 
     [HttpPut]
     [Route("{consultantId}/{date}/update")]
-
     public ActionResult<VacationReadModel> UpdateVacation([FromRoute] string orgUrlKey,
         [FromRoute] int consultantId,
         [FromRoute] string date)
@@ -105,12 +104,12 @@ public class VacationsController : ControllerBase
 
         var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrg is null) return BadRequest();
-        
+
         var service = new StorageService(_cache, _context);
-        
+
         if (!VacationsValidator.ValidateVacation(consultantId, service, orgUrlKey))
             return BadRequest();
-        
+
         try
         {
             var dateObject = DateOnly.FromDateTime(DateTime.Parse(date));
@@ -125,12 +124,28 @@ public class VacationsController : ControllerBase
         var vacationDays = service.LoadConsultantVacation(consultantId);
         var consultant = service.GetBaseConsultantById(consultantId);
         if (consultant is null) return BadRequest();
-        var vacationMetaData = ReadModelFactory.GetVacationMetaData(selectedOrg, vacationDays, consultant);
-        return ReadModelFactory.MapToReadModel(consultantId, vacationDays, vacationMetaData);
+        var vacationMetaData = new VacationMetaData(consultant, DateOnly.FromDateTime(DateTime.Now));
+        return new VacationReadModel(consultantId, vacationDays, vacationMetaData);
     }
-
 }
-public record VacationMetaData(int DaysTotal, int TransferredDays, int Planned, int Used, int LeftToPlan);
-public record VacationReadModel(int ConsultantId, List<DateOnly> VacationDays, VacationMetaData VacationMetaData);
 
+public record VacationMetaData(int DaysTotal, int TransferredDays, int Planned, int Used, int LeftToPlan)
+{
+    public VacationMetaData(Consultant consultant, DateOnly day) : this(
+        consultant.TotalAvailableVacationDays,
+        consultant.TransferredVacationDays,
+        consultant.GetPlannedVacationDays(day),
+        consultant.GetUsedVacationDays(day),
+        consultant.GetRemainingVacationDays(day)
+    )
+    {
+    }
+}
 
+public record VacationReadModel(int ConsultantId, List<DateOnly> VacationDays, VacationMetaData VacationMetaData)
+{
+    public VacationReadModel(int consultantId, List<Vacation> vacations, VacationMetaData vacationMetaData) : this(
+        consultantId, vacations.Select(v => v.Date).ToList(), vacationMetaData)
+    {
+    }
+}
