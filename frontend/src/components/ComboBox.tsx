@@ -41,6 +41,7 @@ export default function ComboBox({
       isDisabled={isDisabled}
       isClearable={isClearable}
       filterOption={customFilter}
+      formatCreateLabel={(inputText) => `Legg til "${inputText}"`}
       value={
         isMultipleOptions
           ? selectedMultipleOptionsValue
