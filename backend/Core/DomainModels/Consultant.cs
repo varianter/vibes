@@ -17,6 +17,7 @@ public class Consultant
 
     public Degree? Degree { get; set; }
     public int? GraduationYear { get; set; }
+    public int TransferredVacationDays { get; set; }
 
     public List<Competence> Competences { get; set; } = new();
 
@@ -37,6 +38,24 @@ public class Consultant
                 (DateTime.Now - augustThisYear).Seconds > 0 ? DateTime.Now.Year : DateTime.Now.Year - 1;
             return currentAcademicYear - GraduationYear ?? currentAcademicYear;
         }
+    }
+
+    public int TotalAvailableVacationDays => Department.Organization.NumberOfVacationDaysInYear;
+
+    public int GetUsedVacationDays(DateOnly day)
+    {
+        return Vacations.Where(v => v.Date.Year.Equals(day.Year)).Count(v => v.Date < day);
+    }
+
+    public int GetPlannedVacationDays(DateOnly day)
+    {
+        return Vacations.Where(v => v.Date.Year.Equals(day.Year)).Count(v => v.Date > day);
+    }
+
+    public int GetRemainingVacationDays(DateOnly day)
+    {
+        return TotalAvailableVacationDays + TransferredVacationDays - GetUsedVacationDays(day) -
+               GetPlannedVacationDays(day);
     }
 }
 

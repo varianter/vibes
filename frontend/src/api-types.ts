@@ -146,6 +146,21 @@ export interface SeveralStaffingWriteModel {
   hours?: number;
 }
 
+export interface SingleConsultantReadModel {
+  /** @format int32 */
+  id: number;
+  /** @minLength 1 */
+  name: string;
+  /** @minLength 1 */
+  email: string;
+  competences: string[];
+  /** @minLength 1 */
+  department: string;
+  /** @format int32 */
+  yearsOfExperience: number;
+  degree: Degree;
+}
+
 export interface StaffingWriteModel {
   type?: BookingType;
   /** @format int32 */
@@ -170,6 +185,26 @@ export interface UpdateProjectWriteModel {
   startWeek?: number;
   /** @format int32 */
   weekSpan?: number;
+}
+
+export interface VacationMetaData {
+  /** @format int32 */
+  daysTotal?: number;
+  /** @format int32 */
+  transferredDays?: number;
+  /** @format int32 */
+  planned?: number;
+  /** @format int32 */
+  used?: number;
+  /** @format int32 */
+  leftToPlan?: number;
+}
+
+export interface VacationReadModel {
+  /** @format int32 */
+  consultantId?: number;
+  vacationDays?: string[];
+  vacationMetaData?: VacationMetaData;
 }
 
 export interface WeeklyBookingReadModel {

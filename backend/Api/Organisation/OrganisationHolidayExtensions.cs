@@ -50,4 +50,20 @@ public static class OrganisationHolidayExtensions
 
         return date >= startDate && date <= endDate;
     }
+
+    public static List<DateOnly> GetPublicHolidays(this Organization organization, int year)
+    {
+        var publicHoliday = organization.GetPublicHoliday();
+        var publicHolidays = publicHoliday.PublicHolidays(year).Select(DateOnly.FromDateTime).ToList();
+        if (organization.HasVacationInChristmas)
+        {
+            var startDate = new DateTime(year, 12, 24);
+            var endDate = new DateTime(year, 12, 31);
+            var list = Enumerable.Range(0, 1 + endDate.Subtract(startDate).Days)
+                .Select(offset => DateOnly.FromDateTime(startDate.AddDays(offset)))
+                .ToList();
+            publicHolidays = publicHolidays.Concat(list).Distinct().ToList();
+        }
+        return publicHolidays;
+    }
 }

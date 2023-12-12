@@ -6,23 +6,22 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Api.StaffingController;
-
 [Authorize]
-[Route("/v0/{orgUrlKey}/consultants")]
+[Route("/v0/{orgUrlKey}/staffings")]
 [ApiController]
-public class ConsultantController : ControllerBase
+public class StaffingController : ControllerBase
 {
     private readonly IMemoryCache _cache;
     private readonly ApplicationContext _context;
 
-    public ConsultantController(ApplicationContext context, IMemoryCache cache)
+    public StaffingController(ApplicationContext context, IMemoryCache cache)
     {
         _context = context;
         _cache = cache;
     }
 
     [HttpGet]
-    public ActionResult<List<ConsultantReadModel>> Get(
+    public ActionResult<List<StaffingReadModel>> Get(
         [FromRoute] string orgUrlKey,
         [FromQuery(Name = "Year")] int? selectedYearParam = null,
         [FromQuery(Name = "Week")] int? selectedWeekParam = null,
@@ -39,10 +38,11 @@ public class ConsultantController : ControllerBase
         var readModels = new ReadModelFactory(service).GetConsultantReadModelsForWeeks(orgUrlKey, weekSet);
         return Ok(readModels);
     }
+    
 
     [HttpPut]
-    [Route("staffing/update")]
-    public ActionResult<ConsultantReadModel> Put(
+    [Route("update")]
+    public ActionResult<StaffingReadModel> Put(
         [FromRoute] string orgUrlKey,
         [FromBody] StaffingWriteModel staffingWriteModel
     )
@@ -86,8 +86,8 @@ public class ConsultantController : ControllerBase
     }
 
     [HttpPut]
-    [Route("staffing/update/several")]
-    public ActionResult<ConsultantReadModel> Put(
+    [Route("update/several")]
+    public ActionResult<StaffingReadModel> Put(
         [FromRoute] string orgUrlKey,
         [FromBody] SeveralStaffingWriteModel severalStaffingWriteModel
     )

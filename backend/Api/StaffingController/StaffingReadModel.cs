@@ -5,7 +5,7 @@ using Core.DomainModels;
 
 namespace Api.StaffingController;
 
-public record ConsultantReadModel(
+public record StaffingReadModel(
     [property: Required] int Id,
     [property: Required] string Name,
     [property: Required] string Email,
@@ -17,7 +17,7 @@ public record ConsultantReadModel(
     [property: Required] List<DetailedBooking> DetailedBooking,
     [property: Required] bool IsOccupied)
 {
-    public ConsultantReadModel(Consultant consultant, List<BookedHoursPerWeek> bookings,
+    public StaffingReadModel(Consultant consultant, List<BookedHoursPerWeek> bookings,
         List<DetailedBooking> detailedBookings, bool IsOccupied)
         : this(
             consultant.Id,
@@ -34,6 +34,7 @@ public record ConsultantReadModel(
     {
     }
 }
+
 
 public record BookedHoursPerWeek(
     [property: Required] int Year,

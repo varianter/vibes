@@ -70,7 +70,7 @@ public class ProjectController : ControllerBase
 
     [HttpPut]
     [Route("updateState")]
-    public ActionResult<List<ConsultantReadModel>> Put([FromRoute] string orgUrlKey,
+    public ActionResult<List<StaffingReadModel>> Put([FromRoute] string orgUrlKey,
         [FromBody] UpdateProjectWriteModel projectWriteModel)
     {
         // Merk: Service kommer snart via Dependency Injection, da slipper å lage ny hele tiden

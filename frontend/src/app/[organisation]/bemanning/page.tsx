@@ -23,7 +23,7 @@ export default async function Bemanning({
 
   const consultants =
     (await fetchWithToken<ConsultantReadModel[]>(
-      `${params.organisation}/consultants${
+      `${params.organisation}/staffings${
         selectedWeek
           ? `?Year=${selectedWeek.year}&Week=${selectedWeek.weekNumber}`
           : ""
