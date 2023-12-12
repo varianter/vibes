@@ -18,6 +18,18 @@ public class StorageService
         _dbContext = context;
     }
 
+    public Consultant? GetConsultantByEmail(string orgUrlKey, string email)
+    {
+        var consultant = _dbContext.Consultant.Include(c=>c.Department).ThenInclude(d=> d.Organization).SingleOrDefault(c => c.Email == email);
+        if (consultant is null || consultant.Department.Organization.UrlKey != orgUrlKey)
+        {
+            return null;
+        }
+
+        return consultant;
+
+    }
+
     public void ClearConsultantCache(string orgUrlKey)
     {
         _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
@@ -358,4 +370,38 @@ public class StorageService
             .ThenInclude(c => c.Organization)
             .Single(p => p.Id == id);
     }
+
+    public List<Vacation> LoadConsultantVacation(int consultantId)
+    {
+        return _dbContext.Vacation.Where(v => v.ConsultantId == consultantId).ToList();
+    }
+
+    public List<DateOnly>? LoadPublicHolidays(string orgUrlKey)
+    {
+        var org = _dbContext.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
+        if (org is null) return null;
+        return org.GetPublicHolidays(DateOnly.FromDateTime(DateTime.Now).Year);
+    }
+
+    public void RemoveVacationDay(int consultantId, DateOnly date)
+    {
+        var vacation = _dbContext.Vacation.Single(v => v.ConsultantId == consultantId && v.Date.Equals(date));
+        
+        _dbContext.Vacation.Remove(vacation);
+        _dbContext.SaveChanges();
+    }
+    
+    public void AddVacationDay(int consultantId, DateOnly date)
+    {
+       var consultant =  _dbContext.Consultant.Single(c => c.Id == consultantId);
+       var vacation = new Vacation
+       {
+           ConsultantId = consultantId,
+           Consultant = consultant,
+           Date = date
+       };
+       _dbContext.Add(vacation);
+       _dbContext.SaveChanges();
+    }
+    
 }

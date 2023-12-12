@@ -34,7 +34,7 @@ namespace Database.Migrations
 
                     b.HasIndex("ConsultantId");
 
-                    b.ToTable("CompetenceConsultant");
+                    b.ToTable("CompetenceConsultant", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModels.Absence", b =>
@@ -60,7 +60,7 @@ namespace Database.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("Absence");
+                    b.ToTable("Absence", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModels.Competence", b =>
@@ -75,7 +75,7 @@ namespace Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Competence");
+                    b.ToTable("Competence", (string)null);
 
                     b.HasData(
                         new
@@ -136,7 +136,7 @@ namespace Database.Migrations
 
                     b.HasIndex("DepartmentId");
 
-                    b.ToTable("Consultant");
+                    b.ToTable("Consultant", (string)null);
 
                     b.HasData(
                         new
@@ -171,7 +171,7 @@ namespace Database.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("Customer");
+                    b.ToTable("Customer", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModels.Department", b =>
@@ -195,7 +195,7 @@ namespace Database.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("Department");
+                    b.ToTable("Department", (string)null);
 
                     b.HasData(
                         new
@@ -232,7 +232,7 @@ namespace Database.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Project");
+                    b.ToTable("Project", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModels.Organization", b =>
@@ -263,7 +263,7 @@ namespace Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Organization");
+                    b.ToTable("Organization", (string)null);
 
                     b.HasData(
                         new
@@ -296,7 +296,7 @@ namespace Database.Migrations
 
                     b.HasIndex("ConsultantId");
 
-                    b.ToTable("PlannedAbsence");
+                    b.ToTable("PlannedAbsence", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModels.Staffing", b =>
@@ -317,7 +317,7 @@ namespace Database.Migrations
 
                     b.HasIndex("ConsultantId");
 
-                    b.ToTable("Staffing");
+                    b.ToTable("Staffing", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModels.Vacation", b =>
@@ -338,7 +338,7 @@ namespace Database.Migrations
 
                     b.HasIndex("ConsultantId");
 
-                    b.ToTable("Vacation");
+                    b.ToTable("Vacation", (string)null);
                 });
 
             modelBuilder.Entity("CompetenceConsultant", b =>

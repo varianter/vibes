@@ -9,7 +9,7 @@ import {
   MockOrganisations,
 } from "../../mockdata/mockData";
 
-type HttpMethod = "GET" | "PUT" | "POST";
+type HttpMethod = "GET" | "PUT" | "POST" | "DELETE";
 
 export async function callApi<T, Body>(
   path: string,
@@ -80,6 +80,13 @@ export async function postWithToken<ReturnType, BodyType>(
   body?: BodyType,
 ): Promise<ReturnType | undefined> {
   return callApi<ReturnType, BodyType>(path, "POST", body);
+}
+
+export async function deleteWithToken<ReturnType, BodyType>(
+  path: string,
+  body?: BodyType,
+): Promise<ReturnType | undefined> {
+  return callApi<ReturnType, BodyType>(path, "DELETE", body);
 }
 
 function mockedCall<T>(path: string): Promise<T> {

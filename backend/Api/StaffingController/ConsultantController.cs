@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Api.StaffingController;
-
 [Authorize]
 [Route("/v0/{orgUrlKey}/consultants")]
 [ApiController]
@@ -38,6 +37,24 @@ public class ConsultantController : ControllerBase
         var service = new StorageService(_cache, _context);
         var readModels = new ReadModelFactory(service).GetConsultantReadModelsForWeeks(orgUrlKey, weekSet);
         return Ok(readModels);
+    }
+    
+    [HttpGet]
+    [Route("single")]
+
+    public ActionResult<SingleConsultantReadModel> Get([FromRoute] string orgUrlKey,
+        [FromQuery(Name = "Email")] string? email = "")
+    {
+        var service = new StorageService(_cache, _context);
+
+        var consultant = service.GetConsultantByEmail(orgUrlKey, email ?? "");
+
+        if (consultant is null)
+        {
+            return BadRequest("Consultant not found");
+        }
+        
+        return Ok( new SingleConsultantReadModel(consultant));
     }
 
     [HttpPut]
