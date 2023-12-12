@@ -122,6 +122,8 @@ public class ApplicationContext : DbContext
         modelBuilder.Entity<Consultant>()  
             .Property(c => c.TransferredVacationDays)  
             .HasDefaultValue(0);  
+        
+       
 
         modelBuilder.Entity<Competence>().HasData(new List<Competence>
         {
@@ -142,6 +144,10 @@ public class ApplicationContext : DbContext
                 HasVacationInChristmas = true,
                 NumberOfVacationDaysInYear = 25
             });
+        
+        modelBuilder.Entity<Organization>()  
+            .Property(o => o.AllowOverbooking)  
+            .HasDefaultValue(false);  
 
         modelBuilder.Entity<Department>()
             .HasData(new { Id = "trondheim", Name = "Trondheim", OrganizationId = "variant-as" });

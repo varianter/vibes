@@ -11,6 +11,7 @@ public class Organization
     public required int NumberOfVacationDaysInYear { get; set; }
     public required bool HasVacationInChristmas { get; set; }
     public required double HoursPerWorkday { get; set; }
+    public bool AllowOverbooking { get; set; }
 
     [JsonIgnore] public List<Department> Departments { get; set; }
 

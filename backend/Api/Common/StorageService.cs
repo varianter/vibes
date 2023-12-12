@@ -220,7 +220,7 @@ public class StorageService
         foreach (var week in weeks)
         {
             var newHours = hours;
-            if (org != null)
+            if (org is { AllowOverbooking: false })
             {
                 var holidayHours = org.GetTotalHolidayHoursOfWeek(week);
                 var vacations = _dbContext.Vacation.Where(v => v.ConsultantId.Equals(consultantId)).ToList();
