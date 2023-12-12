@@ -91,7 +91,7 @@ export async function deleteWithToken<ReturnType, BodyType>(
 
 function mockedCall<T>(path: string): Promise<T> {
   return new Promise((resolve) => {
-    if (path.includes("consultants")) {
+    if (path.includes("staffings")) {
       resolve(MockConsultants as T);
     }
     if (path.includes("departments")) {

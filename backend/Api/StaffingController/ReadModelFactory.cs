@@ -13,7 +13,7 @@ public class ReadModelFactory
         _storageService = storageService;
     }
 
-    public List<ConsultantReadModel> GetConsultantReadModelsForWeeks(string orgUrlKey, List<Week> weeks)
+    public List<StaffingReadModel> GetConsultantReadModelsForWeeks(string orgUrlKey, List<Week> weeks)
     {
         var firstDayInScope = weeks.First().FirstDayOfWorkWeek();
         var firstWorkDayOutOfScope = weeks.Last().LastWorkDayOfWeek();
@@ -26,40 +26,40 @@ public class ReadModelFactory
     }
 
 
-    public ConsultantReadModel GetConsultantReadModelForWeek(int consultantId, Week week)
+    public StaffingReadModel GetConsultantReadModelForWeek(int consultantId, Week week)
     {
         var consultant = _storageService.LoadConsultantForSingleWeek(consultantId, week);
         var readModel = MapToReadModelList(consultant, new List<Week> { week });
 
-        return new ConsultantReadModel(consultant, new List<BookedHoursPerWeek> { readModel.Bookings.First() },
+        return new StaffingReadModel(consultant, new List<BookedHoursPerWeek> { readModel.Bookings.First() },
              readModel.DetailedBooking.ToList(), readModel.IsOccupied);
     }
 
-    public ConsultantReadModel GetConsultantReadModelForWeeks(int consultantId, List<Week> weeks)
+    public StaffingReadModel GetConsultantReadModelForWeeks(int consultantId, List<Week> weeks)
     {
         var consultant = _storageService.LoadConsultantForWeekSet(consultantId, weeks);
         var readModel = MapToReadModelList(consultant, weeks);
 
-        return new ConsultantReadModel(consultant, readModel.Bookings,
+        return new StaffingReadModel(consultant, readModel.Bookings,
             readModel.DetailedBooking, readModel.IsOccupied);
     }
 
-    public List<ConsultantReadModel> GetConsultantReadModelForWeeks(List<int> consultantIds, List<Week> weeks)
+    public List<StaffingReadModel> GetConsultantReadModelForWeeks(List<int> consultantIds, List<Week> weeks)
     {
-        var consultants = new List<ConsultantReadModel>();
+        var consultants = new List<StaffingReadModel>();
         foreach (var i in consultantIds)
         {
             var consultant = _storageService.LoadConsultantForWeekSet(i, weeks);
             var readModel = MapToReadModelList(consultant, weeks);
 
-            consultants.Add(new ConsultantReadModel(consultant, readModel.Bookings,
+            consultants.Add(new StaffingReadModel(consultant, readModel.Bookings,
                 readModel.DetailedBooking, readModel.IsOccupied));
         }
 
         return consultants;
     }
 
-    public static ConsultantReadModel MapToReadModelList(
+    public static StaffingReadModel MapToReadModelList(
         Consultant consultant,
         List<Week> weekSet)
     {
@@ -80,7 +80,7 @@ public class ReadModelFactory
             b.BookingModel.TotalBillable + b.BookingModel.TotalPlannedAbsences + b.BookingModel.TotalVacationHours +
             b.BookingModel.TotalHolidayHours >= hoursPrWeek);
 
-        return new ConsultantReadModel(
+        return new StaffingReadModel(
             consultant,
             bookingSummary,
             detailedBookings.ToList(),

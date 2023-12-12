@@ -20,7 +20,7 @@ export default async function Ferie({
 
   const consultant =
     (await fetchWithToken<ConsultantReadModel>(
-      `${params.organisation}/consultants/single?Email=${userEmail}`,
+      `${params.organisation}/consultants?Email=${userEmail}`,
     )) ?? undefined;
 
   const vacationDays =

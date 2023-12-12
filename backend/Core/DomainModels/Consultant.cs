@@ -38,6 +38,26 @@ public class Consultant
             return currentAcademicYear - GraduationYear ?? currentAcademicYear;
         }
     }
+
+    public int GetUsedVacationDays(DateOnly day)
+    {
+        return Vacations.Where(v => v.Date.Year.Equals(day.Year)).Count(v => v.Date < day);
+    }
+
+    public int GetPlannedVacationDays(DateOnly day)
+    {
+        return Vacations.Where(v => v.Date.Year.Equals(day.Year)).Count(v => v.Date > day);
+    }
+
+    public int GetTransferredVacationDays(int year, int total)
+    {
+        if (StartDate is not null && StartDate.Value.Year <= year)
+        {
+            return Math.Clamp((total - Vacations.Count(v => v.Date.Year.Equals(year))), 0, 12);
+        }
+
+        return 0;
+    }
 }
 
 public class Competence

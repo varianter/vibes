@@ -31,8 +31,8 @@ export async function PUT(
   };
 
   const url = endWeek
-    ? `${orgUrlKey}/consultants/staffing/update/several`
-    : `${orgUrlKey}/consultants/staffing/update`;
+    ? `${orgUrlKey}/staffings/update/several`
+    : `${orgUrlKey}/staffings/update`;
 
   const staffing =
     (await putWithToken<never, StaffingWriteModel>(url, body)) ?? [];

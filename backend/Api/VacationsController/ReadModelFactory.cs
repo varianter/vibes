@@ -10,14 +10,15 @@ public static class ReadModelFactory
     }
 
 
-    public static VacationMetaData GetVacationMetaData(Organization org, List<Vacation> vacations)
+    public static VacationMetaData GetVacationMetaData(Organization org, List<Vacation> vacations, Consultant consultant)
     {
         var today = DateOnly.FromDateTime(DateTime.Now);
         var total = org.NumberOfVacationDaysInYear;
-        var used = vacations.Where(v => v.Date.Year.Equals(today.Year)).Count(v => v.Date < today);
-        var planned = vacations.Where(v => v.Date.Year.Equals(today.Year)).Count(v => v.Date > today);
+        var used = consultant.GetUsedVacationDays(today);
+        var planned = consultant.GetPlannedVacationDays(today);
         var left = total - used - planned;
-        var transferred = 0; //FIX!!!!
+        var transferred = consultant.GetTransferredVacationDays(today.Year - 1, total);
+        
         return new VacationMetaData(total, transferred, planned, used, left);
     }
 }

@@ -22,7 +22,7 @@ public class VacationsController : ControllerBase
 
     [HttpGet]
     [Route("publicHolidays")]
-    public ActionResult<List<DateOnly>> Get([FromRoute] string orgUrlKey)
+    public ActionResult<List<DateOnly>> GetPublicHolidays([FromRoute] string orgUrlKey)
     {
         //TODO: Validate that consultant is in organisation
         //TODO: Year?
@@ -39,30 +39,42 @@ public class VacationsController : ControllerBase
     [HttpGet]
     [Route("{consultantId}/get")]
 
-    public ActionResult<VacationReadModel> Get([FromRoute] string orgUrlKey,
+    public ActionResult<VacationReadModel> GetVacations([FromRoute] string orgUrlKey,
         [FromRoute] int consultantId)
     {
-        //TODO: Validate that consultant is in organisation
-        //TODO: Year?
+        //TODO: Make year optional search param
+        
         var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrg is null) return BadRequest();
-
+        
         var service = new StorageService(_cache, _context);
+        
+        if (!VacationsValidator.ValidateVacation(consultantId, service, orgUrlKey))
+            return BadRequest();
+
         var vacationDays = service.LoadConsultantVacation(consultantId);
-        var vacationMetaData = ReadModelFactory.GetVacationMetaData(selectedOrg, vacationDays);
+        var consultant = service.GetBaseConsultantById(consultantId);
+        if (consultant is null) return BadRequest();
+        var vacationMetaData = ReadModelFactory.GetVacationMetaData(selectedOrg, vacationDays, consultant);
         return ReadModelFactory.MapToReadModel(consultantId, vacationDays, vacationMetaData);
     }
 
     [HttpDelete]
     [Route("{consultantId}/{date}/delete")]
-    public ActionResult<VacationReadModel> Delete([FromRoute] string orgUrlKey,
+    public ActionResult<VacationReadModel> DeleteVacation([FromRoute] string orgUrlKey,
         [FromRoute] int consultantId,
         [FromRoute] string date)
     {
+        //TODO: Make year optional search param
+
         var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrg is null) return BadRequest();
 
         var service = new StorageService(_cache, _context);
+        
+        if (!VacationsValidator.ValidateVacation(consultantId, service, orgUrlKey))
+            return BadRequest();
+        
         try
         {
             var dateObject = DateOnly.FromDateTime(DateTime.Parse(date, CultureInfo.InvariantCulture));
@@ -75,22 +87,29 @@ public class VacationsController : ControllerBase
         }
 
         var vacationDays = service.LoadConsultantVacation(consultantId);
-        var vacationMetaData = ReadModelFactory.GetVacationMetaData(selectedOrg, vacationDays);
+        var consultant = service.GetBaseConsultantById(consultantId);
+        if (consultant is null) return BadRequest();
+        var vacationMetaData = ReadModelFactory.GetVacationMetaData(selectedOrg, vacationDays, consultant);
         return ReadModelFactory.MapToReadModel(consultantId, vacationDays, vacationMetaData);
     }
 
     [HttpPut]
     [Route("{consultantId}/{date}/update")]
 
-    public ActionResult<VacationReadModel> Put([FromRoute] string orgUrlKey,
+    public ActionResult<VacationReadModel> UpdateVacation([FromRoute] string orgUrlKey,
         [FromRoute] int consultantId,
         [FromRoute] string date)
     {
+        //TODO: Make year optional search param
+
         var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrg is null) return BadRequest();
-
+        
         var service = new StorageService(_cache, _context);
-
+        
+        if (!VacationsValidator.ValidateVacation(consultantId, service, orgUrlKey))
+            return BadRequest();
+        
         try
         {
             var dateObject = DateOnly.FromDateTime(DateTime.Parse(date));
@@ -103,7 +122,9 @@ public class VacationsController : ControllerBase
         }
 
         var vacationDays = service.LoadConsultantVacation(consultantId);
-        var vacationMetaData = ReadModelFactory.GetVacationMetaData(selectedOrg, vacationDays);
+        var consultant = service.GetBaseConsultantById(consultantId);
+        if (consultant is null) return BadRequest();
+        var vacationMetaData = ReadModelFactory.GetVacationMetaData(selectedOrg, vacationDays, consultant);
         return ReadModelFactory.MapToReadModel(consultantId, vacationDays, vacationMetaData);
     }
 
