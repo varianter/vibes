@@ -21,8 +21,6 @@ export function DetailedEngagementModalCell({
   startDragWeek,
   setStartDragWeek,
   setCurrentDragWeek,
-  isRowHovered,
-  setIsRowHovered,
   numWeeks,
   firstDayInWeek,
   initHours,
@@ -36,8 +34,6 @@ export function DetailedEngagementModalCell({
   setHourDragValue: React.Dispatch<React.SetStateAction<number | undefined>>;
   setStartDragWeek: React.Dispatch<React.SetStateAction<number | undefined>>;
   setCurrentDragWeek: React.Dispatch<React.SetStateAction<number | undefined>>;
-  isRowHovered: boolean;
-  setIsRowHovered: React.Dispatch<React.SetStateAction<boolean>>;
   numWeeks: number;
   firstDayInWeek: DateTime;
   initHours: number;
@@ -68,12 +64,6 @@ export function DetailedEngagementModalCell({
       });
     }
   }
-
-  useEffect(() => {
-    if (!isRowHovered && inputRef.current) {
-      inputRef.current.blur();
-    }
-  }, [isRowHovered]);
 
   function updateDragHours() {
     setIsDisabledHotkeys(false);
@@ -134,10 +124,8 @@ export function DetailedEngagementModalCell({
         }`}
         onMouseEnter={() => {
           setIsChangingHours(true);
-          setIsRowHovered(true);
         }}
         onMouseLeave={() => {
-          setIsRowHovered(false);
           setIsChangingHours(false);
           !isInputFocused && updateSingularHours();
         }}

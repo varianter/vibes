@@ -65,7 +65,6 @@ export function DetailedBookingRows(props: {
   const [currentDragWeek, setCurrentDragWeek] = useState<number | undefined>(
     undefined,
   );
-  const [isRowHovered, setIsRowHovered] = useState(false);
 
   const [editOfferDropdownIsOpen, setEditOfferDropdownIsOpen] = useState(false);
   const menuRef = useRef(null);
@@ -167,8 +166,6 @@ export function DetailedBookingRows(props: {
             startDragWeek={startDragWeek}
             setStartDragWeek={setStartDragWeek}
             setCurrentDragWeek={setCurrentDragWeek}
-            isRowHovered={isRowHovered}
-            setIsRowHovered={setIsRowHovered}
           />
         ))}
     </tr>
@@ -217,8 +214,6 @@ function DetailedBookingCell({
   startDragWeek,
   setStartDragWeek,
   setCurrentDragWeek,
-  isRowHovered,
-  setIsRowHovered,
 }: {
   detailedBooking: DetailedBooking;
   detailedBookingHours: WeeklyHours;
@@ -229,8 +224,6 @@ function DetailedBookingCell({
   setHourDragValue: React.Dispatch<React.SetStateAction<number | undefined>>;
   setStartDragWeek: React.Dispatch<React.SetStateAction<number | undefined>>;
   setCurrentDragWeek: React.Dispatch<React.SetStateAction<number | undefined>>;
-  isRowHovered: boolean;
-  setIsRowHovered: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const { setConsultants } = useContext(FilteredContext);
   const [hours, setHours] = useState(detailedBookingHours.hours);
@@ -261,12 +254,6 @@ function DetailedBookingCell({
       });
     }
   }
-
-  useEffect(() => {
-    if (!isRowHovered && inputRef.current) {
-      inputRef.current.blur();
-    }
-  }, [isRowHovered]);
 
   useEffect(() => {
     setHours(detailedBookingHours.hours);
@@ -326,10 +313,8 @@ function DetailedBookingCell({
         }`}
         onMouseEnter={() => {
           setIsChangingHours(true);
-          setIsRowHovered(true);
         }}
         onMouseLeave={() => {
-          setIsRowHovered(false);
           setIsChangingHours(false);
           !isInputFocused && updateSingularHours();
         }}
