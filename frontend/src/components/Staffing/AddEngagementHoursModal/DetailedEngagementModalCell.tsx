@@ -42,14 +42,12 @@ export function DetailedEngagementModalCell({
   const [hours, setHours] = useState(initHours);
   const [isChangingHours, setIsChangingHours] = useState(false);
   const [oldHours, setOldHours] = useState(0);
-  const { setIsDisabledHotkeys } = useContext(FilteredContext);
 
   const [isInputFocused, setIsInputFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const organisationName = usePathname().split("/")[1];
 
   function updateSingularHours() {
-    setIsDisabledHotkeys(false);
     if (oldHours != hours && hourDragValue == undefined) {
       setOldHours(hours);
       setDetailedBookingHours({
@@ -66,7 +64,6 @@ export function DetailedEngagementModalCell({
   }
 
   function updateDragHours() {
-    setIsDisabledHotkeys(false);
     if (
       hourDragValue == undefined ||
       startDragWeek == undefined ||
@@ -164,12 +161,10 @@ export function DetailedEngagementModalCell({
           onFocus={(e) => {
             e.target.select();
             setIsInputFocused(true);
-            setIsDisabledHotkeys(true);
           }}
           onBlur={() => {
             updateSingularHours();
             setIsInputFocused(false);
-            setIsDisabledHotkeys(false);
           }}
           onDragStart={() => {
             setHourDragValue(hours);
