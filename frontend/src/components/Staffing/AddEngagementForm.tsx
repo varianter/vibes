@@ -202,6 +202,7 @@ export function AddEngagementForm({
                 isMultipleOptions={false}
                 placeHolderText="Velg kunde"
                 isDisabled={!selectedConsultants}
+                isCreatable={true}
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -213,6 +214,7 @@ export function AddEngagementForm({
                 isMultipleOptions={false}
                 placeHolderText="Velg engasjement"
                 isDisabled={selectedCustomer == null}
+                isCreatable={true}
               />
             </div>
 
