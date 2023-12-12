@@ -1,6 +1,6 @@
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { useContext } from "react";
-import Select, { MultiValue } from "react-select";
+import { MultiValue, createFilter } from "react-select";
 import CreatableSelect from "react-select/creatable";
 
 export type SelectOption = { value: string | number; label: string };
@@ -27,6 +27,9 @@ export default function ComboBox({
   isClearable?: boolean;
 }) {
   const { setCloseModalOnBackdropClick } = useContext(FilteredContext);
+  const customFilter = createFilter({
+    matchFrom: "start",
+  });
 
   return (
     <CreatableSelect
@@ -37,6 +40,7 @@ export default function ComboBox({
       options={options}
       isDisabled={isDisabled}
       isClearable={isClearable}
+      filterOption={customFilter}
       value={
         isMultipleOptions
           ? selectedMultipleOptionsValue
