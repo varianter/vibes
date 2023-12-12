@@ -49,6 +49,7 @@ public enum EngagementState
     Order,
     Lost,
     Offer,
+    Absence,
 
     [Obsolete("'Active' is no longer used. Please use 'Order' instead")]
     Active

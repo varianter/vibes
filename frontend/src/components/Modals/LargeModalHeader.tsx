@@ -14,7 +14,7 @@ export function LargeModalHeader({
   return (
     <div className="flex flex-row gap-3 items-center">
       <div
-        className={`w-[60px] h-[60px] bg-offer rounded-lg flex justify-center items-center ${projectStateColor}`}
+        className={`w-[60px] h-[60px] rounded-lg flex justify-center items-center ${projectStateColor}`}
       >
         {getIconByProjectState(32, project?.bookingType)}
       </div>

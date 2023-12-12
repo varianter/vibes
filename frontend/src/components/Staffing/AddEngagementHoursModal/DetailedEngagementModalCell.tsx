@@ -122,7 +122,7 @@ export function DetailedEngagementModalCell({
   return (
     <td className="h-8 p-0.5">
       <div
-        className={`flex justify-end items-center bg-offer/30 border rounded-lg h-full ${
+        className={`flex justify-end items-center border rounded-lg h-full ${
           hours == 0 && "bg-opacity-30"
         } ${getColorByStaffingType(
           getBookingTypeFromProjectState(project?.bookingType) ??
@@ -184,8 +184,8 @@ export function DetailedEngagementModalCell({
             setIsDisabledHotkeys(false);
           }}
           onDragStart={() => {
-            setHourDragValue(hours),
-              setStartDragWeek(dayToWeek(firstDayInWeek));
+            setHourDragValue(hours);
+            setStartDragWeek(dayToWeek(firstDayInWeek));
           }}
           onDragEnterCapture={() => {
             setCurrentDragWeek(dayToWeek(firstDayInWeek));

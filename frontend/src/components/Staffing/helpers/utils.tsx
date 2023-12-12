@@ -1,8 +1,12 @@
-import { BookingType, EngagementState } from "@/api-types";
+import {
+  BookingType,
+  ConsultantReadModel,
+  DetailedBooking,
+  EngagementState,
+} from "@/api-types";
 import React, { ReactElement } from "react";
 import { Briefcase, Coffee, FileText, Moon, Sun } from "react-feather";
 import { InfoPillVariant } from "@/components/Staffing/InfoPill";
-import { ConsultantReadModel, DetailedBooking } from "@/api-types";
 
 export function getColorByStaffingType(type: BookingType): string {
   switch (type) {
@@ -30,6 +34,8 @@ export function getIconByProjectState(
       return <FileText size={size} className="text-primary_darker" />;
     case EngagementState.Order:
       return <Briefcase size={size} className="text-black" />;
+    case EngagementState.Absence:
+      return <Moon size={size} className="text-absence_darker" />;
     default:
       return <></>;
   }
@@ -41,6 +47,8 @@ export function getColorByProjectState(type?: EngagementState): string {
       return "bg-offer";
     case EngagementState.Order:
       return "bg-primary/[3%]";
+    case EngagementState.Absence:
+      return "bg-absence";
     default:
       return "";
   }

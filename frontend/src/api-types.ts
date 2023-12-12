@@ -99,6 +99,7 @@ export enum EngagementState {
   Order = "Order",
   Lost = "Lost",
   Offer = "Offer",
+  Absence = "Absence",
   Active = "Active",
 }
 
