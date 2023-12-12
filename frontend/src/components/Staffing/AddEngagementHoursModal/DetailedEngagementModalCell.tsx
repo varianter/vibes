@@ -21,8 +21,6 @@ export function DetailedEngagementModalCell({
   startDragWeek,
   setStartDragWeek,
   setCurrentDragWeek,
-  isRowHovered,
-  setIsRowHovered,
   numWeeks,
   firstDayInWeek,
   initHours,
@@ -36,8 +34,6 @@ export function DetailedEngagementModalCell({
   setHourDragValue: React.Dispatch<React.SetStateAction<number | undefined>>;
   setStartDragWeek: React.Dispatch<React.SetStateAction<number | undefined>>;
   setCurrentDragWeek: React.Dispatch<React.SetStateAction<number | undefined>>;
-  isRowHovered: boolean;
-  setIsRowHovered: React.Dispatch<React.SetStateAction<boolean>>;
   numWeeks: number;
   firstDayInWeek: DateTime;
   initHours: number;
@@ -46,14 +42,12 @@ export function DetailedEngagementModalCell({
   const [hours, setHours] = useState(initHours);
   const [isChangingHours, setIsChangingHours] = useState(false);
   const [oldHours, setOldHours] = useState(0);
-  const { setIsDisabledHotkeys } = useContext(FilteredContext);
 
   const [isInputFocused, setIsInputFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const organisationName = usePathname().split("/")[1];
 
   function updateSingularHours() {
-    setIsDisabledHotkeys(false);
     if (oldHours != hours && hourDragValue == undefined) {
       setOldHours(hours);
       setDetailedBookingHours({
@@ -69,14 +63,7 @@ export function DetailedEngagementModalCell({
     }
   }
 
-  useEffect(() => {
-    if (!isRowHovered && inputRef.current) {
-      inputRef.current.blur();
-    }
-  }, [isRowHovered]);
-
   function updateDragHours() {
-    setIsDisabledHotkeys(false);
     if (
       hourDragValue == undefined ||
       startDragWeek == undefined ||
@@ -134,10 +121,8 @@ export function DetailedEngagementModalCell({
         }`}
         onMouseEnter={() => {
           setIsChangingHours(true);
-          setIsRowHovered(true);
         }}
         onMouseLeave={() => {
-          setIsRowHovered(false);
           setIsChangingHours(false);
           !isInputFocused && updateSingularHours();
         }}
@@ -176,12 +161,10 @@ export function DetailedEngagementModalCell({
           onFocus={(e) => {
             e.target.select();
             setIsInputFocused(true);
-            setIsDisabledHotkeys(true);
           }}
           onBlur={() => {
             updateSingularHours();
             setIsInputFocused(false);
-            setIsDisabledHotkeys(false);
           }}
           onDragStart={() => {
             setHourDragValue(hours);

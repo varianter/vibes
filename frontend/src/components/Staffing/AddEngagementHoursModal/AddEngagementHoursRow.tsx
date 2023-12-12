@@ -26,7 +26,6 @@ export function AddEngagementHoursRow({
   const [currentDragWeek, setCurrentDragWeek] = useState<number | undefined>(
     undefined,
   );
-  const [isRowHovered, setIsRowHovered] = useState(false);
   const [consultantWHours, setConsultantsWHours] = useState<
     ConsultantWithWeekHours | undefined
   >(consultantWWeekHours);
@@ -90,8 +89,6 @@ export function AddEngagementHoursRow({
           setHourDragValue={setHourDragValue}
           setStartDragWeek={setStartDragWeek}
           setCurrentDragWeek={setCurrentDragWeek}
-          isRowHovered={isRowHovered}
-          setIsRowHovered={setIsRowHovered}
           numWeeks={weekList.length}
           firstDayInWeek={day}
           initHours={
