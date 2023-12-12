@@ -17,6 +17,7 @@ public class Consultant
 
     public Degree? Degree { get; set; }
     public int? GraduationYear { get; set; }
+    public int? TransferredVacationDays { get; set; }
 
     public List<Competence> Competences { get; set; } = new();
 
@@ -49,14 +50,9 @@ public class Consultant
         return Vacations.Where(v => v.Date.Year.Equals(day.Year)).Count(v => v.Date > day);
     }
 
-    public int GetTransferredVacationDays(int year, int total)
+    public int GetTransferredVacationDays()
     {
-        if (StartDate is not null && StartDate.Value.Year <= year)
-        {
-            return Math.Clamp((total - Vacations.Count(v => v.Date.Year.Equals(year))), 0, 12);
-        }
-
-        return 0;
+        return TransferredVacationDays ?? 0;
     }
 }
 

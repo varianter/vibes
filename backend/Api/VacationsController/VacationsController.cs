@@ -83,7 +83,8 @@ public class VacationsController : ControllerBase
         catch (Exception e)
         {
             Console.WriteLine(e);
-            throw;
+            return BadRequest("Something went wrong");
+
         }
 
         var vacationDays = service.LoadConsultantVacation(consultantId);
@@ -118,7 +119,7 @@ public class VacationsController : ControllerBase
         catch (Exception e)
         {
             Console.WriteLine(e);
-            throw;
+            return BadRequest("Something went wrong");
         }
 
         var vacationDays = service.LoadConsultantVacation(consultantId);

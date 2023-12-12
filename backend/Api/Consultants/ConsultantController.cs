@@ -29,6 +29,7 @@ public class ConsultantController : ControllerBase
         var service = new StorageService(_cache, _context);
 
         var consultant = service.GetConsultantByEmail(orgUrlKey, email ?? "");
+        
 
         if (consultant is null)
         {

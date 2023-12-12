@@ -16,8 +16,8 @@ public static class ReadModelFactory
         var total = org.NumberOfVacationDaysInYear;
         var used = consultant.GetUsedVacationDays(today);
         var planned = consultant.GetPlannedVacationDays(today);
-        var left = total - used - planned;
-        var transferred = consultant.GetTransferredVacationDays(today.Year - 1, total);
+        var transferred = consultant.GetTransferredVacationDays();
+        var left = total + transferred - used - planned;
         
         return new VacationMetaData(total, transferred, planned, used, left);
     }
