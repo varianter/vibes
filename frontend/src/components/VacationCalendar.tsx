@@ -131,8 +131,6 @@ export default function VacationCalendar({
               style: { color: "#00445B" },
             };
           } else if (
-            isWeekend ||
-            date.toDate() <= new Date() ||
             publicHolidays.includes(
               `${date.year.toString()}-${
                 date.month.number > 9
@@ -143,6 +141,11 @@ export default function VacationCalendar({
               }`,
             )
           )
+            return {
+              disabled: true,
+              style: { color: "#FAD2E2" },
+            };
+          else if (isWeekend || date.toDate() <= new Date())
             return {
               disabled: true,
               style: { color: "#ccc" },
