@@ -125,12 +125,12 @@ export default function VacationCalendar({
               }`,
             ) &&
             date.toDate() <= new Date()
-          ) {
+          )
             return {
               disabled: true,
               style: { color: "#00445B" },
             };
-          } else if (
+          else if (
             publicHolidays.includes(
               `${date.year.toString()}-${
                 date.month.number > 9
