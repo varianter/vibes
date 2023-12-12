@@ -134,7 +134,7 @@ export function AddEngagementForm({
     const body: EngagementWriteModel = {
       customerName: selectedCustomer?.label,
       projectName: selectedEngagement?.label,
-      bookingType: isAbsence ? radioValue : EngagementState.Absence,
+      bookingType: isAbsence ? EngagementState.Absence : radioValue,
       isBillable: isFakturerbar,
     };
 
