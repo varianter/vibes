@@ -1,6 +1,7 @@
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { useContext } from "react";
 import Select, { MultiValue } from "react-select";
+import CreatableSelect from "react-select/creatable";
 
 export type SelectOption = { value: string | number; label: string };
 
@@ -28,7 +29,7 @@ export default function ComboBox({
   const { setCloseModalOnBackdropClick } = useContext(FilteredContext);
 
   return (
-    <Select
+    <CreatableSelect
       onFocus={() => setCloseModalOnBackdropClick(false)}
       onBlur={() => setCloseModalOnBackdropClick(true)}
       placeholder={placeHolderText}
