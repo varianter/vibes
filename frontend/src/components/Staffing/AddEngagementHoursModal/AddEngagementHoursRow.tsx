@@ -47,7 +47,7 @@ export function AddEngagementHoursRow({
       );
 
       if (hoursForWeek) {
-        hoursForWeek.hours = resHours || hoursForWeek.hours || 0;
+        hoursForWeek.hours = resHours ?? hoursForWeek.hours ?? 0;
       } else {
         consultant.weekWithHours.push({
           week: dayToWeek(d),
