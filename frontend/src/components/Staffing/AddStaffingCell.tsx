@@ -17,7 +17,7 @@ export function AddStaffingCell({
     openModal: openAddEngagementModal,
     modalRef: addEngagementModalRef,
   } = useModal({
-    closeOnBackdropClick: closeModalOnBackdropClick,
+    closeOnBackdropClick: false,
   });
 
   const {
@@ -25,7 +25,7 @@ export function AddStaffingCell({
     openModal: openStaffEngagementModal,
     modalRef: staffEngagementModalRef,
   } = useModal({
-    closeOnBackdropClick: closeModalOnBackdropClick,
+    closeOnBackdropClick: false,
   });
 
   const [isAddStaffingHovered, setIsAddStaffingHovered] = useState(false);
