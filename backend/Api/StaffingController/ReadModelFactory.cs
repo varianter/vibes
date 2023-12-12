@@ -101,10 +101,10 @@ public class ReadModelFactory
         var billableBookings = consultant.Staffings
             .Where(staffing => staffing.Engagement.State == EngagementState.Order)
             .Where(staffing => weekSet.Contains(staffing.Week))
-            .GroupBy(staffing => staffing.Engagement.Name)
+            .GroupBy(staffing => staffing.Engagement.Id)
             .Select(grouping => new DetailedBooking(
-                new BookingDetails(grouping.Key, BookingType.Booking, grouping.First().Engagement.Customer.Name,
-                    grouping.First().Engagement.Id),
+                new BookingDetails(grouping.First().Engagement.Name, BookingType.Booking, grouping.First().Engagement.Customer.Name,
+                    grouping.Key),
                 weekSet.Select(week =>
                     new WeeklyHours(
                         week.ToSortableInt(), grouping
@@ -116,10 +116,10 @@ public class ReadModelFactory
         var offeredBookings = consultant.Staffings
             .Where(staffing => staffing.Engagement.State == EngagementState.Offer)
             .Where(staffing => weekSet.Contains(staffing.Week))
-            .GroupBy(staffing => staffing.Engagement.Name)
+            .GroupBy(staffing => staffing.Engagement.Id)
             .Select(grouping => new DetailedBooking(
-                new BookingDetails(grouping.Key, BookingType.Offer, grouping.First().Engagement.Customer.Name,
-                    grouping.First().Engagement.Id),
+                new BookingDetails(grouping.First().Engagement.Name, BookingType.Offer, grouping.First().Engagement.Customer.Name,
+                    grouping.Key),
                 weekSet.Select(week =>
                     new WeeklyHours(
                         week.ToSortableInt(),
