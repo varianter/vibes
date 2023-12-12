@@ -11,7 +11,6 @@ export function AddStaffingCell({
 }: {
   consultant: ConsultantReadModel;
 }): ReactElement {
-  const { closeModalOnBackdropClick } = useContext(FilteredContext);
   const {
     closeModal: closeAddEngagementModal,
     openModal: openAddEngagementModal,

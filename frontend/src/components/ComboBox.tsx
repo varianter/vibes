@@ -28,14 +28,11 @@ export default function ComboBox({
   isClearable?: boolean;
   isCreatable?: boolean;
 }) {
-  const { setCloseModalOnBackdropClick } = useContext(FilteredContext);
   const customFilter = createFilter({
     matchFrom: "start",
   });
 
   const selectProps = {
-    onFocus: () => setCloseModalOnBackdropClick(false),
-    onBlur: () => setCloseModalOnBackdropClick(true),
     placeholder: placeHolderText,
     isMulti: isMultipleOptions,
     options: options,
