@@ -118,6 +118,10 @@ public class ApplicationContext : DbContext
         modelBuilder.Entity<Consultant>()
             .HasMany(v => v.Competences)
             .WithMany();
+        
+        modelBuilder.Entity<Consultant>()  
+            .Property(c => c.TransferredVacationDays)  
+            .HasDefaultValue(0);  
 
         modelBuilder.Entity<Competence>().HasData(new List<Competence>
         {

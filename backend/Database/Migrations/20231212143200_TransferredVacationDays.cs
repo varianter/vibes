@@ -14,14 +14,8 @@ namespace Database.Migrations
                 name: "TransferredVacationDays",
                 table: "Consultant",
                 type: "int",
-                nullable: true);
-
-            migrationBuilder.UpdateData(
-                table: "Consultant",
-                keyColumn: "Id",
-                keyValue: 1,
-                column: "TransferredVacationDays",
-                value: null);
+                nullable: false,
+                defaultValue: 0);
         }
 
         /// <inheritdoc />

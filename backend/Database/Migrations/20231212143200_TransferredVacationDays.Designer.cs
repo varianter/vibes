@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Database.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20231212140520_TransferredVacationDays")]
+    [Migration("20231212143200_TransferredVacationDays")]
     partial class TransferredVacationDays
     {
         /// <inheritdoc />
@@ -135,8 +135,10 @@ namespace Database.Migrations
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("TransferredVacationDays")
-                        .HasColumnType("int");
+                    b.Property<int>("TransferredVacationDays")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.HasKey("Id");
 

@@ -17,7 +17,7 @@ public class Consultant
 
     public Degree? Degree { get; set; }
     public int? GraduationYear { get; set; }
-    public int TransferredVacationDays { get; set; } = 0;
+    public int TransferredVacationDays { get; set; }
 
     public List<Competence> Competences { get; set; } = new();
 

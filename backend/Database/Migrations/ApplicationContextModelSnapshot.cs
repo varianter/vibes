@@ -132,8 +132,10 @@ namespace Database.Migrations
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("TransferredVacationDays")
-                        .HasColumnType("int");
+                    b.Property<int>("TransferredVacationDays")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.HasKey("Id");
 
