@@ -90,6 +90,8 @@ export function AddEngagementHoursModal({
       project={project}
       showCloseButton={true}
       onClose={() => {
+        setSelectedConsultantsFirstEdited(false);
+        setSelectedConsultants([]);
         setIsDisabledHotkeys(false), router.refresh();
       }}
     >
