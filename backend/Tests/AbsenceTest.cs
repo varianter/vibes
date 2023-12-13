@@ -69,6 +69,7 @@ public class Tests
         customer.Name = "TestCustomer";
         project.Customer = customer;
         project.State = EngagementState.Order;
+        project.IsBillable = true;
 
 
         // TODO: Change this to update consultant data

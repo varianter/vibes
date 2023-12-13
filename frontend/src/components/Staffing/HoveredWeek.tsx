@@ -36,6 +36,7 @@ export function HoveredWeek(props: {
         projectName: "",
         customerName: "Ledig Tid",
         projectId: 0,
+        isBillable: false,
       },
       hours: [
         {
