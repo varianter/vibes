@@ -150,6 +150,7 @@ export function AddEngagementForm({
         ),
       );
       setIsDisabledHotkeys(true);
+      resetSelectedValues();
 
       // TODO: Futher logic for the changes in openModal *here*
     } else console.error("Error adding engagement");
