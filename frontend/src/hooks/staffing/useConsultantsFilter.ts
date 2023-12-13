@@ -187,9 +187,9 @@ function setWeeklyInvoiceRate(
     });
 
     const invoiceRate =
-      totalAvailableWeekHours == 0
+      totalAvailableWeekHours <= 0
         ? 0
-        : totalBillable / totalAvailableWeekHours;
+        : Math.max(0, Math.min(1, totalBillable / totalAvailableWeekHours));
     weeklyInvoiceRate.set(weekNumber, invoiceRate);
   });
 
