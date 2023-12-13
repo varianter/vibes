@@ -3,6 +3,7 @@ import { ConsultantReadModel, VacationReadModel } from "@/api-types";
 import React, { useState } from "react";
 import type { Value } from "react-multi-date-picker";
 import { Calendar, DateObject } from "react-multi-date-picker";
+import InfoBox from "./InfoBox";
 
 export default function VacationCalendar({
   consultant,
@@ -83,75 +84,93 @@ export default function VacationCalendar({
   }
 
   return (
-    <>
-      <ul>
-        <li>
-          Årlig antall feriedager:{" "}
-          {vacationInformation?.vacationMetaData?.daysTotal}
-        </li>
-        <li>
-          Antall overført fra i fjor:{" "}
-          {vacationInformation?.vacationMetaData?.transferredDays}
-        </li>
-        <li>
-          Planlagte feriedager: {vacationInformation?.vacationMetaData?.planned}
-        </li>
-        <li>
-          Brukte feriedager: {vacationInformation?.vacationMetaData?.used}
-        </li>
-        <li>
-          Gjenstående dager å planlegge:{" "}
-          {vacationInformation?.vacationMetaData?.leftToPlan}
-        </li>
-      </ul>
-      <Calendar
-        multiple
-        fullYear
-        weekStartDayIndex={1}
-        displayWeekNumbers
-        value={value}
-        onChange={handleChange}
-        mapDays={({ date }) => {
-          let isWeekend = [0, 6].includes(date.weekDay.index);
+    <div className="flex flex-row">
+      <div className="sidebar z-10">
+        <div className="bg-primary/5 h-full flex flex-col gap-6 p-4 w-[300px]">
+          <h1 className="">2023</h1>
+          <div className="flex flex-col gap-2">
+            <p className="small text-black">Ferieoversikt</p>
+            <InfoBox
+              infoName="Årlig antall feriedager"
+              infoValue={vacationInformation?.vacationMetaData?.daysTotal?.toString()}
+            />
+            <InfoBox
+              infoName="Antall overført fra i fjor"
+              infoValue={vacationInformation?.vacationMetaData?.transferredDays?.toString()}
+            />
+            <InfoBox
+              infoName="Planlagte feriedager"
+              infoValue={vacationInformation?.vacationMetaData?.planned?.toString()}
+            />
+            <InfoBox
+              infoName="Brukte feriedager"
+              infoValue={vacationInformation?.vacationMetaData?.used?.toString()}
+            />
+            <InfoBox
+              infoName="Gjenstående dager å planlegge"
+              infoValue={vacationInformation?.vacationMetaData?.leftToPlan?.toString()}
+            />
+          </div>
+        </div>
+      </div>
 
-          if (
-            vacationDays.vacationDays?.includes(
-              `${date.year.toString()}-${
-                date.month.number > 9
-                  ? date.month.number.toString()
-                  : "0" + date.month.number.toString()
-              }-${
-                date.day > 9 ? date.day.toString() : "0" + date.day.toString()
-              }`,
-            ) &&
-            date.toDate() <= new Date()
-          )
-            return {
-              disabled: true,
-              style: { color: "#00445B" },
-            };
-          else if (
-            publicHolidays.includes(
-              `${date.year.toString()}-${
-                date.month.number > 9
-                  ? date.month.number.toString()
-                  : "0" + date.month.number.toString()
-              }-${
-                date.day > 9 ? date.day.toString() : "0" + date.day.toString()
-              }`,
+      <div className="flex flex-col justify-center m-4">
+        <h1 className="text-black">{consultant.name}</h1>
+        <p className="normal text-black">{consultant.department}</p>
+        <p></p>
+        <Calendar
+          multiple
+          fullYear
+          weekStartDayIndex={1}
+          displayWeekNumbers
+          value={value}
+          onChange={handleChange}
+          className="custom-calendar"
+          mapDays={({ date }) => {
+            let isWeekend = [0, 6].includes(date.weekDay.index);
+            if (
+              vacationDays.vacationDays?.includes(
+                `${date.year.toString()}-${
+                  date.month.number > 9
+                    ? date.month.number.toString()
+                    : "0" + date.month.number.toString()
+                }-${
+                  date.day > 9 ? date.day.toString() : "0" + date.day.toString()
+                }`,
+              ) &&
+              date.toDate() <= new Date()
             )
-          )
-            return {
-              disabled: true,
-              style: { color: "#FAD2E2" },
-            };
-          else if (isWeekend || date.toDate() <= new Date())
-            return {
-              disabled: true,
-              style: { color: "#ccc" },
-            };
-        }}
-      />
-    </>
+              return {
+                disabled: true,
+                style: {
+                  color: "#00445B",
+                  opacity: 0.5,
+                  backgroundColor: "#C8EEFB",
+                },
+              };
+            else if (
+              publicHolidays.includes(
+                `${date.year.toString()}-${
+                  date.month.number > 9
+                    ? date.month.number.toString()
+                    : "0" + date.month.number.toString()
+                }-${
+                  date.day > 9 ? date.day.toString() : "0" + date.day.toString()
+                }`,
+              )
+            )
+              return {
+                disabled: true,
+                style: { color: "#B91456", opacity: 0.5 },
+              };
+            else if (isWeekend || date.toDate() <= new Date())
+              return {
+                disabled: true,
+                style: { color: "#00445B", opacity: 0.5 },
+              };
+          }}
+        />
+      </div>
+    </div>
   );
 }

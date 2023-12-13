@@ -3,5 +3,5 @@ export default function FerieLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="overflow-scroll">{children}</div>;
+  return <div className="overflow-scroll main">{children}</div>;
 }
