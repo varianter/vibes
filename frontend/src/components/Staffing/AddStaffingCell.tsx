@@ -11,13 +11,12 @@ export function AddStaffingCell({
 }: {
   consultant: ConsultantReadModel;
 }): ReactElement {
-  const { closeModalOnBackdropClick } = useContext(FilteredContext);
   const {
     closeModal: closeAddEngagementModal,
     openModal: openAddEngagementModal,
     modalRef: addEngagementModalRef,
   } = useModal({
-    closeOnBackdropClick: closeModalOnBackdropClick,
+    closeOnBackdropClick: false,
   });
 
   const {
@@ -25,7 +24,7 @@ export function AddStaffingCell({
     openModal: openStaffEngagementModal,
     modalRef: staffEngagementModalRef,
   } = useModal({
-    closeOnBackdropClick: closeModalOnBackdropClick,
+    closeOnBackdropClick: false,
   });
 
   const [isAddStaffingHovered, setIsAddStaffingHovered] = useState(false);
