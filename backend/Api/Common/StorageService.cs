@@ -380,7 +380,8 @@ public class StorageService
     {
         var org = _dbContext.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (org is null) return null;
-        return org.GetPublicHolidays(DateOnly.FromDateTime(DateTime.Now).Year);
+        var year = DateOnly.FromDateTime(DateTime.Now).Year;
+        return org.GetPublicHolidays(year).Concat(org.GetPublicHolidays(year+1)).Concat(org.GetPublicHolidays(year+2)).ToList();
     }
 
     public void RemoveVacationDay(int consultantId, DateOnly date)

@@ -26,8 +26,6 @@ public class VacationsController : ControllerBase
     [Route("publicHolidays")]
     public ActionResult<List<DateOnly>> GetPublicHolidays([FromRoute] string orgUrlKey)
     {
-        //TODO: Validate that consultant is in organisation
-        //TODO: Year?
         var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrg is null) return BadRequest();
 
@@ -43,7 +41,6 @@ public class VacationsController : ControllerBase
     public ActionResult<VacationReadModel> GetVacations([FromRoute] string orgUrlKey,
         [FromRoute] int consultantId)
     {
-        //TODO: Make year optional search param
 
         var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrg is null) return BadRequest();
@@ -66,7 +63,6 @@ public class VacationsController : ControllerBase
         [FromRoute] int consultantId,
         [FromRoute] string date)
     {
-        //TODO: Make year optional search param
 
         var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrg is null) return BadRequest();
@@ -100,7 +96,6 @@ public class VacationsController : ControllerBase
         [FromRoute] int consultantId,
         [FromRoute] string date)
     {
-        //TODO: Make year optional search param
 
         var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrg is null) return BadRequest();
