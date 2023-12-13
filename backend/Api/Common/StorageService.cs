@@ -381,6 +381,7 @@ public class StorageService
         var org = _dbContext.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (org is null) return null;
         var year = DateOnly.FromDateTime(DateTime.Now).Year;
+        //Get the public holidays for the next three years, and return them as a list
         return org.GetPublicHolidays(year).Concat(org.GetPublicHolidays(year+1)).Concat(org.GetPublicHolidays(year+2)).ToList();
     }
 
