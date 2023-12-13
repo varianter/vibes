@@ -59,6 +59,7 @@ export function AddEngagementForm({
       }) as SelectOption,
   );
 
+  let uniqueLabels = new Set();
   const projectOptions =
     customers
       .find((c) => c.customerId == selectedCustomer?.value)
@@ -68,7 +69,9 @@ export function AddEngagementForm({
             value: `${e.engagementId}`,
             label: `${e.engagementName}`,
           }) as SelectOption,
-      ) ?? [];
+      )
+      .filter((e) => !uniqueLabels.has(e.label) && uniqueLabels.add(e.label)) ??
+    [];
 
   const consultantOptions =
     consultants.map(
