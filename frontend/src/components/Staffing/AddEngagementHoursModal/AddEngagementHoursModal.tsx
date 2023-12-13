@@ -1,5 +1,9 @@
 import React, { RefObject, useEffect, useState, useContext } from "react";
-import { ConsultantReadModel, ProjectWithCustomerModel } from "@/api-types";
+import {
+  ConsultantReadModel,
+  EngagementState,
+  ProjectWithCustomerModel,
+} from "@/api-types";
 import { DateTime } from "luxon";
 import { generateWeekList } from "@/components/Staffing/helpers/GenerateWeekList";
 import { LargeModal } from "@/components/Modals/LargeModal";
@@ -59,6 +63,7 @@ export function AddEngagementHoursModal({
           selectedConsultants,
           consultant,
           project?.projectId || 0,
+          project?.bookingType || EngagementState.Order,
         ),
       ]);
     }
@@ -75,7 +80,8 @@ export function AddEngagementHoursModal({
         generateConsultatsWithHours(
           weekList,
           chosenConsultants,
-          project?.projectId || 0,
+          project.projectId || 0,
+          project.bookingType,
         ),
       );
       setSelectedConsultantsFirstEdited(true);
