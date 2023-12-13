@@ -104,7 +104,7 @@ public class ReadModelFactory
             .GroupBy(staffing => staffing.Engagement.Name)
             .Select(grouping => new DetailedBooking(
                 new BookingDetails(grouping.Key, BookingType.Booking, grouping.First().Engagement.Customer.Name,
-                    grouping.First().Engagement.Id),
+                    grouping.First().Engagement.Id, grouping.First().Engagement.IsBillable),
                 weekSet.Select(week =>
                     new WeeklyHours(
                         week.ToSortableInt(), grouping
@@ -119,7 +119,7 @@ public class ReadModelFactory
             .GroupBy(staffing => staffing.Engagement.Name)
             .Select(grouping => new DetailedBooking(
                 new BookingDetails(grouping.Key, BookingType.Offer, grouping.First().Engagement.Customer.Name,
-                    grouping.First().Engagement.Id),
+                    grouping.First().Engagement.Id, grouping.First().Engagement.IsBillable),
                 weekSet.Select(week =>
                     new WeeklyHours(
                         week.ToSortableInt(),
@@ -180,7 +180,10 @@ public class ReadModelFactory
         var detailedBookingsArray = detailedBookings as DetailedBooking[] ?? detailedBookings.ToArray();
         var totalBillable =
             DetailedBooking.GetTotalHoursPrBookingTypeAndWeek(detailedBookingsArray, BookingType.Booking,
-                week);
+                week, true);
+        
+        var totalNonBillable = DetailedBooking.GetTotalHoursPrBookingTypeAndWeek(detailedBookingsArray, BookingType.Booking,
+            week, true, false);
 
         var totalOffered = DetailedBooking.GetTotalHoursPrBookingTypeAndWeek(detailedBookingsArray,
             BookingType.Offer,
@@ -194,7 +197,7 @@ public class ReadModelFactory
             BookingType.Vacation,
             week);
 
-        var bookedTime = totalBillable + totalAbsence + totalVacations + totalHolidayHours;
+        var bookedTime = totalBillable + totalAbsence + totalVacations + totalHolidayHours + totalNonBillable;
         var hoursPrWorkDay = consultant.Department.Organization.HoursPerWorkday;
 
         var totalSellableTime =

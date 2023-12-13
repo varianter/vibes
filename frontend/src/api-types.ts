@@ -29,6 +29,7 @@ export interface BookingDetails {
   customerName: string;
   /** @format int32 */
   projectId: number;
+  isBillable: boolean;
 }
 
 export enum BookingType {
