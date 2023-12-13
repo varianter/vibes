@@ -145,6 +145,8 @@ public class ProjectController : ControllerBase
         return _context.Project
             .SingleOrDefault(
                 p => p.Customer == engagementToChange.Customer && p.Name == engagementToChange.Name &&
+                     (p.State == EngagementState.Offer ||
+                      p.State == EngagementState.Order) && p.IsBillable == engagementToChange.IsBillable &&
                      p.Id != id) is not null;
     }
 
@@ -163,6 +165,7 @@ public class ProjectController : ControllerBase
                     // Tror vi også bør sjekke det, så vi unngå å flette med gamle tapte prosjekter o.l.
                     && (p.State == EngagementState.Offer || p.State == EngagementState.Order)
                     && p.Name == engagementToChange.Name
+                    && p.IsBillable == engagementToChange.IsBillable
                     && p.Id != id);
 
         engagementToKeep.MergeEngagement(engagementToChange);
