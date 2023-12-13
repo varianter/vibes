@@ -223,4 +223,17 @@ public class ReadModelFactory
                " - " + week
                    .GetDatesInWorkWeek()[^1].ToString("dd.MM");
     }
+
+    public List<StaffingReadModel>? GetConsultantsReadModelsForProjectAndWeeks(string orgUrlKey, List<Week> weeks, int projectId)
+    {
+        var firstDayInScope = weeks.First().FirstDayOfWorkWeek();
+        var firstWorkDayOutOfScope = weeks.Last().LastWorkDayOfWeek();
+
+
+        return _storageService.LoadConsultants(orgUrlKey)
+            .Where(c => c.EndDate == null || c.EndDate > firstDayInScope)
+            .Where(c => c.StartDate == null || c.StartDate < firstWorkDayOutOfScope).Where(c => c.Staffings.Any(s => s.EngagementId == projectId))
+            .Select(consultant => MapToReadModelList(consultant, weeks)).Where(s => s.DetailedBooking.Any(db=> db.BookingDetails.ProjectId == projectId && db.BookingDetails.Type == BookingType.Booking || db.BookingDetails.Type == BookingType.Offer))
+            .ToList();
+    }
 }

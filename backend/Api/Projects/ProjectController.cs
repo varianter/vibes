@@ -24,6 +24,29 @@ public class ProjectController : ControllerBase
         _context = context;
         _cache = cache;
     }
+    
+    [HttpGet]
+    [Route("get/{projectId}")]
+    public ActionResult<ProjectWithCustomerModel> GetProject([FromRoute] string orgUrlKey,
+        [FromRoute] int projectId)
+    {
+        var service = new StorageService(_cache, _context);
+
+        var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
+        if (selectedOrg is null) return BadRequest("Selected org not found");
+
+        var project = service.GetProjectWithCustumerById(projectId);
+
+        if (project is null)
+        {
+            return NoContent();
+        }
+
+        var responseModel =
+            new ProjectWithCustomerModel(project.Name, project.Customer.Name, project.State, project.IsBillable, project.Id);
+
+        return Ok(responseModel);
+    }
 
     [HttpGet]
     public ActionResult<List<EngagementPerCustomerReadModel>> Get(
@@ -198,6 +221,8 @@ public class ProjectController : ControllerBase
 
         return Ok(responseModel);
     }
+    
+    
 
     private ProjectWithCustomerModel HandleAbsenceChange(EngagementWriteModel body)
     {
@@ -205,4 +230,8 @@ public class ProjectController : ControllerBase
         return new ProjectWithCustomerModel(absence.Name, AbsenceCustomerName, EngagementState.Absence, false,
             absence.Id);
     }
+    
+    
+    
+    
 }

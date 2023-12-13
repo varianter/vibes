@@ -14,7 +14,7 @@ import {
 } from "@/components/Staffing/helpers/utils";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { usePathname } from "next/navigation";
-import { Minus, Plus } from "react-feather";
+import { Edit, Edit2, Edit3, Minus, PenTool, Plus } from "react-feather";
 import { updateBookingHoursBody, updateProjectStateBody } from "@/types";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { parseYearWeekFromString } from "@/data/urlUtils";
@@ -52,10 +52,11 @@ async function updateProjectState(
 export function DetailedBookingRows(props: {
   consultant: ConsultantReadModel;
   detailedBooking: DetailedBooking;
+  openEngagementAndSetID: (id: number) => void;
 }) {
   const { setConsultants } = useContext(FilteredContext);
 
-  const { consultant, detailedBooking } = props;
+  const { consultant, detailedBooking, openEngagementAndSetID } = props;
   const [hourDragValue, setHourDragValue] = useState<number | undefined>(
     undefined,
   );
@@ -95,8 +96,17 @@ export function DetailedBookingRows(props: {
           className={`h-8 w-8 flex justify-center items-center rounded ${getColorByStaffingType(
             detailedBooking.bookingDetails.type,
           )}`}
-          onClick={() => setEditOfferDropdownIsOpen(true)}
-          disabled={detailedBooking.bookingDetails.type != BookingType.Offer}
+          onClick={() =>
+            detailedBooking.bookingDetails.type == BookingType.Offer
+              ? setEditOfferDropdownIsOpen(true)
+              : openEngagementAndSetID(detailedBooking.bookingDetails.projectId)
+          }
+          disabled={
+            !(
+              detailedBooking.bookingDetails.type == BookingType.Offer ||
+              detailedBooking.bookingDetails.type == BookingType.Booking
+            )
+          }
         >
           {getIconByBookingType(detailedBooking.bookingDetails.type, 16)}
         </button>
@@ -127,12 +137,13 @@ export function DetailedBookingRows(props: {
           <div className="border-b border-primary/10 my-1" />
           <button
             className="hover:bg-primary/10 px-3 py-2 rounded flex flex-row gap-3 items-center"
-            onClick={() => console.log("Fjern")}
-            disabled
+            onClick={() =>
+              openEngagementAndSetID(detailedBooking.bookingDetails.projectId)
+            }
           >
-            <Minus className="h-6 w-6 text-primary" />
+            <Edit3 className="h-6 w-6 text-primary" />
             <p className="h-6 flex items-center normal-semibold text-primary">
-              Fjern fra engasjement
+              Rediger engasjement
             </p>
           </button>
         </div>
