@@ -53,10 +53,10 @@ public record DetailedBooking(
     }
 
     internal static double GetTotalHoursPrBookingTypeAndWeek(IEnumerable<DetailedBooking> list, BookingType type,
-        Week week)
+        Week week, bool careAboutBillable = false, bool isBillable = true)
     {
         return list
-            .Where(s => s.BookingDetails.Type == type)
+            .Where(s => s.BookingDetails.Type == type && ( !careAboutBillable || s.BookingDetails.IsBillable == isBillable))
             .Select(wh => wh.TotalHoursForWeek(week))
             .Sum();
     }
@@ -75,7 +75,8 @@ public record BookingDetails(
     [property: Required] string ProjectName,
     [property: Required] BookingType Type,
     [property: Required] string CustomerName,
-    [property: Required] int ProjectId);
+    [property: Required] int ProjectId,
+    [property: Required] bool IsBillable = false);
 
 public record WeeklyHours([property: Required] int Week, [property: Required] double Hours);
 
