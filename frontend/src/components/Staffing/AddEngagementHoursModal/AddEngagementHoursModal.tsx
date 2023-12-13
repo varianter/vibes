@@ -36,6 +36,8 @@ export function AddEngagementHoursModal({
 
   const { consultants, setIsDisabledHotkeys } = useContext(FilteredContext);
 
+  const [chosenProject, setProject] = useState(project);
+
   const [weekList, setWeekList] = useState<DateTime[]>(
     generateWeekList(firstVisibleDay, selectedWeekSpan),
   );
@@ -55,6 +57,8 @@ export function AddEngagementHoursModal({
     (c) => !selectedConsultants.find((c2) => c2.consultant.id == c.id),
   );
 
+  useEffect(() => setProject(project), [project]);
+
   function handleAddConsultant(option: SelectOption) {
     const consultant = remainingConsultants.find((c) => c.id == option.value);
     if (consultant) {
@@ -62,8 +66,8 @@ export function AddEngagementHoursModal({
         ...addNewConsultatWHours(
           selectedConsultants,
           consultant,
-          project?.projectId || 0,
-          project?.bookingType || EngagementState.Order,
+          chosenProject?.projectId || 0,
+          chosenProject?.bookingType || EngagementState.Order,
         ),
       ]);
     }
@@ -75,29 +79,35 @@ export function AddEngagementHoursModal({
   }
 
   useEffect(() => {
-    if (project != undefined && selectedConsultantsFirstEdited == false) {
+    if (chosenProject != undefined && selectedConsultantsFirstEdited == false) {
       setSelectedConsultants(
         generateConsultatsWithHours(
           weekList,
           chosenConsultants,
-          project.projectId || 0,
-          project.bookingType,
+          chosenProject.projectId || 0,
+          chosenProject.bookingType,
         ),
       );
       setSelectedConsultantsFirstEdited(true);
     }
-  }, [chosenConsultants, selectedConsultantsFirstEdited, project, weekList]);
+  }, [
+    chosenConsultants,
+    selectedConsultantsFirstEdited,
+    chosenProject,
+    weekList,
+  ]);
 
   const router = useRouter();
 
   return (
     <LargeModal
       modalRef={modalRef}
-      project={project}
+      project={chosenProject}
       showCloseButton={true}
       onClose={() => {
         setSelectedConsultantsFirstEdited(false);
         setSelectedConsultants([]);
+        setProject(undefined);
         setIsDisabledHotkeys(false), router.refresh();
       }}
     >
@@ -203,7 +213,7 @@ export function AddEngagementHoursModal({
                 key={consultant.consultant.id}
                 consultant={consultant.consultant}
                 weekList={weekList}
-                project={project}
+                project={chosenProject}
                 consultantWWeekHours={consultant}
               />
             ))}
