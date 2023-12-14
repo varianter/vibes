@@ -165,7 +165,7 @@ export function AddEngagementForm({
     setSelectedEngagement(null);
     setSelectedConsultants([selectedConsultant]);
     setRadioValue(EngagementState.Offer);
-    setIsFakturerbar(false);
+    setIsFakturerbar(true);
   }
 
   return (
