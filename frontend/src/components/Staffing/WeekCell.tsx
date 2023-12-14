@@ -1,7 +1,7 @@
 import { BookedHoursPerWeek, ConsultantReadModel } from "@/api-types";
 import { HoveredWeek } from "@/components/Staffing/HoveredWeek";
 import InfoPill from "@/components/Staffing/InfoPill";
-import { AlertTriangle, Coffee, FileText, Sun } from "react-feather";
+import { AlertTriangle, Coffee, FileText, Moon, Sun } from "react-feather";
 import { getInfopillVariantByColumnCount } from "@/components/Staffing/helpers/utils";
 import React from "react";
 
@@ -103,6 +103,17 @@ export function WeekCell(props: {
               variant={getInfopillVariantByColumnCount(columnCount)}
             />
           )}
+          {bookedHoursPerWeek.bookingModel.totalPlannedAbsences > 0 &&
+            getInfopillVariantByColumnCount(columnCount) !== "narrow" && (
+              <InfoPill
+                text={bookedHoursPerWeek.bookingModel.totalPlannedAbsences.toFixed(
+                  1,
+                )}
+                colors="bg-absence text-absence_darker border-absence_darker"
+                icon={<Moon size="12" />}
+                variant={getInfopillVariantByColumnCount(columnCount)}
+              />
+            )}
           {bookedHoursPerWeek.bookingModel.totalOverbooking > 0 && (
             <InfoPill
               text={bookedHoursPerWeek.bookingModel.totalOverbooking.toFixed(1)}
