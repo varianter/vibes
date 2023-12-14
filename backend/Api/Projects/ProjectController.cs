@@ -33,7 +33,7 @@ public class ProjectController : ControllerBase
         if (selectedOrgId is null) return BadRequest();
 
         var absenceReadModels = new EngagementPerCustomerReadModel(-1, AbsenceCustomerName,
-            _context.Absence.Select(absence =>
+            _context.Absence.Where(a=> a.Organization.UrlKey == orgUrlKey).Select(absence =>
                 new EngagementReadModel(absence.Id, absence.Name, EngagementState.Absence, false)).ToList());
 
         var projectReadModels = _context.Project.Include(project => project.Customer)
