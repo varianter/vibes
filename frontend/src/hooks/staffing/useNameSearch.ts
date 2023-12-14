@@ -18,13 +18,10 @@ export function useNameSearch() {
 
   useEffect(() => {
     const nameSearchDebounceTimer = setTimeout(() => {
-      if (
-        lastSearchKeyStrokeTime &&
-        Date.now() - lastSearchKeyStrokeTime > 250
-      ) {
+      if (lastSearchKeyStrokeTime && Date.now() - lastSearchKeyStrokeTime > 0) {
         updateRoute({ search: activeNameSearch });
       }
-    }, 250);
+    }, 0);
 
     // this will clear Timeout
     // when component unmount like in willComponentUnmount
