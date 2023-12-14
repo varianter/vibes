@@ -12,7 +12,6 @@ import { Week } from "@/types";
 import { isCurrentWeek } from "@/hooks/staffing/dateTools";
 import InfoPill from "../InfoPill";
 import { EditEngagementHoursRow } from "./EditEngagementHoursRow";
-import { upsertConsultantBooking } from "../helpers/utils";
 import { weekToString } from "@/data/urlUtils";
 
 export function EditEngagementHourModal({
@@ -59,18 +58,13 @@ export function EditEngagementHourModal({
     changeSelectedWeek(-(selectedWeekSpan - 1));
   }
 
-  console.log(selectedWeek);
-
-  const { consultants, setIsDisabledHotkeys } = useContext(FilteredContext);
+  const { setIsDisabledHotkeys } = useContext(FilteredContext);
 
   const [chosenProject, setProject] = useState(project);
 
   const [selectedConsultants, setSelectedConsultants] = useState<
     ConsultantReadModel[]
   >([]);
-
-  const [selectedConsultantsFirstEdited, setSelectedConsultantsFirstEdited] =
-    useState(false);
 
   useEffect(() => setProject(project), [project]);
 
@@ -94,8 +88,6 @@ export function EditEngagementHourModal({
           ...res,
         ]);
       });
-
-      setSelectedConsultantsFirstEdited(true);
     }
   }, [chosenProject, organisationUrl, selectedWeek, selectedWeekSpan]);
 
@@ -107,7 +99,6 @@ export function EditEngagementHourModal({
       project={chosenProject}
       showCloseButton={true}
       onClose={() => {
-        setSelectedConsultantsFirstEdited(false);
         setSelectedConsultants([]);
         setProject(undefined);
         resetSelectedWeek();
@@ -116,34 +107,27 @@ export function EditEngagementHourModal({
       }}
     >
       <div className="flex flex-col gap-6">
-        <div className="flex justify-end">
-          <div className="flex flex-row gap-2">
-            <DropDown
-              startingOption={
-                selectedWeekSpan
-                  ? selectedWeekSpan + " uker"
-                  : weekSpanOptions[0]
-              }
-              dropDownOptions={weekSpanOptions}
-              dropDownFunction={setWeekSpan}
-            />
-            <ActionButton
-              variant="secondary"
-              onClick={() => resetSelectedWeek()}
-            >
-              Nåværende uke
-            </ActionButton>
-            <IconActionButton
-              variant={"secondary"}
-              icon={<ArrowLeft />}
-              onClick={() => decrementSelectedWeek()}
-            />
-            <IconActionButton
-              variant={"secondary"}
-              icon={<ArrowRight />}
-              onClick={() => incrementSelectedWeek()}
-            />
-          </div>
+        <div className="flex flex-row gap-2 justify-end">
+          <DropDown
+            startingOption={
+              selectedWeekSpan ? selectedWeekSpan + " uker" : weekSpanOptions[0]
+            }
+            dropDownOptions={weekSpanOptions}
+            dropDownFunction={setWeekSpan}
+          />
+          <ActionButton variant="secondary" onClick={() => resetSelectedWeek()}>
+            Nåværende uke
+          </ActionButton>
+          <IconActionButton
+            variant={"secondary"}
+            icon={<ArrowLeft />}
+            onClick={() => decrementSelectedWeek()}
+          />
+          <IconActionButton
+            variant={"secondary"}
+            icon={<ArrowRight />}
+            onClick={() => incrementSelectedWeek()}
+          />
         </div>
         <table
           className={`w-full ${
@@ -162,8 +146,8 @@ export function EditEngagementHourModal({
               ?.bookings.map((_, index) => <col key={index} span={1} />)}
           </colgroup>
           <thead>
-            <tr className="sticky -top-6 bg-white z-10">
-              <th colSpan={2} className="pt-3 pl-2 -left-2 relative bg-white">
+            <tr>
+              <th colSpan={2}>
                 <div className="flex flex-row gap-3 pb-4 items-center">
                   <p className="normal-medium ">Konsulenter</p>
                   <p className="text-primary small-medium rounded-full bg-primary/5 px-2 py-1">

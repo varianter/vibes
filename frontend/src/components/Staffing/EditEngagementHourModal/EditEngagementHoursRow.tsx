@@ -2,7 +2,6 @@ import {
   BookingType,
   ConsultantReadModel,
   DetailedBooking,
-  ProjectWithCustomerModel,
   WeeklyHours,
 } from "@/api-types";
 import { useEffect, useRef, useState } from "react";
@@ -55,7 +54,7 @@ export function EditEngagementHoursRow({
           {detailedBooking.hours
             .sort((a, b) => a.week - b.week)
             .map((hours) => (
-              <DetailedBookingCell
+              <EditBookingCell
                 key={`${consultant.id}-details-${detailedBooking.bookingDetails.projectName}-${hours.week}`}
                 detailedBooking={detailedBooking}
                 detailedBookingHours={hours}
@@ -76,7 +75,7 @@ export function EditEngagementHoursRow({
   );
 }
 
-function DetailedBookingCell({
+function EditBookingCell({
   detailedBooking,
   detailedBookingHours,
   consultant,

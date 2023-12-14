@@ -14,7 +14,7 @@ import {
 } from "@/components/Staffing/helpers/utils";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { usePathname } from "next/navigation";
-import { Edit, Edit2, Edit3, Minus, PenTool, Plus } from "react-feather";
+import { Edit3, Minus, Plus, ThumbsDown, ThumbsUp } from "react-feather";
 import { updateBookingHoursBody, updateProjectStateBody } from "@/types";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { parseYearWeekFromString } from "@/data/urlUtils";
@@ -111,7 +111,7 @@ export function DetailedBookingRows(props: {
           {getIconByBookingType(detailedBooking.bookingDetails.type, 16)}
         </button>
         <div
-          className={`w-full z-50 bg-white flex flex-col p-1 absolute top-full mt-1 rounded-lg dropdown-shadow ${
+          className={` z-50 bg-white flex flex-col p-1 absolute top-full mt-1 rounded-lg dropdown-shadow ${
             !editOfferDropdownIsOpen && "hidden"
           }`}
         >
@@ -122,6 +122,7 @@ export function DetailedBookingRows(props: {
             className="hover:bg-primary/10 px-3 py-2 rounded flex flex-row gap-3 items-center "
             onClick={() => changeState(EngagementState.Order)}
           >
+            <ThumbsUp className="h-6 w-6 text-primary" />
             <p className="h-6 flex items-center normal-semibold text-primary">
               Vunnet
             </p>
@@ -130,6 +131,7 @@ export function DetailedBookingRows(props: {
             className="hover:bg-primary/10 px-3 py-2 rounded flex flex-row gap-3 items-center"
             onClick={() => changeState(EngagementState.Lost)}
           >
+            <ThumbsDown className="h-6 w-6 text-primary" />
             <p className="h-6 flex items-center normal-semibold text-primary">
               Tapt
             </p>
@@ -142,7 +144,7 @@ export function DetailedBookingRows(props: {
             }
           >
             <Edit3 className="h-6 w-6 text-primary" />
-            <p className="h-6 flex items-center normal-semibold text-primary">
+            <p className="h-6 flex items-center normal-semibold text-primary whitespace-nowrap">
               Rediger engasjement
             </p>
           </button>
