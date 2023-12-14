@@ -20,7 +20,7 @@ public class StorageService
 
     public Consultant? GetConsultantByEmail(string orgUrlKey, string email)
     {
-        var consultant = _dbContext.Consultant.Include(c=>c.Department).ThenInclude(d=> d.Organization).SingleOrDefault(c => c.Email == email);
+        var consultant = _dbContext.Consultant.Include(c => c.Department).ThenInclude(d => d.Organization).SingleOrDefault(c => c.Email == email);
         if (consultant is null || consultant.Department.Organization.UrlKey != orgUrlKey)
         {
             return null;
@@ -382,28 +382,30 @@ public class StorageService
         if (org is null) return null;
         var year = DateOnly.FromDateTime(DateTime.Now).Year;
         //Get the public holidays for the next three years, and return them as a list
-        return org.GetPublicHolidays(year).Concat(org.GetPublicHolidays(year+1)).Concat(org.GetPublicHolidays(year+2)).ToList();
+        return org.GetPublicHolidays(year).Concat(org.GetPublicHolidays(year + 1)).Concat(org.GetPublicHolidays(year + 2)).ToList();
     }
 
     public void RemoveVacationDay(int consultantId, DateOnly date)
     {
         var vacation = _dbContext.Vacation.Single(v => v.ConsultantId == consultantId && v.Date.Equals(date));
-        
+
         _dbContext.Vacation.Remove(vacation);
         _dbContext.SaveChanges();
     }
-    
+
     public void AddVacationDay(int consultantId, DateOnly date)
     {
-       var consultant =  _dbContext.Consultant.Single(c => c.Id == consultantId);
-       var vacation = new Vacation
-       {
-           ConsultantId = consultantId,
-           Consultant = consultant,
-           Date = date
-       };
-       _dbContext.Add(vacation);
-       _dbContext.SaveChanges();
+        var consultant = _dbContext.Consultant.Single(c => c.Id == consultantId);
+        if (_dbContext.Vacation.Any(v => v.ConsultantId == consultantId && v.Date.Equals(date))) return;
+        var vacation = new Vacation
+        {
+            ConsultantId = consultantId,
+            Consultant = consultant,
+            Date = date
+        };
+        _dbContext.Add(vacation);
+        _dbContext.SaveChanges();
+
     }
-    
+
 }
