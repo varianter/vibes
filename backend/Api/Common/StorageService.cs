@@ -302,7 +302,7 @@ public class StorageService
 
     public Customer UpdateOrCreateCustomer(Organization org, string customerName, string orgUrlKey)
     {
-        var customer = _dbContext.Customer.SingleOrDefault(c => c.Name == customerName);
+        var customer = _dbContext.Customer.Where(c=> c.Organization == org).SingleOrDefault(c => c.Name == customerName);
 
         if (customer is null)
         {
