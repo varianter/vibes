@@ -361,6 +361,11 @@ public class StorageService
     {
         return _dbContext.Project.Find(id);
     }
+    
+    public Engagement? GetProjectWithCustumerById(int id)
+    {
+        return _dbContext.Project.Include(p=> p.Customer).SingleOrDefault(p=>p.Id==id);
+    }
 
     public Engagement GetProjectWithOrganisationById(int id)
     {

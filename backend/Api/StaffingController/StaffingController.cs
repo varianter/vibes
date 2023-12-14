@@ -39,6 +39,26 @@ public class StaffingController : ControllerBase
         return Ok(readModels);
     }
     
+    [HttpGet]
+    [Route("project/{projectId}")]
+    public ActionResult<List<StaffingReadModel>> GetConsultantsInProject(
+        [FromRoute] string orgUrlKey,
+        [FromRoute] int projectId,
+        [FromQuery(Name = "Year")] int? selectedYearParam = null,
+        [FromQuery(Name = "Week")] int? selectedWeekParam = null,
+        [FromQuery(Name = "WeekSpan")] int numberOfWeeks = 8)
+    {
+        var selectedWeek = selectedYearParam is null || selectedWeekParam is null
+            ? Week.FromDateTime(DateTime.Now)
+            : new Week((int)selectedYearParam, (int)selectedWeekParam);
+
+        var weekSet = selectedWeek.GetNextWeeks(numberOfWeeks);
+
+        var service = new StorageService(_cache, _context);
+        var readModels = new ReadModelFactory(service).GetConsultantsReadModelsForProjectAndWeeks(orgUrlKey, weekSet, projectId);
+        return Ok(readModels);
+    }
+    
 
     [HttpPut]
     [Route("update")]

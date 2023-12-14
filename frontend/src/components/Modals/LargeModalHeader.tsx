@@ -24,6 +24,10 @@ export function LargeModalHeader({
           <p className="normal text-black">{project?.customerName}</p>
           <div className="w-1 h-1 rounded-full bg-black"></div>
           <p className="normal text-black">{project?.bookingType}</p>
+          <div className="w-1 h-1 rounded-full bg-black"></div>
+          <p className="normal text-black">
+            {project?.isBillable ? "Fakturerbart" : "Ikke fakturerbart"}
+          </p>
         </div>
       </div>
     </div>

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Api.StaffingController;
 using Core.DomainModels;
 
 namespace Api.Projects;
@@ -14,7 +15,7 @@ public record EngagementReadModel(
     [property: Required] EngagementState BookingType,
     [property: Required] bool IsBillable);
 
-public record EngagementWriteModel( EngagementState BookingType,
+public record EngagementWriteModel(EngagementState BookingType,
     bool IsBillable, string ProjectName, string CustomerName);
 
 public record ProjectWithCustomerModel(

@@ -1,10 +1,13 @@
 "use client";
-import { ConsultantReadModel } from "@/api-types";
-import React, { useState } from "react";
+import { ConsultantReadModel, ProjectWithCustomerModel } from "@/api-types";
+import React, { useContext, useEffect, useState } from "react";
 import { ChevronDown } from "react-feather";
 import { DetailedBookingRows } from "@/components/Staffing/DetailedBookingRows";
 import { WeekCell } from "@/components/Staffing/WeekCell";
 import { AddStaffingCell } from "@/components/Staffing/AddStaffingCell";
+import { useModal } from "@/hooks/useModal";
+import { EditEngagementHourModal } from "./EditEngagementHourModal/EditEngagementHoursModal";
+import { usePathname } from "next/navigation";
 
 export default function ConsultantRows({
   consultant,
@@ -19,6 +22,49 @@ export default function ConsultantRows({
 
   function toggleListElementVisibility() {
     setIsListElementVisible(!isListElementVisible);
+  }
+
+  const {
+    closeModal: closeChangeEngagementModal,
+    openModal: openChangeEngagementModal,
+    modalRef: changeEngagementModalRef,
+  } = useModal({
+    closeOnBackdropClick: false,
+  });
+
+  const [selectedProjectId, setSelectedProjectId] = useState<
+    number | undefined
+  >(undefined);
+  const [selectedProject, setSelectedProject] = useState<
+    ProjectWithCustomerModel | undefined
+  >(undefined);
+
+  const organisationUrl = usePathname().split("/")[1];
+
+  useEffect(() => {
+    async function fetchProject() {
+      const url = `/${organisationUrl}/bemanning/api/projects?projectId=${selectedProjectId}`;
+
+      try {
+        const data = await fetch(url, {
+          method: "get",
+        });
+        setSelectedProject((await data.json()) as ProjectWithCustomerModel);
+      } catch (e) {
+        console.error("Error updating staffing", e);
+      }
+    }
+    selectedProjectId && fetchProject();
+  }, [organisationUrl, selectedProjectId]);
+
+  function openEngagementAndSetID(id: number) {
+    setSelectedProjectId(id);
+    openChangeEngagementModal();
+  }
+
+  function onCloseEngagementModal() {
+    setSelectedProject(undefined);
+    setSelectedProjectId(undefined);
   }
 
   return (
@@ -59,6 +105,11 @@ export default function ConsultantRows({
               {`${consultant.yearsOfExperience} års erfaring`}
             </p>
           </div>
+          <EditEngagementHourModal
+            modalRef={changeEngagementModalRef}
+            project={selectedProject}
+            onClose={onCloseEngagementModal}
+          />
         </td>
         {consultant.bookings.map((b, index) => (
           <WeekCell
@@ -82,6 +133,7 @@ export default function ConsultantRows({
             key={index}
             consultant={consultant}
             detailedBooking={db}
+            openEngagementAndSetID={openEngagementAndSetID}
           />
         ))}
       {isListElementVisible && (
