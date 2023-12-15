@@ -67,18 +67,13 @@ public class ReadModelFactory
 
         var detailedBookings = DetailedBookings(consultant, weekSet);
 
-        var hoursPrWorkday = consultant.Department.Organization.HoursPerWorkday;
-        var hoursPrWeek = hoursPrWorkday * 5;
-
-
         var bookingSummary = weekSet.Select(week =>
             GetBookedHours(week, detailedBookings, consultant)
         ).ToList();
 
-        //isOccupied should not include offered or sellable time, as it's sometimes necessary to "double-book"
+        //checks if the consultant has 0 availible hours each week
         var isOccupied = bookingSummary.All(b =>
-            b.BookingModel.TotalBillable + b.BookingModel.TotalPlannedAbsences + b.BookingModel.TotalVacationHours +
-            b.BookingModel.TotalHolidayHours >= hoursPrWeek);
+           b.BookingModel.TotalSellableTime == 0);
 
         return new StaffingReadModel(
             consultant,
