@@ -390,15 +390,17 @@ public class StorageService
         return org.GetPublicHolidays(year).Concat(org.GetPublicHolidays(year + 1)).Concat(org.GetPublicHolidays(year + 2)).ToList();
     }
 
-    public void RemoveVacationDay(int consultantId, DateOnly date)
+    public void RemoveVacationDay(int consultantId, DateOnly date, string orgUrlKey)
     {
         var vacation = _dbContext.Vacation.Single(v => v.ConsultantId == consultantId && v.Date.Equals(date));
 
         _dbContext.Vacation.Remove(vacation);
         _dbContext.SaveChanges();
+        
+        _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
     }
 
-    public void AddVacationDay(int consultantId, DateOnly date)
+    public void AddVacationDay(int consultantId, DateOnly date, string orgUrlKey)
     {
         var consultant = _dbContext.Consultant.Single(c => c.Id == consultantId);
         if (_dbContext.Vacation.Any(v => v.ConsultantId == consultantId && v.Date.Equals(date))) return;
@@ -410,6 +412,8 @@ public class StorageService
         };
         _dbContext.Add(vacation);
         _dbContext.SaveChanges();
+        
+        _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
 
     }
 

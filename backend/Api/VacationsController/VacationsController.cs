@@ -75,7 +75,7 @@ public class VacationsController : ControllerBase
         try
         {
             var dateObject = DateOnly.FromDateTime(DateTime.Parse(date, CultureInfo.InvariantCulture));
-            service.RemoveVacationDay(consultantId, dateObject);
+            service.RemoveVacationDay(consultantId, dateObject, orgUrlKey);
         }
         catch (Exception e)
         {
@@ -108,7 +108,7 @@ public class VacationsController : ControllerBase
         try
         {
             var dateObject = DateOnly.FromDateTime(DateTime.Parse(date));
-            service.AddVacationDay(consultantId, dateObject);
+            service.AddVacationDay(consultantId, dateObject, orgUrlKey);
         }
         catch (Exception e)
         {
