@@ -89,7 +89,9 @@ public class ProjectController : ControllerBase
         
         var service = new StorageService(_cache, _context);
 
-
+        if (customerName == AbsenceCustomerName)
+            return Ok(HandleGetAbsenceWithAbsences(orgUrlKey));
+        
         var customer = service.GetCustomerFromName(orgUrlKey, customerName);
 
         if (customer is null) return NotFound();
@@ -263,6 +265,13 @@ public class ProjectController : ControllerBase
         var absence = _context.Absence.Single(a => a.Name == body.ProjectName);
         return new ProjectWithCustomerModel(absence.Name, AbsenceCustomerName, EngagementState.Absence, false,
             absence.Id);
+    }
+
+    private CustomersWithProjectsReadModel HandleGetAbsenceWithAbsences(string orgUrlKey)
+    {
+        return new CustomersWithProjectsReadModel(-1, AbsenceCustomerName,
+            _context.Absence.Where(a=> a.Organization.UrlKey == orgUrlKey).Select(absence =>
+                new EngagementReadModel(absence.Id, absence.Name, EngagementState.Absence, false)).ToList(), new List<EngagementReadModel>()); 
     }
     
     

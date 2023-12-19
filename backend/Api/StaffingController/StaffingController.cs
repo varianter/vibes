@@ -44,6 +44,7 @@ public class StaffingController : ControllerBase
     public ActionResult<List<StaffingReadModel>> GetConsultantsInProject(
         [FromRoute] string orgUrlKey,
         [FromRoute] int projectId,
+        [FromQuery] bool isAbsence = false,
         [FromQuery(Name = "Year")] int? selectedYearParam = null,
         [FromQuery(Name = "Week")] int? selectedWeekParam = null,
         [FromQuery(Name = "WeekSpan")] int numberOfWeeks = 8)
@@ -55,6 +56,12 @@ public class StaffingController : ControllerBase
         var weekSet = selectedWeek.GetNextWeeks(numberOfWeeks);
 
         var service = new StorageService(_cache, _context);
+        
+        if (isAbsence){
+            var absenceReadModel = new ReadModelFactory(service).GetConsultantsReadModelsForAbsenceAndWeeks(orgUrlKey, weekSet, projectId);
+            return Ok(absenceReadModel);
+        }
+        
         var readModels = new ReadModelFactory(service).GetConsultantsReadModelsForProjectAndWeeks(orgUrlKey, weekSet, projectId);
         return Ok(readModels);
     }

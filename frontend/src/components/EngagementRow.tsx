@@ -1,6 +1,10 @@
 "use client";
 
-import { ConsultantReadModel, EngagementReadModel } from "@/api-types";
+import {
+  ConsultantReadModel,
+  EngagementReadModel,
+  EngagementState,
+} from "@/api-types";
 import { useEffect, useState } from "react";
 import { ChevronDown } from "react-feather";
 import { Week } from "@/types";
@@ -81,7 +85,7 @@ export default function EngagementRows({
               {engagement.engagementName}
             </p>
             <p className="xsmall text-black/75 text-start">
-              {selectedConsultants.length}
+              {`${selectedConsultants.length} konsulenter`}
             </p>
           </div>
         </td>
@@ -124,7 +128,9 @@ export async function fetchConsultantsFromProject(
     engagement.engagementId
   }&selectedWeek=${weekToString(
     selectedWeek,
-  )}&selectedWeekSpan=${selectedWeekSpan}`;
+  )}&selectedWeekSpan=${selectedWeekSpan}${
+    engagement.bookingType == EngagementState.Absence ? "&isAbsence=True" : ""
+  }`;
 
   try {
     const data = await fetch(url, {
