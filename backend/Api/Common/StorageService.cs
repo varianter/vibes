@@ -376,6 +376,14 @@ public class StorageService
             .Single(p => p.Id == id);
     }
 
+    public Customer? GetCustomerFromName(string orgUrlKey, string customerName)
+    {
+        return _dbContext.Customer
+            .Include(c => c.Organization)
+            .Include(c => c.Projects)
+            .SingleOrDefault(customer => customer.Organization.UrlKey == orgUrlKey && customer.Name.Equals(customerName));
+    }
+
     public List<Vacation> LoadConsultantVacation(int consultantId)
     {
         return _dbContext.Vacation.Where(v => v.ConsultantId == consultantId).ToList();

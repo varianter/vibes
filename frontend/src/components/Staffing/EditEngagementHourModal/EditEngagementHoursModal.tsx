@@ -233,7 +233,7 @@ export function EditEngagementHourModal({
   );
 }
 
-async function fetchConsultantsFromProject(
+export async function fetchConsultantsFromProject(
   project: ProjectWithCustomerModel,
   organisationUrl: string,
   selectedWeek: Week,

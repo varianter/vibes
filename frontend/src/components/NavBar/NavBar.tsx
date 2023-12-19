@@ -12,6 +12,7 @@ export default async function NavBar() {
     <div className="bg-primary w-full flex flex-row justify-between header px-4">
       <div className="flex flex-row gap-8">
         <NavBarLink text="Bemanning" path={`bemanning`} />
+        <NavBarLink text="Kunder" path={`kunder`} />
       </div>
       <div className="flex flex-row gap-4 items-center">
         <NavBarOrganisationDropdown organisations={orgs} />

@@ -67,11 +67,31 @@ public class ProjectController : ControllerBase
                     a.Key.Id,
                     a.Key.Name,
                     a.Select(e =>
-                        new EngagementReadModel(e.Id, e.Name, e.State, false)).ToList()))
+                        new EngagementReadModel(e.Id, e.Name, e.State, e.IsBillable)).ToList()))
             .ToList();
 
         projectReadModels.Add(absenceReadModels);
         return projectReadModels;
+    }
+    
+    [HttpGet]
+    [Route("{customerName}")]
+    public ActionResult<EngagementPerCustomerReadModel> GetCustomerWithEngagements(
+        [FromRoute] string orgUrlKey,
+        [FromRoute] string customerName)
+    {
+        var selectedOrgId = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
+        if (selectedOrgId is null) return BadRequest();
+        
+        var service = new StorageService(_cache, _context);
+
+
+        var customer = service.GetCustomerFromName(orgUrlKey, customerName);
+
+        if (customer is null) return NotFound();
+        
+        return new EngagementPerCustomerReadModel(customer.Id, customer.Name, customer.Projects.Select(e =>
+            new EngagementReadModel(e.Id, e.Name, e.State, e.IsBillable)).ToList());
     }
 
     [HttpDelete]
@@ -224,6 +244,8 @@ public class ProjectController : ControllerBase
 
         return Ok(responseModel);
     }
+    
+    
     
     
 
