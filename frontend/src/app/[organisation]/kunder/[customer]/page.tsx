@@ -12,6 +12,8 @@ export default async function Kunde({
       `${params.organisation}/projects/${params.customer}`, //Kanskje bruk id eller noen form for url-safe navn?
     )) ?? undefined;
 
+  //Deal with permisjoner og ferie
+
   return (
     <>
       {customer && (
