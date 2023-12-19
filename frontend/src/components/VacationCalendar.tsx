@@ -29,16 +29,23 @@ export default function VacationCalendar({
       ?.toString()
       .replace(searchRegExp, replaceWith)
       .split(",");
+
     if (!dates || !valueDates) {
       return;
     }
-    if (dates.length > valueDates.length) {
+    if (
+      dates.length > valueDates.length ||
+      (valueDates.length == 1 && valueDates[0] == "")
+    ) {
       const newDates = dates.filter((item) => valueDates.indexOf(item) < 0);
       addVacationDay(newDates[0]).then((res) => {
         if (res) setVacationInformation({ ...res });
       });
     }
-    if (dates.length < valueDates.length) {
+    if (
+      dates.length < valueDates.length ||
+      (dates.length == 1 && dates[0] == "")
+    ) {
       const removeDates = valueDates.filter((item) => dates.indexOf(item) < 0);
       removeVacationDay(removeDates[0]).then((res) => {
         if (res) setVacationInformation({ ...res });
