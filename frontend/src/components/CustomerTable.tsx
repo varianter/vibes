@@ -81,7 +81,7 @@ export default function CustomerTable({
   }
 
   return (
-    <div className="flex flex-row h-full">
+    <div className="flex flex-row">
       <div className="sidebar z-10">
         <div className=" bg-primary/5 h-full flex flex-col gap-6 p-4 w-[300px]">
           <div className="flex flex-row justify-between items-center gap-6">
