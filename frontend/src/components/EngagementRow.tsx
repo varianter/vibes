@@ -1,13 +1,22 @@
 "use client";
 
-import { EngagementReadModel } from "@/api-types";
-import { useState } from "react";
+import { ConsultantReadModel, EngagementReadModel } from "@/api-types";
+import { useEffect, useState } from "react";
 import { ChevronDown } from "react-feather";
+import { Week } from "@/types";
+import { weekToString } from "@/data/urlUtils";
+import { EditEngagementHoursRow } from "./Staffing/EditEngagementHourModal/EditEngagementHoursRow";
 
-export default function ConsultantRows({
+export default function EngagementRows({
   engagement,
+  orgUrl,
+  selectedWeek,
+  selectedWeekSpan,
 }: {
   engagement: EngagementReadModel;
+  orgUrl: string;
+  selectedWeek: Week;
+  selectedWeekSpan: number;
 }) {
   const [isListElementVisible, setIsListElementVisible] = useState(false);
   const [isRowHovered, setIsRowHovered] = useState(false);
@@ -16,6 +25,24 @@ export default function ConsultantRows({
   function toggleListElementVisibility() {
     setIsListElementVisible(!isListElementVisible);
   }
+
+  const [selectedConsultants, setSelectedConsultants] = useState<
+    ConsultantReadModel[]
+  >([]);
+
+  useEffect(() => {
+    fetchConsultantsFromProject(
+      engagement,
+      orgUrl,
+      selectedWeek,
+      selectedWeekSpan,
+    ).then((res) => {
+      setSelectedConsultants([
+        // Use spread to make a new list, forcing a re-render
+        ...res,
+      ]);
+    });
+  }, [engagement, orgUrl, selectedWeek, selectedWeekSpan]);
 
   return (
     <>
@@ -56,8 +83,55 @@ export default function ConsultantRows({
             </p>
           </div>
         </td>
+        {selectedConsultants
+          .at(0)
+          ?.detailedBooking.at(0)
+          ?.hours.map((hours) => (
+            <td key={hours.week}>
+              {" "}
+              <p>{hours.week}</p>{" "}
+            </td>
+          ))}
       </tr>
-      {isListElementVisible && "Hi"}
+      {isListElementVisible &&
+        selectedConsultants &&
+        selectedConsultants.map((consultant, index) => (
+          <EditEngagementHoursRow
+            key={consultant.id}
+            consultant={consultant}
+            detailedBooking={
+              consultant.detailedBooking.filter(
+                (db) => db.bookingDetails.projectId == engagement?.engagementId,
+              )[0]
+            }
+            consultants={selectedConsultants}
+            setConsultants={setSelectedConsultants}
+          />
+        ))}
     </>
   );
+}
+
+export async function fetchConsultantsFromProject(
+  engagement: EngagementReadModel,
+  organisationUrl: string,
+  selectedWeek: Week,
+  selectedWeekSpan: number,
+) {
+  const url = `/${organisationUrl}/bemanning/api/projects/staffings?projectId=${
+    engagement.engagementId
+  }&selectedWeek=${weekToString(
+    selectedWeek,
+  )}&selectedWeekSpan=${selectedWeekSpan}`;
+
+  try {
+    const data = await fetch(url, {
+      method: "get",
+    });
+    return (await data.json()) as ConsultantReadModel[];
+  } catch (e) {
+    console.error("Error updating staffing", e);
+  }
+
+  return [];
 }
