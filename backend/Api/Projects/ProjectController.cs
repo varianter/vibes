@@ -74,14 +74,18 @@ public class ProjectController : ControllerBase
         return projectReadModels;
     }
     
+    
     [HttpGet]
     [Route("{customerName}")]
-    public ActionResult<EngagementPerCustomerReadModel> GetCustomerWithEngagements(
+    public ActionResult<CustomersWithProjectsReadModel> GetCustomerWithEngagements(
         [FromRoute] string orgUrlKey,
-        [FromRoute] string customerName)
+        [FromRoute] string customerName
+        )
     {
         var selectedOrgId = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrgId is null) return BadRequest();
+
+        var thisWeek = Week.FromDateTime(DateTime.Now);
         
         var service = new StorageService(_cache, _context);
 
@@ -90,8 +94,13 @@ public class ProjectController : ControllerBase
 
         if (customer is null) return NotFound();
         
-        return new EngagementPerCustomerReadModel(customer.Id, customer.Name, customer.Projects.Select(e =>
-            new EngagementReadModel(e.Id, e.Name, e.State, e.IsBillable)).ToList());
+        return new CustomersWithProjectsReadModel(
+            customer.Id, 
+            customer.Name, 
+            customer.Projects.Where(p=>p.Staffings.Exists(s=> s.Week.CompareTo(thisWeek) >= 0)).Select(e =>
+            new EngagementReadModel(e.Id, e.Name, e.State, e.IsBillable)).ToList(),
+            customer.Projects.Where(p=> !(p.Staffings.Exists(s =>  s.Week.CompareTo(thisWeek) >= 0))).Select(e =>
+                new EngagementReadModel(e.Id, e.Name, e.State, e.IsBillable)).ToList());
     }
 
     [HttpDelete]

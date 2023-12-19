@@ -39,12 +39,14 @@ export function EditEngagementHoursRow({
     <tr>
       {detailedBooking && (
         <>
-          <td
-            className={`flex justify-center items-center w-8 h-8 ${getColorByStaffingType(
-              detailedBooking.bookingDetails.type,
-            )} rounded-lg`}
-          >
-            {getIconByBookingType(detailedBooking.bookingDetails.type, 16)}
+          <td className="border-l-secondary border-l-2">
+            <div
+              className={`flex justify-center items-center w-8 h-8 ${getColorByStaffingType(
+                detailedBooking.bookingDetails.type,
+              )} rounded-lg ml-3`}
+            >
+              {getIconByBookingType(detailedBooking.bookingDetails.type, 16)}
+            </div>
           </td>
           <td>
             <p className="text-black text-start small pl-2">

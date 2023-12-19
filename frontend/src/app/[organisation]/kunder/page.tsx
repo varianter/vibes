@@ -19,7 +19,7 @@ export default async function Kunder({
           <div className="flex flex-row justify-between items-center">
             <h1 className="">Filter</h1>
           </div>
-          Kommer
+          Ikke implementert
         </div>
       </div>
       <div className="p-4 pt-5 w-full flex flex-col gap-8">
@@ -27,8 +27,11 @@ export default async function Kunder({
         <div>
           <table className="w-full min-w-[700px] table-fixed">
             <colgroup>
-              <col span={1} className="w-3" />
+              <col span={1} className="w-16" />
               <col span={1} className="w-[190px]" />
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((_, index) => (
+                <col key={index} span={1} />
+              ))}
             </colgroup>
             <thead>
               <tr>
@@ -46,11 +49,7 @@ export default async function Kunder({
               {customers
                 .sort((a, b) => a.customerName.localeCompare(b.customerName))
                 .map((customer) => (
-                  <CustomerRow
-                    key={customer.customerId}
-                    customer={customer}
-                    orgUrl={params.organisation}
-                  />
+                  <CustomerRow key={customer.customerId} customer={customer} />
                 ))}
             </tbody>
           </table>

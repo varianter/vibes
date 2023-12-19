@@ -6,21 +6,23 @@ import { ChevronDown } from "react-feather";
 import { Week } from "@/types";
 import { weekToString } from "@/data/urlUtils";
 import { EditEngagementHoursRow } from "./Staffing/EditEngagementHourModal/EditEngagementHoursRow";
+import { DateTime } from "luxon";
 
 export default function EngagementRows({
   engagement,
   orgUrl,
   selectedWeek,
   selectedWeekSpan,
+  weekList,
 }: {
   engagement: EngagementReadModel;
   orgUrl: string;
   selectedWeek: Week;
   selectedWeekSpan: number;
+  weekList: DateTime[];
 }) {
   const [isListElementVisible, setIsListElementVisible] = useState(false);
   const [isRowHovered, setIsRowHovered] = useState(false);
-  const [hoveredRowWeek, setHoveredRowWeek] = useState(-1);
 
   function toggleListElementVisibility() {
     setIsListElementVisible(!isListElementVisible);
@@ -79,19 +81,19 @@ export default function EngagementRows({
               {engagement.engagementName}
             </p>
             <p className="xsmall text-black/75 text-start">
-              {engagement.isBillable ? "Fakturerbart" : "Ikke fakturerbart"}
+              {selectedConsultants.length}
             </p>
           </div>
         </td>
-        {selectedConsultants
-          .at(0)
-          ?.detailedBooking.at(0)
-          ?.hours.map((hours) => (
-            <td key={hours.week}>
-              {" "}
-              <p>{hours.week}</p>{" "}
-            </td>
-          ))}
+        {weekList.map((day) => (
+          <td key={day.weekNumber} className={`h-[52px] p-0.5`}>
+            <div
+              className={`flex flex-col gap-1 p-2 justify-end rounded w-full h-full relative border border-transparent bg-primary/[3%] hover:border-primary/30 hover:cursor-pointer
+          `}
+              onClick={() => setIsListElementVisible(!isListElementVisible)}
+            ></div>
+          </td>
+        ))}
       </tr>
       {isListElementVisible &&
         selectedConsultants &&

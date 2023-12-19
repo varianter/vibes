@@ -381,6 +381,7 @@ public class StorageService
         return _dbContext.Customer
             .Include(c => c.Organization)
             .Include(c => c.Projects)
+            .ThenInclude(p=>p.Staffings)
             .SingleOrDefault(customer => customer.Organization.UrlKey == orgUrlKey && customer.Name.Equals(customerName));
     }
 

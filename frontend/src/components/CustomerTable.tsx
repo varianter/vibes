@@ -1,5 +1,5 @@
 "use client";
-import { EngagementPerCustomerReadModel } from "@/api-types";
+import { CustomersWithProjectsReadModel } from "@/api-types";
 import { Week } from "@/types";
 import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
@@ -15,7 +15,7 @@ export default function CustomerTable({
   customer,
   orgUrl,
 }: {
-  customer: EngagementPerCustomerReadModel;
+  customer: CustomersWithProjectsReadModel;
   orgUrl: string;
 }) {
   const weekSpanOptions = ["8 uker", "12 uker", "26 uker"];
@@ -97,8 +97,12 @@ export default function CustomerTable({
           <div className="flex flex-col gap-2">
             <p className="small">Bemanning</p>
             <InfoBox
-              infoName={"Antall engasjement"}
-              infoValue={customer?.engagements.length.toString()}
+              infoName={"Antall aktive engasjement"}
+              infoValue={customer?.activeEngagements?.length.toString()}
+            />
+            <InfoBox
+              infoName={"Antall inaktive engasjement"}
+              infoValue={customer?.inactiveEngagements?.length.toString()}
             />
           </div>
         </div>
@@ -155,9 +159,9 @@ export default function CustomerTable({
               <tr>
                 <th colSpan={2}>
                   <div className="flex flex-row gap-3 pb-4 items-center">
-                    <p className="normal-medium ">Engasjement</p>
+                    <p className="normal-medium ">Aktive engasjement</p>
                     <p className="text-primary small-medium rounded-full bg-primary/5 px-2 py-1">
-                      {customer?.engagements.length}
+                      {customer?.activeEngagements?.length}
                     </p>
                   </div>
                 </th>
@@ -194,13 +198,34 @@ export default function CustomerTable({
               </tr>
             </thead>
             <tbody>
-              {customer?.engagements.map((engagement) => (
+              {customer?.activeEngagements?.map((engagement) => (
                 <EngagementRow
                   key={engagement.engagementId}
                   engagement={engagement}
                   orgUrl={orgUrl}
                   selectedWeek={selectedWeek}
                   selectedWeekSpan={selectedWeekSpan}
+                  weekList={weekList}
+                />
+              ))}
+              <tr>
+                <td colSpan={2}>
+                  <div className="flex flex-row gap-3 pb-4 items-center">
+                    <p className="normal-medium ">Inaktive engasjement</p>
+                    <p className="text-primary small-medium rounded-full bg-primary/5 px-2 py-1">
+                      {customer?.inactiveEngagements?.length}
+                    </p>
+                  </div>
+                </td>
+              </tr>
+              {customer?.inactiveEngagements?.map((engagement) => (
+                <EngagementRow
+                  key={engagement.engagementId}
+                  engagement={engagement}
+                  orgUrl={orgUrl}
+                  selectedWeek={selectedWeek}
+                  selectedWeekSpan={selectedWeekSpan}
+                  weekList={weekList}
                 />
               ))}
             </tbody>

@@ -12,10 +12,8 @@ import Link from "next/link";
 
 export default function CostumerRow({
   customer,
-  orgUrl,
 }: {
   customer: EngagementPerCustomerReadModel;
-  orgUrl: string;
 }) {
   const [isListElementVisible, setIsListElementVisible] = useState(false);
   const [isRowHovered, setIsRowHovered] = useState(false);
@@ -54,20 +52,28 @@ export default function CostumerRow({
             className={`text-black text-start ${
               isListElementVisible ? "normal-medium" : "normal"
             }`}
-            href={`/${orgUrl}/${customer.customerName}`}
+            href={`kunder/${customer.customerName}`}
           >
             {customer.customerName}
           </Link>
         </td>
+        {[1, 2, 3, 4, 5, 6, 7, 8].map((number) => (
+          <td key={number} className={`h-[52px] p-0.5`}>
+            <div
+              className={`flex flex-col gap-1 p-2 justify-end rounded w-full h-full relative border border-transparent bg-primary/[3%] hover:border-primary/30 hover:cursor-pointer
+          `}
+              onClick={() => setIsListElementVisible(!isListElementVisible)}
+            ></div>
+          </td>
+        ))}
       </tr>
       {isListElementVisible &&
         customer.engagements &&
         customer.engagements.map((engagement, index) => (
           <tr key={`${engagement.engagementId}-details`} className="h-fit">
-            <td className="border-l-secondary border-l-2"></td>
-            <td className="flex flex-row gap-2 justify-start relative">
+            <td className="border-l-secondary border-l-2">
               <div
-                className={`h-8 w-8 flex justify-center items-center rounded ${getColorByStaffingType(
+                className={`h-8 w-8 flex justify-center items-center rounded ml-3 ${getColorByStaffingType(
                   getBookingTypeFromProjectState(engagement.bookingType),
                 )}`}
               >
@@ -76,7 +82,8 @@ export default function CostumerRow({
                   16,
                 )}
               </div>
-
+            </td>
+            <td className="flex flex-row gap-2 justify-start relative">
               <div className="flex flex-col justify-center">
                 <p className="xsmall text-black/75 whitespace-nowrap text-ellipsis overflow-x-hidden max-w-[145px]">
                   {engagement.isBillable ? "Fakturerbart" : "Ikke-fakturerbart"}
