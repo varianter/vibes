@@ -1,20 +1,18 @@
 "use client";
 
 import { useCallback, useContext, useEffect } from "react";
-import { useUrlRouteFilter } from "./useUrlRouteFilter";
 import { FilteredContext } from "../ConsultantFilterProvider";
 
 export function useAvailabilityFilter() {
-  const { updateRoute } = useUrlRouteFilter();
-  const { availabilityFilter } = useUrlRouteFilter();
-  const availabilityFilterOn = availabilityFilter === "true";
-  const { isDisabledHotkeys } = useContext(FilteredContext);
+  const { isDisabledHotkeys, updateFilters, activeFilters } =
+    useContext(FilteredContext);
+  const availabilityFilterOn = activeFilters.availabilityFilter;
 
   const setAvailabilityFilter = useCallback(
-    (availabelFilterOn: Boolean) => {
-      updateRoute({ availability: availabelFilterOn });
+    (availableFilterOn: boolean) => {
+      updateFilters({ availability: availableFilterOn });
     },
-    [updateRoute],
+    [updateFilters],
   );
 
   const toggleAvailabilityFilter = useCallback(
@@ -40,6 +38,6 @@ export function useAvailabilityFilter() {
   return {
     availabilityFilterOn,
     toggleAvailabilityFilter,
-    updateRoute,
+    updateRoute: updateFilters,
   };
 }

@@ -1,5 +1,4 @@
 import { YearRange } from "@/types";
-import { useUrlRouteFilter } from "./useUrlRouteFilter";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { useContext, useEffect, useState } from "react";
 import { useYearsXpFilter } from "./useYearsXpFilter";
@@ -34,7 +33,8 @@ export function useConsultantsFilter() {
     getNumWorkHours(setNumWorkHours, organisationName);
   }, [organisationName]);
 
-  const { departmentFilter, searchFilter } = useUrlRouteFilter();
+  const { departmentFilter, searchFilter } =
+    useContext(FilteredContext).activeFilters;
 
   const { filteredYears } = useYearsXpFilter();
   const { availabilityFilterOn } = useAvailabilityFilter();

@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import { useUrlRouteFilter } from "./useUrlRouteFilter";
+import { useState, useEffect, useContext } from "react";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
 export function useNameSearch() {
-  const { searchFilter } = useUrlRouteFilter();
-  const { updateRoute } = useUrlRouteFilter();
+  const { updateFilters, activeFilters } = useContext(FilteredContext);
+  const searchFilter = activeFilters.searchFilter;
 
   function setNameSearch(newSearch: string) {
     setActiveNameSearch(newSearch);
@@ -20,11 +20,11 @@ export function useNameSearch() {
     const nameSearchDebounceTimer = setTimeout(() => {
       if (
         lastSearchKeyStrokeTime &&
-        Date.now() - lastSearchKeyStrokeTime > 250
+        Date.now() - lastSearchKeyStrokeTime > 180
       ) {
-        updateRoute({ search: activeNameSearch });
+        updateFilters({ search: activeNameSearch });
       }
-    }, 250);
+    }, 180);
 
     // this will clear Timeout
     // when component unmount like in willComponentUnmount
@@ -32,7 +32,7 @@ export function useNameSearch() {
     return () => {
       clearTimeout(nameSearchDebounceTimer);
     };
-  }, [activeNameSearch, lastSearchKeyStrokeTime, updateRoute]);
+  }, [activeNameSearch, lastSearchKeyStrokeTime, updateFilters]);
 
   return { activeNameSearch, setNameSearch };
 }
