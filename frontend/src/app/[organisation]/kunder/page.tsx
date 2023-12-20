@@ -61,8 +61,8 @@ export default async function Kunder({
       <table className="w-full min-w-[700px] table-fixed">
         <colgroup>
           <col span={1} className="w-16" />
-          <col span={1} className="w-[190px]" />
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((_, index) => (
+          <col span={1} className="w-[300px]" />
+          {[1].map((_, index) => (
             <col key={index} span={1} />
           ))}
         </colgroup>

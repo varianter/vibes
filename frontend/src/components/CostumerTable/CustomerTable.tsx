@@ -107,40 +107,30 @@ export default function CustomerTable({
     </div>
   );
 
-  function CustomerTableBody() {
+  function WeekSelection() {
     return (
-      <tbody>
-        {customer?.activeEngagements?.map((engagement) => (
-          <EngagementRow
-            key={engagement.engagementId}
-            engagement={engagement}
-            orgUrl={orgUrl}
-            selectedWeek={selectedWeek}
-            selectedWeekSpan={selectedWeekSpan}
-            weekList={weekList}
-          />
-        ))}
-        <tr>
-          <td colSpan={2}>
-            <div className="flex flex-row gap-3 pb-4 items-center">
-              <p className="normal-medium ">Inaktive engasjement</p>
-              <p className="text-primary small-medium rounded-full bg-primary/5 px-2 py-1">
-                {customer?.inactiveEngagements?.length}
-              </p>
-            </div>
-          </td>
-        </tr>
-        {customer?.inactiveEngagements?.map((engagement) => (
-          <EngagementRow
-            key={engagement.engagementId}
-            engagement={engagement}
-            orgUrl={orgUrl}
-            selectedWeek={selectedWeek}
-            selectedWeekSpan={selectedWeekSpan}
-            weekList={weekList}
-          />
-        ))}
-      </tbody>
+      <div className="flex flex-row gap-2 justify-end">
+        <DropDown
+          startingOption={
+            selectedWeekSpan ? selectedWeekSpan + " uker" : weekSpanOptions[0]
+          }
+          dropDownOptions={weekSpanOptions}
+          dropDownFunction={setWeekSpan}
+        />
+        <ActionButton variant="secondary" onClick={() => resetSelectedWeek()}>
+          Nåværende uke
+        </ActionButton>
+        <IconActionButton
+          variant={"secondary"}
+          icon={<ArrowLeft />}
+          onClick={() => decrementSelectedWeek()}
+        />
+        <IconActionButton
+          variant={"secondary"}
+          icon={<ArrowRight />}
+          onClick={() => incrementSelectedWeek()}
+        />
+      </div>
     );
   }
 
@@ -191,30 +181,40 @@ export default function CustomerTable({
     );
   }
 
-  function WeekSelection() {
+  function CustomerTableBody() {
     return (
-      <div className="flex flex-row gap-2 justify-end">
-        <DropDown
-          startingOption={
-            selectedWeekSpan ? selectedWeekSpan + " uker" : weekSpanOptions[0]
-          }
-          dropDownOptions={weekSpanOptions}
-          dropDownFunction={setWeekSpan}
-        />
-        <ActionButton variant="secondary" onClick={() => resetSelectedWeek()}>
-          Nåværende uke
-        </ActionButton>
-        <IconActionButton
-          variant={"secondary"}
-          icon={<ArrowLeft />}
-          onClick={() => decrementSelectedWeek()}
-        />
-        <IconActionButton
-          variant={"secondary"}
-          icon={<ArrowRight />}
-          onClick={() => incrementSelectedWeek()}
-        />
-      </div>
+      <tbody>
+        {customer.activeEngagements?.map((engagement) => (
+          <EngagementRow
+            key={engagement.engagementId}
+            engagement={engagement}
+            orgUrl={orgUrl}
+            selectedWeek={selectedWeek}
+            selectedWeekSpan={selectedWeekSpan}
+            weekList={weekList}
+          />
+        ))}
+        <tr>
+          <td colSpan={2}>
+            <div className="flex flex-row gap-3 pb-4 items-center">
+              <p className="normal-medium ">Inaktive engasjement</p>
+              <p className="text-primary small-medium rounded-full bg-primary/5 px-2 py-1">
+                {customer.inactiveEngagements?.length}
+              </p>
+            </div>
+          </td>
+        </tr>
+        {customer.inactiveEngagements?.map((engagement) => (
+          <EngagementRow
+            key={engagement.engagementId}
+            engagement={engagement}
+            orgUrl={orgUrl}
+            selectedWeek={selectedWeek}
+            selectedWeekSpan={selectedWeekSpan}
+            weekList={weekList}
+          />
+        ))}
+      </tbody>
     );
   }
 }
