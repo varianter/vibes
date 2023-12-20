@@ -76,10 +76,10 @@ public class ProjectController : ControllerBase
     
     
     [HttpGet]
-    [Route("{customerName}")]
+    [Route("{customerId}")]
     public ActionResult<CustomersWithProjectsReadModel> GetCustomerWithEngagements(
         [FromRoute] string orgUrlKey,
-        [FromRoute] string customerName
+        [FromRoute] int customerId
         )
     {
         var selectedOrgId = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
@@ -89,10 +89,10 @@ public class ProjectController : ControllerBase
         
         var service = new StorageService(_cache, _context);
 
-        if (customerName == AbsenceCustomerName)
+        if (customerId == -1)
             return Ok(HandleGetAbsenceWithAbsences(orgUrlKey));
         
-        var customer = service.GetCustomerFromName(orgUrlKey, customerName);
+        var customer = service.GetCustomerFromId(orgUrlKey, customerId);
 
         if (customer is null) return NotFound();
         

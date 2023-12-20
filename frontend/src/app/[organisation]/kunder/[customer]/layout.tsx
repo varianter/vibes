@@ -1,7 +1,7 @@
-export default function KundeLayout({
+export default function BemanningLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="overflow-scroll main">{children}</div>;
+  return children;
 }

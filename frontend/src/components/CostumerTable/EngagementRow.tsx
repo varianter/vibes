@@ -11,6 +11,7 @@ import { Week } from "@/types";
 import { weekToString } from "@/data/urlUtils";
 import { EditEngagementHoursRow } from "../Staffing/EditEngagementHourModal/EditEngagementHoursRow";
 import { DateTime } from "luxon";
+import { getBookingTypeFromProjectState } from "../Staffing/AddEngagementHoursModal/utils";
 
 export default function EngagementRows({
   engagement,
@@ -29,7 +30,7 @@ export default function EngagementRows({
   const [isRowHovered, setIsRowHovered] = useState(false);
 
   function toggleListElementVisibility() {
-    setIsListElementVisible(!isListElementVisible);
+    setIsListElementVisible((old) => !old);
   }
 
   const [selectedConsultants, setSelectedConsultants] = useState<
@@ -85,7 +86,9 @@ export default function EngagementRows({
               {engagement.engagementName}
             </p>
             <p className="xsmall text-black/75 text-start">
-              {`${selectedConsultants.length} konsulenter`}
+              {`${selectedConsultants.length} konsulenter - ${
+                engagement.isBillable ? "Fakturerbart" : "Ikke fakturerbart"
+              }`}
             </p>
           </div>
         </td>
@@ -101,13 +104,16 @@ export default function EngagementRows({
       </tr>
       {isListElementVisible &&
         selectedConsultants &&
-        selectedConsultants.map((consultant, index) => (
+        selectedConsultants.map((consultant) => (
           <EditEngagementHoursRow
             key={consultant.id}
             consultant={consultant}
             detailedBooking={consultant.detailedBooking
               .filter(
-                (db) => db.bookingDetails.projectId == engagement?.engagementId,
+                (db) =>
+                  db.bookingDetails.projectId == engagement?.engagementId &&
+                  db.bookingDetails.type ==
+                    getBookingTypeFromProjectState(engagement.bookingType),
               )
               .at(0)}
             consultants={selectedConsultants}

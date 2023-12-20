@@ -376,13 +376,13 @@ public class StorageService
             .Single(p => p.Id == id);
     }
 
-    public Customer? GetCustomerFromName(string orgUrlKey, string customerName)
+    public Customer? GetCustomerFromId(string orgUrlKey, int customerId)
     {
         return _dbContext.Customer
             .Include(c => c.Organization)
             .Include(c => c.Projects)
             .ThenInclude(p=>p.Staffings)
-            .SingleOrDefault(customer => customer.Organization.UrlKey == orgUrlKey && customer.Name.Equals(customerName));
+            .SingleOrDefault(customer => customer.Organization.UrlKey == orgUrlKey && customer.Id.Equals(customerId));
     }
 
     public List<Vacation> LoadConsultantVacation(int consultantId)

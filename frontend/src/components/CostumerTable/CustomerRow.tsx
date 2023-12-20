@@ -1,14 +1,15 @@
 "use client";
 
-import { EngagementPerCustomerReadModel, EngagementState } from "@/api-types";
+import { EngagementPerCustomerReadModel } from "@/api-types";
 import { useState } from "react";
-import { ChevronDown } from "react-feather";
+import { ArrowRight, ChevronDown } from "react-feather";
 import {
   getColorByStaffingType,
   getIconByBookingType,
 } from "../Staffing/helpers/utils";
 import { getBookingTypeFromProjectState } from "../Staffing/AddEngagementHoursModal/utils";
 import Link from "next/link";
+import ActionButton from "../Buttons/ActionButton";
 
 export default function CostumerRow({
   customer,
@@ -19,13 +20,13 @@ export default function CostumerRow({
   const [isRowHovered, setIsRowHovered] = useState(false);
 
   function toggleListElementVisibility() {
-    setIsListElementVisible(!isListElementVisible);
+    setIsListElementVisible((old) => !old);
   }
 
   return (
     <>
       <tr
-        className="h-[52px]"
+        className="h-[52px] hover:cursor-pointer"
         onMouseEnter={() => setIsRowHovered(true)}
         onMouseLeave={() => setIsRowHovered(false)}
       >
@@ -37,6 +38,7 @@ export default function CostumerRow({
               ? "border-l-primary"
               : "border-l-primary/5"
           } `}
+          onClick={toggleListElementVisibility}
         >
           <button
             className={`p-2 rounded-lg ml-2 hover:bg-primary hover:bg-opacity-10 ${
@@ -47,22 +49,28 @@ export default function CostumerRow({
             <ChevronDown className={`text-primary w-6 h-6`} />
           </button>
         </td>
-        <td>
-          <Link
-            className={`text-black text-start ${
+        <td className="flex flex-row justify-between items-center h-[52px]">
+          <p
+            className={`text-black text-start w-full whitespace-nowrap text-ellipsis overflow-x-hidden  ${
               isListElementVisible ? "normal-medium" : "normal"
             }`}
-            href={`kunder/${customer.customerName}`}
+            onClick={toggleListElementVisibility}
           >
             {customer.customerName}
+          </p>
+          <Link
+            href={`kunder/${customer.customerId}`}
+            className={`p-2 rounded-lg ml-2 hover:bg-primary hover:bg-opacity-10 `}
+          >
+            <ArrowRight className={`text-primary w-6 h-6`} />
           </Link>
         </td>
         {[1, 2, 3, 4, 5, 6, 7, 8].map((number) => (
           <td key={number} className={`h-[52px] p-0.5`}>
             <div
-              className={`flex flex-col gap-1 p-2 justify-end rounded w-full h-full relative border border-transparent bg-primary/[3%] hover:border-primary/30 hover:cursor-pointer
+              className={`flex flex-col gap-1 p-2 justify-end rounded w-full h-full relative border border-transparent bg-primary/[3%] hover:border-primary/30 
           `}
-              onClick={() => setIsListElementVisible(!isListElementVisible)}
+              onClick={toggleListElementVisibility}
             ></div>
           </td>
         ))}
