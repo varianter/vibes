@@ -11,10 +11,15 @@ export async function GET(
   const projectId = searchParams.get("projectId") || "";
   const selectedWeekParam = searchParams.get("selectedWeek") || "";
   const selectedWeekSpan = searchParams.get("selectedWeekSpan") || "";
+  const isAbsence = searchParams.get("isAbsence") || "";
 
   const week = parseYearWeekFromUrlString(selectedWeekParam);
 
-  const endpointUrl = `${params.organisation}/staffings/project/${projectId}?Year=${week?.year}&Week=${week?.weekNumber}&WeekSpan=${selectedWeekSpan}`;
+  const endpointUrl = `${
+    params.organisation
+  }/staffings/project/${projectId}?Year=${week?.year}&Week=${week?.weekNumber}&WeekSpan=${selectedWeekSpan}${
+    isAbsence ? "&isAbsence=True" : ""
+  }`;
 
   const engagement = await fetchWithToken<ConsultantReadModel[]>(endpointUrl);
 

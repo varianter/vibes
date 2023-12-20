@@ -67,11 +67,42 @@ public class ProjectController : ControllerBase
                     a.Key.Id,
                     a.Key.Name,
                     a.Select(e =>
-                        new EngagementReadModel(e.Id, e.Name, e.State, false)).ToList()))
+                        new EngagementReadModel(e.Id, e.Name, e.State, e.IsBillable)).ToList()))
             .ToList();
 
         projectReadModels.Add(absenceReadModels);
         return projectReadModels;
+    }
+    
+    
+    [HttpGet]
+    [Route("{customerId}")]
+    public ActionResult<CustomersWithProjectsReadModel> GetCustomerWithEngagements(
+        [FromRoute] string orgUrlKey,
+        [FromRoute] int customerId
+        )
+    {
+        var selectedOrgId = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
+        if (selectedOrgId is null) return BadRequest();
+
+        var thisWeek = Week.FromDateTime(DateTime.Now);
+        
+        var service = new StorageService(_cache, _context);
+
+        if (customerId == -1)
+            return Ok(HandleGetAbsenceWithAbsences(orgUrlKey));
+        
+        var customer = service.GetCustomerFromId(orgUrlKey, customerId);
+
+        if (customer is null) return NotFound();
+        
+        return new CustomersWithProjectsReadModel(
+            customer.Id, 
+            customer.Name, 
+            customer.Projects.Where(p=>p.Staffings.Exists(s=> s.Week.CompareTo(thisWeek) >= 0)).Select(e =>
+            new EngagementReadModel(e.Id, e.Name, e.State, e.IsBillable)).ToList(),
+            customer.Projects.Where(p=> !(p.Staffings.Exists(s =>  s.Week.CompareTo(thisWeek) >= 0))).Select(e =>
+                new EngagementReadModel(e.Id, e.Name, e.State, e.IsBillable)).ToList());
     }
 
     [HttpDelete]
@@ -226,12 +257,21 @@ public class ProjectController : ControllerBase
     }
     
     
+    
+    
 
     private ProjectWithCustomerModel HandleAbsenceChange(EngagementWriteModel body)
     {
         var absence = _context.Absence.Single(a => a.Name == body.ProjectName);
         return new ProjectWithCustomerModel(absence.Name, AbsenceCustomerName, EngagementState.Absence, false,
             absence.Id);
+    }
+
+    private CustomersWithProjectsReadModel HandleGetAbsenceWithAbsences(string orgUrlKey)
+    {
+        return new CustomersWithProjectsReadModel(-1, AbsenceCustomerName,
+            _context.Absence.Where(a=> a.Organization.UrlKey == orgUrlKey).Select(absence =>
+                new EngagementReadModel(absence.Id, absence.Name, EngagementState.Absence, false)).ToList(), new List<EngagementReadModel>()); 
     }
     
     

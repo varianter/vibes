@@ -231,3 +231,10 @@ export interface WeeklyHours {
   /** @format double */
   hours: number;
 }
+
+export interface CustomersWithProjectsReadModel {
+  customerId: number;
+  customerName: string;
+  activeEngagements: EngagementReadModel[];
+  inactiveEngagements: EngagementReadModel[];
+}

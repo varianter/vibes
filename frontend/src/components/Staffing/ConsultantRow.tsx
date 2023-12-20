@@ -21,7 +21,7 @@ export default function ConsultantRows({
   const columnCount = consultant.bookings.length ?? 0;
 
   function toggleListElementVisibility() {
-    setIsListElementVisible(!isListElementVisible);
+    setIsListElementVisible((old) => !old);
   }
 
   const {

@@ -139,7 +139,7 @@ export function EditEngagementHourModal({
           } table-fixed`}
         >
           <colgroup>
-            <col span={1} className="w-8" />
+            <col span={1} className="w-10" />
             <col span={1} className="w-[190px]" />
             {selectedConsultants
               .at(0)

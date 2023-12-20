@@ -27,3 +27,10 @@ public record ProjectWithCustomerModel(
 
 public record UpdateProjectWriteModel(int EngagementId, EngagementState ProjectState, int StartYear, int StartWeek,
     int WeekSpan);
+
+
+public record CustomersWithProjectsReadModel(
+    [property: Required] int CustomerId,
+    [property: Required] string CustomerName,
+    [property: Required] List<EngagementReadModel> ActiveEngagements,
+    [property: Required] List<EngagementReadModel> InactiveEngagements);

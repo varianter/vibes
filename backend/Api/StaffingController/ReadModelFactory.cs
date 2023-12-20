@@ -71,7 +71,7 @@ public class ReadModelFactory
             GetBookedHours(week, detailedBookings, consultant)
         ).ToList();
 
-        //checks if the consultant has 0 availible hours each week
+        //checks if the consultant has 0 available hours each week
         var isOccupied = bookingSummary.All(b =>
            b.BookingModel.TotalSellableTime == 0);
 
@@ -128,7 +128,7 @@ public class ReadModelFactory
             .Where(absence => weekSet.Contains(absence.Week))
             .GroupBy(absence => absence.Absence.Name)
             .Select(grouping => new DetailedBooking(
-                new BookingDetails("", BookingType.PlannedAbsence,
+                new BookingDetails(grouping.Key, BookingType.PlannedAbsence,
                     grouping.Key,
                     grouping.First().Absence.Id), //Empty projectName as PlannedAbsence does not have a project
                 weekSet.Select(week =>
@@ -156,7 +156,7 @@ public class ReadModelFactory
                 consultant.Department.Organization.HoursPerWorkday
             )).ToList();
             detailedBookings = detailedBookings.Append(new DetailedBooking(
-                new BookingDetails("", BookingType.Vacation,
+                new BookingDetails("Ferie", BookingType.Vacation,
                     "Ferie",
                     0), //Empty projectName as vacation does not have a project, 0 as projectId as vacation is weird
                 vacationsPrWeek));
@@ -219,16 +219,45 @@ public class ReadModelFactory
                    .GetDatesInWorkWeek()[^1].ToString("dd.MM");
     }
 
-    public List<StaffingReadModel>? GetConsultantsReadModelsForProjectAndWeeks(string orgUrlKey, List<Week> weeks, int projectId)
+    public List<StaffingReadModel> GetConsultantsReadModelsForProjectAndWeeks(string orgUrlKey, List<Week> weeks, int projectId)
     {
         var firstDayInScope = weeks.First().FirstDayOfWorkWeek();
         var firstWorkDayOutOfScope = weeks.Last().LastWorkDayOfWeek();
 
-
-        return _storageService.LoadConsultants(orgUrlKey)
+        var activeConsultants = _storageService.LoadConsultants(orgUrlKey)
             .Where(c => c.EndDate == null || c.EndDate > firstDayInScope)
-            .Where(c => c.StartDate == null || c.StartDate < firstWorkDayOutOfScope).Where(c => c.Staffings.Any(s => s.EngagementId == projectId))
-            .Select(consultant => MapToReadModelList(consultant, weeks)).Where(s => s.DetailedBooking.Any(db=> db.BookingDetails.ProjectId == projectId && db.BookingDetails.Type == BookingType.Booking || db.BookingDetails.Type == BookingType.Offer))
+            .Where(c => c.StartDate == null || c.StartDate < firstWorkDayOutOfScope)
+            .Where(c => c.Staffings.Any(s => s.EngagementId == projectId && weeks.Contains(s.Week)));
+        
+        return activeConsultants
+            .Select(consultant => MapToReadModelList(consultant, weeks))
+            .Where(s => 
+                s.DetailedBooking
+                    .Any(db=> 
+                        db.BookingDetails.ProjectId == projectId 
+                        && db.BookingDetails.Type is BookingType.Booking or BookingType.Offer))
+            .ToList();
+    }
+
+    public List<StaffingReadModel> GetConsultantsReadModelsForAbsenceAndWeeks(string orgUrlKey, List<Week> weeks,
+        int absenceId)
+    {
+        var firstDayInScope = weeks.First().FirstDayOfWorkWeek();
+        var firstWorkDayOutOfScope = weeks.Last().LastWorkDayOfWeek();
+
+        var consultantsWithAbsenceInSelectedWeeks = _storageService.LoadConsultants(orgUrlKey)
+            .Where(c => c.EndDate == null || c.EndDate > firstDayInScope)
+            .Where(c => c.StartDate == null || c.StartDate < firstWorkDayOutOfScope)
+            .Where(c => 
+                c.PlannedAbsences
+                    .Any(pa => pa.AbsenceId == absenceId && weeks.Contains(pa.Week)));
+
+        return consultantsWithAbsenceInSelectedWeeks
+            .Select(consultant => MapToReadModelList(consultant, weeks))
+            .Where(s => 
+                s.DetailedBooking
+                    .Any(db=> db.BookingDetails.ProjectId == absenceId 
+                              && db.BookingDetails.Type == BookingType.PlannedAbsence ))
             .ToList();
     }
 }
