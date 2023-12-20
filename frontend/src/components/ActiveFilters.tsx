@@ -1,14 +1,15 @@
 "use client";
-import { Filter } from "react-feather";
-import { useUrlRouteFilter } from "@/hooks/staffing/useUrlRouteFilter";
 import { useDepartmentFilter } from "@/hooks/staffing/useDepartmentFilter";
 import { useYearsXpFilter } from "@/hooks/staffing/useYearsXpFilter";
 import { useAvailabilityFilter } from "@/hooks/staffing/useAvailabilityFilter";
+import { useContext } from "react";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
 export default function ActiveFilters() {
   const filterTextComponents: string[] = [];
+  const { activeFilters } = useContext(FilteredContext);
 
-  const { searchFilter } = useUrlRouteFilter();
+  const { searchFilter } = activeFilters;
   const { filteredDepartments } = useDepartmentFilter();
   const { filteredYears } = useYearsXpFilter();
   const { availabilityFilterOn } = useAvailabilityFilter();

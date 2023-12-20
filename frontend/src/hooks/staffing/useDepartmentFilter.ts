@@ -1,13 +1,13 @@
 import { DepartmentReadModel } from "@/api-types";
 import { useCallback, useContext, useEffect } from "react";
-import { useUrlRouteFilter } from "./useUrlRouteFilter";
 import { toggleValueFromFilter } from "./UrlStringFilter";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
 export function useDepartmentFilter() {
   const { departments } = useContext(FilteredContext);
-  const { departmentFilter, updateRoute } = useUrlRouteFilter();
-  const { isDisabledHotkeys } = useContext(FilteredContext);
+  const { isDisabledHotkeys, updateFilters, activeFilters } =
+    useContext(FilteredContext);
+  const departmentFilter = activeFilters.departmentFilter;
 
   const filteredDepartments = departmentFilter
     .split(",")
@@ -17,9 +17,9 @@ export function useDepartmentFilter() {
   const toggleDepartmentFilter = useCallback(
     (d: DepartmentReadModel) => {
       const newDepartmentFilter = toggleValueFromFilter(departmentFilter, d.id);
-      updateRoute({ departments: newDepartmentFilter });
+      updateFilters({ departments: newDepartmentFilter });
     },
-    [departmentFilter, updateRoute],
+    [departmentFilter, updateFilters],
   );
 
   // To handle hotkeys 0,1,2,... for departments
@@ -41,7 +41,7 @@ export function useDepartmentFilter() {
         handleDepartmentHotkey(e.code);
       }
       if (e.code.includes("0")) {
-        updateRoute({ departments: "" });
+        updateFilters({ departments: "" });
       }
     }
     document.addEventListener("keydown", keyDownHandler);
@@ -50,7 +50,7 @@ export function useDepartmentFilter() {
     return () => {
       document.removeEventListener("keydown", keyDownHandler);
     };
-  }, [updateRoute, departments, toggleDepartmentFilter, isDisabledHotkeys]);
+  }, [updateFilters, departments, toggleDepartmentFilter, isDisabledHotkeys]);
 
   return {
     departments,

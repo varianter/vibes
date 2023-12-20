@@ -2,11 +2,11 @@
 import ConsultantRows from "./Staffing/ConsultantRow";
 import { isCurrentWeek } from "@/hooks/staffing/dateTools";
 import { useConsultantsFilter } from "@/hooks/staffing/useConsultantsFilter";
-import { useUrlRouteFilter } from "@/hooks/staffing/useUrlRouteFilter";
 import InfoPill from "./Staffing/InfoPill";
 import { Calendar } from "react-feather";
 import StaffingSums from "./StaffingSums";
-import React from "react";
+import React, { useContext } from "react";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
 export default function StaffingTable() {
   const {
@@ -16,7 +16,7 @@ export default function StaffingTable() {
     weeklyInvoiceRates,
   } = useConsultantsFilter();
 
-  const { weekSpan } = useUrlRouteFilter();
+  const { weekSpan } = useContext(FilteredContext).activeFilters;
 
   return (
     <>

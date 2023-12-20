@@ -1,8 +1,11 @@
 import { DateTime } from "luxon";
-import { useUrlRouteFilter } from "./useUrlRouteFilter";
+import { useContext } from "react";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
 export function useSelectedWeek() {
-  const { updateRoute, selectedWeekFilter, weekSpan } = useUrlRouteFilter();
+  const { updateFilters, activeFilters } = useContext(FilteredContext);
+
+  const { selectedWeekFilter, weekSpan } = activeFilters;
 
   function changeSelectedWeek(numberOfWeeks: number) {
     const date = selectedWeekFilter
@@ -14,18 +17,18 @@ export function useSelectedWeek() {
 
     const newDate = date.plus({ week: numberOfWeeks });
 
-    updateRoute({
+    updateFilters({
       week: { year: newDate.year, weekNumber: newDate.weekNumber },
     });
   }
 
   function setWeekSpan(weekSpanString: string) {
     const weekSpanNum = parseInt(weekSpanString.split(" ")[0]);
-    updateRoute({ numWeeks: weekSpanNum });
+    updateFilters({ numWeeks: weekSpanNum });
   }
 
   function resetSelectedWeek() {
-    updateRoute({
+    updateFilters({
       week: {
         year: DateTime.now().year,
         weekNumber: DateTime.now().weekNumber,

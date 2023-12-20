@@ -2,14 +2,15 @@
 import { ArrowLeft, ArrowRight } from "react-feather";
 import { useSelectedWeek } from "@/hooks/staffing/useSelectedWeek";
 import DropDown from "./DropDown";
-import { useUrlRouteFilter } from "@/hooks/staffing/useUrlRouteFilter";
 import ActionButton from "./Buttons/ActionButton";
 import IconActionButton from "./Buttons/IconActionButton";
+import { useContext } from "react";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
 export default function WeekSelection() {
   const weekSpanOptions = ["8 uker", "12 uker", "26 uker"];
 
-  const { weekSpan } = useUrlRouteFilter();
+  const { weekSpan } = useContext(FilteredContext).activeFilters;
 
   const {
     decrementSelectedWeek,

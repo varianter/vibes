@@ -1,13 +1,14 @@
 "use client";
 
 import { YearRange } from "@/types";
-import { useCallback } from "react";
+import { useCallback, useContext } from "react";
 import { toggleValueFromFilter } from "./UrlStringFilter";
-import { useUrlRouteFilter } from "./useUrlRouteFilter";
 import { yearRanges } from "@/components/ExperienceFilter";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
 export function useYearsXpFilter() {
-  const { yearFilter, updateRoute } = useUrlRouteFilter();
+  const { updateFilters, activeFilters } = useContext(FilteredContext);
+  const { yearFilter } = activeFilters;
 
   const filteredYears = yearFilter
     .split(",")
@@ -17,14 +18,14 @@ export function useYearsXpFilter() {
   const toggleYearFilter = useCallback(
     (y: YearRange) => {
       const newYearFilter = toggleValueFromFilter(yearFilter, y.urlString);
-      updateRoute({ years: newYearFilter });
+      updateFilters({ years: newYearFilter });
     },
-    [updateRoute, yearFilter],
+    [updateFilters, yearFilter],
   );
 
   return {
     filteredYears,
     toggleYearFilter,
-    updateRoute,
+    updateRoute: updateFilters,
   };
 }
