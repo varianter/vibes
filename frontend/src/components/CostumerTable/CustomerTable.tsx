@@ -3,13 +3,13 @@ import { CustomersWithProjectsReadModel } from "@/api-types";
 import { Week } from "@/types";
 import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
-import InfoBox from "./InfoBox";
+import InfoBox from "../InfoBox";
 import EngagementRow from "./EngagementRow";
-import DropDown from "./DropDown";
-import ActionButton from "./Buttons/ActionButton";
-import IconActionButton from "./Buttons/IconActionButton";
+import DropDown from "../DropDown";
+import ActionButton from "../Buttons/ActionButton";
+import IconActionButton from "../Buttons/IconActionButton";
 import { ArrowLeft, ArrowRight } from "react-feather";
-import { generateWeekList } from "./Staffing/helpers/GenerateWeekList";
+import { generateWeekList } from "../Staffing/helpers/GenerateWeekList";
 
 export default function CustomerTable({
   customer,

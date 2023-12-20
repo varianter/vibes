@@ -1,5 +1,5 @@
 import { CustomersWithProjectsReadModel } from "@/api-types";
-import CustomerTable from "@/components/CustomerTable";
+import CustomerTable from "@/components/CostumerTable/CustomerTable";
 import { fetchWithToken } from "@/data/apiCallsWithToken";
 
 export default async function Kunde({

@@ -1,5 +1,5 @@
 import { EngagementPerCustomerReadModel, EngagementState } from "@/api-types";
-import CustomerRow from "@/components/CustomerRow";
+import CustomerRow from "@/components/CostumerTable/CustomerRow";
 import { fetchWithToken } from "@/data/apiCallsWithToken";
 
 export default async function Kunder({

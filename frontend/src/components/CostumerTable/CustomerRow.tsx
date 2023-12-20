@@ -6,8 +6,8 @@ import { ChevronDown } from "react-feather";
 import {
   getColorByStaffingType,
   getIconByBookingType,
-} from "./Staffing/helpers/utils";
-import { getBookingTypeFromProjectState } from "./Staffing/AddEngagementHoursModal/utils";
+} from "../Staffing/helpers/utils";
+import { getBookingTypeFromProjectState } from "../Staffing/AddEngagementHoursModal/utils";
 import Link from "next/link";
 
 export default function CostumerRow({

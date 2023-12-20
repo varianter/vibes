@@ -19,11 +19,13 @@ export function EditEngagementHoursRow({
   detailedBooking,
   consultants,
   setConsultants,
+  withBorder = false,
 }: {
   consultant: ConsultantReadModel;
   detailedBooking?: DetailedBooking;
   consultants: ConsultantReadModel[];
   setConsultants: React.Dispatch<React.SetStateAction<ConsultantReadModel[]>>;
+  withBorder?: boolean;
 }) {
   const [hourDragValue, setHourDragValue] = useState<number | undefined>(
     undefined,
@@ -39,7 +41,7 @@ export function EditEngagementHoursRow({
     <tr>
       {detailedBooking && (
         <>
-          <td className="border-l-secondary border-l-2">
+          <td className={`${withBorder && "border-l-secondary border-l-2"}`}>
             <div
               className={`flex justify-center items-center w-8 h-8 ${getColorByStaffingType(
                 detailedBooking.bookingDetails.type,

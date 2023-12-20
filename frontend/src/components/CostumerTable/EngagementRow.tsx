@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { ChevronDown } from "react-feather";
 import { Week } from "@/types";
 import { weekToString } from "@/data/urlUtils";
-import { EditEngagementHoursRow } from "./Staffing/EditEngagementHourModal/EditEngagementHoursRow";
+import { EditEngagementHoursRow } from "../Staffing/EditEngagementHourModal/EditEngagementHoursRow";
 import { DateTime } from "luxon";
 
 export default function EngagementRows({
@@ -105,13 +105,14 @@ export default function EngagementRows({
           <EditEngagementHoursRow
             key={consultant.id}
             consultant={consultant}
-            detailedBooking={
-              consultant.detailedBooking.filter(
+            detailedBooking={consultant.detailedBooking
+              .filter(
                 (db) => db.bookingDetails.projectId == engagement?.engagementId,
-              )[0]
-            }
+              )
+              .at(0)}
             consultants={selectedConsultants}
             setConsultants={setSelectedConsultants}
+            withBorder={true}
           />
         ))}
     </>
