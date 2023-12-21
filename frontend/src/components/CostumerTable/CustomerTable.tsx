@@ -1,5 +1,8 @@
 "use client";
-import { CustomersWithProjectsReadModel } from "@/api-types";
+import {
+  CustomersWithProjectsReadModel,
+  EngagementReadModel,
+} from "@/api-types";
 import EngagementRow from "./EngagementRow";
 import WeekSelector from "../WeekSelector";
 import { useWeekSelectors } from "@/hooks/useWeekSelectors";
@@ -59,14 +62,34 @@ export default function CustomerTable({
           selectedWeekSpan={selectedWeekSpan}
         />
 
-        <CustomerTableBody />
+        <tbody>
+          <EngagementsRows engagements={customer.activeEngagements} />
+
+          <tr>
+            <td colSpan={2}>
+              <div className="flex flex-row gap-3 py-2 items-center ">
+                <p className="normal-medium">Inaktive engasjement</p>
+                <p className="text-primary small-medium rounded-full bg-primary/5 px-2 py-1">
+                  {customer.inactiveEngagements?.length}
+                </p>
+              </div>
+            </td>
+          </tr>
+
+          <EngagementsRows engagements={customer.inactiveEngagements} />
+        </tbody>
       </table>
     </div>
   );
-  function CustomerTableBody() {
+
+  function EngagementsRows({
+    engagements,
+  }: {
+    engagements: EngagementReadModel[];
+  }) {
     return (
-      <tbody>
-        {customer.activeEngagements?.map((engagement) => (
+      <>
+        {engagements.map((engagement) => (
           <EngagementRow
             key={engagement.engagementId}
             engagement={engagement}
@@ -76,27 +99,7 @@ export default function CustomerTable({
             weekList={weekList}
           />
         ))}
-        <tr>
-          <td colSpan={2}>
-            <div className="flex flex-row gap-3 pb-4 items-center">
-              <p className="normal-medium ">Inaktive engasjement</p>
-              <p className="text-primary small-medium rounded-full bg-primary/5 px-2 py-1">
-                {customer.inactiveEngagements?.length}
-              </p>
-            </div>
-          </td>
-        </tr>
-        {customer.inactiveEngagements?.map((engagement) => (
-          <EngagementRow
-            key={engagement.engagementId}
-            engagement={engagement}
-            orgUrl={orgUrl}
-            selectedWeek={selectedWeek}
-            selectedWeekSpan={selectedWeekSpan}
-            weekList={weekList}
-          />
-        ))}
-      </tbody>
+      </>
     );
   }
 }
