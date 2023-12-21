@@ -2,15 +2,13 @@
 import { CustomersWithProjectsReadModel } from "@/api-types";
 import { Week } from "@/types";
 import { DateTime } from "luxon";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import EngagementRow from "./EngagementRow";
 import DropDown from "../DropDown";
 import ActionButton from "../Buttons/ActionButton";
 import IconActionButton from "../Buttons/IconActionButton";
 import { ArrowLeft, ArrowRight } from "react-feather";
 import { generateWeekList } from "../Staffing/helpers/GenerateWeekList";
-import ActiveFilters from "../ActiveFilters";
-import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { useDepartmentFilter } from "@/hooks/staffing/useDepartmentFilter";
 
 export default function CustomerTable({
