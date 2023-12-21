@@ -5,13 +5,14 @@ import {
   EngagementReadModel,
   EngagementState,
 } from "@/api-types";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ChevronDown } from "react-feather";
 import { Week } from "@/types";
 import { weekToString } from "@/data/urlUtils";
 import { EditEngagementHoursRow } from "../Staffing/EditEngagementHourModal/EditEngagementHoursRow";
 import { DateTime } from "luxon";
 import { getBookingTypeFromProjectState } from "../Staffing/AddEngagementHoursModal/utils";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
 export default function EngagementRows({
   engagement,
@@ -29,11 +30,17 @@ export default function EngagementRows({
   const [isListElementVisible, setIsListElementVisible] = useState(false);
   const [isRowHovered, setIsRowHovered] = useState(false);
 
+  const { activeFilters } = useContext(FilteredContext);
+
   function toggleListElementVisibility() {
     setIsListElementVisible((old) => !old);
   }
 
   const [selectedConsultants, setSelectedConsultants] = useState<
+    ConsultantReadModel[]
+  >([]);
+
+  const [filteredConsultants, setFilteredConsultants] = useState<
     ConsultantReadModel[]
   >([]);
 
@@ -50,6 +57,23 @@ export default function EngagementRows({
       ]);
     });
   }, [engagement, orgUrl, selectedWeek, selectedWeekSpan]);
+
+  useEffect(() => {
+    if (
+      activeFilters.departmentFilter &&
+      activeFilters.departmentFilter.length > 0
+    ) {
+      setFilteredConsultants(
+        selectedConsultants?.filter((consultant) =>
+          activeFilters.departmentFilter
+            .toLowerCase()
+            .includes(consultant.department.toLowerCase()),
+        ),
+      );
+    } else {
+      setFilteredConsultants(selectedConsultants);
+    }
+  }, [selectedConsultants, activeFilters.departmentFilter]);
 
   return (
     <>
@@ -86,7 +110,7 @@ export default function EngagementRows({
               {engagement.engagementName}
             </p>
             <p className="xsmall text-black/75 text-start">
-              {`${selectedConsultants.length} konsulenter - ${
+              {`${filteredConsultants.length} konsulenter - ${
                 engagement.isBillable ? "Fakturerbart" : "Ikke fakturerbart"
               }`}
             </p>
@@ -103,8 +127,8 @@ export default function EngagementRows({
         ))}
       </tr>
       {isListElementVisible &&
-        selectedConsultants &&
-        selectedConsultants.map((consultant) => (
+        filteredConsultants &&
+        filteredConsultants.map((consultant) => (
           <EditEngagementHoursRow
             key={consultant.id}
             consultant={consultant}

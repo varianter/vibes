@@ -2,13 +2,16 @@
 import { CustomersWithProjectsReadModel } from "@/api-types";
 import { Week } from "@/types";
 import { DateTime } from "luxon";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import EngagementRow from "./EngagementRow";
 import DropDown from "../DropDown";
 import ActionButton from "../Buttons/ActionButton";
 import IconActionButton from "../Buttons/IconActionButton";
 import { ArrowLeft, ArrowRight } from "react-feather";
 import { generateWeekList } from "../Staffing/helpers/GenerateWeekList";
+import ActiveFilters from "../ActiveFilters";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
+import { useDepartmentFilter } from "@/hooks/staffing/useDepartmentFilter";
 
 export default function CustomerTable({
   customer,
@@ -79,10 +82,21 @@ export default function CustomerTable({
     setSelectedWeekSpan(weekSpanNum);
   }
 
+  const { filteredDepartments } = useDepartmentFilter();
+
   return (
     <div className="main p-4 pt-5 w-full flex flex-col gap-8">
       <h1>{customer?.customerName}</h1>
-      <WeekSelection />
+      <div className="flex flex-row justify-between">
+        <div className="h-4">
+          {filteredDepartments.length > 0 && (
+            <p className="small-medium">
+              {` ${filteredDepartments.map((d) => d.name).join(", ")}`}
+            </p>
+          )}
+        </div>
+        <WeekSelection />
+      </div>
 
       <table
         className={`w-full ${

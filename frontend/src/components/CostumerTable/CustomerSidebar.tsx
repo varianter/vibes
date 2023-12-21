@@ -1,5 +1,6 @@
 import { CustomersWithProjectsReadModel } from "@/api-types";
 import InfoBox from "../InfoBox";
+import DepartmentFilter from "../DepartmentFilter";
 
 export default function CustomerSidebar({
   customer,
@@ -30,6 +31,7 @@ export default function CustomerSidebar({
             infoValue={customer?.inactiveEngagements?.length.toString()}
           />
         </div>
+        <DepartmentFilter />
       </div>
     </div>
   );
