@@ -1,17 +1,70 @@
+import { fetchPublicHolidays } from "@/hooks/fetchPublicHolidays";
 import { isCurrentWeek } from "@/hooks/staffing/dateTools";
 import { DateTime } from "luxon";
+import { useEffect, useState } from "react";
+import InfoPill from "./InfoPill";
+import { Calendar } from "react-feather";
+import { fetchWorkHoursPerWeek } from "@/hooks/fetchWorkHoursPerDay";
 
 export function WeekSpanTableHead({
   title,
   number,
   weekList,
   selectedWeekSpan,
+  orgUrl,
 }: {
   title: string;
   number: number;
   weekList: DateTime[];
   selectedWeekSpan: number;
+  orgUrl?: string;
 }) {
+  const [publicHolidays, setPublicHolidays] = useState<string[]>([]);
+
+  const [workHoursPerDay, setWorkHoursPerDay] = useState(7.5);
+
+  useEffect(() => {
+    orgUrl &&
+      fetchPublicHolidays(orgUrl).then((res) => {
+        if (res) {
+          setPublicHolidays(res);
+        }
+      });
+  }, [orgUrl]);
+
+  useEffect(() => {
+    orgUrl &&
+      fetchWorkHoursPerWeek(orgUrl).then((res) => {
+        if (res) {
+          setWorkHoursPerDay(res / 5); //Since the api call returns hours per week, its divided by 5
+        }
+      });
+  }, [orgUrl]);
+
+  function getHolidayHoursForWeek(firstDayofWeek: DateTime) {
+    var daySpan = [firstDayofWeek];
+    for (let i = 1; i < 5; i++) {
+      daySpan.push(firstDayofWeek.plus({ days: i }));
+    }
+
+    var publicHolidayHours = 0;
+
+    daySpan.forEach((day) => {
+      if (
+        publicHolidays.length > 0 &&
+        publicHolidays.includes(
+          `${day.year.toString()}-${
+            day.month > 9 ? day.month.toString() : "0" + day.month.toString()
+          }-${day.day > 9 ? day.day.toString() : "0" + day.day.toString()}`,
+        )
+      ) {
+        publicHolidayHours += workHoursPerDay;
+      }
+    });
+
+    return publicHolidayHours;
+  }
+
   return (
     <thead>
       <tr>
@@ -28,6 +81,14 @@ export function WeekSpanTableHead({
             <div className="flex flex-col gap-1">
               {isCurrentWeek(day.weekNumber, day.year) ? (
                 <div className="flex flex-row gap-2 items-center justify-end">
+                  {getHolidayHoursForWeek(day) > 0 && (
+                    <InfoPill
+                      text={getHolidayHoursForWeek(day).toFixed(1)}
+                      icon={<Calendar size="12" />}
+                      colors={"bg-holiday text-holiday_darker w-fit"}
+                      variant={selectedWeekSpan < 24 ? "wide" : "medium"}
+                    />
+                  )}
                   <div className="h-2 w-2 rounded-full bg-primary" />
 
                   <p className="normal-medium text-right">{day.weekNumber}</p>
@@ -40,6 +101,14 @@ export function WeekSpanTableHead({
                       : "flex-row gap-2"
                   }`}
                 >
+                  {getHolidayHoursForWeek(day) > 0 && (
+                    <InfoPill
+                      text={getHolidayHoursForWeek(day).toFixed(1)}
+                      icon={<Calendar size="12" />}
+                      colors={"bg-holiday text-holiday_darker w-fit"}
+                      variant={selectedWeekSpan < 24 ? "wide" : "medium"}
+                    />
+                  )}
                   <p className="normal text-right">{day.weekNumber}</p>
                 </div>
               )}

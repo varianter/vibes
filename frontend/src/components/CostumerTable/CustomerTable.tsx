@@ -60,6 +60,7 @@ export default function CustomerTable({
           number={customer?.activeEngagements?.length}
           weekList={weekList}
           selectedWeekSpan={selectedWeekSpan}
+          orgUrl={orgUrl}
         />
 
         <tbody>
