@@ -9,6 +9,7 @@ import ActionButton from "../Buttons/ActionButton";
 import IconActionButton from "../Buttons/IconActionButton";
 import { ArrowLeft, ArrowRight } from "react-feather";
 import { generateWeekList } from "../Staffing/helpers/GenerateWeekList";
+import { useDepartmentFilter } from "@/hooks/staffing/useDepartmentFilter";
 
 export default function CustomerTable({
   customer,
@@ -79,10 +80,21 @@ export default function CustomerTable({
     setSelectedWeekSpan(weekSpanNum);
   }
 
+  const { filteredDepartments } = useDepartmentFilter();
+
   return (
     <div className="main p-4 pt-5 w-full flex flex-col gap-8">
       <h1>{customer?.customerName}</h1>
-      <WeekSelection />
+      <div className="flex flex-row justify-between">
+        <div className="h-4">
+          {filteredDepartments.length > 0 && (
+            <p className="small-medium">
+              {` ${filteredDepartments.map((d) => d.name).join(", ")}`}
+            </p>
+          )}
+        </div>
+        <WeekSelection />
+      </div>
 
       <table
         className={`w-full ${

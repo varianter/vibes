@@ -64,7 +64,7 @@ export function useConsultantsFilter() {
   };
 }
 
-function filterConsultants({
+export function filterConsultants({
   search,
   departmentFilter,
   yearFilter,

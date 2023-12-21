@@ -1,5 +1,6 @@
 import { CustomersWithProjectsReadModel } from "@/api-types";
 import InfoBox from "../InfoBox";
+import DepartmentFilter from "../DepartmentFilter";
 
 export default function CustomerSidebar({
   customer,
@@ -10,8 +11,10 @@ export default function CustomerSidebar({
     <div className="sidebar z-10 h-full">
       <div className=" bg-primary/5 h-full flex flex-col gap-6 p-4 w-[300px]">
         <div className="flex flex-row justify-between items-center gap-6">
-          <h1 className="">Info</h1>
+          <h1 className="">Info og filter</h1>
         </div>
+        <DepartmentFilter />
+
         <div className="flex flex-col gap-2">
           <p className="small">Om</p>
           <InfoBox
