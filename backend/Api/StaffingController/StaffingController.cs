@@ -56,14 +56,26 @@ public class StaffingController : ControllerBase
         var weekSet = selectedWeek.GetNextWeeks(numberOfWeeks);
 
         var service = new StorageService(_cache, _context);
-        
-        if (isAbsence){
-            var absenceReadModel = new ReadModelFactory(service).GetConsultantsReadModelsForAbsenceAndWeeks(orgUrlKey, weekSet, projectId);
-            return Ok(absenceReadModel);
+
+        switch (isAbsence)
+        {
+            // -1 as projectId and isAbsence == true is a workaround to get vacations
+            case true when projectId == -1:
+            {
+                var vacationReadModel = new ReadModelFactory(service).GetConsultantsReadModelsForVacationsAndWeeks(orgUrlKey, weekSet);
+                return Ok(vacationReadModel);
+            }
+            case true:
+            {
+                var absenceReadModel = new ReadModelFactory(service).GetConsultantsReadModelsForAbsenceAndWeeks(orgUrlKey, weekSet, projectId);
+                return Ok(absenceReadModel);
+            }
+            default:
+            {
+                var readModels = new ReadModelFactory(service).GetConsultantsReadModelsForProjectAndWeeks(orgUrlKey, weekSet, projectId);
+                return Ok(readModels);
+            }
         }
-        
-        var readModels = new ReadModelFactory(service).GetConsultantsReadModelsForProjectAndWeeks(orgUrlKey, weekSet, projectId);
-        return Ok(readModels);
     }
     
 

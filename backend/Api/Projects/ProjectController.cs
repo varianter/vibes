@@ -89,7 +89,7 @@ public class ProjectController : ControllerBase
         
         var service = new StorageService(_cache, _context);
 
-        if (customerId == -1)
+        if (customerId == -1) //CustomerId == -1 means PlannedAbsences
             return Ok(HandleGetAbsenceWithAbsences(orgUrlKey));
         
         var customer = service.GetCustomerFromId(orgUrlKey, customerId);
@@ -269,9 +269,14 @@ public class ProjectController : ControllerBase
 
     private CustomersWithProjectsReadModel HandleGetAbsenceWithAbsences(string orgUrlKey)
     {
-        return new CustomersWithProjectsReadModel(-1, AbsenceCustomerName,
-            _context.Absence.Where(a=> a.Organization.UrlKey == orgUrlKey).Select(absence =>
+        var vacation = new EngagementReadModel(-1, "Ferie", EngagementState.Absence, false);
+
+        var readModel = new CustomersWithProjectsReadModel(-1, AbsenceCustomerName + "og Ferie",
+            _context.Absence.Where(a => a.Organization.UrlKey == orgUrlKey).Select(absence =>
                 new EngagementReadModel(absence.Id, absence.Name, EngagementState.Absence, false)).ToList(), new List<EngagementReadModel>()); 
+
+        readModel.ActiveEngagements.Add(vacation);
+        return readModel;
     }
     
     
