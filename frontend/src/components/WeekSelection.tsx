@@ -5,7 +5,7 @@ import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import WeekSelector from "./WeekSelector";
 
 export default function WeekSelection() {
-  const weekSpanOptions = ["8 uker", "12 uker", "26 uker"];
+  const weekSpanOptions = [8, 12, 26];
 
   const { weekSpan } = useContext(FilteredContext).activeFilters;
 

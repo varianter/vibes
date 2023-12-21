@@ -22,9 +22,8 @@ export function useSelectedWeek() {
     });
   }
 
-  function setWeekSpan(weekSpanString: string) {
-    const weekSpanNum = parseInt(weekSpanString.split(" ")[0]);
-    updateFilters({ numWeeks: weekSpanNum });
+  function setWeekSpan(weekSpanNumb: number) {
+    updateFilters({ numWeeks: weekSpanNumb });
   }
 
   function resetSelectedWeek() {

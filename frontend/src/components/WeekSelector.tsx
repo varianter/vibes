@@ -26,7 +26,7 @@ export default function WeekSelector({
   }
 
   const weekSpanStringOptions = weekSpanOptions.map(
-    (number) => number + "uker",
+    (number) => number + " uker",
   );
 
   return (
