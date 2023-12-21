@@ -21,9 +21,9 @@ export default function CustomerTable({
     weekList,
     selectedWeekSpan,
     resetSelectedWeek,
+    setSelectedWeekSpan,
     incrementSelectedWeek,
     decrementSelectedWeek,
-    setWeekSpan,
   } = useWeekSelectors();
 
   return (
@@ -32,7 +32,7 @@ export default function CustomerTable({
       <WeekSelector
         weekSpan={selectedWeekSpan}
         weekSpanOptions={weekSpanOptions}
-        setWeekSpan={setWeekSpan}
+        setWeekSpan={setSelectedWeekSpan}
         resetSelectedWeek={resetSelectedWeek}
         decrementSelectedWeek={decrementSelectedWeek}
         incrementSelectedWeek={incrementSelectedWeek}

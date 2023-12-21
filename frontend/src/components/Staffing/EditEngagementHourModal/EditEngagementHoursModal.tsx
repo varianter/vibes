@@ -27,7 +27,7 @@ export function EditEngagementHourModal({
     resetSelectedWeek,
     incrementSelectedWeek,
     decrementSelectedWeek,
-    setWeekSpan,
+    setSelectedWeekSpan,
   } = useWeekSelectors();
 
   const { setIsDisabledHotkeys } = useContext(FilteredContext);
@@ -77,7 +77,7 @@ export function EditEngagementHourModal({
         <WeekSelector
           weekSpan={selectedWeekSpan}
           weekSpanOptions={weekSpanOptions}
-          setWeekSpan={setWeekSpan}
+          setWeekSpan={setSelectedWeekSpan}
           resetSelectedWeek={resetSelectedWeek}
           decrementSelectedWeek={decrementSelectedWeek}
           incrementSelectedWeek={incrementSelectedWeek}

@@ -4,7 +4,7 @@ import { Week } from "@/types";
 import { generateWeekList } from "@/components/Staffing/helpers/GenerateWeekList";
 
 export function useWeekSelectors() {
-  const weekSpanOptions = ["8 uker", "12 uker", "26 uker"];
+  const weekSpanOptions = [8, 12, 26];
   const [selectedWeekSpan, setSelectedWeekSpan] = useState<number>(8);
   const [selectedWeek, setSelectedWeek] = useState<Week>({
     year: DateTime.now().year,
@@ -61,11 +61,6 @@ export function useWeekSelectors() {
     changeSelectedWeek(-(selectedWeekSpan - 1));
   }
 
-  function setWeekSpan(weekSpanString: string) {
-    const weekSpanNum = parseInt(weekSpanString.split(" ")[0]);
-    setSelectedWeekSpan(weekSpanNum);
-  }
-
   return {
     selectedWeek,
     weekSpanOptions,
@@ -75,6 +70,6 @@ export function useWeekSelectors() {
     resetSelectedWeek,
     incrementSelectedWeek,
     decrementSelectedWeek,
-    setWeekSpan,
+    setSelectedWeekSpan,
   };
 }

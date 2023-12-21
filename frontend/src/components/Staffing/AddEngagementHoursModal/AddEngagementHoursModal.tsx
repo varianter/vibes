@@ -32,7 +32,7 @@ export function AddEngagementHoursModal({
     resetSelectedWeek,
     incrementSelectedWeek,
     decrementSelectedWeek,
-    setWeekSpan,
+    setSelectedWeekSpan,
   } = useWeekSelectors();
 
   const { consultants, setIsDisabledHotkeys } = useContext(FilteredContext);
@@ -103,7 +103,7 @@ export function AddEngagementHoursModal({
         <WeekSelector
           weekSpan={selectedWeekSpan}
           weekSpanOptions={weekSpanOptions}
-          setWeekSpan={setWeekSpan}
+          setWeekSpan={setSelectedWeekSpan}
           resetSelectedWeek={resetSelectedWeek}
           decrementSelectedWeek={decrementSelectedWeek}
           incrementSelectedWeek={incrementSelectedWeek}

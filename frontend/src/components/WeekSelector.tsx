@@ -3,6 +3,15 @@ import ActionButton from "./Buttons/ActionButton";
 import IconActionButton from "./Buttons/IconActionButton";
 import DropDown from "./DropDown";
 
+type WeekSelectorProps = {
+  weekSpan: number;
+  weekSpanOptions: number[];
+  setWeekSpan: (weekSpanNumber: number) => void;
+  resetSelectedWeek: () => void;
+  decrementSelectedWeek: () => void;
+  incrementSelectedWeek: () => void;
+};
+
 export default function WeekSelector({
   weekSpanOptions,
   weekSpan,
@@ -10,20 +19,24 @@ export default function WeekSelector({
   resetSelectedWeek,
   decrementSelectedWeek,
   incrementSelectedWeek,
-}: {
-  weekSpan: number;
-  weekSpanOptions: string[];
-  setWeekSpan: (weekSpanString: string) => void;
-  resetSelectedWeek: () => void;
-  decrementSelectedWeek: () => void;
-  incrementSelectedWeek: () => void;
-}) {
+}: WeekSelectorProps) {
+  function getNumberFromWeekspan(weekSpanString: string) {
+    const weekSpanNum = parseInt(weekSpanString.split(" ")[0]);
+    setWeekSpan(weekSpanNum);
+  }
+
+  const weekSpanStringOptions = weekSpanOptions.map(
+    (number) => number + "uker",
+  );
+
   return (
     <div className="flex flex-row gap-2 justify-end">
       <DropDown
-        startingOption={weekSpan ? weekSpan + " uker" : weekSpanOptions[0]}
-        dropDownOptions={weekSpanOptions}
-        dropDownFunction={setWeekSpan}
+        startingOption={
+          weekSpan ? weekSpan + " uker" : weekSpanStringOptions[0]
+        }
+        dropDownOptions={weekSpanStringOptions}
+        dropDownFunction={getNumberFromWeekspan}
       />
       <ActionButton variant="secondary" onClick={resetSelectedWeek}>
         Nåværende uke
