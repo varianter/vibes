@@ -13,6 +13,7 @@ import { EditEngagementHoursRow } from "../Staffing/EditEngagementHourModal/Edit
 import { DateTime } from "luxon";
 import { getBookingTypeFromProjectState } from "../Staffing/AddEngagementHoursModal/utils";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
+import { filterConsultants } from "@/hooks/staffing/useConsultantsFilter";
 
 export default function EngagementRows({
   engagement,
@@ -59,20 +60,15 @@ export default function EngagementRows({
   }, [engagement, orgUrl, selectedWeek, selectedWeekSpan]);
 
   useEffect(() => {
-    if (
-      activeFilters.departmentFilter &&
-      activeFilters.departmentFilter.length > 0
-    ) {
-      setFilteredConsultants(
-        selectedConsultants?.filter((consultant) =>
-          activeFilters.departmentFilter
-            .toLowerCase()
-            .includes(consultant.department.toLowerCase()),
-        ),
-      );
-    } else {
-      setFilteredConsultants(selectedConsultants);
-    }
+    setFilteredConsultants(
+      filterConsultants({
+        search: "",
+        departmentFilter: activeFilters.departmentFilter,
+        yearFilter: [],
+        consultants: selectedConsultants,
+        availabilityFilterOn: false,
+      }),
+    );
   }, [selectedConsultants, activeFilters.departmentFilter]);
 
   return (
