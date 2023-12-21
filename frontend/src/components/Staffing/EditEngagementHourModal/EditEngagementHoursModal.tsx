@@ -103,6 +103,7 @@ export function EditEngagementHourModal({
             number={selectedConsultants?.length}
             weekList={weekList}
             selectedWeekSpan={selectedWeekSpan}
+            orgUrl={organisationUrl}
           />
           <tbody>
             {selectedConsultants?.map((consultant) => (
