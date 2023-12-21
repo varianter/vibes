@@ -271,7 +271,7 @@ public class ProjectController : ControllerBase
     {
         var vacation = new EngagementReadModel(-1, "Ferie", EngagementState.Absence, false);
 
-        var readModel = new CustomersWithProjectsReadModel(-1, AbsenceCustomerName + "og Ferie",
+        var readModel = new CustomersWithProjectsReadModel(-1, AbsenceCustomerName + " og Ferie",
             _context.Absence.Where(a => a.Organization.UrlKey == orgUrlKey).Select(absence =>
                 new EngagementReadModel(absence.Id, absence.Name, EngagementState.Absence, false)).ToList(), new List<EngagementReadModel>()); 
 
