@@ -28,7 +28,7 @@ export function AddEngagementForm({
     selectedConsultants: ConsultantReadModel[],
   ) => void;
   easyModalRef: RefObject<HTMLDialogElement>;
-  consultant: ConsultantReadModel;
+  consultant?: ConsultantReadModel;
 }) {
   const { customers, consultants, setIsDisabledHotkeys } =
     useContext(FilteredContext);
@@ -42,12 +42,14 @@ export function AddEngagementForm({
     useState<SelectOption | null>(null);
 
   const selectedConsultant: SelectOption = {
-    value: consultant.id.toString(),
-    label: consultant.name,
+    value: consultant?.id.toString() || "",
+    label: consultant?.name || "",
   };
 
   const [selectedConsultants, setSelectedConsultants] =
-    useState<MultiValue<SelectOption> | null>([selectedConsultant]);
+    useState<MultiValue<SelectOption> | null>(
+      consultant ? [selectedConsultant] : [],
+    );
 
   const [_, setProject] = useState<ProjectWithCustomerModel | undefined>();
 
@@ -163,7 +165,7 @@ export function AddEngagementForm({
   function resetSelectedValues() {
     setSelectedCustomer(null);
     setSelectedEngagement(null);
-    setSelectedConsultants([selectedConsultant]);
+    setSelectedConsultants(consultant ? [selectedConsultant] : []);
     setRadioValue(EngagementState.Offer);
     setIsFakturerbar(true);
   }

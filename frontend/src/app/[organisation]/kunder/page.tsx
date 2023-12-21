@@ -1,6 +1,13 @@
-import { EngagementPerCustomerReadModel, EngagementState } from "@/api-types";
+import {
+  ConsultantReadModel,
+  DepartmentReadModel,
+  EngagementPerCustomerReadModel,
+  EngagementState,
+} from "@/api-types";
+import AddEngagementButton from "@/components/AddEngagementButton";
 import CustomerRow from "@/components/CostumerTable/CustomerRow";
 import { fetchWithToken } from "@/data/apiCallsWithToken";
+import { ConsultantFilterProvider } from "@/hooks/ConsultantFilterProvider";
 
 export default async function Kunder({
   params,
@@ -20,11 +27,29 @@ export default async function Kunder({
     (c) => c.engagements.at(0)?.bookingType == EngagementState.Absence,
   );
 
+  const consultants =
+    (await fetchWithToken<ConsultantReadModel[]>(
+      `${params.organisation}/staffings`,
+    )) ?? [];
+
+  const departments =
+    (await fetchWithToken<DepartmentReadModel[]>(
+      `organisations/${params.organisation}/departments`,
+    )) ?? [];
+
   return (
-    <>
+    <ConsultantFilterProvider
+      consultants={consultants}
+      departments={departments}
+      customers={customers}
+    >
       <Sidebar />
       <div className="main p-4 pt-5 w-full flex flex-col gap-8">
-        <h1>Kunder</h1>
+        <div className="flex flex-row justify-between">
+          <h1>Kunder</h1>
+
+          <AddEngagementButton />
+        </div>
 
         <CustomerTable
           title={"Kunder"}
@@ -34,7 +59,7 @@ export default async function Kunder({
         />
         <CustomerTable title={"Permisjoner"} customers={absence} />
       </div>
-    </>
+    </ConsultantFilterProvider>
   );
 
   function Sidebar() {
