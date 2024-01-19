@@ -14,7 +14,7 @@ namespace Api.Projects;
 [ApiController]
 public class ProjectController : ControllerBase
 {
-    private const string AbsenceCustomerName = "Permisjoner";
+    private const string AbsenceCustomerName = "Variant - Fravær";
 
     private readonly IMemoryCache _cache;
     private readonly ApplicationContext _context;
