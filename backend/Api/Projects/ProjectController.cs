@@ -71,7 +71,8 @@ public class ProjectController : ControllerBase
             .ToList();
 
         projectReadModels.Add(absenceReadModels);
-        return projectReadModels;
+        List<EngagementPerCustomerReadModel> sortedProjectReadModels = projectReadModels.OrderBy(project => project.CustomerName).ToList();
+        return sortedProjectReadModels;
     }
     
     
@@ -220,7 +221,7 @@ public class ProjectController : ControllerBase
         if (selectedOrg is null) return BadRequest("Selected org not found");
 
         if (body.CustomerName == AbsenceCustomerName)
-            return Ok(HandleAbsenceChange(orgUrlKey, body));
+            return Ok(HandleAbsenceChange(body));
 
         var customer = service.UpdateOrCreateCustomer(selectedOrg, body.CustomerName, orgUrlKey);
 
@@ -255,13 +256,14 @@ public class ProjectController : ControllerBase
 
         return Ok(responseModel);
     }
+    
+    
+    
+    
 
-
-    private ProjectWithCustomerModel HandleAbsenceChange(string orgUrlKey, EngagementWriteModel body)
+    private ProjectWithCustomerModel HandleAbsenceChange(EngagementWriteModel body)
     {
-        var absence = _context.Absence.Include(a => a.Organization)
-            .Single(a => a.Name == body.ProjectName && a.Organization.UrlKey == orgUrlKey);
-
+        var absence = _context.Absence.Single(a => a.Name == body.ProjectName);
         return new ProjectWithCustomerModel(absence.Name, AbsenceCustomerName, EngagementState.Absence, false,
             absence.Id);
     }
@@ -277,4 +279,8 @@ public class ProjectController : ControllerBase
         readModel.ActiveEngagements.Add(vacation);
         return readModel;
     }
+    
+    
+    
+    
 }
