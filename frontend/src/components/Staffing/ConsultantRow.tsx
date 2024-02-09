@@ -106,11 +106,12 @@ export default function ConsultantRows({
             </p>
           </div>
           {isListElementVisible && (
-          <EditEngagementHourModal
-            modalRef={changeEngagementModalRef}
-            project={selectedProject}
-            onClose={onCloseEngagementModal}
-          />)}
+            <EditEngagementHourModal
+              modalRef={changeEngagementModalRef}
+              project={selectedProject}
+              onClose={onCloseEngagementModal}
+            />
+          )}
         </td>
         {consultant.bookings.map((b, index) => (
           <WeekCell
