@@ -43,17 +43,14 @@ export default function CustomerTable({
           )}
         </div>
         <WeekSelector
-        weekSpan={selectedWeekSpan}
-        weekSpanOptions={weekSpanOptions}
-        setWeekSpan={setSelectedWeekSpan}
-        resetSelectedWeek={resetSelectedWeek}
-        decrementSelectedWeek={decrementSelectedWeek}
-        incrementSelectedWeek={incrementSelectedWeek}
-      /> 
+          weekSpan={selectedWeekSpan}
+          weekSpanOptions={weekSpanOptions}
+          setWeekSpan={setSelectedWeekSpan}
+          resetSelectedWeek={resetSelectedWeek}
+          decrementSelectedWeek={decrementSelectedWeek}
+          incrementSelectedWeek={incrementSelectedWeek}
+        />
       </div>
-
-      
-
 
       <table
         className={`w-full ${
