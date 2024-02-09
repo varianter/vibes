@@ -6,7 +6,7 @@ import {
 } from "@/api-types";
 import { LargeModal } from "@/components/Modals/LargeModal";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { AddConsultantCell } from "../AddConsultantCell";
 import { SelectOption } from "../../ComboBox";
 import { ConsultantWithWeekHours } from "@/types";
@@ -87,6 +87,10 @@ export function AddEngagementHoursModal({
 
   const router = useRouter();
 
+  const pathname = usePathname();
+
+  const orgUrl = pathname.split("/")[1] || "";
+
   return (
     <LargeModal
       modalRef={modalRef}
@@ -129,6 +133,7 @@ export function AddEngagementHoursModal({
             number={selectedConsultants?.length}
             weekList={weekList}
             selectedWeekSpan={selectedWeekSpan}
+            orgUrl={orgUrl}
           />
 
           <tbody>

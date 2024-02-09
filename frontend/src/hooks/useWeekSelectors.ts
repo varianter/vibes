@@ -24,10 +24,12 @@ export function useWeekSelectors() {
   useEffect(() => {
     setWeekList(
       generateWeekList(
-        DateTime.now().set({
-          weekYear: selectedWeek.year,
-          weekNumber: selectedWeek.weekNumber,
-        }),
+        DateTime.now()
+          .set({
+            weekYear: selectedWeek.year,
+            weekNumber: selectedWeek.weekNumber,
+          })
+          .startOf("week"),
         selectedWeekSpan,
       ),
     );
