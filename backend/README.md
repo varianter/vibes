@@ -6,7 +6,7 @@
 ## Config and run
 ```shell
 # Copy the template file and fill the missing fields:
-cd backend/
+cd Api/
 cp appsettings.Local.json.template appsettings.Local.json
 
 
@@ -21,7 +21,7 @@ dotnet ef database update --startup-project Api/ --project Database/
 
 # Start the web-server by either using the IDE launcher (launchSettings.json): Api:http
 # ...or manually by terminal 
-cd backend/Api
+cd Api
 dotnet run
 ```
 
