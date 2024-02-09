@@ -105,11 +105,12 @@ export default function ConsultantRows({
               {`${consultant.yearsOfExperience} års erfaring`}
             </p>
           </div>
+          {isListElementVisible && (
           <EditEngagementHourModal
             modalRef={changeEngagementModalRef}
             project={selectedProject}
             onClose={onCloseEngagementModal}
-          />
+          />)}
         </td>
         {consultant.bookings.map((b, index) => (
           <WeekCell
