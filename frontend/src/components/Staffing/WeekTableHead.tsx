@@ -24,21 +24,18 @@ export function WeekSpanTableHead({
   const [workHoursPerDay, setWorkHoursPerDay] = useState(7.5);
 
   useEffect(() => {
-    orgUrl &&
+    if (orgUrl) {
       fetchPublicHolidays(orgUrl).then((res) => {
         if (res) {
           setPublicHolidays(res);
         }
       });
-  }, [orgUrl]);
-
-  useEffect(() => {
-    orgUrl &&
       fetchWorkHoursPerWeek(orgUrl).then((res) => {
         if (res) {
           setWorkHoursPerDay(res / 5); //Since the api call returns hours per week, its divided by 5
         }
       });
+    }
   }, [orgUrl]);
 
   function getHolidayHoursForWeek(firstDayofWeek: DateTime) {
