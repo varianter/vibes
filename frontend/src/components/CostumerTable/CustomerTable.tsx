@@ -4,9 +4,11 @@ import {
   EngagementReadModel,
 } from "@/api-types";
 import EngagementRow from "./EngagementRow";
+import { useDepartmentFilter } from "@/hooks/staffing/useDepartmentFilter";
 import WeekSelector from "../WeekSelector";
 import { useWeekSelectors } from "@/hooks/useWeekSelectors";
 import { WeekSpanTableHead } from "../Staffing/WeekTableHead";
+import WeekSelection from "../WeekSelection";
 
 export default function CustomerTable({
   customer,
@@ -26,17 +28,29 @@ export default function CustomerTable({
     decrementSelectedWeek,
   } = useWeekSelectors();
 
+  const { filteredDepartments } = useDepartmentFilter();
+
   return (
     <div className="main p-4 pt-5 w-full flex flex-col gap-8">
       <h1>{customer?.customerName}</h1>
-      <WeekSelector
-        weekSpan={selectedWeekSpan}
-        weekSpanOptions={weekSpanOptions}
-        setWeekSpan={setSelectedWeekSpan}
-        resetSelectedWeek={resetSelectedWeek}
-        decrementSelectedWeek={decrementSelectedWeek}
-        incrementSelectedWeek={incrementSelectedWeek}
-      />
+
+      <div className="flex flex-row justify-between">
+        <div className="h-4">
+          {filteredDepartments.length > 0 && (
+            <p className="small-medium">
+              {` ${filteredDepartments.map((d) => d.name).join(", ")}`}
+            </p>
+          )}
+        </div>
+        <WeekSelector
+          weekSpan={selectedWeekSpan}
+          weekSpanOptions={weekSpanOptions}
+          setWeekSpan={setSelectedWeekSpan}
+          resetSelectedWeek={resetSelectedWeek}
+          decrementSelectedWeek={decrementSelectedWeek}
+          incrementSelectedWeek={incrementSelectedWeek}
+        />
+      </div>
 
       <table
         className={`w-full ${
