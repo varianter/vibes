@@ -32,7 +32,7 @@ public class ReadModelFactory
         var readModel = MapToReadModelList(consultant, new List<Week> { week });
 
         return new StaffingReadModel(consultant, new List<BookedHoursPerWeek> { readModel.Bookings.First() },
-             readModel.DetailedBooking.ToList(), readModel.IsOccupied);
+            readModel.DetailedBooking.ToList(), readModel.IsOccupied);
     }
 
     public StaffingReadModel GetConsultantReadModelForWeeks(int consultantId, List<Week> weeks)
@@ -73,7 +73,7 @@ public class ReadModelFactory
 
         //checks if the consultant has 0 available hours each week
         var isOccupied = bookingSummary.All(b =>
-           b.BookingModel.TotalSellableTime == 0);
+            b.BookingModel.TotalSellableTime == 0);
 
         return new StaffingReadModel(
             consultant,
@@ -98,7 +98,8 @@ public class ReadModelFactory
             .Where(staffing => weekSet.Contains(staffing.Week))
             .GroupBy(staffing => staffing.Engagement.Id)
             .Select(grouping => new DetailedBooking(
-                new BookingDetails(grouping.First().Engagement.Name, BookingType.Booking, grouping.First().Engagement.Customer.Name,
+                new BookingDetails(grouping.First().Engagement.Name, BookingType.Booking,
+                    grouping.First().Engagement.Customer.Name,
                     grouping.Key, grouping.First().Engagement.IsBillable),
                 weekSet.Select(week =>
                     new WeeklyHours(
@@ -113,7 +114,8 @@ public class ReadModelFactory
             .Where(staffing => weekSet.Contains(staffing.Week))
             .GroupBy(staffing => staffing.Engagement.Id)
             .Select(grouping => new DetailedBooking(
-                new BookingDetails(grouping.First().Engagement.Name, BookingType.Offer, grouping.First().Engagement.Customer.Name,
+                new BookingDetails(grouping.First().Engagement.Name, BookingType.Offer,
+                    grouping.First().Engagement.Customer.Name,
                     grouping.Key, grouping.First().Engagement.IsBillable),
                 weekSet.Select(week =>
                     new WeeklyHours(
@@ -177,7 +179,8 @@ public class ReadModelFactory
             DetailedBooking.GetTotalHoursPrBookingTypeAndWeek(detailedBookingsArray, BookingType.Booking,
                 week, true);
 
-        var totalNonBillable = DetailedBooking.GetTotalHoursPrBookingTypeAndWeek(detailedBookingsArray, BookingType.Booking,
+        var totalNonBillable = DetailedBooking.GetTotalHoursPrBookingTypeAndWeek(detailedBookingsArray,
+            BookingType.Booking,
             week, true, false);
 
         var totalOffered = DetailedBooking.GetTotalHoursPrBookingTypeAndWeek(detailedBookingsArray,
@@ -219,7 +222,8 @@ public class ReadModelFactory
                    .GetDatesInWorkWeek()[^1].ToString("dd.MM");
     }
 
-    public List<StaffingReadModel> GetConsultantsReadModelsForProjectAndWeeks(string orgUrlKey, List<Week> weeks, int projectId)
+    public List<StaffingReadModel> GetConsultantsReadModelsForProjectAndWeeks(string orgUrlKey, List<Week> weeks,
+        int projectId)
     {
         var firstDayInScope = weeks.First().FirstDayOfWorkWeek();
         var firstWorkDayOutOfScope = weeks.Last().LastWorkDayOfWeek();
@@ -228,13 +232,13 @@ public class ReadModelFactory
             .Where(c => c.EndDate == null || c.EndDate > firstDayInScope)
             .Where(c => c.StartDate == null || c.StartDate < firstWorkDayOutOfScope)
             .Where(c => c.Staffings.Any(s => s.EngagementId == projectId && weeks.Contains(s.Week)));
-        
+
         return activeConsultants
             .Select(consultant => MapToReadModelList(consultant, weeks))
-            .Where(s => 
+            .Where(s =>
                 s.DetailedBooking
-                    .Any(db=> 
-                        db.BookingDetails.ProjectId == projectId 
+                    .Any(db =>
+                        db.BookingDetails.ProjectId == projectId
                         && db.BookingDetails.Type is BookingType.Booking or BookingType.Offer))
             .ToList();
     }
@@ -248,16 +252,37 @@ public class ReadModelFactory
         var consultantsWithAbsenceInSelectedWeeks = _storageService.LoadConsultants(orgUrlKey)
             .Where(c => c.EndDate == null || c.EndDate > firstDayInScope)
             .Where(c => c.StartDate == null || c.StartDate < firstWorkDayOutOfScope)
-            .Where(c => 
+            .Where(c =>
                 c.PlannedAbsences
                     .Any(pa => pa.AbsenceId == absenceId && weeks.Contains(pa.Week)));
 
         return consultantsWithAbsenceInSelectedWeeks
             .Select(consultant => MapToReadModelList(consultant, weeks))
-            .Where(s => 
+            .Where(s =>
                 s.DetailedBooking
-                    .Any(db=> db.BookingDetails.ProjectId == absenceId 
-                              && db.BookingDetails.Type == BookingType.PlannedAbsence ))
+                    .Any(db => db.BookingDetails.ProjectId == absenceId
+                               && db.BookingDetails.Type == BookingType.PlannedAbsence))
+            .ToList();
+    }
+
+
+    public List<StaffingReadModel> GetConsultantsReadModelsForVacationsAndWeeks(string orgUrlKey, List<Week> weeks)
+    {
+        var firstDayInScope = weeks.First().FirstDayOfWorkWeek();
+        var firstWorkDayOutOfScope = weeks.Last().LastWorkDayOfWeek();
+
+        var consultantsWithAbsenceInSelectedWeeks = _storageService.LoadConsultants(orgUrlKey)
+            .Where(c => c.EndDate == null || c.EndDate > firstDayInScope)
+            .Where(c => c.StartDate == null || c.StartDate < firstWorkDayOutOfScope)
+            .Where(c =>
+                c.Vacations
+                    .Any(vacation => weeks.Any(week => week.ContainsDate(vacation.Date))));
+
+        return consultantsWithAbsenceInSelectedWeeks
+            .Select(consultant => MapToReadModelList(consultant, weeks))
+            .Where(s =>
+                s.DetailedBooking
+                    .Any(db => db.BookingDetails.Type == BookingType.Vacation))
             .ToList();
     }
 }

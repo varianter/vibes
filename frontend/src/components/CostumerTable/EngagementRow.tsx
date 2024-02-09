@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  BookingType,
   ConsultantReadModel,
   EngagementReadModel,
   EngagementState,
@@ -131,9 +132,10 @@ export default function EngagementRows({
             detailedBooking={consultant.detailedBooking
               .filter(
                 (db) =>
-                  db.bookingDetails.projectId == engagement?.engagementId &&
-                  db.bookingDetails.type ==
-                    getBookingTypeFromProjectState(engagement.bookingType),
+                  (db.bookingDetails.projectId == engagement?.engagementId &&
+                    db.bookingDetails.type ==
+                      getBookingTypeFromProjectState(engagement.bookingType)) ||
+                  db.bookingDetails.type == BookingType.Vacation,
               )
               .at(0)}
             consultants={selectedConsultants}

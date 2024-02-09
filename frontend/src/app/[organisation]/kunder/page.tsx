@@ -32,7 +32,7 @@ export default async function Kunder({
             a.customerName.localeCompare(b.customerName),
           )}
         />
-        <CustomerTable title={"Permisjoner"} customers={absence} />
+        <CustomerTable title={"Permisjoner og ferie"} customers={absence} />
       </div>
     </>
   );
