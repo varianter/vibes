@@ -30,6 +30,18 @@ public class StorageService
 
     }
 
+    public List<Consultant> GetConsultantsEmploymentVariant(string orgUrlKey)
+    {
+
+        var consultants = _dbContext.Consultant
+            .Include(c => c.Department)
+            .ThenInclude(d => d.Organization)
+            .Where(c => c.Department.Organization.UrlKey == orgUrlKey)
+            .ToList();
+
+        return consultants;
+    }
+
     public void ClearConsultantCache(string orgUrlKey)
     {
         _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");

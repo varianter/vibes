@@ -25,3 +25,18 @@ public record SingleConsultantReadModel([property: Required] int Id,
     {
     }
 }
+
+public record ConsultantsEmploymentReadModel(
+    [property: Required] string Email,
+    [property: Required] DateOnly? StartDate,
+    [property: Required] DateOnly? EndDate)
+{
+    public ConsultantsEmploymentReadModel(Consultant consultant)
+        : this(
+            consultant.Email,
+            consultant.StartDate,
+            consultant.EndDate
+        )
+    {
+    }
+}

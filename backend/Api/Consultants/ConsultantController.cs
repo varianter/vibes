@@ -1,4 +1,5 @@
 using Api.Common;
+using Core.DomainModels;
 using Database.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,5 +40,19 @@ public class ConsultantController : ControllerBase
         return Ok( new SingleConsultantReadModel(consultant));
     }
 
+    [HttpGet]
+    [Route("employment")]
+    public ActionResult<List<ConsultantsEmploymentReadModel>> GetConsultantsEmployment([FromRoute] string orgUrlKey)
+    {
+        var service = new StorageService(_cache, _context);
+
+        var consultants = service.GetConsultantsEmploymentVariant(orgUrlKey);
     
+        List<ConsultantsEmploymentReadModel> readModels = consultants
+            .Select(c => new ConsultantsEmploymentReadModel(c))
+            .ToList();
+        
+        
+        return Ok(readModels);
+    }
 }
