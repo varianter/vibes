@@ -221,7 +221,7 @@ public class ProjectController : ControllerBase
         if (selectedOrg is null) return BadRequest("Selected org not found");
 
         if (body.CustomerName == AbsenceCustomerName)
-            return Ok(HandleAbsenceChange(body));
+            return Ok(HandleAbsenceChange(body, orgUrlKey));
 
         var customer = service.UpdateOrCreateCustomer(selectedOrg, body.CustomerName, orgUrlKey);
 
@@ -261,9 +261,9 @@ public class ProjectController : ControllerBase
     
     
 
-    private ProjectWithCustomerModel HandleAbsenceChange(EngagementWriteModel body)
+    private ProjectWithCustomerModel HandleAbsenceChange(EngagementWriteModel body, string orgUrlKey)
     {
-        var absence = _context.Absence.Single(a => a.Name == body.ProjectName);
+        var absence = _context.Absence.Single(a => a.Name == body.ProjectName && a.Organization.UrlKey == orgUrlKey);
         return new ProjectWithCustomerModel(absence.Name, AbsenceCustomerName, EngagementState.Absence, false,
             absence.Id);
     }
