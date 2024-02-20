@@ -108,13 +108,13 @@ export function DetailedBookingRows(props: {
         >
           <div className="flex flex-row items-center gap-3 justify-end">
             <div
-              className={`min-w-8 w-8 h-8 flex justify-center items-center ${getColorByStaffingType(
+              className={`w-8 h-8 flex justify-center items-center ${getColorByStaffingType(
                 detailedBooking.bookingDetails.type,
               )}`}
             >
               {getIconByBookingType(detailedBooking.bookingDetails.type, 20)}
             </div>
-            <div className="flex flex-col justify-center text-left">
+            <div className="flex flex-col justify-center">
               <p
                 className={`xsmall text-black/75 whitespace-nowrap text-ellipsis overflow-x-hidden max-w-[145px] ${
                   !(

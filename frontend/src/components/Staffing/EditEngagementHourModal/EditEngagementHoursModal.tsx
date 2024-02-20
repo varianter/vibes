@@ -1,14 +1,22 @@
 import React, { RefObject, useEffect, useState, useContext } from "react";
-import { ConsultantReadModel, ProjectWithCustomerModel } from "@/api-types";
+import {
+  ConsultantReadModel,
+  EngagementState,
+  ProjectWithCustomerModel,
+} from "@/api-types";
 import { LargeModal } from "@/components/Modals/LargeModal";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { usePathname, useRouter } from "next/navigation";
-import { Week } from "@/types";
+import { ConsultantWithWeekHours, Week } from "@/types";
 import { EditEngagementHoursRow } from "./EditEngagementHoursRow";
+import { addNewConsultatWHours } from "./utils";
 import { weekToString } from "@/data/urlUtils";
 import WeekSelector from "@/components/WeekSelector";
 import { useWeekSelectors } from "@/hooks/useWeekSelectors";
 import { WeekSpanTableHead } from "../WeekTableHead";
+import { AddConsultantCell } from "../AddConsultantCell";
+import { SelectOption } from "@/components/ComboBox";
+import { AddEngagementHoursRow } from "./AddEngagementHoursRow";
 
 export function EditEngagementHourModal({
   modalRef,
@@ -30,7 +38,7 @@ export function EditEngagementHourModal({
     setSelectedWeekSpan,
   } = useWeekSelectors();
 
-  const { setIsDisabledHotkeys } = useContext(FilteredContext);
+  const { consultants, setIsDisabledHotkeys } = useContext(FilteredContext);
 
   const [chosenProject, setProject] = useState(project);
 
@@ -38,7 +46,46 @@ export function EditEngagementHourModal({
     ConsultantReadModel[]
   >([]);
 
+  const [selectedNewConsultants, setSelectedNewConsultants] = useState<
+    ConsultantWithWeekHours[]
+  >([]);
+
+  const remainingConsultants = consultants.filter(
+    (c) =>
+      !selectedNewConsultants.find((c2) => c2.consultant.id == c.id) &&
+      !selectedConsultants.find((c2) => c2.id == c.id),
+  );
+
   useEffect(() => setProject(project), [project]);
+
+  useEffect(() => {
+    //check if selectedConsultants contains any of the selectedNewConsultants
+    const newConsultants = selectedNewConsultants.map((c) => c.consultant.id);
+    const consultants = selectedConsultants.map((c) => c.id);
+    const intersection = newConsultants.filter((c) => consultants.includes(c));
+    // remove the consultants that are in both lists from selectedNewConsultants
+    if (intersection.length > 0) {
+      setSelectedNewConsultants(
+        selectedNewConsultants.filter(
+          (c) => !intersection.includes(c.consultant.id),
+        ),
+      );
+    }
+  }, [selectedConsultants]);
+
+  function handleAddConsultant(option: SelectOption) {
+    const consultant = remainingConsultants.find((c) => c.id == option.value);
+    if (consultant) {
+      setSelectedNewConsultants([
+        ...addNewConsultatWHours(
+          selectedNewConsultants,
+          consultant,
+          chosenProject?.projectId || 0,
+          chosenProject?.bookingType || EngagementState.Order,
+        ),
+      ]);
+    }
+  }
 
   const organisationUrl = usePathname().split("/")[1];
 
@@ -119,6 +166,33 @@ export function EditEngagementHourModal({
                 setConsultants={setSelectedConsultants}
               />
             ))}
+
+            {selectedNewConsultants?.length > 0 && (
+              <tr>
+                <td
+                  className={` pt-3 pb-3 small`}
+                  colSpan={weekList.length + 2}
+                >
+                  Nylig lagt til:
+                </td>
+              </tr>
+            )}
+
+            {selectedNewConsultants?.map((consultant) => (
+              <AddEngagementHoursRow
+                key={consultant.consultant.id}
+                consultant={consultant.consultant}
+                weekList={weekList}
+                project={chosenProject}
+                consultantWWeekHours={consultant}
+              />
+            ))}
+            <tr>
+              <AddConsultantCell
+                onAddConsultant={handleAddConsultant}
+                consultantList={remainingConsultants}
+              />
+            </tr>
           </tbody>
         </table>
       </div>

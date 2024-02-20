@@ -27,7 +27,7 @@ export function AddConsultantCell(props: {
         />
         <button
           onClick={openModal}
-          className="flex flex-row items-center gap-2"
+          className="flex flex-row items-center ml-3"
           onMouseEnter={() => setIsAddConsultantHovered(true)}
           onMouseLeave={() => setIsAddConsultantHovered(false)}
         >
@@ -38,7 +38,7 @@ export function AddConsultantCell(props: {
           >
             <Plus size={16} className="text-primary" />
           </span>
-          <p className="small text-primary text-start small ">
+          <p className="small text-primary text-start small pl-1">
             Legg til konsulent
           </p>
         </button>

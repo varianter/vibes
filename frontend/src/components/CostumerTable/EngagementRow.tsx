@@ -12,7 +12,7 @@ import { Week } from "@/types";
 import { weekToString } from "@/data/urlUtils";
 import { EditEngagementHoursRow } from "../Staffing/EditEngagementHourModal/EditEngagementHoursRow";
 import { DateTime } from "luxon";
-import { getBookingTypeFromProjectState } from "../Staffing/AddEngagementHoursModal/utils";
+import { getBookingTypeFromProjectState } from "../Staffing/EditEngagementHourModal/utils";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { filterConsultants } from "@/hooks/staffing/useConsultantsFilter";
 

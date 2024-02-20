@@ -21,33 +21,31 @@ export function getBookingTypeFromProjectState(projectState?: EngagementState) {
 
 export function generateConsultatsWithHours(
   weekList: DateTime[],
-  chosenConsultants: ConsultantReadModel[],
+  chosenConsultant: ConsultantReadModel,
   projectId: number,
   engagementState: EngagementState,
 ) {
-  const consultantsWHours: ConsultantWithWeekHours[] = [];
-  chosenConsultants.map((c) => {
-    const consultant: ConsultantWithWeekHours = {
-      consultant: c,
-      weekWithHours: [],
-    };
-    weekList.map((d) => {
-      const initHours =
-        engagementState == EngagementState.Absence
-          ? findAbsenceInitHours(c, projectId, dayToWeek(d))
-          : findEngagementInitHours(c, projectId, dayToWeek(d));
+  const consultant: ConsultantWithWeekHours = {
+    consultant: chosenConsultant,
+    weekWithHours: [],
+  };
 
-      c.detailedBooking
-        .find((db) => db.bookingDetails.projectId == projectId)
-        ?.hours.find((h) => h.week == dayToWeek(d))?.hours;
-      consultant.weekWithHours.push({
-        week: dayToWeek(d),
-        hours: initHours || 0,
-      });
+  weekList.map((d) => {
+    const initHours =
+      engagementState == EngagementState.Absence
+        ? findAbsenceInitHours(chosenConsultant, projectId, dayToWeek(d))
+        : findEngagementInitHours(chosenConsultant, projectId, dayToWeek(d));
+
+    chosenConsultant.detailedBooking
+      .find((db) => db.bookingDetails.projectId == projectId)
+      ?.hours.find((h) => h.week == dayToWeek(d))?.hours;
+    consultant.weekWithHours.push({
+      week: dayToWeek(d),
+      hours: initHours || 0,
     });
-    consultantsWHours.push(consultant);
   });
-  return consultantsWHours;
+
+  return consultant;
 }
 
 export function addNewConsultatWHours(
@@ -60,7 +58,7 @@ export function addNewConsultatWHours(
     consultant: consultant,
     weekWithHours: [],
   };
-  old[0].weekWithHours.map((d) => {
+  old[0]?.weekWithHours.map((d) => {
     const initHours =
       engagementState == EngagementState.Absence
         ? findAbsenceInitHours(consultant, projectId, d.week)
