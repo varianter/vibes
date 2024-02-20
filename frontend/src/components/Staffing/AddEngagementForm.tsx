@@ -7,8 +7,6 @@ import React, {
 } from "react";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import ComboBox, { SelectOption } from "@/components/ComboBox";
-import { MultiValue } from "react-select";
-import EasyModal from "@/components/Modals/EasyModal";
 import {
   ConsultantReadModel,
   EngagementState,
@@ -20,18 +18,12 @@ import ActionButton from "../Buttons/ActionButton";
 
 export function AddEngagementForm({
   closeEngagementModal,
-  easyModalRef,
   consultant,
 }: {
-  closeEngagementModal: (
-    project: ProjectWithCustomerModel,
-    selectedConsultants: ConsultantReadModel[],
-  ) => void;
-  easyModalRef: RefObject<HTMLDialogElement>;
+  closeEngagementModal: (project: ProjectWithCustomerModel) => void;
   consultant: ConsultantReadModel;
 }) {
-  const { customers, consultants, setIsDisabledHotkeys } =
-    useContext(FilteredContext);
+  const { customers, setIsDisabledHotkeys } = useContext(FilteredContext);
 
   const organisationName = usePathname().split("/")[1];
   // State for select components
@@ -40,14 +32,6 @@ export function AddEngagementForm({
   );
   const [selectedEngagement, setSelectedEngagement] =
     useState<SelectOption | null>(null);
-
-  const selectedConsultant: SelectOption = {
-    value: consultant.id.toString(),
-    label: consultant.name,
-  };
-
-  const [selectedConsultants, setSelectedConsultants] =
-    useState<MultiValue<SelectOption> | null>([selectedConsultant]);
 
   const [_, setProject] = useState<ProjectWithCustomerModel | undefined>();
 
@@ -72,15 +56,6 @@ export function AddEngagementForm({
       )
       .filter((e) => !uniqueLabels.has(e.label) && uniqueLabels.add(e.label)) ??
     [];
-
-  const consultantOptions =
-    consultants.map(
-      (c) =>
-        ({
-          value: `${c.id}`,
-          label: `${c.name}`,
-        }) as SelectOption,
-    ) ?? [];
 
   // State for radio button group
   const [radioValue, setRadioValue] = useState(EngagementState.Offer);
@@ -146,12 +121,7 @@ export function AddEngagementForm({
     // TODO: This is a simplified mockup.
     if (result) {
       setProject(result);
-      closeEngagementModal(
-        result,
-        consultants.filter(
-          (c) => selectedConsultants?.some((sc) => sc.value == c.id.toString()),
-        ),
-      );
+      closeEngagementModal(result);
       setIsDisabledHotkeys(true);
       resetSelectedValues();
 
@@ -163,40 +133,20 @@ export function AddEngagementForm({
   function resetSelectedValues() {
     setSelectedCustomer(null);
     setSelectedEngagement(null);
-    setSelectedConsultants([selectedConsultant]);
     setRadioValue(EngagementState.Offer);
     setIsFakturerbar(true);
   }
 
   return (
-    <>
-      <EasyModal
-        modalRef={easyModalRef}
-        title={"Legg til engasjement"}
-        showCloseButton={true}
-        onClose={() => {
-          setIsDisabledHotkeys(false);
-          resetSelectedValues();
+    <div className="flex flex-row gap-2 items-center w-max pt-3 pb-3">
+      <form
+        onSubmit={(e) => {
+          selectedEngagement != null && handleSubmit(e);
         }}
+        className="flex flex-col gap-4 items-center"
       >
-        <form
-          onSubmit={(e) => {
-            selectedEngagement != null && handleSubmit(e);
-          }}
-          className="h-full flex flex-col gap-6"
-        >
-          <div className="flex flex-col gap-6 pt-6">
-            {/* Selected Customer */}
-            <div className="flex flex-col gap-2">
-              <p className="small text-black">Konsulenter</p>
-              <ComboBox
-                options={consultantOptions}
-                selectedMultipleOptionsValue={selectedConsultants}
-                onMultipleOptionsChange={setSelectedConsultants}
-                isMultipleOptions={true}
-                placeHolderText="Velg konsulenter"
-              />
-            </div>
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-row gap-6">
             <div className="flex flex-col gap-2">
               <p className="small text-black">Kunde</p>
               <ComboBox
@@ -205,7 +155,6 @@ export function AddEngagementForm({
                 onSingleOptionChange={handleSelectedCustomerChange}
                 isMultipleOptions={false}
                 placeHolderText="Velg kunde"
-                isDisabled={!selectedConsultants}
                 isCreatable={true}
               />
             </div>
@@ -221,71 +170,71 @@ export function AddEngagementForm({
                 isCreatable={true}
               />
             </div>
-
-            {!isAbsence && (
-              <>
-                {/* Radio Button Group */}
-
-                <div
-                  className={`flex flex-row gap-4 ${
-                    selectedEngagement == null && "hidden"
-                  }`}
-                >
-                  <label className="flex gap-2 normal items-center">
-                    <input
-                      type="radio"
-                      value={EngagementState.Offer}
-                      checked={radioValue === EngagementState.Offer}
-                      onChange={handleRadioChange}
-                      disabled={selectedCustomer?.value == -1}
-                    />
-                    Tilbud
-                  </label>
-                  <label className="flex gap-2 normal items-center">
-                    <input
-                      type="radio"
-                      value={EngagementState.Order}
-                      checked={radioValue === EngagementState.Order}
-                      onChange={handleRadioChange}
-                      disabled={isAbsence}
-                    />
-                    Ordre
-                  </label>
-                </div>
-                {/* Toggle (Checkbox) */}
-                <label
-                  className={`flex flex-row justify-between items-center normal ${
-                    selectedEngagement == null && "hidden"
-                  }`}
-                >
-                  Fakturerbart
-                  <div
-                    className={`rounded-full w-[52px] h-7 flex items-center  ${
-                      isFakturerbar ? "bg-primary" : "bg-black/20"
-                    }`}
-                    onClick={handleToggleChange}
-                  >
-                    <div
-                      className={`m-[2px] bg-white rounded-full w-6 h-6 ${
-                        isFakturerbar && " translate-x-6"
-                      }`}
-                    ></div>
-                  </div>
-                </label>
-              </>
-            )}
           </div>
 
-          <ActionButton
-            variant="primary"
-            fullWidth
-            type="submit"
-            disabled={selectedEngagement == null}
-          >
-            Legg til engasjement
-          </ActionButton>
-        </form>
-      </EasyModal>
-    </>
+          {!isAbsence && (
+            <>
+              {/* Radio Button Group */}
+
+              <div
+                className={`flex flex-row gap-4 ${
+                  selectedEngagement == null && "hidden"
+                }`}
+              >
+                <label className="flex gap-2 normal items-center">
+                  <input
+                    type="radio"
+                    value={EngagementState.Offer}
+                    checked={radioValue === EngagementState.Offer}
+                    onChange={handleRadioChange}
+                    disabled={selectedCustomer?.value == -1}
+                  />
+                  Tilbud
+                </label>
+                <label className="flex gap-2 normal items-center">
+                  <input
+                    type="radio"
+                    value={EngagementState.Order}
+                    checked={radioValue === EngagementState.Order}
+                    onChange={handleRadioChange}
+                    disabled={isAbsence}
+                  />
+                  Ordre
+                </label>
+              </div>
+              {/* Toggle (Checkbox) */}
+              <label
+                className={`flex flex-row justify-between items-center normal ${
+                  selectedEngagement == null && "hidden"
+                }`}
+              >
+                Fakturerbart
+                <div
+                  className={`rounded-full w-[52px] h-7 flex items-center  ${
+                    isFakturerbar ? "bg-primary" : "bg-black/20"
+                  }`}
+                  onClick={handleToggleChange}
+                >
+                  <div
+                    className={`m-[2px] bg-white rounded-full w-6 h-6 ${
+                      isFakturerbar && " translate-x-6"
+                    }`}
+                  ></div>
+                </div>
+              </label>
+            </>
+          )}
+        </div>
+
+        <ActionButton
+          variant="primary"
+          fullWidth
+          type="submit"
+          disabled={selectedEngagement == null}
+        >
+          Legg til engasjement
+        </ActionButton>
+      </form>
+    </div>
   );
 }

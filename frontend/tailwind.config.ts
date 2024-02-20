@@ -22,7 +22,11 @@ export default {
       absence: "#9FDFD9",
       absence_darker: "#004C46",
     },
-    extend: {},
+    extend: {
+      minWidth: {
+        "8": "2rem",
+      },
+    },
     screens,
     boxShadow: {
       md: "0 4px 4px 0 rgba(66, 61, 137, 0.10)",

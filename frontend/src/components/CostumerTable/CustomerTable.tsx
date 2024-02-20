@@ -8,7 +8,6 @@ import { useDepartmentFilter } from "@/hooks/staffing/useDepartmentFilter";
 import WeekSelector from "../WeekSelector";
 import { useWeekSelectors } from "@/hooks/useWeekSelectors";
 import { WeekSpanTableHead } from "../Staffing/WeekTableHead";
-import WeekSelection from "../WeekSelection";
 
 export default function CustomerTable({
   customer,

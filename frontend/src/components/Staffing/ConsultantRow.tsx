@@ -1,24 +1,42 @@
 "use client";
 import { ConsultantReadModel, ProjectWithCustomerModel } from "@/api-types";
 import React, { useContext, useEffect, useState } from "react";
-import { ChevronDown } from "react-feather";
+import { ChevronDown, Plus } from "react-feather";
 import { DetailedBookingRows } from "@/components/Staffing/DetailedBookingRows";
 import { WeekCell } from "@/components/Staffing/WeekCell";
-import { AddStaffingCell } from "@/components/Staffing/AddStaffingCell";
 import { useModal } from "@/hooks/useModal";
 import { EditEngagementHourModal } from "./EditEngagementHourModal/EditEngagementHoursModal";
 import { usePathname } from "next/navigation";
+import { AddEngagementForm } from "./AddEngagementForm";
+import {
+  dayToWeek,
+  getBookingTypeFromProjectState,
+} from "./EditEngagementHourModal/utils";
+import { useWeekSelectors } from "@/hooks/useWeekSelectors";
+import { setDetailedBookingHours } from "./NewDetailedBookingRow";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
 export default function ConsultantRows({
   consultant,
 }: {
   consultant: ConsultantReadModel;
 }) {
+  const [currentConsultant, setCurrentConsultant] =
+    useState<ConsultantReadModel>(consultant);
   const [isListElementVisible, setIsListElementVisible] = useState(false);
   const [isRowHovered, setIsRowHovered] = useState(false);
   const [hoveredRowWeek, setHoveredRowWeek] = useState(-1);
+  const [isAddStaffingHovered, setIsAddStaffingHovered] = useState(false);
+  const [addNewRow, setAddNewRow] = useState(false);
+  const { weekList, setSelectedWeekSpan } = useWeekSelectors();
+  const { setIsDisabledHotkeys } = useContext(FilteredContext);
 
-  const columnCount = consultant.bookings.length ?? 0;
+  useEffect(() => {
+    setSelectedWeekSpan(consultant.bookings.length);
+    setCurrentConsultant(consultant);
+  }, [consultant.bookings.length, consultant]);
+
+  const columnCount = currentConsultant.bookings.length ?? 0;
 
   function toggleListElementVisibility() {
     setIsListElementVisible((old) => !old);
@@ -67,6 +85,51 @@ export default function ConsultantRows({
     setSelectedProjectId(undefined);
   }
 
+  async function handleNewEngagement(project: ProjectWithCustomerModel) {
+    setAddNewRow(false);
+    setIsDisabledHotkeys(false);
+    setSelectedProject(project);
+
+    if (
+      project !== undefined &&
+      !currentConsultant.detailedBooking.some(
+        (e) =>
+          e.bookingDetails.projectId === project.projectId &&
+          e.bookingDetails.type ===
+            getBookingTypeFromProjectState(project?.bookingType),
+      )
+    ) {
+      try {
+        const res = await setDetailedBookingHours({
+          hours: 0,
+          bookingType: getBookingTypeFromProjectState(project?.bookingType),
+          organisationUrl: organisationUrl,
+          consultantId: currentConsultant.id,
+          bookingId: `${project?.projectId}`,
+          startWeek: dayToWeek(weekList[0]),
+        });
+
+        if (res) {
+          const tempCurrentConsultant = { ...currentConsultant };
+
+          const newDetailedBooking = res.detailedBooking.find(
+            (e) => e.bookingDetails.projectId === project.projectId,
+          );
+
+          if (newDetailedBooking) {
+            newDetailedBooking.hours = weekList.map((e) => {
+              return { week: dayToWeek(e), hours: 0 };
+            });
+            tempCurrentConsultant.detailedBooking.push(newDetailedBooking);
+            setCurrentConsultant(tempCurrentConsultant);
+          }
+        }
+      } catch (e) {
+        console.error("Error updating staffing", e);
+      }
+    }
+  }
+
   return (
     <>
       <tr
@@ -99,10 +162,10 @@ export default function ConsultantRows({
                 isListElementVisible ? "normal-medium" : "normal"
               }`}
             >
-              {consultant.name}
+              {currentConsultant.name}
             </p>
             <p className="xsmall text-black/75 text-start">
-              {`${consultant.yearsOfExperience} års erfaring`}
+              {`${currentConsultant.yearsOfExperience} års erfaring`}
             </p>
           </div>
           {isListElementVisible && (
@@ -113,34 +176,81 @@ export default function ConsultantRows({
             />
           )}
         </td>
-        {consultant.bookings.map((b, index) => (
+        {currentConsultant.bookings.map((b, index) => (
           <WeekCell
             key={index}
             bookedHoursPerWeek={b}
             isListElementVisible={isListElementVisible}
             setIsListElementVisible={setIsListElementVisible}
-            consultant={consultant}
+            consultant={currentConsultant}
             setHoveredRowWeek={setHoveredRowWeek}
             hoveredRowWeek={hoveredRowWeek}
             columnCount={columnCount}
-            isLastCol={index == consultant.bookings.length - 1}
-            isSecondLastCol={index == consultant.bookings.length - 2}
+            isLastCol={index == currentConsultant.bookings.length - 1}
+            isSecondLastCol={index == currentConsultant.bookings.length - 2}
           />
         ))}
       </tr>
       {isListElementVisible &&
-        consultant.detailedBooking &&
-        consultant.detailedBooking.map((db, index) => (
+        currentConsultant.detailedBooking &&
+        currentConsultant.detailedBooking.map((db, index) => (
           <DetailedBookingRows
             key={index}
-            consultant={consultant}
+            consultant={currentConsultant}
             detailedBooking={db}
             openEngagementAndSetID={openEngagementAndSetID}
           />
         ))}
+      {isListElementVisible && addNewRow && (
+        <tr>
+          <td
+            className={`border-l-2 ${
+              isListElementVisible
+                ? "border-l-secondary"
+                : isRowHovered
+                ? "border-l-primary"
+                : "border-l-primary/5"
+            } `}
+          ></td>
+          <AddEngagementForm
+            closeEngagementModal={handleNewEngagement}
+            consultant={currentConsultant}
+          />
+        </tr>
+      )}
+
       {isListElementVisible && (
         <tr>
-          <AddStaffingCell consultant={consultant} />
+          <td
+            className={`border-l-2 ${
+              isListElementVisible
+                ? "border-l-secondary"
+                : isRowHovered
+                ? "border-l-primary"
+                : "border-l-primary/5"
+            } `}
+          ></td>
+          {!addNewRow && (
+            <button
+              onClick={() => {
+                setAddNewRow(true);
+                setIsDisabledHotkeys(true);
+              }}
+              className="flex flex-row items-center min-w-max gap-2 h-[52px]"
+              onMouseEnter={() => setIsAddStaffingHovered(true)}
+              onMouseLeave={() => setIsAddStaffingHovered(false)}
+            >
+              <span
+                className={`w-8 h-8 flex justify-center items-center rounded bg-primary/0 ${
+                  isAddStaffingHovered && "bg-primary/10"
+                }`}
+              >
+                <Plus size={16} className="text-primary" />
+              </span>
+
+              <p className="small text-primary">Legg til bemanning</p>
+            </button>
+          )}
         </tr>
       )}
     </>

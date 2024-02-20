@@ -7,7 +7,7 @@ import {
   getColorByStaffingType,
   getIconByBookingType,
 } from "../Staffing/helpers/utils";
-import { getBookingTypeFromProjectState } from "../Staffing/AddEngagementHoursModal/utils";
+import { getBookingTypeFromProjectState } from "../Staffing/EditEngagementHourModal/utils";
 import Link from "next/link";
 
 export default function CostumerRow({

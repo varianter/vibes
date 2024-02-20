@@ -1,7 +1,12 @@
-import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
-import { useContext } from "react";
-import Select, { MultiValue, SingleValue, createFilter } from "react-select";
+import Select, {
+  CSSObjectWithLabel,
+  MultiValue,
+  SingleValue,
+  StylesConfig,
+  createFilter,
+} from "react-select";
 import CreatableSelect from "react-select/creatable";
+import { OptionalTypeNode } from "typescript";
 
 export type SelectOption = { value: string | number; label: string };
 
@@ -16,6 +21,7 @@ export default function ComboBox({
   placeHolderText = "Velg...",
   isClearable = false,
   isCreatable = false,
+  width = 200,
 }: {
   options: SelectOption[];
   selectedSingleOptionValue?: SelectOption | null;
@@ -27,6 +33,7 @@ export default function ComboBox({
   placeHolderText?: string;
   isClearable?: boolean;
   isCreatable?: boolean;
+  width?: number;
 }) {
   const customFilter = createFilter({
     matchFrom: "start",
@@ -63,6 +70,11 @@ export default function ComboBox({
           selectedMultipleOptionsValue?.length >= 2
             ? "1 0 auto"
             : "",
+      }),
+
+      control: (base: CSSObjectWithLabel) => ({
+        ...base,
+        width,
       }),
     },
   };

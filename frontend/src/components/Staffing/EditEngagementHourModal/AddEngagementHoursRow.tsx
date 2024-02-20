@@ -64,11 +64,11 @@ export function AddEngagementHoursRow({
   }
 
   return (
-    <tr>
+    <tr className="h-8 p-0.5">
       <td
         className={`flex justify-center items-center w-8 h-8 ${getColorByStaffingType(
           getBookingTypeFromProjectState(project?.bookingType),
-        )} rounded-lg`}
+        )} rounded-lg ml-3`}
       >
         {getIconByBookingType(
           getBookingTypeFromProjectState(project?.bookingType),
