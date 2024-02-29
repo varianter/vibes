@@ -13,6 +13,7 @@ export default async function NavBar() {
       <div className="flex flex-row gap-8">
         <NavBarLink text="Bemanning" path={`bemanning`} />
         <NavBarLink text="Kunder" path={`kunder`} />
+        <NavBarLink text="Konsulenter" path={`konsulenter`} />
       </div>
       <div className="flex flex-row gap-4 items-center">
         <NavBarOrganisationDropdown organisations={orgs} />

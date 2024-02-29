@@ -65,6 +65,7 @@ export default function EngagementRows({
       filterConsultants({
         search: "",
         departmentFilter: activeFilters.departmentFilter,
+        competenceFilter: activeFilters.competenceFilter,
         yearFilter: [],
         consultants: selectedConsultants,
         availabilityFilterOn: false,

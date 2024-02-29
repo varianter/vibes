@@ -30,6 +30,21 @@ public class StorageService
 
     }
 
+    public List<Consultant> GetConsultants(string orgUrlKey)
+    {
+
+        var consultants = _dbContext.Consultant
+            .Include(c => c.Department)
+            .ThenInclude(d => d.Organization)
+            .Include(c => c.CompetenceConsultant)
+            .ThenInclude(cc => cc.Competence)
+            .Where(c => c.Department.Organization.UrlKey == orgUrlKey)
+            .ToList();
+
+        return consultants;
+
+    }
+
     public List<Consultant> GetConsultantsEmploymentVariant(string orgUrlKey)
     {
 
@@ -111,6 +126,8 @@ public class StorageService
         var consultantList = _dbContext.Consultant
             .Include(consultant => consultant.Department)
             .ThenInclude(department => department.Organization)
+            .Include(c => c.CompetenceConsultant)
+            .ThenInclude(cc => cc.Competence)
             .Where(consultant => consultant.Department.Organization.UrlKey == orgUrlKey)
             .OrderBy(consultant => consultant.Name)
             .ToList();

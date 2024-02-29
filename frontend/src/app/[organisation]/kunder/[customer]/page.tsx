@@ -25,6 +25,7 @@ export default async function Kunde({
   return (
     <ConsultantFilterProvider
       consultants={[]}
+      competences={[]}
       departments={departments}
       customers={[]}
     >
