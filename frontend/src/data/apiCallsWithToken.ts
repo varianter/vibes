@@ -3,6 +3,7 @@ import {
   getCustomServerSession,
 } from "@/app/api/auth/[...nextauth]/route";
 import {
+  MockCompetences,
   MockConsultants,
   MockDepartments,
   MockEngagements,
@@ -102,6 +103,9 @@ function mockedCall<T>(path: string): Promise<T> {
     }
     if (path.includes("projects")) {
       resolve(MockEngagements as T);
+    }
+    if (path.includes("competences")) {
+      resolve(MockCompetences as T);
     }
   });
 }

@@ -1,4 +1,5 @@
 import {
+  CompetenceReadModel,
   ConsultantReadModel,
   Degree,
   DepartmentReadModel,
@@ -59,5 +60,12 @@ export const MockEngagements: EngagementPerCustomerReadModel[] = [
     customerId: 1,
     customerName: "TestCustomer",
     engagements: [],
+  },
+];
+
+export const MockCompetences: CompetenceReadModel[] = [
+  {
+    id: "development",
+    name: "Utvikling",
   },
 ];
