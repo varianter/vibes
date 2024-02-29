@@ -22,7 +22,7 @@ export const MockConsultants: ConsultantReadModel[] = [
     id: 1,
     name: "Test Consultant",
     email: "test@company.io",
-    competences: ["Frontend"],
+    competences: [{ id: "development", name: "Utvikling" }],
     department: "My Department",
     bookings: [
       {
