@@ -1,4 +1,5 @@
 import {
+  CompetenceReadModel,
   ConsultantReadModel,
   DepartmentReadModel,
   EngagementPerCustomerReadModel,
@@ -35,6 +36,9 @@ export default async function Bemanning({
       `organisations/${params.organisation}/departments`,
     )) ?? [];
 
+  const competences =
+    (await fetchWithToken<CompetenceReadModel[]>(`competences`)) ?? [];
+
   const customers =
     (await fetchWithToken<EngagementPerCustomerReadModel[]>(
       `${params.organisation}/projects`,
@@ -44,6 +48,7 @@ export default async function Bemanning({
     <ConsultantFilterProvider
       consultants={consultants}
       departments={departments}
+      competences={competences}
       customers={customers}
     >
       <StaffingContent />

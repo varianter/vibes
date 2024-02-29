@@ -47,16 +47,26 @@ export interface ConsultantReadModel {
   name: string;
   /** @minLength 1 */
   email: string;
-  competences: string[];
+  startDate?: Date;
+  endDate?: Date;
+  competences: Competence[];
   /** @minLength 1 */
   department: string;
   /** @format int32 */
   yearsOfExperience: number;
+  graduationYear?: number;
   degree: Degree;
   bookings: BookedHoursPerWeek[];
   detailedBooking: DetailedBooking[];
   isOccupied: boolean;
 }
+
+export type Competence = {
+  /** @minLength 1 */
+  id: string;
+  /** @minLength 1 */
+  name: string;
+};
 
 export enum Degree {
   Master = "Master",
@@ -71,6 +81,13 @@ export interface DepartmentReadModel {
   name: string;
   /** @format int32 */
   hotkey?: number | null;
+}
+
+export interface CompetenceReadModel {
+  /** @minLength 1 */
+  id: string;
+  /** @minLength 1 */
+  name: string;
 }
 
 export interface DetailedBooking {

@@ -4,6 +4,7 @@ import AvailabilityFilter from "./AvailabilityFilter";
 import SearchBarComponent from "./SearchBarComponent";
 import { ArrowLeft } from "react-feather";
 import ExperienceFilter from "./ExperienceFilter";
+import CompetenceFilter from "./CompetenceFilter";
 
 // @ts-ignore
 export default function StaffingSidebar({
@@ -30,6 +31,7 @@ export default function StaffingSidebar({
           <AvailabilityFilter />
           <DepartmentFilter />
           <ExperienceFilter />
+          <CompetenceFilter />
         </div>
       )}
       {!isSidebarOpen && <SearchBarComponent hidden={!isSidebarOpen} />}

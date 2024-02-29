@@ -12,6 +12,7 @@ public class ApplicationContext : DbContext
 
     public DbSet<Consultant> Consultant { get; set; } = null!;
     public DbSet<Competence> Competence { get; set; } = null!;
+    public DbSet<CompetenceConsultant> CompetenceConsultant { get; set; } = null!;
     public DbSet<Department> Department { get; set; } = null!;
     public DbSet<Organization> Organization { get; set; } = null!;
     public DbSet<Absence> Absence { get; set; } = null!;
@@ -115,20 +116,34 @@ public class ApplicationContext : DbContext
             .Property(v => v.EndDate)
             .HasConversion<DateOnlyConverter>();
 
-        modelBuilder.Entity<Consultant>()
-            .HasMany(v => v.Competences)
-            .WithMany();
+        /*modelBuilder.Entity<Consultant>()
+            .HasMany(v => v.CompetenceConsultant)
+            .WithMany();*/
         
         modelBuilder.Entity<Consultant>()  
             .Property(c => c.TransferredVacationDays)  
             .HasDefaultValue(0);  
+
+        modelBuilder.Entity<CompetenceConsultant>()
+            .HasKey(us => new { us.ConsultantId, us.CompetencesId });
+
+        modelBuilder.Entity<CompetenceConsultant>()
+            .HasOne(us => us.Consultant)
+            .WithMany(u => u.CompetenceConsultant)
+            .HasForeignKey(us => us.ConsultantId);
+
+        modelBuilder.Entity<CompetenceConsultant>()
+            .HasOne(us => us.Competence)
+            .WithMany(s => s.CompetenceConsultant)
+            .HasForeignKey(us => us.CompetencesId);
 
         modelBuilder.Entity<Competence>().HasData(new List<Competence>
         {
             new() { Id = "frontend", Name = "Frontend" },
             new() { Id = "backend", Name = "Backend" },
             new() { Id = "design", Name = "Design" },
-            new() { Id = "project-mgmt", Name = "Project Management" }
+            new() { Id = "project-mgmt", Name = "Project Management" },
+            new() { Id = "development", Name = "Utvikling" }
         });
 
         modelBuilder.Entity<Organization>()

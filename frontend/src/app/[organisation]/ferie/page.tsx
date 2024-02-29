@@ -15,12 +15,12 @@ export default async function Ferie({
     !process.env.NEXT_PUBLIC_NO_AUTH &&
     (await getCustomServerSession(authOptions));
 
-  const userEmail =
+  const email =
     session && session.user && session.user.email ? session.user.email : "";
 
   const consultant =
     (await fetchWithToken<ConsultantReadModel>(
-      `${params.organisation}/consultants?Email=${userEmail}`,
+      `${params.organisation}/consultants/${email}`,
     )) ?? undefined;
 
   const vacationDays =

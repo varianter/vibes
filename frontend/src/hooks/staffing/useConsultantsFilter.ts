@@ -24,6 +24,29 @@ async function getNumWorkHours(
   }
 }
 
+export function useSimpleConsultantsFilter() {
+  const { consultants } = useContext(FilteredContext);
+
+  const { departmentFilter, competenceFilter, searchFilter } =
+    useContext(FilteredContext).activeFilters;
+
+  const { filteredYears } = useYearsXpFilter();
+  const { availabilityFilterOn } = useAvailabilityFilter();
+
+  const filteredConsultants = filterConsultants({
+    search: searchFilter,
+    departmentFilter,
+    competenceFilter,
+    yearFilter: filteredYears,
+    consultants,
+    availabilityFilterOn,
+  });
+
+  return {
+    filteredConsultants,
+  };
+}
+
 export function useConsultantsFilter() {
   const { consultants } = useContext(FilteredContext);
   const [numWorkHours, setNumWorkHours] = useState<number>(-1);
@@ -33,7 +56,7 @@ export function useConsultantsFilter() {
     getNumWorkHours(setNumWorkHours, organisationName);
   }, [organisationName]);
 
-  const { departmentFilter, searchFilter } =
+  const { departmentFilter, competenceFilter, searchFilter } =
     useContext(FilteredContext).activeFilters;
 
   const { filteredYears } = useYearsXpFilter();
@@ -42,6 +65,7 @@ export function useConsultantsFilter() {
   const filteredConsultants = filterConsultants({
     search: searchFilter,
     departmentFilter,
+    competenceFilter,
     yearFilter: filteredYears,
     consultants,
     availabilityFilterOn,
@@ -67,12 +91,14 @@ export function useConsultantsFilter() {
 export function filterConsultants({
   search,
   departmentFilter,
+  competenceFilter,
   yearFilter,
   consultants,
   availabilityFilterOn,
 }: {
   search: string;
   departmentFilter: string;
+  competenceFilter: string;
   yearFilter: YearRange[];
   consultants: ConsultantReadModel[];
   availabilityFilterOn: Boolean;
@@ -88,6 +114,17 @@ export function filterConsultants({
       departmentFilter
         .toLowerCase()
         .includes(consultant.department.toLowerCase()),
+    );
+  }
+  if (competenceFilter && competenceFilter.length > 0) {
+    newFilteredConsultants = newFilteredConsultants?.filter((consultant) =>
+      competenceFilter
+        .toLowerCase()
+        .split(",")
+        .map((c) => c.trim())
+        .some((c) =>
+          consultant.competences.map((c) => c.id.toLowerCase()).includes(c),
+        ),
     );
   }
   if (yearFilter.length > 0) {

@@ -21,6 +21,9 @@ export default {
       overbooked_darker: "#B91456",
       absence: "#9FDFD9",
       absence_darker: "#004C46",
+      background_light_purple: "#423D8908",
+      background_light_purple_hover: "#423D891A",
+      text_light_black: "#333333BF",
     },
     extend: {
       minWidth: {

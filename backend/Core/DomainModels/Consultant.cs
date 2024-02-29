@@ -19,7 +19,7 @@ public class Consultant
     public int? GraduationYear { get; set; }
     public int TransferredVacationDays { get; set; }
 
-    public List<Competence> Competences { get; set; } = new();
+    public ICollection<CompetenceConsultant> CompetenceConsultant { get; set; } = new List<CompetenceConsultant>();
 
     public List<Vacation> Vacations { get; set; } = new();
 
@@ -28,6 +28,7 @@ public class Consultant
     public List<Engagement> Projects { get; set; } = new();
 
     public List<Staffing> Staffings { get; set; } = new();
+    
 
     public int YearsOfExperience
     {
@@ -61,10 +62,18 @@ public class Consultant
 
 public class Competence
 {
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public required string Id { get; set; }
 
     public required string Name { get; set; }
+    public ICollection<CompetenceConsultant> CompetenceConsultant { get; set; } = new List<CompetenceConsultant>();
+}
+
+public class CompetenceConsultant
+{
+    public int ConsultantId { get; set; }
+    public Consultant Consultant { get; set; } = null!;
+    public required string CompetencesId { get; set; }
+    public Competence Competence { get; set; } = null!;
 }
 
 public enum Degree

@@ -3,6 +3,7 @@
 import {
   ConsultantReadModel,
   DepartmentReadModel,
+  CompetenceReadModel,
   EngagementPerCustomerReadModel,
 } from "@/api-types";
 import React, { createContext, ReactNode, useEffect, useState } from "react";
@@ -13,6 +14,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 const defaultFilters: StaffingFilters = {
   availabilityFilter: false,
   departmentFilter: "",
+  competenceFilter: "",
   searchFilter: "",
   selectedWeekFilter: undefined,
   weekSpan: 0,
@@ -23,6 +25,7 @@ type FilterContextType = {
   consultants: ConsultantReadModel[];
   setConsultants: React.Dispatch<React.SetStateAction<ConsultantReadModel[]>>;
   departments: DepartmentReadModel[];
+  competences: CompetenceReadModel[];
   customers: EngagementPerCustomerReadModel[];
   isDisabledHotkeys: boolean;
   setIsDisabledHotkeys: React.Dispatch<React.SetStateAction<boolean>>;
@@ -34,6 +37,7 @@ export const FilteredContext = createContext<FilterContextType>({
   consultants: [],
   setConsultants: () => null,
   departments: [],
+  competences: [],
   customers: [],
   isDisabledHotkeys: false,
   setIsDisabledHotkeys: () => {},
@@ -44,6 +48,7 @@ export const FilteredContext = createContext<FilterContextType>({
 export function ConsultantFilterProvider(props: {
   consultants: ConsultantReadModel[];
   departments: DepartmentReadModel[];
+  competences: CompetenceReadModel[];
   customers: EngagementPerCustomerReadModel[];
   children: ReactNode;
 }) {
@@ -73,6 +78,7 @@ export function ConsultantFilterProvider(props: {
 interface UpdateFilterParams {
   search?: string;
   departments?: string;
+  competences?: string;
   years?: string;
   week?: Week;
   numWeeks?: number;
@@ -82,6 +88,7 @@ interface UpdateFilterParams {
 export type StaffingFilters = {
   availabilityFilter: boolean;
   departmentFilter: string;
+  competenceFilter: string;
   yearFilter: string;
   selectedWeekFilter: Week | undefined;
   weekSpan: number;
@@ -101,6 +108,9 @@ function useUrlRouteFilter(): [StaffingFilters, UpdateFilters] {
   const [departmentFilter, setDepartmentFilter] = useState(
     searchParams.get("depFilter") || "",
   );
+  const [competenceFilter, setCompetenceFilter] = useState(
+    searchParams.get("compFilter") || "",
+  );
   const [yearFilter, setYearFilter] = useState(
     searchParams.get("yearFilter") || "",
   );
@@ -116,12 +126,13 @@ function useUrlRouteFilter(): [StaffingFilters, UpdateFilters] {
     // If not defined, defaults to current value:
     const { search = searchFilter } = updateParams;
     const { departments = departmentFilter } = updateParams;
+    const { competences = competenceFilter } = updateParams;
     const { years = yearFilter } = updateParams;
     const { week = selectedWeek } = updateParams;
     const { numWeeks = weekSpan } = updateParams;
     const { availability = availabilityFilter } = updateParams;
 
-    const url = `${pathname}?search=${search}&depFilter=${departments}&yearFilter=${years}${
+    const url = `${pathname}?search=${search}&depFilter=${departments}&compFilter=${competences}&yearFilter=${years}${
       week ? `&selectedWeek=${weekToString(week)}` : ""
     }&availabilityFilter=${availability}&${
       numWeeks ? `&weekSpan=${numWeeks}` : ""
@@ -130,6 +141,7 @@ function useUrlRouteFilter(): [StaffingFilters, UpdateFilters] {
     setYearFilter(years);
     setSearchFilter(search);
     setDepartmentFilter(departments);
+    setCompetenceFilter(competences);
     setAvailabilityFilter(availability);
     setSelectedWeek(week);
 
@@ -144,6 +156,7 @@ function useUrlRouteFilter(): [StaffingFilters, UpdateFilters] {
     {
       searchFilter,
       departmentFilter,
+      competenceFilter,
       yearFilter,
       availabilityFilter,
       selectedWeekFilter: selectedWeek,

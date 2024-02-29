@@ -24,8 +24,9 @@ public class ConsultantController : ControllerBase
     
     
     [HttpGet]
+    [Route("{Email}")]
     public ActionResult<SingleConsultantReadModel> Get([FromRoute] string orgUrlKey,
-        [FromQuery(Name = "Email")] string? email = "")
+        [FromRoute(Name = "Email")] string? email = "")
     {
         var service = new StorageService(_cache, _context);
 
@@ -38,6 +39,20 @@ public class ConsultantController : ControllerBase
         }
         
         return Ok( new SingleConsultantReadModel(consultant));
+    }
+
+    [HttpGet]
+    public ActionResult<List<SingleConsultantReadModel>> GetAll([FromRoute] string orgUrlKey)
+    {
+        var service = new StorageService(_cache, _context);
+
+        var consultants = service.GetConsultants(orgUrlKey);
+
+        List<SingleConsultantReadModel> readModels = consultants
+            .Select(c => new SingleConsultantReadModel(c))
+            .ToList();
+        
+        return Ok(readModels);
     }
 
     [HttpGet]
