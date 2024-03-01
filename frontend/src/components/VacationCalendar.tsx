@@ -94,7 +94,7 @@ export default function VacationCalendar({
     <div className="flex flex-row">
       <div className="sidebar z-10">
         <div className="bg-primary/5 h-full flex flex-col gap-6 p-4 w-[300px]">
-          <h1 className="">2023</h1>
+          <h1 className="">{new Date().getFullYear()}</h1>
           <div className="flex flex-col gap-2">
             <p className="small text-black">Ferieoversikt</p>
             <InfoBox

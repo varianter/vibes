@@ -23,7 +23,7 @@ export default function FilteredConsultants() {
             <div className="flex flex-row gap-1 items-center">
               <p className="normal-medium ">Konsulenter</p>
               <p className="text-primary small-medium rounded-full bg-primary/5 px-2 py-1">
-                {filteredConsultants?.length}
+                {filteredConsultants.filter((e) => !e.endDate)?.length}
               </p>
             </div>
           </th>
@@ -129,7 +129,12 @@ export default function FilteredConsultants() {
           ))}
         <tr>
           <td className="py-4 font-bold text-">
-            <p className="normal">Inaktive konsulenter</p>
+            <div className="flex flex-row gap-1 items-center">
+              <p className="normal-medium ">Inaktive konsulenter</p>
+              <p className="text-primary small-medium rounded-full bg-primary/5 px-2 py-1">
+                {filteredConsultants.filter((e) => e.endDate)?.length}
+              </p>
+            </div>
           </td>
         </tr>
 
