@@ -9,6 +9,7 @@ import {
   MockEngagements,
   MockOrganisations,
 } from "../../mockdata/mockData";
+import { ConsultantReadModel, EmployeeItemChewbacca } from "@/api-types";
 
 type HttpMethod = "GET" | "PUT" | "POST" | "DELETE";
 
@@ -67,6 +68,59 @@ export async function fetchWithToken<ReturnType>(
   path: string,
 ): Promise<ReturnType | undefined> {
   return callApi<ReturnType, undefined>(path, "GET");
+}
+
+export async function fetchEmployeesWithImageAndToken(
+  path: string,
+): Promise<ConsultantReadModel[] | undefined> {
+  return await callEmployee(path);
+}
+
+export async function callEmployee(path: string) {
+  const session = await getCustomServerSession(authOptions);
+
+  if (!session || !session.access_token) return;
+
+  const apiBackendUrl = process.env.BACKEND_URL ?? "http://localhost:7172/v0";
+
+  const headers = new Headers();
+  const bearer = `Bearer ${session.access_token}`;
+
+  headers.append("Authorization", bearer);
+
+  const options = {
+    method: "GET",
+    headers: headers,
+  };
+
+  const completeUrl = `${apiBackendUrl}/${path}`;
+
+  try {
+    const response = await fetch(completeUrl, options);
+    const imageResponse = await fetch(
+      `https://chewie-webapp-ld2ijhpvmb34c.azurewebsites.net/employees`,
+    );
+
+    const { employees }: { employees: EmployeeItemChewbacca[] } =
+      await imageResponse.json();
+
+    const consultantsRes: ConsultantReadModel[] = await response.json();
+
+    const consultants = consultantsRes?.map((consultant) => {
+      const imageCons = employees.find(
+        (imageConsultant) => imageConsultant.email === consultant.email,
+      );
+      return {
+        ...consultant,
+        imageUrl: imageCons?.imageUrl,
+      };
+    });
+
+    return consultants;
+  } catch (e) {
+    console.error(e);
+    throw new Error(`${options.method} ${completeUrl} failed`);
+  }
 }
 
 export async function putWithToken<ReturnType, BodyType>(

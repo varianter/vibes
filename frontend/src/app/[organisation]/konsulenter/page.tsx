@@ -2,9 +2,13 @@ import {
   CompetenceReadModel,
   ConsultantReadModel,
   DepartmentReadModel,
+  EmployeeItemChewbacca,
 } from "@/api-types";
 import ConsultantsContent from "@/components/consultants/ConsultantsContent";
-import { fetchWithToken } from "@/data/apiCallsWithToken";
+import {
+  fetchEmployeesWithImageAndToken,
+  fetchWithToken,
+} from "@/data/apiCallsWithToken";
 import { ConsultantFilterProvider } from "@/hooks/ConsultantFilterProvider";
 
 export default async function Konsulenter({
@@ -12,8 +16,8 @@ export default async function Konsulenter({
 }: {
   params: { organisation: string };
 }) {
-  const consultants =
-    (await fetchWithToken<ConsultantReadModel[]>(
+  const consultants: ConsultantReadModel[] =
+    (await fetchEmployeesWithImageAndToken(
       `${params.organisation}/consultants`,
     )) ?? [];
 

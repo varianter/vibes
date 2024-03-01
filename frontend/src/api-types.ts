@@ -59,7 +59,16 @@ export interface ConsultantReadModel {
   bookings: BookedHoursPerWeek[];
   detailedBooking: DetailedBooking[];
   isOccupied: boolean;
+  imageUrl?: string;
 }
+
+export type EmployeeItemChewbacca = {
+  name: string;
+  email: string;
+  telephone: string | null;
+  imageUrl: string;
+  officeName: string;
+};
 
 export type Competence = {
   /** @minLength 1 */
