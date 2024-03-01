@@ -8,9 +8,11 @@ import CompetenceFilter from "./CompetenceFilter";
 
 // @ts-ignore
 export default function StaffingSidebar({
+  isStaffing = true,
   isSidebarOpen,
   closeSidebar,
 }: {
+  isStaffing?: boolean;
   isSidebarOpen: boolean;
   closeSidebar: () => void;
 }) {
@@ -28,7 +30,7 @@ export default function StaffingSidebar({
             </button>
           </div>
           <SearchBarComponent />
-          <AvailabilityFilter />
+          {isStaffing ? <AvailabilityFilter /> : null}
           <DepartmentFilter />
           <ExperienceFilter />
           <CompetenceFilter />

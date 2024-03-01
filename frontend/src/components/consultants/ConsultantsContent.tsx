@@ -13,6 +13,7 @@ export default function ConsultantContent() {
   return (
     <>
       <StaffingSidebar
+        isStaffing={false}
         isSidebarOpen={isSideBarOpen}
         closeSidebar={() => setIsSidebarOpen(false)}
       />
