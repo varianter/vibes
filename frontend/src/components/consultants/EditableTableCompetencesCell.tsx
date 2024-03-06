@@ -33,6 +33,12 @@ export default function EditableTableCompetencesCell({
 
   useEffect(() => {
     if (isEditing) {
+      setSelectedValues(
+        newCompetences.map((option) => ({
+          value: option.id,
+          label: option.name,
+        })),
+      );
       setConsultant(newCompetences);
     }
   }, [newCompetences]);

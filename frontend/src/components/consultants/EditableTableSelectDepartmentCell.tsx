@@ -32,6 +32,10 @@ export default function EditableTableSelectDepartmentCell({
 
   useEffect(() => {
     if (isEditing) {
+      setSelectedValues({
+        value: newDepartment.id,
+        label: newDepartment.name,
+      });
       setConsultant(newDepartment);
     }
   }, [newDepartment]);
