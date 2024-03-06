@@ -54,7 +54,7 @@ export interface ConsultantReadModel {
   department: DepartmentReadModel;
   /** @format int32 */
   yearsOfExperience: number;
-  graduationYear?: number;
+  graduationYear: number;
   degree: Degree;
   bookings: BookedHoursPerWeek[];
   detailedBooking: DetailedBooking[];

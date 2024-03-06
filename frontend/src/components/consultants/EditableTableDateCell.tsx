@@ -5,26 +5,21 @@ import React, { useEffect, useState } from "react";
 export default function EditableTableDateCell({
   style,
   setConsultant,
-  consultant,
+  date,
   isEditing,
-  field,
 }: {
   style?: string;
-  setConsultant: (consultant: ConsultantReadModel) => void;
-  consultant: ConsultantReadModel;
+  setConsultant: (date: Date | undefined) => void;
+  date: Date | undefined;
   isEditing: boolean;
-  field: "startDate" | "endDate";
 }) {
-  const [newDate, setNewDate] = useState<Date | undefined>(consultant[field]);
-
-  const [editableConsultant, setEditableConsultant] =
-    useState<ConsultantReadModel>(consultant);
+  const [newDate, setNewDate] = useState<Date | undefined>(date);
 
   useEffect(() => {
     if (isEditing) {
-      setConsultant({ ...consultant, [field]: editableConsultant[field] });
+      setConsultant(newDate);
     }
-  }, [editableConsultant]);
+  }, [newDate]);
 
   return (
     <td className="pr-3">
@@ -35,10 +30,6 @@ export default function EditableTableDateCell({
           value={newDate ? new Date(newDate).toISOString().split("T")[0] : ""}
           onChange={(e) => {
             setNewDate(e.target.value ? new Date(e.target.value) : undefined);
-            setEditableConsultant({
-              ...consultant,
-              [field]: e.target.value ? e.target.value : undefined,
-            });
           }}
         />
       ) : (

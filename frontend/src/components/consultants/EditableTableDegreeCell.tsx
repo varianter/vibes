@@ -1,31 +1,28 @@
-import { ConsultantReadModel, Degree } from "@/api-types";
-import Select, { ActionMeta, MultiValue, SingleValue } from "react-select";
+import { Degree } from "@/api-types";
+import Select, { SingleValue } from "react-select";
 
 import React, { useEffect, useState } from "react";
 
 export default function EditableTableDegreeCell({
-  consultant,
+  degree,
   setConsultant,
   isEditing,
-  field,
 }: {
-  consultant: ConsultantReadModel;
-  setConsultant: (consultant: ConsultantReadModel) => void;
+  degree: Degree;
+  setConsultant: (degree: Degree) => void;
   isEditing: boolean;
-  field: "degree";
 }) {
-  const [editableConsultant, setEditableConsultant] =
-    useState<ConsultantReadModel>(consultant);
+  const [newDegree, setNewDegree] = useState<Degree>(degree);
 
   const [selectedValue, setSelectedValue] = useState<{
     value: string;
     label: string;
   }>({
-    value: Degree[consultant[field]],
-    label: consultant[field].toString(),
+    value: Degree[degree],
+    label: degree.toString(),
   });
 
-  const selectOptions = Object.entries(Degree)
+  const selectOption = Object.entries(Degree)
     .filter(([value]) => isNaN(Number(value)))
     .map(([value, label]) => ({
       value: label.toString(),
@@ -34,33 +31,27 @@ export default function EditableTableDegreeCell({
 
   useEffect(() => {
     if (isEditing) {
-      setConsultant({ ...consultant, [field]: editableConsultant[field] });
+      setConsultant(newDegree);
     }
-  }, [editableConsultant]);
+  }, [newDegree]);
 
   return (
     <td className="pr-3">
       {isEditing ? (
         <Select
-          options={selectOptions}
+          options={selectOption}
           isMulti={false}
           defaultValue={selectedValue}
           onChange={(
             selOptions: SingleValue<{ value: string; label: string }>,
           ) => {
             if (selOptions) {
-              setEditableConsultant({
-                ...consultant,
-                //@ts-ignore
-                [field]: Degree[selOptions.value],
-              });
+              setNewDegree(Degree[selOptions.value as keyof typeof Degree]);
             }
           }}
         />
       ) : (
-        <p className="normal text-text_light_black">
-          {editableConsultant[field]}
-        </p>
+        <p className="normal text-text_light_black">{newDegree}</p>
       )}
     </td>
   );

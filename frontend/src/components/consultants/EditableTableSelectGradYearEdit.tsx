@@ -1,23 +1,17 @@
-import { ConsultantReadModel } from "@/api-types";
-import Select, { ActionMeta, MultiValue, SingleValue } from "react-select";
+import Select, { SingleValue } from "react-select";
 
 import React, { useEffect, useState } from "react";
 
 export default function EditableTableSelectGradYearCell({
-  consultant,
+  gradYear,
   setConsultant,
   isEditing,
-  field,
-  options,
 }: {
-  consultant: ConsultantReadModel;
-  setConsultant: (consultant: ConsultantReadModel) => void;
+  gradYear: number;
+  setConsultant: (year: number) => void;
   isEditing: boolean;
-  field: "graduationYear";
-  options: { value: string; label: string }[];
 }) {
-  const [editableConsultant, setEditableConsultant] =
-    useState<ConsultantReadModel>(consultant);
+  const [newYear, setNewYear] = useState<number>(gradYear);
 
   const [selectedValue, setSelectedValue] = useState<
     | {
@@ -25,36 +19,37 @@ export default function EditableTableSelectGradYearCell({
         label: string;
       }
     | undefined
-  >(options.find((option) => option.label === consultant[field]?.toString()));
+  >({ value: gradYear?.toString(), label: gradYear?.toString() });
 
   useEffect(() => {
     if (isEditing) {
-      setConsultant({ ...consultant, [field]: editableConsultant[field] });
+      setConsultant(newYear);
     }
-  }, [editableConsultant]);
+  }, [newYear]);
 
   return (
     <td className="pr-3">
       {isEditing ? (
         <Select
-          options={options}
+          options={Array.from(
+            { length: 50 },
+            (_, i) => new Date().getFullYear() - i,
+          ).map((year) => ({
+            value: year.toString(),
+            label: year.toString(),
+          }))}
           isMulti={false}
           defaultValue={selectedValue}
           onChange={(
             selOptions: SingleValue<{ value: string; label: string }>,
           ) => {
             if (selOptions) {
-              setEditableConsultant({
-                ...consultant,
-                [field]: parseInt(selOptions.value),
-              });
+              setNewYear(parseInt(selOptions.value));
             }
           }}
         />
       ) : (
-        <p className="normal text-text_light_black">
-          {editableConsultant[field]}
-        </p>
+        <p className="normal text-text_light_black">{newYear}</p>
       )}
     </td>
   );

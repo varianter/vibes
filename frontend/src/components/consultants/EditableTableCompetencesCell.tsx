@@ -1,28 +1,26 @@
-import { ConsultantReadModel } from "@/api-types";
+import { Competence, ConsultantReadModel } from "@/api-types";
 import Select, { MultiValue } from "react-select";
 
 import React, { useEffect, useState } from "react";
 
-export default function EditableTableMultiselectCell({
-  consultant,
+export default function EditableTableCompetencesCell({
+  competences,
   setConsultant,
   isEditing,
-  field,
   options,
 }: {
-  consultant: ConsultantReadModel;
-  setConsultant: (consultant: ConsultantReadModel) => void;
+  competences: Competence[];
+  setConsultant: (competences: Competence[]) => void;
   isEditing: boolean;
-  field: keyof ConsultantReadModel;
   options: { id: string; name: string }[];
 }) {
-  const [editableConsultant, setEditableConsultant] =
-    useState<ConsultantReadModel>(consultant);
+  const [newCompetences, setNewCompetences] =
+    useState<Competence[]>(competences);
 
   const [selectedValues, setSelectedValues] = useState<
     { value: string; label: string }[]
   >(
-    consultant.competences.map((option) => ({
+    competences.map((option) => ({
       value: option.id,
       label: option.name,
     })),
@@ -35,16 +33,9 @@ export default function EditableTableMultiselectCell({
 
   useEffect(() => {
     if (isEditing) {
-      setSelectedValues(
-        editableConsultant.competences.map((option) => ({
-          value: option.id,
-          label: option.name,
-        })),
-      );
-
-      setConsultant({ ...consultant, [field]: editableConsultant[field] });
+      setConsultant(newCompetences);
     }
-  }, [editableConsultant]);
+  }, [newCompetences]);
 
   const customStyles = {
     valueContainer: (provided: any) => ({
@@ -66,21 +57,18 @@ export default function EditableTableMultiselectCell({
             selOptions: MultiValue<{ value: string; label: string }>,
           ) => {
             if (Array.isArray(selOptions)) {
-              setEditableConsultant({
-                ...consultant,
-                [field]: selOptions.map((option) => ({
+              setNewCompetences(
+                selOptions.map((option) => ({
                   id: option.value,
                   name: option.label,
                 })),
-              });
+              );
             }
           }}
         />
       ) : (
         <p className="normal text-text_light_black">
-          {(editableConsultant[field] as { id: string; name: string }[])
-            .map((option) => option.name)
-            .join(", ")}
+          {newCompetences.map((option) => option.name).join(", ")}
         </p>
       )}
     </td>

@@ -1,30 +1,28 @@
-import { ConsultantReadModel } from "@/api-types";
-import Select, { ActionMeta, MultiValue, SingleValue } from "react-select";
+import { DepartmentReadModel } from "@/api-types";
+import Select, { SingleValue } from "react-select";
 
 import React, { useEffect, useState } from "react";
 
 export default function EditableTableSelectDepartmentCell({
-  consultant,
+  department,
   setConsultant,
   isEditing,
-  field,
   options,
 }: {
-  consultant: ConsultantReadModel;
-  setConsultant: (consultant: ConsultantReadModel) => void;
+  department: DepartmentReadModel;
+  setConsultant: (department: DepartmentReadModel) => void;
   isEditing: boolean;
-  field: "department";
   options: { id: string; name: string }[];
 }) {
-  const [editableConsultant, setEditableConsultant] =
-    useState<ConsultantReadModel>(consultant);
+  const [newDepartment, setNewDepartment] =
+    useState<DepartmentReadModel>(department);
 
   const [selectedValues, setSelectedValues] = useState<{
     value: string;
     label: string;
   }>({
-    value: consultant[field]?.id,
-    label: consultant[field]?.name,
+    value: department.id,
+    label: department.name,
   });
 
   const selectOptions = options.map((option) => ({
@@ -34,9 +32,9 @@ export default function EditableTableSelectDepartmentCell({
 
   useEffect(() => {
     if (isEditing) {
-      setConsultant({ ...consultant, [field]: editableConsultant[field] });
+      setConsultant(newDepartment);
     }
-  }, [editableConsultant]);
+  }, [newDepartment]);
 
   return (
     <td className="pr-3">
@@ -49,20 +47,15 @@ export default function EditableTableSelectDepartmentCell({
             selOptions: SingleValue<{ value: string; label: string }>,
           ) => {
             if (selOptions) {
-              setEditableConsultant({
-                ...consultant,
-                [field]: {
-                  id: selOptions.value,
-                  name: selOptions.label,
-                },
+              setNewDepartment({
+                id: selOptions.value,
+                name: selOptions.label,
               });
             }
           }}
         />
       ) : (
-        <p className="normal text-text_light_black">
-          {editableConsultant[field].name}
-        </p>
+        <p className="normal text-text_light_black">{newDepartment.name}</p>
       )}
     </td>
   );

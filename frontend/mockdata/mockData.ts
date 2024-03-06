@@ -37,6 +37,7 @@ export const MockConsultants: ConsultantReadModel[] = [
     yearsOfExperience: 23,
     detailedBooking: [],
     isOccupied: true,
+    graduationYear: 2010,
     degree: Degree.Bachelor,
   },
 ];

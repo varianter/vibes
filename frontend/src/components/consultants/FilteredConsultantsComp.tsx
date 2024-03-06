@@ -1,5 +1,10 @@
 "use client";
-import { ConsultantReadModel } from "@/api-types";
+import {
+  Competence,
+  ConsultantReadModel,
+  Degree,
+  DepartmentReadModel,
+} from "@/api-types";
 import { useSimpleConsultantsFilter } from "@/hooks/staffing/useConsultantsFilter";
 import Image from "next/image";
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -9,7 +14,7 @@ import EditableTableDateCell from "./EditableTableDateCell";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import EditableTableSelectDepartmentCell from "./EditableTableSelectDepartmentCell";
 import { useParams } from "next/navigation";
-import EditableTableMultiselectCell from "./EditableTableMultiselectCell";
+import EditableTableCompetencesCell from "./EditableTableCompetencesCell";
 import EditableTableDegreeCell from "./EditableTableDegreeCell";
 import EditableTableSelectGradYearCell from "./EditableTableSelectGradYearEdit";
 import { isEqual } from "lodash";
@@ -30,19 +35,16 @@ export default function FilteredConsultantsComp() {
   const currentConsultantEditRef = useRef(selectedEditConsultant);
 
   useEffect(() => {
-    console.log("outside");
     if (
       filteredConsultants &&
       !isEqual(editableConsultants, filteredConsultants)
     ) {
-      console.log("inside");
       setEditableConsultants(filteredConsultants);
     }
   }, [filteredConsultants]);
 
   async function saveConsultant(consultant: ConsultantReadModel | null) {
     if (consultant) {
-      console.log("saving...", consultant);
       const updatedConsultant = await fetch(
         `/${organisation}/konsulenter/api/consultant`,
         {
@@ -63,9 +65,7 @@ export default function FilteredConsultantsComp() {
   }
 
   useEffect(() => {
-    if (selectedEditConsultant) {
-      currentConsultantEditRef.current = selectedEditConsultant;
-    }
+    currentConsultantEditRef.current = selectedEditConsultant;
   }, [selectedEditConsultant]);
 
   useEffect(() => {
@@ -193,9 +193,12 @@ export default function FilteredConsultantsComp() {
                           type="text"
                           value={selectedEditConsultant.name}
                           onChange={(e) =>
-                            setSelectedEditConsultant({
-                              ...consultant,
-                              name: e.target.value,
+                            setSelectedEditConsultant((selectedConsultant) => {
+                              if (!selectedConsultant) return null;
+                              return {
+                                ...selectedConsultant,
+                                name: e.target.value,
+                              };
                             })
                           }
                         />
@@ -214,69 +217,76 @@ export default function FilteredConsultantsComp() {
                 </div>
               </td>
               <EditableTableTextCell
-                setConsultant={(consultant: ConsultantReadModel) =>
-                  setSelectedEditConsultant(consultant)
+                setConsultant={(email: string) =>
+                  setSelectedEditConsultant((selectedConsultant) => {
+                    if (!selectedConsultant) return null;
+                    return { ...selectedConsultant, email };
+                  })
                 }
-                consultant={consultant}
+                text={consultant.email}
                 isEditing={selectedEditConsultant?.id === consultant.id}
-                field="email"
               />
               <EditableTableDateCell
-                setConsultant={(consultant: ConsultantReadModel) =>
-                  setSelectedEditConsultant(consultant)
+                setConsultant={(date: Date | undefined) =>
+                  setSelectedEditConsultant((selectedConsultant) => {
+                    if (!selectedConsultant) return null;
+                    return { ...selectedConsultant, startDate: date };
+                  })
                 }
-                consultant={consultant}
+                date={consultant.startDate}
                 isEditing={selectedEditConsultant?.id === consultant.id}
-                field="startDate"
               />
               <EditableTableDateCell
-                setConsultant={(consultant: ConsultantReadModel) =>
-                  setSelectedEditConsultant(consultant)
+                setConsultant={(date: Date | undefined) =>
+                  setSelectedEditConsultant((selectedConsultant) => {
+                    if (!selectedConsultant) return null;
+                    return { ...selectedConsultant, endDate: date };
+                  })
                 }
-                consultant={consultant}
+                date={consultant.endDate}
                 isEditing={selectedEditConsultant?.id === consultant.id}
-                field="endDate"
               />
               <EditableTableSelectDepartmentCell
                 options={departments}
-                setConsultant={(consultant: ConsultantReadModel) =>
-                  setSelectedEditConsultant(consultant)
+                setConsultant={(department: DepartmentReadModel) =>
+                  setSelectedEditConsultant((selectedConsultant) => {
+                    if (!selectedConsultant) return null;
+                    return { ...selectedConsultant, department };
+                  })
                 }
-                consultant={consultant}
+                department={consultant.department}
                 isEditing={selectedEditConsultant?.id === consultant.id}
-                field="department"
               />
-              <EditableTableMultiselectCell
+              <EditableTableCompetencesCell
                 options={competences}
-                setConsultant={(consultant: ConsultantReadModel) =>
-                  setSelectedEditConsultant(consultant)
+                setConsultant={(competences: Competence[]) =>
+                  setSelectedEditConsultant((selectedConsultant) => {
+                    if (!selectedConsultant) return null;
+                    return { ...selectedConsultant, competences };
+                  })
                 }
-                consultant={consultant}
+                competences={consultant.competences}
                 isEditing={selectedEditConsultant?.id === consultant.id}
-                field="competences"
               />
               <EditableTableDegreeCell
-                setConsultant={(consultant: ConsultantReadModel) =>
-                  setSelectedEditConsultant(consultant)
+                setConsultant={(degree: Degree) =>
+                  setSelectedEditConsultant((selectedConsultant) => {
+                    if (!selectedConsultant) return null;
+                    return { ...selectedConsultant, degree };
+                  })
                 }
-                consultant={consultant}
+                degree={consultant.degree}
                 isEditing={selectedEditConsultant?.id === consultant.id}
-                field="degree"
               />
               <EditableTableSelectGradYearCell
-                options={Array.from(
-                  { length: 50 },
-                  (_, i) => new Date().getFullYear() - i,
-                ).map((year) => ({
-                  value: year.toString(),
-                  label: year.toString(),
-                }))}
-                setConsultant={(consultant: ConsultantReadModel) =>
-                  setSelectedEditConsultant(consultant)
+                setConsultant={(year: number) =>
+                  setSelectedEditConsultant((selectedConsultant) => {
+                    if (!selectedConsultant) return null;
+                    return { ...selectedConsultant, graduationYear: year };
+                  })
                 }
-                consultant={consultant}
+                gradYear={consultant.graduationYear}
                 isEditing={selectedEditConsultant?.id === consultant.id}
-                field="graduationYear"
               />
 
               <td className="px-2 py-1 rounded-r-md float-right">
@@ -363,9 +373,12 @@ export default function FilteredConsultantsComp() {
                           type="text"
                           value={selectedEditConsultant.name}
                           onChange={(e) =>
-                            setSelectedEditConsultant({
-                              ...consultant,
-                              name: e.target.value,
+                            setSelectedEditConsultant((selectedConsultant) => {
+                              if (!selectedConsultant) return null;
+                              return {
+                                ...selectedConsultant,
+                                name: e.target.value,
+                              };
                             })
                           }
                         />
@@ -384,69 +397,76 @@ export default function FilteredConsultantsComp() {
                 </div>
               </td>
               <EditableTableTextCell
-                setConsultant={(consultant: ConsultantReadModel) =>
-                  setSelectedEditConsultant(consultant)
+                setConsultant={(email: string) =>
+                  setSelectedEditConsultant((selectedConsultant) => {
+                    if (!selectedConsultant) return null;
+                    return { ...selectedConsultant, email };
+                  })
                 }
-                consultant={consultant}
+                text={consultant.email}
                 isEditing={selectedEditConsultant?.id === consultant.id}
-                field="email"
               />
               <EditableTableDateCell
-                setConsultant={(consultant: ConsultantReadModel) =>
-                  setSelectedEditConsultant(consultant)
+                setConsultant={(date: Date | undefined) =>
+                  setSelectedEditConsultant((selectedConsultant) => {
+                    if (!selectedConsultant) return null;
+                    return { ...selectedConsultant, startDate: date };
+                  })
                 }
-                consultant={consultant}
+                date={consultant.startDate}
                 isEditing={selectedEditConsultant?.id === consultant.id}
-                field="startDate"
               />
               <EditableTableDateCell
-                setConsultant={(consultant: ConsultantReadModel) =>
-                  setSelectedEditConsultant(consultant)
+                setConsultant={(date: Date | undefined) =>
+                  setSelectedEditConsultant((selectedConsultant) => {
+                    if (!selectedConsultant) return null;
+                    return { ...selectedConsultant, endDate: date };
+                  })
                 }
-                consultant={consultant}
+                date={consultant.endDate}
                 isEditing={selectedEditConsultant?.id === consultant.id}
-                field="endDate"
               />
               <EditableTableSelectDepartmentCell
                 options={departments}
-                setConsultant={(consultant: ConsultantReadModel) =>
-                  setSelectedEditConsultant(consultant)
+                setConsultant={(department: DepartmentReadModel) =>
+                  setSelectedEditConsultant((selectedConsultant) => {
+                    if (!selectedConsultant) return null;
+                    return { ...selectedConsultant, department };
+                  })
                 }
-                consultant={consultant}
+                department={consultant.department}
                 isEditing={selectedEditConsultant?.id === consultant.id}
-                field="department"
               />
-              <EditableTableMultiselectCell
+              <EditableTableCompetencesCell
                 options={competences}
-                setConsultant={(consultant: ConsultantReadModel) =>
-                  setSelectedEditConsultant(consultant)
+                setConsultant={(competences: Competence[]) =>
+                  setSelectedEditConsultant((selectedConsultant) => {
+                    if (!selectedConsultant) return null;
+                    return { ...selectedConsultant, competences };
+                  })
                 }
-                consultant={consultant}
+                competences={consultant.competences}
                 isEditing={selectedEditConsultant?.id === consultant.id}
-                field="competences"
               />
               <EditableTableDegreeCell
-                setConsultant={(consultant: ConsultantReadModel) =>
-                  setSelectedEditConsultant(consultant)
+                setConsultant={(degree: Degree) =>
+                  setSelectedEditConsultant((selectedConsultant) => {
+                    if (!selectedConsultant) return null;
+                    return { ...selectedConsultant, degree };
+                  })
                 }
-                consultant={consultant}
+                degree={consultant.degree}
                 isEditing={selectedEditConsultant?.id === consultant.id}
-                field="degree"
               />
               <EditableTableSelectGradYearCell
-                options={Array.from(
-                  { length: 50 },
-                  (_, i) => new Date().getFullYear() - i,
-                ).map((year) => ({
-                  value: year.toString(),
-                  label: year.toString(),
-                }))}
-                setConsultant={(consultant: ConsultantReadModel) =>
-                  setSelectedEditConsultant(consultant)
+                setConsultant={(year: number) =>
+                  setSelectedEditConsultant((selectedConsultant) => {
+                    if (!selectedConsultant) return null;
+                    return { ...selectedConsultant, graduationYear: year };
+                  })
                 }
-                consultant={consultant}
+                gradYear={consultant.graduationYear}
                 isEditing={selectedEditConsultant?.id === consultant.id}
-                field="graduationYear"
               />
 
               <td className="px-2 py-1 rounded-r-md float-right">

@@ -344,8 +344,8 @@ public class StorageService
             {
                 Name = body.Name,
                 Email = body.Email,
-                StartDate = body.StartDate,
-                EndDate = body.EndDate,
+                StartDate = body.StartDate.HasValue ? DateOnly.FromDateTime(body.StartDate.Value.Date) : null,
+                EndDate = body.EndDate.HasValue ? DateOnly.FromDateTime(body.EndDate.Value.Date) : null,
                 CompetenceConsultant = new List<CompetenceConsultant>(),
                 Staffings = new List<Staffing>(),
                 PlannedAbsences = new List<PlannedAbsence>(),
@@ -368,8 +368,8 @@ public class StorageService
         {
             consultant.Name = body.Name; 
             consultant.Email = body.Email;
-            consultant.StartDate = body.StartDate;
-            consultant.EndDate = body.EndDate;
+            consultant.StartDate = body.StartDate.HasValue ? DateOnly.FromDateTime(body.StartDate.Value.Date) : null;
+            consultant.EndDate = body.EndDate.HasValue ? DateOnly.FromDateTime(body.EndDate.Value.Date) : null;
             consultant.Department = _dbContext.Department.Single(d => d.Id == body.Department.Id);
             consultant.GraduationYear = body.GraduationYear;
             consultant.Degree = body.Degree;
