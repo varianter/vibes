@@ -34,7 +34,8 @@ public class Consultant
     {
         get
         {
-            var currentDate = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+            
+            var currentDate = DateOnly.FromDateTime(DateTime.Now);
             var graduationDate = new DateOnly(GraduationYear, 8, 1);
             var yearDifference = currentDate.Year - graduationDate.Year;
 
