@@ -51,10 +51,10 @@ export interface ConsultantReadModel {
   endDate?: Date;
   competences: Competence[];
   /** @minLength 1 */
-  department: string;
+  department: DepartmentReadModel;
   /** @format int32 */
   yearsOfExperience: number;
-  graduationYear?: number;
+  graduationYear: number;
   degree: Degree;
   bookings: BookedHoursPerWeek[];
   detailedBooking: DetailedBooking[];
@@ -78,9 +78,9 @@ export type Competence = {
 };
 
 export enum Degree {
-  Master = "Master",
-  Bachelor = "Bachelor",
-  None = "None",
+  Master,
+  Bachelor,
+  None,
 }
 
 export interface DepartmentReadModel {

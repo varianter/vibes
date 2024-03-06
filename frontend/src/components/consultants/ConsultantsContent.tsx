@@ -5,7 +5,7 @@ import { useState } from "react";
 import IconActionButton from "../Buttons/IconActionButton";
 import { Filter } from "react-feather";
 import ActiveFilters from "../ActiveFilters";
-import FilteredConsultants from "./FilteredConsultants";
+import FilteredConsultantsComp from "./FilteredConsultantsComp";
 
 export default function ConsultantContent() {
   const [isSideBarOpen, setIsSidebarOpen] = useState<boolean>(false);
@@ -30,7 +30,7 @@ export default function ConsultantContent() {
             <ActiveFilters />
           </div>
         </div>
-        <FilteredConsultants />
+        <FilteredConsultantsComp />
       </div>
     </>
   );

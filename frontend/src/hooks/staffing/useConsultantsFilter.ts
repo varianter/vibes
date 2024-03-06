@@ -25,7 +25,7 @@ async function getNumWorkHours(
 }
 
 export function useSimpleConsultantsFilter() {
-  const { consultants } = useContext(FilteredContext);
+  const { consultants, setConsultants } = useContext(FilteredContext);
 
   const { departmentFilter, competenceFilter, searchFilter } =
     useContext(FilteredContext).activeFilters;
@@ -44,6 +44,7 @@ export function useSimpleConsultantsFilter() {
 
   return {
     filteredConsultants,
+    setConsultants,
   };
 }
 
@@ -113,7 +114,7 @@ export function filterConsultants({
     newFilteredConsultants = newFilteredConsultants?.filter((consultant) =>
       departmentFilter
         .toLowerCase()
-        .includes(consultant.department.toLowerCase()),
+        .includes(consultant.department.name.toLowerCase()),
     );
   }
   if (competenceFilter && competenceFilter.length > 0) {
