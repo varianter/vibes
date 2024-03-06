@@ -31,6 +31,10 @@ export default function EditableTableDegreeCell({
 
   useEffect(() => {
     if (isEditing) {
+      setSelectedValue({
+        value: Degree[newDegree],
+        label: newDegree.toString(),
+      });
       setConsultant(newDegree);
     }
   }, [newDegree]);
