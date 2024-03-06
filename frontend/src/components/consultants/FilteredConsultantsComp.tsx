@@ -8,7 +8,7 @@ import {
 import { useSimpleConsultantsFilter } from "@/hooks/staffing/useConsultantsFilter";
 import Image from "next/image";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { FiEdit3 } from "react-icons/fi";
+import { Edit3, Check } from "react-feather";
 import EditableTableTextCell from "./EditableTableTextCell";
 import EditableTableDateCell from "./EditableTableDateCell";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
@@ -306,7 +306,11 @@ export default function FilteredConsultantsComp() {
                     }
                   }}
                 >
-                  <FiEdit3 className="text-primary" size="24" />
+                  {selectedEditConsultant?.id === consultant.id ? (
+                    <Check className="text-primary" size="24" />
+                  ) : (
+                    <Edit3 className="text-primary" size="24" />
+                  )}
                 </button>
               </td>
             </tr>
@@ -486,7 +490,11 @@ export default function FilteredConsultantsComp() {
                     }
                   }}
                 >
-                  <FiEdit3 className="text-primary" size="24" />
+                  {selectedEditConsultant?.id === consultant.id ? (
+                    <Check className="text-primary" size="24" />
+                  ) : (
+                    <Edit3 className="text-primary" size="24" />
+                  )}
                 </button>
               </td>
             </tr>
