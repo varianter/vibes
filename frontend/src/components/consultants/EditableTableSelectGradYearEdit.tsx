@@ -23,6 +23,10 @@ export default function EditableTableSelectGradYearCell({
 
   useEffect(() => {
     if (isEditing) {
+      setSelectedValue({
+        value: newYear.toString(),
+        label: newYear.toString(),
+      });
       setConsultant(newYear);
     }
   }, [newYear]);
