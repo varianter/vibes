@@ -16,7 +16,7 @@ public class Consultant
     public required Department Department { get; set; }
 
     public Degree? Degree { get; set; }
-    public int? GraduationYear { get; set; }
+    public int GraduationYear { get; set; }
     public int TransferredVacationDays { get; set; }
 
     public ICollection<CompetenceConsultant> CompetenceConsultant { get; set; } = new List<CompetenceConsultant>();
@@ -34,10 +34,15 @@ public class Consultant
     {
         get
         {
-            var augustThisYear = new DateTime(DateTime.Now.Year, 9, 20);
-            var currentAcademicYear =
-                (DateTime.Now - augustThisYear).Seconds > 0 ? DateTime.Now.Year : DateTime.Now.Year - 1;
-            return currentAcademicYear - GraduationYear ?? currentAcademicYear;
+            var currentDate = DateTime.Now;
+            var graduationDate = new DateTime(GraduationYear, 8, 1);
+            var yearDifference = currentDate.Year - graduationDate.Year;
+
+            if (currentDate.Month < graduationDate.Month || (currentDate.Month == graduationDate.Month && currentDate.Day < graduationDate.Day))
+                {
+                    yearDifference--;
+                }
+            return yearDifference;
         }
     }
 

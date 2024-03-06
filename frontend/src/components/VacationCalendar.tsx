@@ -123,7 +123,7 @@ export default function VacationCalendar({
 
       <div className="flex flex-col justify-center m-4">
         <h1 className="text-black">{consultant.name}</h1>
-        <p className="normal text-black">{consultant.department}</p>
+        <p className="normal text-black">{consultant.department.name}</p>
         <p></p>
         <Calendar
           multiple

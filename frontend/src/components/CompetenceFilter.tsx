@@ -10,7 +10,7 @@ export default function CompetenceFilter() {
   if (competences.length > 0) {
     return (
       <div className="flex flex-col gap-2">
-        <p className="small">Avdeling</p>
+        <p className="small">Kompetanse</p>
         <div className="flex flex-col gap-2 w-52">
           {competences?.map((competence, index) => (
             <FilterButton

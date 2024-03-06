@@ -70,4 +70,24 @@ public class ConsultantController : ControllerBase
         
         return Ok(readModels);
     }
+
+    [HttpPut]
+    public ActionResult<SingleConsultantReadModel> Put([FromRoute] string orgUrlKey,
+        [FromBody] ConsultantWriteModel body)
+    {
+
+        var service = new StorageService(_cache, _context);
+
+        var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
+        if (selectedOrg is null) return BadRequest("Selected org not found");
+
+        var consultant = service.UpdateOrCreateConsultant(selectedOrg, body, orgUrlKey);
+
+
+
+        var responseModel =
+            new SingleConsultantReadModel(consultant);
+
+        return Ok(responseModel);
+    }
 }
