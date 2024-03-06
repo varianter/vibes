@@ -151,7 +151,8 @@ public class Tests
             Id = 1,
             Name = "Test Variant",
             Email = "tv@v.no",
-            Department = department
+            Department = department,
+            GraduationYear = 2010,
         };
 
         var week = new Week(2000, 1);
