@@ -34,8 +34,8 @@ public class Consultant
     {
         get
         {
-            var currentDate = DateTime.Now;
-            var graduationDate = new DateTime(GraduationYear, 8, 1);
+            var currentDate = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+            var graduationDate = new DateOnly(GraduationYear, 8, 1);
             var yearDifference = currentDate.Year - graduationDate.Year;
 
             if (currentDate.Month < graduationDate.Month || (currentDate.Month == graduationDate.Month && currentDate.Day < graduationDate.Day))
