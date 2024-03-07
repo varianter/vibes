@@ -81,9 +81,27 @@ public class ConsultantController : ControllerBase
         var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrg is null) return BadRequest("Selected org not found");
 
-        var consultant = service.UpdateOrCreateConsultant(selectedOrg, body, orgUrlKey);
+        var consultant = service.UpdateConsultant(selectedOrg, body);
 
 
+
+        var responseModel =
+            new SingleConsultantReadModel(consultant);
+
+        return Ok(responseModel);
+    }
+
+    [HttpPost]
+    public ActionResult<SingleConsultantReadModel> Post([FromRoute] string orgUrlKey,
+        [FromBody] ConsultantWriteModel body)
+    {
+
+        var service = new StorageService(_cache, _context);
+
+        var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
+        if (selectedOrg is null) return BadRequest("Selected org not found");
+
+        var consultant = service.CreateConsultant(selectedOrg, body);
 
         var responseModel =
             new SingleConsultantReadModel(consultant);

@@ -69,7 +69,4 @@ public record ConsultantWriteModel(int? Id,
     List<CompetenceReadModel>? Competences,
     UpdateDepartmentReadModel Department,
     int GraduationYear,
-    int YearsOfExperience,
     Degree Degree);
-
-

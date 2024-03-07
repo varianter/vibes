@@ -1,5 +1,5 @@
 import { ConsultantReadModel } from "@/api-types";
-import { putWithToken } from "@/data/apiCallsWithToken";
+import { postWithToken, putWithToken } from "@/data/apiCallsWithToken";
 import { NextResponse } from "next/server";
 
 export async function PUT(
@@ -16,4 +16,20 @@ export async function PUT(
     )) ?? [];
 
   return NextResponse.json(updatedConsultant);
+}
+
+export async function POST(
+  request: Request,
+  { params }: { params: { organisation: string } },
+) {
+  const orgUrlKey = params.organisation;
+  const requestBody = (await request.json()) as ConsultantReadModel;
+
+  const createdConsultant =
+    (await postWithToken<ConsultantReadModel, ConsultantReadModel>(
+      `${orgUrlKey}/consultants`,
+      requestBody,
+    )) ?? [];
+
+  return NextResponse.json(createdConsultant);
 }

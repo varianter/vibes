@@ -62,6 +62,21 @@ export interface ConsultantReadModel {
   imageUrl?: string;
 }
 
+export interface ConsultantWriteModel {
+  /** @minLength 1 */
+  name: string;
+  /** @minLength 1 */
+  email: string;
+  /** @format int32 */
+  department: DepartmentReadModel;
+  competences: Competence[];
+  degree: Degree;
+  /** @format int32 */
+  graduationYear: number;
+  startDate: Date;
+  endDate?: Date;
+}
+
 export type EmployeeItemChewbacca = {
   name: string;
   email: string;
