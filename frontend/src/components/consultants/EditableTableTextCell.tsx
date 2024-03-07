@@ -24,7 +24,7 @@ export default function EditableTableTextCell({
     <td className="pr-3">
       {isEditing ? (
         <input
-          className="w-full h-7 px-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+          className="w-full py-2 px-3 border border-primary_50 rounded-md focus:outline-none focus:ring-1 focus:ring-primary text-sm"
           type="text"
           value={newText}
           onChange={(e) => setNewText(e.target.value)}
