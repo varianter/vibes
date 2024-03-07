@@ -10,7 +10,7 @@ public record StaffingReadModel(
     [property: Required] string Name,
     [property: Required] string Email,
     [property: Required] List<CompetenceReadModel> Competences,
-    [property: Required] string Department,
+    [property: Required] UpdateDepartmentReadModel Department,
     [property: Required] int YearsOfExperience,
     [property: Required] Degree Degree,
     [property: Required] List<BookedHoursPerWeek> Bookings,
@@ -24,7 +24,7 @@ public record StaffingReadModel(
             consultant.Name,
             consultant.Email,
             consultant.CompetenceConsultant.Select(cc => new CompetenceReadModel(cc.Competence.Id, cc.Competence.Name)).ToList(),
-            consultant.Department.Name,
+            new UpdateDepartmentReadModel(consultant.Department.Id, consultant.Department.Name),
             consultant.YearsOfExperience,
             consultant.Degree ?? Degree.Master,
             bookings,
@@ -34,6 +34,10 @@ public record StaffingReadModel(
     {
     }
 }
+
+public record UpdateDepartmentReadModel(
+    string Id,
+    string Name);
 
 public record CompetenceReadModel(
     [property: Required] string Id,
