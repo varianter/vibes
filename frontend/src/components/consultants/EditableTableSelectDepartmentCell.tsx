@@ -44,6 +44,24 @@ export default function EditableTableSelectDepartmentCell({
     <td className="pr-3">
       {isEditing ? (
         <Select
+          styles={{
+            valueContainer: (provided: any) => ({
+              ...provided,
+              // Set a maximum height
+              overflow: "auto", // Enable scrolling
+              maxHeight: "37px",
+            }),
+            control: (baseStyles, state) => ({
+              ...baseStyles,
+              borderColor: state.isFocused
+                ? "var(--primary, #423D89)"
+                : "var(--primary_50, #423D8980)",
+              padding: "0.05rem 0.2rem ",
+              color: "var(--primary, #423D89)",
+              maxHeight: "41px",
+              overflow: "auto",
+            }),
+          }}
           options={selectOptions}
           isMulti={false}
           defaultValue={selectedValues}

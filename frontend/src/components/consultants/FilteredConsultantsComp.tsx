@@ -84,7 +84,7 @@ export default function FilteredConsultantsComp() {
   }, [listRef]);
 
   return (
-    <table className={`w-full border-separate border-spacing-y-1 table-fixed`}>
+    <table className={`border-separate border-spacing-y-1 table-fixed`}>
       <thead>
         <tr className="sticky -top-6 bg-white z-10">
           <th className="px-2 py-1 pt-3 bg-white w-1/6">
@@ -120,7 +120,7 @@ export default function FilteredConsultantsComp() {
             </div>
           </th>
 
-          <th className="py-1 pt-3">
+          <th className="min-w-[120px] md:min-w-[200px] py-1 pt-3">
             <div className="flex flex-col gap-1">
               <p className="normal text-left">Kompetanse</p>
             </div>
@@ -132,12 +132,12 @@ export default function FilteredConsultantsComp() {
             </div>
           </th>
 
-          <th className="py-1 pt-3 w-28">
+          <th className="py-1 pt-3 w-32">
             <div className="flex flex-col gap-1">
               <p className="normal text-left">Eksamensår</p>
             </div>
           </th>
-          <th className="py-1 pt-3 w-20">
+          <th className="py-1 pt-3 w-14">
             <div className="flex flex-col gap-1"></div>
           </th>
         </tr>
@@ -189,7 +189,7 @@ export default function FilteredConsultantsComp() {
                     <div className="pr-3">
                       {selectedEditConsultant?.id === consultant.id ? (
                         <input
-                          className="w-full h-7 px-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+                          className="w-full py-2 px-3 border border-primary_50 rounded-md focus:outline-none focus:ring-1 focus:ring-primary text-sm"
                           type="text"
                           value={selectedEditConsultant.name}
                           onChange={(e) =>
@@ -289,9 +289,9 @@ export default function FilteredConsultantsComp() {
                 isEditing={selectedEditConsultant?.id === consultant.id}
               />
 
-              <td className="px-2 py-1 rounded-r-md float-right">
+              <td className="rounded-r-md">
                 <button
-                  className="flex self-center hover:bg-background_light_purple p-2 rounded"
+                  className="flex self-center hover:bg-background_light_purple p-2 rounded float-right"
                   onClick={() => {
                     if (
                       selectedEditConsultant &&
@@ -373,7 +373,7 @@ export default function FilteredConsultantsComp() {
                     <div className="pr-3">
                       {selectedEditConsultant?.id === consultant.id ? (
                         <input
-                          className="w-full h-7 px-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+                          className="w-full py-2 px-3 border border-primary_50 rounded-md focus:outline-none focus:ring-1 focus:ring-primary text-sm"
                           type="text"
                           value={selectedEditConsultant.name}
                           onChange={(e) =>
