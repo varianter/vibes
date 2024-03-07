@@ -19,7 +19,11 @@ import EditableTableDegreeCell from "./EditableTableDegreeCell";
 import EditableTableSelectGradYearCell from "./EditableTableSelectGradYearEdit";
 import { isEqual } from "lodash";
 
-export default function FilteredConsultantsComp() {
+export default function FilteredConsultantsComp({
+  isModalOpen,
+}: {
+  isModalOpen: boolean;
+}) {
   const { filteredConsultants, setConsultants } = useSimpleConsultantsFilter();
   const [editableConsultants, setEditableConsultants] = useState<
     ConsultantReadModel[]
@@ -70,10 +74,15 @@ export default function FilteredConsultantsComp() {
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (listRef.current && !listRef.current.contains(event.target as Node)) {
-        saveConsultant(currentConsultantEditRef.current ?? null);
-        setSelectedEditConsultant(null);
-        setIsDisabledHotkeys(false);
+      if (!isModalOpen) {
+        if (
+          listRef.current &&
+          !listRef.current.contains(event.target as Node)
+        ) {
+          saveConsultant(currentConsultantEditRef.current ?? null);
+          setSelectedEditConsultant(null);
+          setIsDisabledHotkeys(false);
+        }
       }
     }
 
@@ -81,7 +90,7 @@ export default function FilteredConsultantsComp() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [listRef]);
+  }, [listRef, isModalOpen]);
 
   return (
     <table className={`border-separate border-spacing-y-1 table-fixed`}>
@@ -151,6 +160,7 @@ export default function FilteredConsultantsComp() {
               new Date(e.endDate).setHours(0, 0, 0, 0) >=
                 new Date().setHours(0, 0, 0, 0),
           )
+          .sort((a, b) => a.name.localeCompare(b.name))
           .map((consultant) => (
             <tr
               key={consultant.id}
@@ -336,6 +346,7 @@ export default function FilteredConsultantsComp() {
               new Date(e.endDate).setHours(0, 0, 0, 0) <
                 new Date().setHours(0, 0, 0, 0),
           )
+          .sort((a, b) => a.name.localeCompare(b.name))
           .map((consultant) => (
             <tr
               key={consultant.id}

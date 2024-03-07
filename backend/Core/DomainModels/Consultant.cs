@@ -43,7 +43,8 @@ public class Consultant
                 {
                     yearDifference--;
                 }
-            return yearDifference;
+            // Check if < 0 because the consultant has not yet graduated (before 1.August the same year as graduation), the years of experience is 0
+            return yearDifference < 0 ? 0 : yearDifference;
         }
     }
 
