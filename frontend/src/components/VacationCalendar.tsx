@@ -17,9 +17,10 @@ export default function VacationCalendar({
   organisationUrl: string;
 }) {
   const [value, setValue] = useState<Value>(
-    vacationDays.vacationDays?.map((date) => new DateObject(date)) || [],
+    vacationDays.vacationDays?.map((date) => new DateObject(date)) ?? [],
   );
   const [vacationInformation, setVacationInformation] = useState(vacationDays);
+  const today = new DateObject();
 
   function handleChange(e: Value) {
     const searchRegExp = /\//g;
@@ -130,6 +131,7 @@ export default function VacationCalendar({
           fullYear
           weekStartDayIndex={1}
           displayWeekNumbers
+          currentDate={today}
           value={value}
           onChange={handleChange}
           className="custom-calendar"
