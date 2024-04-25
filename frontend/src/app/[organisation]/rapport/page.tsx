@@ -44,8 +44,6 @@ export default async function Rapport({
       `${params.organisation}/projects`,
     )) ?? [];
 
-  console.log(consultants);
-
   return (
     <ConsultantFilterProvider
       consultants={consultants}
