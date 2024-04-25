@@ -2,7 +2,6 @@ import {
   CompetenceReadModel,
   ConsultantReadModel,
   DepartmentReadModel,
-  EmployeeItemChewbacca,
 } from "@/api-types";
 import ConsultantsContent from "@/components/consultants/ConsultantsContent";
 import {

@@ -51,15 +51,30 @@ export interface ConsultantReadModel {
   endDate?: Date;
   competences: Competence[];
   /** @minLength 1 */
-  department: string;
+  department: DepartmentReadModel;
   /** @format int32 */
   yearsOfExperience: number;
-  graduationYear?: number;
+  graduationYear: number;
   degree: Degree;
   bookings: BookedHoursPerWeek[];
   detailedBooking: DetailedBooking[];
   isOccupied: boolean;
   imageUrl?: string;
+}
+
+export interface ConsultantWriteModel {
+  /** @minLength 1 */
+  name: string;
+  /** @minLength 1 */
+  email: string;
+  /** @format int32 */
+  department: DepartmentReadModel;
+  competences: Competence[];
+  degree: Degree;
+  /** @format int32 */
+  graduationYear: number;
+  startDate: Date;
+  endDate?: Date;
 }
 
 export type EmployeeItemChewbacca = {
@@ -78,9 +93,9 @@ export type Competence = {
 };
 
 export enum Degree {
-  Master = "Master",
-  Bachelor = "Bachelor",
-  None = "None",
+  Master,
+  Bachelor,
+  None,
 }
 
 export interface DepartmentReadModel {

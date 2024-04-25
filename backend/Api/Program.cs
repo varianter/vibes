@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 var connection = builder.Configuration.GetConnectionString("VibesDb");
 
 if (string.IsNullOrEmpty(connection))
-    throw new Exception("No connection string found");
+    throw new InvalidOperationException("No connection string found");
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration);
@@ -27,13 +27,14 @@ builder.Services.AddEndpointsApiExplorer();
 
 
 var adOptions = builder.Configuration.GetSection("AzureAd").Get<AzureAdOptions>();
-if (adOptions == null) throw new Exception("Required AzureAd options are missing");
+if (adOptions == null) throw new InvalidOperationException("Required AzureAd options are missing");
 
 builder.Services.AddSwaggerGen(genOptions =>
 {
     genOptions.SwaggerDoc("v0", new OpenApiInfo { Title = "Vibes API", Version = "v0" });
     genOptions.ConfigureSwaggerAuthentication(adOptions);
     genOptions.SupportNonNullableReferenceTypes();
+    genOptions.CustomSchemaIds(type => type.FullName);
 });
 
 var app = builder.Build();

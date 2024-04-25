@@ -1,3 +1,4 @@
+using Api.Consultants;
 using Api.Organisation;
 using Core.DomainModels;
 using Database.DatabaseContext;
@@ -327,6 +328,77 @@ public class StorageService
 
         _dbContext.SaveChanges();
         ClearConsultantCache(orgUrlKey);
+    }
+
+    public Consultant CreateConsultant(Organization org, ConsultantWriteModel body)
+    {  
+        var consultant = new Consultant
+        {
+            Name = body.Name,
+            Email = body.Email,
+            StartDate = body.StartDate.HasValue ? DateOnly.FromDateTime(body.StartDate.Value.Date) : null,
+            EndDate = body.EndDate.HasValue ? DateOnly.FromDateTime(body.EndDate.Value.Date) : null,
+            CompetenceConsultant = new List<CompetenceConsultant>(),
+            Staffings = new List<Staffing>(),
+            PlannedAbsences = new List<PlannedAbsence>(),
+            Vacations = new List<Vacation>(),
+            Department = _dbContext.Department.Single(d => d.Id == body.Department.Id),
+            GraduationYear = body.GraduationYear,
+            Degree = body.Degree
+        };
+        body?.Competences?.ForEach(c => consultant.CompetenceConsultant.Add(new CompetenceConsultant
+        {
+            Competence = _dbContext.Competence.Single(comp => comp.Id == c.Id),
+            Consultant = consultant,
+            CompetencesId = c.Id,
+            ConsultantId = consultant.Id,
+        }));
+        
+        _dbContext.Consultant.Add(consultant);
+        
+
+        _dbContext.SaveChanges();
+        ClearConsultantCache(org.UrlKey);
+
+        return consultant;
+    }
+
+    public Consultant UpdateConsultant(Organization org, ConsultantWriteModel body)
+    {
+
+        var consultant = _dbContext.Consultant
+            .Include(c => c.CompetenceConsultant)
+            .Single(c => c.Id == body.Id);
+
+        if(consultant is not null) {
+            consultant.Name = body.Name; 
+            consultant.Email = body.Email;
+            consultant.StartDate = body.StartDate.HasValue ? DateOnly.FromDateTime(body.StartDate.Value.Date) : null;
+            consultant.EndDate = body.EndDate.HasValue ? DateOnly.FromDateTime(body.EndDate.Value.Date) : null;
+            consultant.Department = _dbContext.Department.Single(d => d.Id == body.Department.Id);
+            consultant.GraduationYear = body.GraduationYear;
+            consultant.Degree = body.Degree;
+        
+            // Clear the CompetenceConsultant collection
+            consultant.CompetenceConsultant.Clear();
+
+            // For each new competence, create a new CompetenceConsultant entity
+            foreach (var competence in body?.Competences)
+            {
+                consultant.CompetenceConsultant.Add(new CompetenceConsultant
+                {
+                    ConsultantId = consultant.Id,
+                    CompetencesId = competence.Id,
+                    Competence = _dbContext.Competence.Single(comp => comp.Id == competence.Id),
+                    Consultant = consultant,
+                });
+            }
+        }
+
+        _dbContext.SaveChanges();
+        ClearConsultantCache(org.UrlKey);
+
+        return consultant;
     }
 
     public Customer UpdateOrCreateCustomer(Organization org, string customerName, string orgUrlKey)

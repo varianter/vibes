@@ -10,6 +10,7 @@ export default {
       white: "#FFFFFF",
       primary: "#423D89",
       primary_darker: "#35316E",
+      primary_50: "#423D8980",
       secondary: "#F076A6",
       available: "#FFE5B5",
       available_darker: "#573900",

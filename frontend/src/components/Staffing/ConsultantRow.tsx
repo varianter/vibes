@@ -15,6 +15,7 @@ import {
 import { useWeekSelectors } from "@/hooks/useWeekSelectors";
 import { setDetailedBookingHours } from "./NewDetailedBookingRow";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
+import { DateTime } from "luxon";
 
 export default function ConsultantRows({
   consultant,
@@ -30,10 +31,25 @@ export default function ConsultantRows({
   const [addNewRow, setAddNewRow] = useState(false);
   const { weekList, setSelectedWeekSpan } = useWeekSelectors();
   const { setIsDisabledHotkeys } = useContext(FilteredContext);
+  const { selectedWeekFilter, weekSpan } =
+    useContext(FilteredContext).activeFilters;
+
+  const [newWeekList, setNewWeekList] = useState<DateTime[]>(weekList);
 
   useEffect(() => {
     setSelectedWeekSpan(consultant.bookings.length);
     setCurrentConsultant(consultant);
+    if (selectedWeekFilter) {
+      setNewWeekList([]);
+      Array.from({ length: weekSpan }).map((_, index) => {
+        setNewWeekList((old) => [
+          ...old,
+          DateTime.fromISO(
+            `${selectedWeekFilter?.year}-W${selectedWeekFilter?.weekNumber}`,
+          ).plus({ weeks: index }),
+        ]);
+      });
+    }
   }, [consultant.bookings.length, consultant]);
 
   const columnCount = currentConsultant.bookings.length ?? 0;
@@ -100,14 +116,15 @@ export default function ConsultantRows({
       )
     ) {
       try {
-        const res = await setDetailedBookingHours({
+        const body = {
           hours: 0,
           bookingType: getBookingTypeFromProjectState(project?.bookingType),
           organisationUrl: organisationUrl,
           consultantId: currentConsultant.id,
           bookingId: `${project?.projectId}`,
-          startWeek: dayToWeek(weekList[0]),
-        });
+          startWeek: dayToWeek(newWeekList[0]),
+        };
+        const res = await setDetailedBookingHours(body);
 
         if (res) {
           const tempCurrentConsultant = { ...currentConsultant };
@@ -117,7 +134,7 @@ export default function ConsultantRows({
           );
 
           if (newDetailedBooking) {
-            newDetailedBooking.hours = weekList.map((e) => {
+            newDetailedBooking.hours = newWeekList.map((e) => {
               return { week: dayToWeek(e), hours: 0 };
             });
             tempCurrentConsultant.detailedBooking.push(newDetailedBooking);
