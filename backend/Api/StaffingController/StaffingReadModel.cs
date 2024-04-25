@@ -59,7 +59,7 @@ public record DetailedBooking(
     [property: Required] BookingDetails BookingDetails,
     [property: Required] List<WeeklyHours> Hours)
 {
-    private double TotalHoursForWeek(Week week)
+    public double TotalHoursForWeek(Week week)
     {
         return Hours.Where(weeklySum => weeklySum.Week == week.ToSortableInt()).Sum(weeklyHours => weeklyHours.Hours);
     }
@@ -78,6 +78,7 @@ public record WeeklyBookingReadModel(
     [property: Required] double TotalBillable,
     [property: Required] double TotalOffered,
     [property: Required] double TotalPlannedAbsences,
+    [property: Required] double TotalExludableAbsence,
     [property: Required] double TotalSellableTime,
     [property: Required] double TotalHolidayHours,
     [property: Required] double TotalVacationHours,
@@ -88,6 +89,7 @@ public record BookingDetails(
     [property: Required] BookingType Type,
     [property: Required] string CustomerName,
     [property: Required] int ProjectId,
+    [property: Required] bool ExcludeFromBilling = false,
     [property: Required] bool IsBillable = false);
 
 public record WeeklyHours([property: Required] int Week, [property: Required] double Hours);

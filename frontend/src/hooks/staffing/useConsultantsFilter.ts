@@ -205,17 +205,19 @@ function setWeeklyInvoiceRate(
   numWorkHours: number,
 ) {
   const weeklyInvoiceRate = new Map<number, number>();
+  
 
   weeklyTotalBillable.forEach((totalBillable, weekNumber) => {
     let totalAvailableWeekHours = 0;
 
     filteredConsultants.forEach((consultant) => {
       consultant.bookings.forEach((booking) => {
+        debugger
         if (booking.weekNumber === weekNumber) {
           let consultantAvailableWeekHours =
             numWorkHours -
             booking.bookingModel.totalHolidayHours -
-            booking.bookingModel.totalPlannedAbsences -
+            booking.bookingModel.totalExludableAbsence -
             booking.bookingModel.totalVacationHours;
 
           totalAvailableWeekHours += consultantAvailableWeekHours;
