@@ -264,6 +264,7 @@ export interface WeeklyBookingReadModel {
   totalVacationHours: number;
   /** @format double */
   totalOverbooking: number;
+  totalExludableAbsence: number;
 }
 
 export interface WeeklyHours {

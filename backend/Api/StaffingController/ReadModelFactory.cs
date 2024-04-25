@@ -100,7 +100,7 @@ public class ReadModelFactory
             .Select(grouping => new DetailedBooking(
                 new BookingDetails(grouping.First().Engagement.Name, BookingType.Booking,
                     grouping.First().Engagement.Customer.Name,
-                    grouping.Key, grouping.First().Engagement.IsBillable),
+                    grouping.Key, false, grouping.First().Engagement.IsBillable),
                 weekSet.Select(week =>
                     new WeeklyHours(
                         week.ToSortableInt(), grouping
@@ -116,7 +116,7 @@ public class ReadModelFactory
             .Select(grouping => new DetailedBooking(
                 new BookingDetails(grouping.First().Engagement.Name, BookingType.Offer,
                     grouping.First().Engagement.Customer.Name,
-                    grouping.Key, grouping.First().Engagement.IsBillable),
+                    grouping.Key, false, grouping.First().Engagement.IsBillable),
                 weekSet.Select(week =>
                     new WeeklyHours(
                         week.ToSortableInt(),
@@ -132,7 +132,8 @@ public class ReadModelFactory
             .Select(grouping => new DetailedBooking(
                 new BookingDetails(grouping.Key, BookingType.PlannedAbsence,
                     grouping.Key,
-                    grouping.First().Absence.Id), //Empty projectName as PlannedAbsence does not have a project
+                    grouping.First().Absence.Id,//Empty projectName as PlannedAbsence does not have a project
+                    grouping.First().Absence.ExcludeFromBillRate),
                 weekSet.Select(week =>
                     new WeeklyHours(
                         week.ToSortableInt(),
@@ -141,6 +142,7 @@ public class ReadModelFactory
                                 absence.Week.Equals(week))
                             .Sum(absence => absence.Hours)
                     )).ToList()
+
             ));
 
 
@@ -190,6 +192,11 @@ public class ReadModelFactory
         var totalAbsence = DetailedBooking.GetTotalHoursPrBookingTypeAndWeek(detailedBookingsArray,
             BookingType.PlannedAbsence,
             week);
+        
+        var totalExludableAbsence = detailedBookingsArray
+            .Where(s => s.BookingDetails.Type == BookingType.PlannedAbsence &&  s.BookingDetails.ExcludeFromBilling )
+            .Select(wh => wh.TotalHoursForWeek(week))
+            .Sum();        
 
         var totalVacations = DetailedBooking.GetTotalHoursPrBookingTypeAndWeek(detailedBookingsArray,
             BookingType.Vacation,
@@ -209,7 +216,7 @@ public class ReadModelFactory
             week.WeekNumber,
             week.ToSortableInt(),
             GetDatesForWeek(week),
-            new WeeklyBookingReadModel(totalBillable, totalOffered, totalAbsence, totalSellableTime,
+            new WeeklyBookingReadModel(totalBillable, totalOffered, totalAbsence, totalExludableAbsence,  totalSellableTime,
                 totalHolidayHours, totalVacations,
                 totalOverbooked)
         );

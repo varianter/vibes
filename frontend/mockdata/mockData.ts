@@ -16,6 +16,7 @@ const MockWeeklyBookingReadModel: WeeklyBookingReadModel = {
   totalBillable: 0,
   totalOffered: 0,
   totalVacationHours: 0,
+  totalExludableAbsence: 0,
 };
 
 export const MockConsultants: ConsultantReadModel[] = [
