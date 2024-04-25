@@ -206,7 +206,6 @@ function setWeeklyInvoiceRate(
   numWorkHours: number,
 ) {
   const weeklyInvoiceRate = new Map<number, number>();
-  
 
   weeklyTotalBillable.forEach((totalBillable, weekNumber) => {
     let totalAvailableWeekHours = 0;
