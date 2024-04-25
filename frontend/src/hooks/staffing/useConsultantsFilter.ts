@@ -213,7 +213,6 @@ function setWeeklyInvoiceRate(
 
     filteredConsultants.forEach((consultant) => {
       consultant.bookings.forEach((booking) => {
-        debugger
         if (booking.weekNumber === weekNumber) {
           let consultantAvailableWeekHours =
             numWorkHours -
