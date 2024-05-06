@@ -54,6 +54,7 @@ public class Tests
             Id = 1,
             Name = "Test Variant",
             Email = "tv@v.no",
+            GraduationYear = 2010,
             Department = department
         };
 
@@ -152,6 +153,7 @@ public class Tests
             Id = 1,
             Name = "Test Variant",
             Email = "tv@v.no",
+            GraduationYear = 2010,
             Department = department
         };
 

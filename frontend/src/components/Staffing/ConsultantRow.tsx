@@ -230,9 +230,9 @@ export default function ConsultantRows({
             } `}
           ></td>
           <td>
-          <AddEngagementForm
-            closeEngagementModal={handleNewEngagement}
-            consultant={currentConsultant}
+            <AddEngagementForm
+              closeEngagementModal={handleNewEngagement}
+              consultant={currentConsultant}
             />
           </td>
         </tr>
@@ -252,19 +252,19 @@ export default function ConsultantRows({
           <td>
             {!addNewRow && (
               <button
-              onClick={() => {
-                setAddNewRow(true);
-                setIsDisabledHotkeys(true);
-              }}
-              className="flex flex-row items-center min-w-max gap-2 h-[52px]"
-              onMouseEnter={() => setIsAddStaffingHovered(true)}
-              onMouseLeave={() => setIsAddStaffingHovered(false)}
+                onClick={() => {
+                  setAddNewRow(true);
+                  setIsDisabledHotkeys(true);
+                }}
+                className="flex flex-row items-center min-w-max gap-2 h-[52px]"
+                onMouseEnter={() => setIsAddStaffingHovered(true)}
+                onMouseLeave={() => setIsAddStaffingHovered(false)}
               >
                 <span
                   className={`w-8 h-8 flex justify-center items-center rounded bg-primary/0 ${
                     isAddStaffingHovered && "bg-primary/10"
                   }`}
-                  >
+                >
                   <Plus size={16} className="text-primary" />
                 </span>
 

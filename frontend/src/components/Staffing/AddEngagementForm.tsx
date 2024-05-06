@@ -76,7 +76,7 @@ export function AddEngagementForm({
   function handleSelectedEngagementChange(newValue: SelectOption) {
     console.log(projectOptions);
     console.log(newValue);
-    if(!projectOptions.map(o => o.label ).includes(newValue.label)) {
+    if (!projectOptions.map((o) => o.label).includes(newValue.label)) {
       setIsNewProject(true);
     }
     setSelectedEngagement(newValue);
