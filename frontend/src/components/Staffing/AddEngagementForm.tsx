@@ -35,6 +35,7 @@ export function AddEngagementForm({
 
   const [_, setProject] = useState<ProjectWithCustomerModel | undefined>();
   const [isNewProject, setIsNewProject] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const customerOptions = customers.map(
     (c) =>
@@ -74,10 +75,15 @@ export function AddEngagementForm({
   }
 
   function handleSelectedEngagementChange(newValue: SelectOption) {
-    console.log(projectOptions);
-    console.log(newValue);
-    if (!projectOptions.map((o) => o.label).includes(newValue.label)) {
+    setErrorMessage(null)
+    setIsNewProject(false);
+    let isNew = !projectOptions.map((o) => o.label).includes(newValue.label);
+    if (isNew) {
       setIsNewProject(true);
+    }
+    if (isNew && isAbsence) {
+      setErrorMessage('Du kan ikke lage nye fraværskoder. Prøv å benytt dem du har.')
+      return;
     }
     setSelectedEngagement(newValue);
   }
@@ -151,6 +157,9 @@ export function AddEngagementForm({
         }}
         className="flex flex-col gap-4 items-center"
       >
+        <div className="error-message">
+          {errorMessage}
+        </div>
         <div className="flex flex-col gap-6">
           <div className="flex flex-row gap-6">
             <div className="flex flex-col gap-2">
