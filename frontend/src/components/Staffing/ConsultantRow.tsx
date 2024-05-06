@@ -229,10 +229,12 @@ export default function ConsultantRows({
                 : "border-l-primary/5"
             } `}
           ></td>
-          <AddEngagementForm
-            closeEngagementModal={handleNewEngagement}
-            consultant={currentConsultant}
-          />
+          <td>
+            <AddEngagementForm
+              closeEngagementModal={handleNewEngagement}
+              consultant={currentConsultant}
+            />
+          </td>
         </tr>
       )}
 
@@ -247,27 +249,29 @@ export default function ConsultantRows({
                 : "border-l-primary/5"
             } `}
           ></td>
-          {!addNewRow && (
-            <button
-              onClick={() => {
-                setAddNewRow(true);
-                setIsDisabledHotkeys(true);
-              }}
-              className="flex flex-row items-center min-w-max gap-2 h-[52px]"
-              onMouseEnter={() => setIsAddStaffingHovered(true)}
-              onMouseLeave={() => setIsAddStaffingHovered(false)}
-            >
-              <span
-                className={`w-8 h-8 flex justify-center items-center rounded bg-primary/0 ${
-                  isAddStaffingHovered && "bg-primary/10"
-                }`}
+          <td>
+            {!addNewRow && (
+              <button
+                onClick={() => {
+                  setAddNewRow(true);
+                  setIsDisabledHotkeys(true);
+                }}
+                className="flex flex-row items-center min-w-max gap-2 h-[52px]"
+                onMouseEnter={() => setIsAddStaffingHovered(true)}
+                onMouseLeave={() => setIsAddStaffingHovered(false)}
               >
-                <Plus size={16} className="text-primary" />
-              </span>
+                <span
+                  className={`w-8 h-8 flex justify-center items-center rounded bg-primary/0 ${
+                    isAddStaffingHovered && "bg-primary/10"
+                  }`}
+                >
+                  <Plus size={16} className="text-primary" />
+                </span>
 
-              <p className="small text-primary">Legg til bemanning</p>
-            </button>
-          )}
+                <p className="small text-primary">Legg til bemanning</p>
+              </button>
+            )}
+          </td>
         </tr>
       )}
     </>

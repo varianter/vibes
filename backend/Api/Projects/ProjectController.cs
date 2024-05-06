@@ -228,9 +228,7 @@ public class ProjectController : ControllerBase
         var project = _context.Project
             .Include(p => p.Customer)
             .SingleOrDefault(p => p.Customer.Name == body.CustomerName
-                                  && p.IsBillable == body.IsBillable
                                   && p.Name == body.ProjectName
-                                  && p.State == body.BookingType
             );
 
         if (project is null)
