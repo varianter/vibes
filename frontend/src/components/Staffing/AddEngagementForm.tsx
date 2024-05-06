@@ -34,6 +34,7 @@ export function AddEngagementForm({
     useState<SelectOption | null>(null);
 
   const [_, setProject] = useState<ProjectWithCustomerModel | undefined>();
+  const [isNewProject, setIsNewProject] = useState(false);
 
   const customerOptions = customers.map(
     (c) =>
@@ -73,6 +74,11 @@ export function AddEngagementForm({
   }
 
   function handleSelectedEngagementChange(newValue: SelectOption) {
+    console.log(projectOptions);
+    console.log(newValue);
+    if(!projectOptions.map(o => o.label ).includes(newValue.label)) {
+      setIsNewProject(true);
+    }
     setSelectedEngagement(newValue);
   }
 
@@ -172,7 +178,7 @@ export function AddEngagementForm({
             </div>
           </div>
 
-          {!isAbsence && (
+          {isNewProject && (
             <>
               {/* Radio Button Group */}
 

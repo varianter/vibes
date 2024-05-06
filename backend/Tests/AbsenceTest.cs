@@ -19,7 +19,10 @@ public class Tests
     [TestCase(0, 0, 0, 37.5, 0)]
     [TestCase(0, 0, 0, 30, 7.5)]
     [TestCase(0, 7.5, 0, 22.5, 7.5)]
-    public void AvailabilityCalculation(int vacationDays, double plannedAbsenceHours, int numberOfHolidays,
+    public void AvailabilityCalculation(
+        int vacationDays, 
+        double plannedAbsenceHours, 
+        int numberOfHolidays,
         double staffedHours,
         double expectedSellableHours)
     {
@@ -51,9 +54,7 @@ public class Tests
             Id = 1,
             Name = "Test Variant",
             Email = "tv@v.no",
-            Department = department,
-            GraduationYear = 2010,
-
+            Department = department
         };
 
         var mondayDateOnly = numberOfHolidays switch
@@ -151,8 +152,7 @@ public class Tests
             Id = 1,
             Name = "Test Variant",
             Email = "tv@v.no",
-            Department = department,
-            GraduationYear = 2010,
+            Department = department
         };
 
         var week = new Week(2000, 1);
