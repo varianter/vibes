@@ -35,7 +35,7 @@ export function AddEngagementForm({
 
   const [_, setProject] = useState<ProjectWithCustomerModel | undefined>();
   const [isNewProject, setIsNewProject] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const customerOptions = customers.map(
     (c) =>
