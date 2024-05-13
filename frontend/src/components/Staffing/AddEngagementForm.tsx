@@ -74,9 +74,9 @@ export function AddEngagementForm({
   }
 
   function handleSelectedEngagementChange(newValue: SelectOption) {
-    console.log(projectOptions);
-    console.log(newValue);
-    if (!projectOptions.map((o) => o.label).includes(newValue.label)) {
+    setIsNewProject(false);
+    let isNew = !projectOptions.map((o) => o.label).includes(newValue.label);
+    if (isNew) {
       setIsNewProject(true);
     }
     setSelectedEngagement(newValue);
@@ -173,7 +173,7 @@ export function AddEngagementForm({
                 isMultipleOptions={false}
                 placeHolderText="Velg engasjement"
                 isDisabled={selectedCustomer == null}
-                isCreatable={true}
+                isCreatable={!isAbsence}
               />
             </div>
           </div>
