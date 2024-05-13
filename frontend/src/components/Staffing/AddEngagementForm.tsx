@@ -35,7 +35,6 @@ export function AddEngagementForm({
 
   const [_, setProject] = useState<ProjectWithCustomerModel | undefined>();
   const [isNewProject, setIsNewProject] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const customerOptions = customers.map(
     (c) =>
@@ -75,17 +74,10 @@ export function AddEngagementForm({
   }
 
   function handleSelectedEngagementChange(newValue: SelectOption) {
-    setErrorMessage(null);
     setIsNewProject(false);
     let isNew = !projectOptions.map((o) => o.label).includes(newValue.label);
     if (isNew) {
       setIsNewProject(true);
-    }
-    if (isNew && isAbsence) {
-      setErrorMessage(
-        "Du kan ikke lage nye fraværskoder. Prøv å benytt dem du har.",
-      );
-      return;
     }
     setSelectedEngagement(newValue);
   }
@@ -150,7 +142,8 @@ export function AddEngagementForm({
     setRadioValue(EngagementState.Offer);
     setIsFakturerbar(true);
   }
-
+  console.log("isAbsence" , isAbsence);
+  
   return (
     <div className="flex flex-row gap-2 items-center w-max pt-3 pb-3">
       <form
@@ -159,7 +152,6 @@ export function AddEngagementForm({
         }}
         className="flex flex-col gap-4 items-center"
       >
-        <div className="error-message">{errorMessage}</div>
         <div className="flex flex-col gap-6">
           <div className="flex flex-row gap-6">
             <div className="flex flex-col gap-2">
@@ -182,7 +174,7 @@ export function AddEngagementForm({
                 isMultipleOptions={false}
                 placeHolderText="Velg engasjement"
                 isDisabled={selectedCustomer == null}
-                isCreatable={true}
+                isCreatable={!isAbsence}
               />
             </div>
           </div>
