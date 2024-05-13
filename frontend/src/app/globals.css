@@ -150,9 +150,4 @@
   .rmdp-container .custom-calendar.ep-arrow::after {
     box-shadow: none;
   }
-
-  .error-message {
-    color: red;
-    font-style: italic;
-  }
 }

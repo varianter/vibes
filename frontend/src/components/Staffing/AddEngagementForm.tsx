@@ -142,7 +142,6 @@ export function AddEngagementForm({
     setRadioValue(EngagementState.Offer);
     setIsFakturerbar(true);
   }
-  console.log("isAbsence" , isAbsence);
   
   return (
     <div className="flex flex-row gap-2 items-center w-max pt-3 pb-3">
