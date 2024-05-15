@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { isClickOutsideElement } from "./useOutsideClick";
 
 export function useModal(options?: { closeOnBackdropClick?: boolean }) {

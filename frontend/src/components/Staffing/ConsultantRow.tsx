@@ -101,6 +101,11 @@ export default function ConsultantRows({
     setSelectedProjectId(undefined);
   }
 
+  function handleNewEngagementCancelled() {
+    setAddNewRow(false);
+    setIsDisabledHotkeys(false);
+  }
+
   async function handleNewEngagement(project: ProjectWithCustomerModel) {
     setAddNewRow(false);
     setIsDisabledHotkeys(false);
@@ -233,6 +238,7 @@ export default function ConsultantRows({
             <AddEngagementForm
               closeEngagementModal={handleNewEngagement}
               consultant={currentConsultant}
+              onCancel={handleNewEngagementCancelled}
             />
           </td>
         </tr>
