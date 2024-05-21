@@ -53,8 +53,12 @@ export default function StaffingTable() {
                     <div className="flex flex-row gap-2 items-center justify-end">
                       {booking.bookingModel.totalHolidayHours > 0 && (
                         <InfoPill
-                          text={booking.bookingModel.totalHolidayHours.toFixed(
-                            1,
+                          text={booking.bookingModel.totalHolidayHours.toLocaleString(
+                            "nb-No",
+                            {
+                              maximumFractionDigits: 1,
+                              minimumFractionDigits: 0,
+                            },
                           )}
                           icon={<Calendar size="12" />}
                           colors={"bg-holiday text-holiday_darker w-fit"}
@@ -77,8 +81,12 @@ export default function StaffingTable() {
                     >
                       {booking.bookingModel.totalHolidayHours > 0 && (
                         <InfoPill
-                          text={booking.bookingModel.totalHolidayHours.toFixed(
-                            1,
+                          text={booking.bookingModel.totalHolidayHours.toLocaleString(
+                            "nb-No",
+                            {
+                              maximumFractionDigits: 1,
+                              minimumFractionDigits: 0,
+                            },
                           )}
                           icon={<Calendar size="12" />}
                           colors={"bg-holiday text-holiday_darker w-fit"}
