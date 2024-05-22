@@ -35,7 +35,7 @@ export default function EditableTableDateCell({
       ) : (
         <p className={style ? style : "normal text-text_light_black"}>
           {newDate
-            ? new Date(newDate).toLocaleDateString(undefined, {
+            ? new Date(newDate).toLocaleDateString("nb-No", {
                 day: "2-digit",
                 month: "2-digit",
                 year: "numeric",

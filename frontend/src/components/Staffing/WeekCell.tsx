@@ -76,7 +76,13 @@ export function WeekCell(props: {
         <div className="flex flex-row justify-end gap-1">
           {bookedHoursPerWeek.bookingModel.totalOffered > 0 && (
             <InfoPill
-              text={bookedHoursPerWeek.bookingModel.totalOffered.toFixed(1)}
+              text={bookedHoursPerWeek.bookingModel.totalOffered.toLocaleString(
+                "nb-No",
+                {
+                  maximumFractionDigits: 1,
+                  minimumFractionDigits: 0,
+                },
+              )}
               colors="bg-offer text-primary_darker border-primary_darker"
               icon={<FileText size="12" />}
               variant={getInfopillVariantByColumnCount(columnCount)}
@@ -85,8 +91,12 @@ export function WeekCell(props: {
           {bookedHoursPerWeek.bookingModel.totalSellableTime > 0 &&
             getInfopillVariantByColumnCount(columnCount) !== "narrow" && (
               <InfoPill
-                text={bookedHoursPerWeek.bookingModel.totalSellableTime.toFixed(
-                  1,
+                text={bookedHoursPerWeek.bookingModel.totalSellableTime.toLocaleString(
+                  "nb-No",
+                  {
+                    maximumFractionDigits: 1,
+                    minimumFractionDigits: 0,
+                  },
                 )}
                 colors="bg-available text-available_darker border-available_darker"
                 icon={<Coffee size="12" />}
@@ -95,8 +105,12 @@ export function WeekCell(props: {
             )}
           {bookedHoursPerWeek.bookingModel.totalVacationHours > 0 && (
             <InfoPill
-              text={bookedHoursPerWeek.bookingModel.totalVacationHours.toFixed(
-                1,
+              text={bookedHoursPerWeek.bookingModel.totalVacationHours.toLocaleString(
+                "nb-No",
+                {
+                  maximumFractionDigits: 1,
+                  minimumFractionDigits: 0,
+                },
               )}
               colors="bg-vacation text-vacation_darker border-vacation_darker"
               icon={<Sun size="12" />}
@@ -106,8 +120,12 @@ export function WeekCell(props: {
           {bookedHoursPerWeek.bookingModel.totalPlannedAbsences > 0 &&
             getInfopillVariantByColumnCount(columnCount) !== "narrow" && (
               <InfoPill
-                text={bookedHoursPerWeek.bookingModel.totalPlannedAbsences.toFixed(
-                  1,
+                text={bookedHoursPerWeek.bookingModel.totalPlannedAbsences.toLocaleString(
+                  "nb-No",
+                  {
+                    maximumFractionDigits: 1,
+                    minimumFractionDigits: 0,
+                  },
                 )}
                 colors="bg-absence text-absence_darker border-absence_darker"
                 icon={<Moon size="12" />}
@@ -116,7 +134,13 @@ export function WeekCell(props: {
             )}
           {bookedHoursPerWeek.bookingModel.totalOverbooking > 0 && (
             <InfoPill
-              text={bookedHoursPerWeek.bookingModel.totalOverbooking.toFixed(1)}
+              text={bookedHoursPerWeek.bookingModel.totalOverbooking.toLocaleString(
+                "nb-No",
+                {
+                  maximumFractionDigits: 1,
+                  minimumFractionDigits: 0,
+                },
+              )}
               colors="bg-overbooked_darker text-white border-white"
               icon={<AlertTriangle size="12" />}
               variant={getInfopillVariantByColumnCount(columnCount)}
@@ -128,7 +152,9 @@ export function WeekCell(props: {
             isListElementVisible ? "normal-medium" : "normal"
           }`}
         >
-          {bookedHoursPerWeek.bookingModel.totalBillable}
+          {bookedHoursPerWeek.bookingModel.totalBillable.toLocaleString(
+            "nb-No",
+          )}
         </p>
       </div>
     </td>

@@ -80,7 +80,13 @@ export function WeekSpanTableHead({
                 <div className="flex flex-row gap-2 items-center justify-end">
                   {getHolidayHoursForWeek(day) > 0 && (
                     <InfoPill
-                      text={getHolidayHoursForWeek(day).toFixed(1)}
+                      text={getHolidayHoursForWeek(day).toLocaleString(
+                        "nb-No",
+                        {
+                          maximumFractionDigits: 1,
+                          minimumFractionDigits: 0,
+                        },
+                      )}
                       icon={<Calendar size="12" />}
                       colors={"bg-holiday text-holiday_darker w-fit"}
                       variant={selectedWeekSpan < 24 ? "wide" : "medium"}
@@ -100,7 +106,13 @@ export function WeekSpanTableHead({
                 >
                   {getHolidayHoursForWeek(day) > 0 && (
                     <InfoPill
-                      text={getHolidayHoursForWeek(day).toFixed(1)}
+                      text={getHolidayHoursForWeek(day).toLocaleString(
+                        "nb-No",
+                        {
+                          maximumFractionDigits: 1,
+                          minimumFractionDigits: 0,
+                        },
+                      )}
                       icon={<Calendar size="12" />}
                       colors={"bg-holiday text-holiday_darker w-fit"}
                       variant={selectedWeekSpan < 24 ? "wide" : "medium"}
