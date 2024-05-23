@@ -89,18 +89,16 @@ export default function ComboBox({
             ? "1 0 auto"
             : "",
       }),
-      control: (base: CSSObjectWithLabel, { isDisabled }: any) => {
-        return {
-          ...base,
-          width,
-          borderRadius: 8,
-          borderColor: !isDisabled ? primary : black,
-          "&:hover": {
-            borderColor: primary,
-            backgroundColor: `${primary}10`,
-          },
-        };
-      },
+      control: (base: CSSObjectWithLabel, { isDisabled }: any) => ({
+        ...base,
+        width,
+        borderRadius: 8,
+        borderColor: !isDisabled ? primary : black,
+        "&:hover": {
+          borderColor: primary,
+          backgroundColor: `${primary}10`,
+        },
+      }),
       menu: (base: CSSObjectWithLabel) => ({
         ...base,
         width,
@@ -114,7 +112,6 @@ export default function ComboBox({
         fontSize: "0.75rem",
         lineHeight: "1.5rem",
         padding: "0.5rem 0.75rem",
-        margin: "0.25rem 0",
         textOverflow: "ellipsis",
         whiteSpace: "nowrap" as any,
         overflow: "hidden",
@@ -156,13 +153,15 @@ export default function ComboBox({
         formatCreateLabel={(inputText: string) => (
           <div className="relative">
             <div className="absolute top-[-0.5rem] w-full border-t border-black/10" />
-            <div className="flex gap-2 items-center rounded-md p-0">
+            <div className="flex gap-2 items-center rounded-md">
               <Plus size="20" />
-              <p>Legg til</p>
+              <p className="flex-1 truncate">
+                {`Opprett ${inputText && `"${inputText}"`}`}
+              </p>
             </div>
           </div>
         )}
-        isValidNewOption={() => true}
+        isValidNewOption={(inputText: string) => !!inputText}
         isOptionDisabled={(option) => !!option?.disabled}
       />
     );

@@ -15,9 +15,7 @@ import {
 } from "@/api-types";
 import { usePathname } from "next/navigation";
 import ActionButton from "../Buttons/ActionButton";
-import FilterButton from "../Buttons/FilterButton";
 import { Plus } from "react-feather";
-import { CustomerModal } from "./CustomerModal";
 
 export function AddEngagementForm({
   closeEngagementModal,
@@ -42,7 +40,6 @@ export function AddEngagementForm({
   const [_, setProject] = useState<ProjectWithCustomerModel | undefined>();
   const [isNewProject, setIsNewProject] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
   const [customerOptions, setCustomerOptions] = useState<SelectOption[]>([]);
   const [projectOptions, setProjectOptions] = useState<SelectOption[]>([]);
 
@@ -94,7 +91,7 @@ export function AddEngagementForm({
   }, [customers, selectedCustomer, consultant]);
 
   // State for radio button group
-  const [radioValue, setRadioValue] = useState(EngagementState.Offer);
+  const [bookingType, setBookingType] = useState(EngagementState.Offer);
 
   // State for toggle
   const [isBillable, setIsBillable] = useState<boolean>(true);
@@ -102,48 +99,60 @@ export function AddEngagementForm({
   // Hardcoded, based on ID from backend. Hopefully we can find a more graceful solution in the future
   const isAbsence = selectedCustomer?.value == -1;
 
-  function customerExists(projectName: string | undefined): boolean {
+  function projectExists(projectName: string | undefined): boolean {
     if (!projectName) return false;
-
-    return customers
-      .map((o) => o.customerName.toLowerCase())
-      .includes(projectName.toLowerCase());
-  }
-
-  function engagementExists(engagementName: string | undefined): boolean {
-    if (!engagementName) return false;
 
     return projectOptions
       .map((o) => o.label.toLowerCase())
-      .includes(engagementName.toLowerCase());
+      .includes(projectName.toLowerCase());
   }
 
-  // Handler for select components
-  function handleSelectedCustomerChange(newCustomer: SelectOption) {
-    setSelectedCustomer(newCustomer);
-    setSelectedEngagement(null);
+  function isOwnCompany(customerName: string | undefined): boolean {
+    if (!customerName || !organisationName) return false;
 
-    if (!customerExists(newCustomer.label)) {
-      setModalOpen(true);
-    }
+    return (
+      customerName.toLowerCase() ===
+      organisationName.split("-")[0].toLowerCase()
+    );
+  }
+
+  function isProjectBillable(projectName: string | undefined): boolean {
+    if (!projectName) return false;
+
+    const customer = customers.find(
+      (c) => c.customerId == selectedCustomer?.value,
+    );
+
+    return (
+      customer?.engagements.find((e) => e.engagementName == projectName)
+        ?.isBillable || false
+    );
   }
 
   function handleSelectedEngagementChange(newValue: SelectOption) {
     setSelectedEngagement(newValue);
-    if (!engagementExists(newValue.label)) {
+
+    if (!projectExists(newValue.label)) {
       setIsNewProject(true);
-      setModalOpen(true);
+      return;
     }
+
+    setIsBillable(isProjectBillable(newValue.label));
+  }
+
+  // Handler for select components
+  function handleSelectedCustomerChange(newCustomer: SelectOption) {
+    const internalProject = isOwnCompany(newCustomer.label);
+
+    setSelectedCustomer(newCustomer);
+    setIsBillable(!internalProject);
+    setSelectedEngagement(null);
+    setBookingType(internalProject ? EngagementState.Order : bookingType);
   }
 
   // Handler for radio button group
   function handleRadioChange(event: ChangeEvent<HTMLInputElement>) {
-    setRadioValue(event.target.value as EngagementState);
-  }
-
-  // Handler for toggle
-  function handleToggleChange() {
-    setIsBillable(!isBillable);
+    setBookingType(event.target.value as EngagementState);
   }
 
   async function submitAddEngagementForm(body: EngagementWriteModel) {
@@ -174,8 +183,8 @@ export function AddEngagementForm({
     const body: EngagementWriteModel = {
       customerName: selectedCustomer?.label,
       projectName: selectedEngagement?.label,
-      bookingType: isAbsence ? EngagementState.Absence : radioValue,
-      isBillable,
+      bookingType: isAbsence ? EngagementState.Absence : bookingType,
+      isBillable: isAbsence ? false : isBillable,
     };
 
     const result = await submitAddEngagementForm(body);
@@ -195,72 +204,12 @@ export function AddEngagementForm({
   function resetSelectedValues() {
     setSelectedCustomer(null);
     setSelectedEngagement(null);
-    setRadioValue(EngagementState.Offer);
+    setBookingType(EngagementState.Offer);
     setIsBillable(true);
   }
 
-  function handleCustomerAdded(newCustomer: EngagementWriteModel) {
-    const existingCustomer = customerOptions.find(
-      (c) => c.label === newCustomer.customerName,
-    );
-    const existingProject = projectOptions.find(
-      (p) => p.label === newCustomer.projectName,
-    );
-
-    setSelectedCustomer(
-      existingCustomer || {
-        value: `${newCustomer.customerName}`,
-        label: `${newCustomer.customerName}`,
-      },
-    );
-
-    if (newCustomer?.projectName) {
-      setSelectedEngagement(
-        existingProject || {
-          value: `${newCustomer.projectName}`,
-          label: `${newCustomer.projectName}`,
-        },
-      );
-    }
-
-    setIsNewProject(!existingProject);
-    setModalOpen(false);
-  }
-
-  function handleModalClose() {
-    setModalOpen(false);
-
-    if (!customerExists(selectedCustomer?.label)) {
-      setSelectedCustomer(null);
-    }
-  }
-
-  function handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
-    // Needed to prevent keystrokes from triggering filters
-    event.stopPropagation();
-
-    if (event.key === "Escape") {
-      handleModalClose();
-    }
-  }
-
   return (
-    <div
-      className="flex flex-row gap-2 items-center py-3"
-      onKeyDown={handleKeyDown}
-    >
-      <CustomerModal
-        open={modalOpen}
-        onClose={handleModalClose}
-        onCreate={handleCustomerAdded}
-        customer={customers.find(
-          (c) => c.customerName === selectedCustomer?.label,
-        )}
-        initialValues={{
-          customerName: selectedCustomer?.label || "",
-          projectName: selectedEngagement?.label || "",
-        }}
-      />
+    <div className="flex flex-row gap-2 items-center py-3">
       <form
         onSubmit={(e) => {
           selectedEngagement != null && handleSubmit(e);
@@ -289,7 +238,7 @@ export function AddEngagementForm({
                 placeHolderText="Engasjement"
                 isDisabled={selectedCustomer == null}
                 width={190}
-                isCreatable={true}
+                isCreatable={!isAbsence}
               />
             </div>
           </div>
@@ -307,7 +256,7 @@ export function AddEngagementForm({
                     type="radio"
                     className="accent-primary h-4 w-4 mx-[1px]"
                     value={EngagementState.Offer}
-                    checked={radioValue === EngagementState.Offer}
+                    checked={bookingType === EngagementState.Offer}
                     onChange={handleRadioChange}
                     disabled={selectedCustomer?.value == -1}
                   />
@@ -318,18 +267,13 @@ export function AddEngagementForm({
                     type="radio"
                     className="accent-primary h-4 w-4 mx-[1px]"
                     value={EngagementState.Order}
-                    checked={radioValue === EngagementState.Order}
+                    checked={bookingType === EngagementState.Order}
                     onChange={handleRadioChange}
                     disabled={isAbsence}
                   />
                   Ordre
                 </label>
               </div>
-              <FilterButton
-                label="Fakturerbart"
-                onClick={handleToggleChange}
-                checked={isBillable}
-              />
             </>
           )}
         </div>
