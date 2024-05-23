@@ -1,6 +1,11 @@
 import { test, expect } from "@playwright/test";
 
-test("Requires authentication", async ({ page }) => {
+test("Has organisation index page", async ({ page }) => {
   await page.goto("/");
-  await expect(page.url()).toContain("/auth");
+  const orgLink = page.getByText("My Organisation");
+  await orgLink.click();
+
+  const consultantName = page.getByText("Test Consultant");
+
+  await expect(consultantName).toBeVisible();
 });
