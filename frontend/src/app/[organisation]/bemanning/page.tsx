@@ -8,7 +8,10 @@ import { ConsultantFilterProvider } from "@/hooks/ConsultantFilterProvider";
 import { parseYearWeekFromUrlString } from "@/data/urlUtils";
 import React from "react";
 import { StaffingContent } from "@/pagecontent/StaffingContent";
-import { fetchWithToken } from "@/data/apiCallsWithToken";
+import {
+  fetchEmployeesWithImageAndToken,
+  fetchWithToken,
+} from "@/data/apiCallsWithToken";
 
 export default async function Bemanning({
   params,
@@ -23,7 +26,7 @@ export default async function Bemanning({
   const weekSpan = searchParams.weekSpan || undefined;
 
   const consultants =
-    (await fetchWithToken<ConsultantReadModel[]>(
+    (await fetchEmployeesWithImageAndToken(
       `${params.organisation}/staffings${
         selectedWeek
           ? `?Year=${selectedWeek.year}&Week=${selectedWeek.weekNumber}`

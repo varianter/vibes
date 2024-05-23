@@ -16,6 +16,7 @@ import { useWeekSelectors } from "@/hooks/useWeekSelectors";
 import { setDetailedBookingHours } from "./NewDetailedBookingRow";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { DateTime } from "luxon";
+import Image from "next/image";
 
 export default function ConsultantRows({
   consultant,
@@ -178,25 +179,40 @@ export default function ConsultantRows({
           </button>
         </td>
         <td>
-          <div className="flex flex-col gap-1 ">
-            <p
-              className={`text-black text-start ${
-                isListElementVisible ? "normal-medium" : "normal"
-              }`}
-            >
-              {currentConsultant.name}
-            </p>
-            <p className="xsmall text-black/75 text-start">
-              {`${currentConsultant.yearsOfExperience} års erfaring`}
-            </p>
+          <div className="flex gap-2">
+            <div className="flex flex-row align-center self-center gap-2">
+              {consultant.imageUrl ? (
+                <Image
+                  src={consultant.imageUrl}
+                  alt={consultant.name}
+                  className="w-8 h-8 rounded-full self-center object-contain"
+                  width={32}
+                  height={32}
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-primary"></div>
+              )}
+            </div>
+            <div className="flex flex-col gap-1 ">
+              <p
+                className={`text-black text-start ${
+                  isListElementVisible ? "normal-medium" : "normal"
+                }`}
+              >
+                {currentConsultant.name}
+              </p>
+              <p className="xsmall text-black/75 text-start">
+                {`${currentConsultant.yearsOfExperience} års erfaring`}
+              </p>
+            </div>
+            {isListElementVisible && (
+              <EditEngagementHourModal
+                modalRef={changeEngagementModalRef}
+                project={selectedProject}
+                onClose={onCloseEngagementModal}
+              />
+            )}
           </div>
-          {isListElementVisible && (
-            <EditEngagementHourModal
-              modalRef={changeEngagementModalRef}
-              project={selectedProject}
-              onClose={onCloseEngagementModal}
-            />
-          )}
         </td>
         {currentConsultant.bookings.map((b, index) => (
           <WeekCell
