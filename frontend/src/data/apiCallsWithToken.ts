@@ -77,6 +77,10 @@ export async function fetchEmployeesWithImageAndToken(
 }
 
 export async function callEmployee(path: string) {
+  if (process.env.NEXT_PUBLIC_NO_AUTH) {
+    return mockedCall<undefined>(path);
+  }
+
   const session = await getCustomServerSession(authOptions);
 
   if (!session || !session.access_token) return;
