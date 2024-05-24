@@ -16,6 +16,7 @@ import {
 import { usePathname } from "next/navigation";
 import ActionButton from "../Buttons/ActionButton";
 import { Plus } from "react-feather";
+import FilterButton from "../Buttons/FilterButton";
 
 export function AddEngagementForm({
   closeEngagementModal,
@@ -155,6 +156,10 @@ export function AddEngagementForm({
     setBookingType(event.target.value as EngagementState);
   }
 
+  function handleBillableToggled() {
+    setIsBillable(!isBillable);
+  }
+
   async function submitAddEngagementForm(body: EngagementWriteModel) {
     const url = `/${organisationName}/bemanning/api/projects`;
     setIsSubmitting(true);
@@ -274,6 +279,11 @@ export function AddEngagementForm({
                   Ordre
                 </label>
               </div>
+              <FilterButton
+                label="Fakturerbart"
+                onClick={handleBillableToggled}
+                checked={isBillable}
+              />
             </>
           )}
         </div>

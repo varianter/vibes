@@ -4,10 +4,14 @@ import Select, {
   MultiValue,
   SingleValue,
   createFilter,
+  components,
+  GroupBase,
+  SelectInstance,
 } from "react-select";
 import CreatableSelect from "react-select/creatable";
 import resolveConfig from "tailwindcss/resolveConfig";
 import tailwindConfig from "../../tailwind.config";
+import { useRef, useState } from "react";
 
 export type SelectOption = {
   value: string | number;
@@ -44,23 +48,65 @@ export default function ComboBox({
     matchFrom: "start",
   });
 
+  const ref =
+    useRef<SelectInstance<SelectOption, true, GroupBase<SelectOption>>>(null);
+
   const { primary, black } = resolveConfig(tailwindConfig).theme.colors;
 
+  const [inputValue, setInputValue] = useState<string>("");
+
+  function onChange(
+    event: MultiValue<SelectOption> | SingleValue<SelectOption>,
+  ) {
+    const labelValue = (event as any)?.label || "";
+
+    if (isCreatable && !labelValue) {
+      ref.current?.onInputFocus({} as any);
+      return;
+    }
+
+    event && isMultipleOptions
+      ? onMultipleOptionsChange?.(event as MultiValue<SelectOption>)
+      : onSingleOptionChange?.(event as SelectOption);
+  }
+
+  const MenuList = (props: any) => {
+    if (!isCreatable) return <components.MenuList {...props} />;
+
+    const menuOptions = props.children.slice(0, props.children.length - 1);
+    const createOption = props.children[props.children.length - 1];
+
+    const menuListProps = { ...props, maxHeight: props.maxHeight - 55 };
+
+    const creatableClassName = `sticky w-full bottom-0 pb-1 bg-white ${
+      menuOptions.length && "border-t border-black/10 pt-1"
+    }`;
+
+    return (
+      <>
+        <components.MenuList {...menuListProps}>
+          {menuOptions}
+        </components.MenuList>
+        <div className={creatableClassName}>{createOption}</div>
+      </>
+    );
+  };
+
   const selectProps = {
+    ref,
     placeholder: placeHolderText,
     isMulti: isMultipleOptions,
     options: options,
     isDisabled: isDisabled,
     isClearable: isClearable,
+    inputValue,
+    onInputChange: setInputValue,
     filterOption: customFilter,
+    onKeyDown: (e: any) => e.stopPropagation(),
     value: isMultipleOptions
       ? selectedMultipleOptionsValue
       : selectedSingleOptionValue,
-    onChange: (a: MultiValue<SelectOption> | SingleValue<SelectOption>) => {
-      a && isMultipleOptions
-        ? onMultipleOptionsChange?.(a as MultiValue<SelectOption>)
-        : onSingleOptionChange?.(a as SelectOption);
-    },
+    onChange,
     styles: {
       valueContainer: (base: any) => ({
         ...base,
@@ -141,6 +187,7 @@ export default function ComboBox({
       <CreatableSelect
         {...selectProps}
         noOptionsMessage={() => "Ingen resultater"}
+        components={{ MenuList }}
         theme={(theme) => ({
           ...theme,
           borderRadius: 0,
@@ -151,17 +198,14 @@ export default function ComboBox({
           },
         })}
         formatCreateLabel={(inputText: string) => (
-          <div className="relative">
-            <div className="absolute top-[-0.5rem] w-full border-t border-black/10" />
-            <div className="flex gap-2 items-center rounded-md">
-              <Plus size="20" />
-              <p className="flex-1 truncate">
-                {`Opprett ${inputText && `"${inputText}"`}`}
-              </p>
-            </div>
+          <div className="flex gap-2 items-center rounded-md">
+            <Plus size="20" />
+            <p className="flex-1 truncate">
+              {`Opprett ${inputText && `"${inputText}"`}`}
+            </p>
           </div>
         )}
-        isValidNewOption={(inputText: string) => !!inputText}
+        isValidNewOption={() => true}
         isOptionDisabled={(option) => !!option?.disabled}
       />
     );
