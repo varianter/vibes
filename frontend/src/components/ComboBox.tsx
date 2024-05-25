@@ -7,6 +7,7 @@ import Select, {
   components,
   GroupBase,
   SelectInstance,
+  MenuListProps,
 } from "react-select";
 import CreatableSelect from "react-select/creatable";
 import resolveConfig from "tailwindcss/resolveConfig";
@@ -70,8 +71,11 @@ export default function ComboBox({
       : onSingleOptionChange?.(event as SelectOption);
   }
 
-  const MenuList = (props: any) => {
-    if (!isCreatable) return <components.MenuList {...props} />;
+  function MenuList(
+    props: MenuListProps<SelectOption, boolean, GroupBase<SelectOption>>,
+  ) {
+    if (!isCreatable || !Array.isArray(props?.children))
+      return <components.MenuList {...props} />;
 
     const menuOptions = props.children.slice(0, props.children.length - 1);
     const createOption = props.children[props.children.length - 1];
@@ -90,7 +94,7 @@ export default function ComboBox({
         <div className={creatableClassName}>{createOption}</div>
       </>
     );
-  };
+  }
 
   const selectProps = {
     ref,
