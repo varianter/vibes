@@ -60,6 +60,7 @@ export interface ConsultantReadModel {
   detailedBooking: DetailedBooking[];
   isOccupied: boolean;
   imageUrl?: string;
+  imageThumbUrl?: string;
 }
 
 export interface ConsultantWriteModel {
@@ -82,6 +83,7 @@ export type EmployeeItemChewbacca = {
   email: string;
   telephone: string | null;
   imageUrl: string;
+  imageThumbUrl: string;
   officeName: string;
 };
 

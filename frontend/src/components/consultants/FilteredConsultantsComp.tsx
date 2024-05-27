@@ -182,9 +182,9 @@ export default function FilteredConsultantsComp({
             >
               <td className="px-2 py-1 rounded-l-md">
                 <div className="flex flex-row align-center self-center gap-2">
-                  {consultant.imageUrl ? (
+                  {consultant.imageThumbUrl ? (
                     <Image
-                      src={consultant.imageUrl}
+                      src={consultant.imageThumbUrl}
                       alt={consultant.name}
                       className="w-8 h-8 rounded-full self-center object-contain"
                       width={32}
@@ -368,9 +368,9 @@ export default function FilteredConsultantsComp({
             >
               <td className="px-2 py-1 rounded-l-md">
                 <div className="flex flex-row align-center self-center gap-2">
-                  {consultant.imageUrl ? (
+                  {consultant.imageThumbUrl ? (
                     <Image
-                      src={consultant.imageUrl}
+                      src={consultant.imageThumbUrl}
                       alt={consultant.name}
                       className="w-8 h-8 rounded-full self-center object-contain"
                       width={32}
