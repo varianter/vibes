@@ -40,6 +40,7 @@ export function AddEngagementForm({
 
   const [_, setProject] = useState<ProjectWithCustomerModel | undefined>();
   const [isNewProject, setIsNewProject] = useState(false);
+  const [isInternalProject, setIsInternalProject] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [customerOptions, setCustomerOptions] = useState<SelectOption[]>([]);
   const [projectOptions, setProjectOptions] = useState<SelectOption[]>([]);
@@ -145,6 +146,8 @@ export function AddEngagementForm({
   function handleSelectedCustomerChange(newCustomer: SelectOption) {
     const internalProject = isOwnCompany(newCustomer.label);
 
+    setIsInternalProject(internalProject);
+    setIsNewProject(false);
     setSelectedCustomer(newCustomer);
     setIsBillable(!internalProject);
     setSelectedEngagement(null);
@@ -213,6 +216,10 @@ export function AddEngagementForm({
     setIsBillable(true);
   }
 
+  const isOfferOptionDisabled =
+    selectedCustomer?.value == -1 || isInternalProject;
+  const isOrderOptionDisabled = isAbsence || isInternalProject;
+
   return (
     <div className="flex flex-row gap-2 items-center py-3">
       <form
@@ -256,25 +263,33 @@ export function AddEngagementForm({
                   selectedEngagement == null && "hidden"
                 }`}
               >
-                <label className="flex gap-2 normal items-center">
+                <label
+                  className={`flex gap-2 normal items-center ${
+                    isOfferOptionDisabled && "text-black/50"
+                  }`}
+                >
                   <input
                     type="radio"
                     className="accent-primary h-4 w-4 mx-[1px]"
                     value={EngagementState.Offer}
                     checked={bookingType === EngagementState.Offer}
                     onChange={handleRadioChange}
-                    disabled={selectedCustomer?.value == -1}
+                    disabled={isOfferOptionDisabled}
                   />
                   Tilbud
                 </label>
-                <label className="flex gap-2 normal items-center">
+                <label
+                  className={`flex gap-2 normal items-center ${
+                    isOrderOptionDisabled && "text-black/50"
+                  }`}
+                >
                   <input
                     type="radio"
                     className="accent-primary h-4 w-4 mx-[1px]"
                     value={EngagementState.Order}
                     checked={bookingType === EngagementState.Order}
                     onChange={handleRadioChange}
-                    disabled={isAbsence}
+                    disabled={isOrderOptionDisabled}
                   />
                   Ordre
                 </label>
@@ -283,6 +298,7 @@ export function AddEngagementForm({
                 label="Fakturerbart"
                 onClick={handleBillableToggled}
                 checked={isBillable}
+                enabled={!isInternalProject}
               />
             </>
           )}
