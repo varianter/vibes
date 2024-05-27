@@ -2,25 +2,34 @@ export default function FilterButton({
   label,
   onClick,
   checked,
-  enabled,
+  enabled = true,
 }: {
   label: string;
   onClick: () => void;
   checked: boolean;
   enabled?: boolean;
 }) {
-  enabled = enabled ?? true;
+  function handleToggle() {
+    if (enabled) {
+      onClick();
+    }
+  }
 
   return (
-    <div className="flex items-center" onClick={onClick}>
+    <div className="flex items-center" onClick={handleToggle}>
       <input
         id="checkbox"
         type="checkbox"
-        className={`appearance-none border flex items-center border-primary border-opacity-50 m-[1px] mr-2 h-4 w-4 rounded-sm   hover:border-primary checked:bg-primary ${
-          checked
-            ? "hover:bg-primary hover:brightness-[1.5]"
-            : "hover:bg-primary hover:bg-opacity-10"
-        }`}
+        className={`appearance-none border flex items-center border-opacity-50 m-[1px] mr-2 h-4 w-4 rounded-sm border-primary hover:border-primary checked:bg-primary
+          ${
+            !enabled &&
+            "border-black/20 hover:border-black/20 checked:bg-primary/50 bg-black/5"
+          }
+          ${
+            checked
+              ? "hover:bg-primary hover:brightness-[1.5]"
+              : "hover:bg-primary hover:bg-opacity-10"
+          }`}
         checked={checked}
         disabled={!enabled}
         readOnly
@@ -42,7 +51,9 @@ export default function FilterButton({
           fill="white"
         />
       </svg>
-      <label className="normal">{label}</label>
+      <label className={`normal select-none ${!enabled && "text-black/50"}`}>
+        {label}
+      </label>
     </div>
   );
 }
