@@ -76,6 +76,38 @@ export async function fetchEmployeesWithImageAndToken(
   return await callEmployee(path);
 }
 
+/**
+ * Fetches data from the specified URL with a timeout.
+ *
+ * @param url - The URL to fetch data from.
+ * @param timeoutInMilliseconds - The timeout duration in milliseconds (default: 10000).
+ * @returns A promise that resolves to the fetched data or null if an error occurs or the timeout is reached.
+ */
+async function fetchWithTimeoutOrNull<T>(
+  url: string,
+  timeoutInMilliseconds: number = 10000,
+): Promise<T | null> {
+  try {
+    const response = await Promise.race([
+      fetch(url),
+      new Promise((_, reject) =>
+        setTimeout(() => {
+          reject(
+            new Error(
+              `Timeout - response from "${url}" took longer than specified timeout: ${timeoutInMilliseconds}ms.`,
+            ),
+          );
+        }, timeoutInMilliseconds),
+      ),
+    ]);
+
+    return await (response as Response).json();
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+}
+
 export async function callEmployee(path: string) {
   if (process.env.NEXT_PUBLIC_NO_AUTH) {
     return mockedCall<undefined>(path);
@@ -100,15 +132,15 @@ export async function callEmployee(path: string) {
   const completeUrl = `${apiBackendUrl}/${path}`;
 
   try {
-    const response = await fetch(completeUrl, options);
-    const imageResponse = await fetch(
-      `https://chewie-webapp-ld2ijhpvmb34c.azurewebsites.net/employees`,
-    );
-
-    const { employees }: { employees: EmployeeItemChewbacca[] } =
-      await imageResponse.json();
+    const [response, employeeResponse] = await Promise.all([
+      fetch(completeUrl, options),
+      fetchWithTimeoutOrNull<{ employees: EmployeeItemChewbacca[] }>(
+        `https://chewie-webapp-ld2ijhpvmb34c.azurewebsites.net/employees`,
+      ),
+    ]);
 
     const consultantsRes: ConsultantReadModel[] = await response.json();
+    const employees = employeeResponse?.employees || [];
 
     const consultants = consultantsRes?.map((consultant) => {
       const imageCons = employees.find(
