@@ -112,7 +112,7 @@ export async function callEmployee(path: string) {
       );
       return {
         ...consultant,
-        imageUrl: imageCons?.imageUrl,
+        imageThumbUrl: imageCons?.imageThumbUrl,
       };
     });
 
