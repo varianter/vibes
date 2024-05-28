@@ -19,8 +19,10 @@ import { DateTime } from "luxon";
 
 export default function ConsultantRows({
   consultant,
+  numWorkHours,
 }: {
   consultant: ConsultantReadModel;
+  numWorkHours: number;
 }) {
   const [currentConsultant, setCurrentConsultant] =
     useState<ConsultantReadModel>(consultant);
@@ -210,6 +212,7 @@ export default function ConsultantRows({
             columnCount={columnCount}
             isLastCol={index == currentConsultant.bookings.length - 1}
             isSecondLastCol={index == currentConsultant.bookings.length - 2}
+            numWorkHours={numWorkHours}
           />
         ))}
       </tr>

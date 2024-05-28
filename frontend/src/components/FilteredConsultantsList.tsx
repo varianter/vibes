@@ -10,6 +10,7 @@ import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
 export default function StaffingTable() {
   const {
+    numWorkHours,
     filteredConsultants,
     weeklyTotalBillable,
     weeklyTotalBillableAndOffered,
@@ -111,7 +112,11 @@ export default function StaffingTable() {
         </thead>
         <tbody>
           {filteredConsultants.map((consultant) => (
-            <ConsultantRows key={consultant.id} consultant={consultant} />
+            <ConsultantRows
+              key={consultant.id}
+              consultant={consultant}
+              numWorkHours={numWorkHours}
+            />
           ))}
         </tbody>
         <StaffingSums

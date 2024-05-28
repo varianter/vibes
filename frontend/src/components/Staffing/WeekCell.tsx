@@ -15,6 +15,7 @@ export function WeekCell(props: {
   columnCount: number;
   isLastCol: boolean;
   isSecondLastCol: boolean;
+  numWorkHours: number;
 }) {
   const {
     bookedHoursPerWeek: bookedHoursPerWeek,
@@ -26,6 +27,7 @@ export function WeekCell(props: {
     columnCount,
     isLastCol,
     isSecondLastCol,
+    numWorkHours,
   } = props;
 
   let pillNumber = 0;
@@ -152,11 +154,34 @@ export function WeekCell(props: {
             isListElementVisible ? "normal-medium" : "normal"
           }`}
         >
-          {bookedHoursPerWeek.bookingModel.totalBillable.toLocaleString(
-            "nb-No",
-          )}
+          {bookedHoursPerWeek.bookingModel.totalPlannedAbsences > 0 &&
+          checkIfNotStartedOrQuit(consultant, bookedHoursPerWeek, numWorkHours)
+            ? "-"
+            : bookedHoursPerWeek.bookingModel.totalBillable.toLocaleString(
+                "nb-No",
+              )}
         </p>
       </div>
     </td>
+  );
+}
+
+function checkIfNotStartedOrQuit(
+  consultant: ConsultantReadModel,
+  bookedHoursPerWeek: BookedHoursPerWeek,
+  numWorkHours: number,
+) {
+  const project = consultant.detailedBooking.find(
+    (b) => b.bookingDetails.projectName == "Ikke startet eller sluttet",
+  );
+  const hours = project?.hours.find(
+    (h) => h.week == bookedHoursPerWeek.sortableWeek,
+  );
+
+  if (!hours?.hours) return false;
+
+  return (
+    hours?.hours ==
+    numWorkHours - bookedHoursPerWeek.bookingModel.totalHolidayHours
   );
 }
