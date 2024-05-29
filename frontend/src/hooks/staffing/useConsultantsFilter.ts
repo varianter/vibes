@@ -82,6 +82,7 @@ export function useConsultantsFilter() {
   );
 
   return {
+    numWorkHours,
     filteredConsultants,
     weeklyTotalBillable,
     weeklyTotalBillableAndOffered,
