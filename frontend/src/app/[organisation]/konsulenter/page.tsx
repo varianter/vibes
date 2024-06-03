@@ -9,6 +9,11 @@ import {
   fetchWithToken,
 } from "@/data/apiCallsWithToken";
 import { ConsultantFilterProvider } from "@/hooks/ConsultantFilterProvider";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Konsulenter | VIBES",
+};
 
 export default async function Konsulenter({
   params,

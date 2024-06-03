@@ -1,6 +1,11 @@
 import { EngagementPerCustomerReadModel, EngagementState } from "@/api-types";
 import CustomerRow from "@/components/CostumerTable/CustomerRow";
 import { fetchWithToken } from "@/data/apiCallsWithToken";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Kunder | VIBES",
+};
 
 export default async function Kunder({
   params,

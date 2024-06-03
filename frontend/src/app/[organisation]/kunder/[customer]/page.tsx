@@ -6,6 +6,11 @@ import CustomerSidebar from "@/components/CostumerTable/CustomerSidebar";
 import CustomerTable from "@/components/CostumerTable/CustomerTable";
 import { fetchWithToken } from "@/data/apiCallsWithToken";
 import { ConsultantFilterProvider } from "@/hooks/ConsultantFilterProvider";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Kunder | VIBES",
+};
 
 export default async function Kunde({
   params,
