@@ -15,7 +15,7 @@ export const authOptions: AuthOptions = {
       tenantId: process.env.AZURE_AD_TENANT_ID!,
       authorization: {
         params: {
-          scope: `openid profile email ${process.env.AZURE_AD_APP_SCOPE}`,
+          scope: `openid profile email offline_access ${process.env.AZURE_AD_APP_SCOPE}`,
         },
       },
       idToken: true,
