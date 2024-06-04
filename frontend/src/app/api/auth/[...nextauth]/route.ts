@@ -1,4 +1,6 @@
+import { azureAdProvider, refreshAccessTokenError } from "@/utils/auth";
 import NextAuth, { AuthOptions, getServerSession, Session } from "next-auth";
+import { JWT } from "next-auth/jwt";
 import AzureADProvider from "next-auth/providers/azure-ad";
 
 export type CustomSession = {
@@ -6,24 +8,77 @@ export type CustomSession = {
   access_token?: string;
 } & Session;
 
+function getAzureADProvider() {
+  return AzureADProvider({
+    id: azureAdProvider,
+    clientId: process.env.AZURE_AD_CLIENT_ID!,
+    clientSecret: process.env.AZURE_AD_CLIENT_SECRET!,
+    tenantId: process.env.AZURE_AD_TENANT_ID!,
+    authorization: {
+      params: {
+        scope: `openid profile email offline_access ${process.env.AZURE_AD_APP_SCOPE}`,
+      },
+    },
+    idToken: true,
+  });
+}
+
+function fromSecondsToMilliseconds(seconds: number) {
+  return seconds * 1000;
+}
+
+async function refreshAccessToken(token: JWT): Promise<JWT> {
+  try {
+    const azureAdProvider = getAzureADProvider();
+
+    const body = new URLSearchParams({
+      client_id: azureAdProvider.options?.clientId!,
+      scope: `openid profile email offline_access ${process.env.AZURE_AD_APP_SCOPE}`,
+      refresh_token: (token as any).refresh_token!,
+      grant_type: "refresh_token",
+      client_secret: azureAdProvider.options?.clientSecret!,
+    });
+
+    const response = await fetch(
+      `https://login.microsoftonline.com/${process.env.AZURE_AD_TENANT_ID}/oauth2/v2.0/token?`,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        method: "POST",
+        body,
+      },
+    );
+
+    const newTokens = await response.json();
+
+    if (!response.ok) {
+      throw newTokens;
+    }
+
+    return {
+      ...token,
+      accessToken: newTokens.access_token,
+      accessTokenExpires:
+        Date.now() + fromSecondsToMilliseconds(newTokens.expires_in),
+      refreshToken: newTokens.refresh_token ?? token.refreshToken, // Fall back to old refresh token
+    };
+  } catch (error) {
+    console.error(error);
+
+    return {
+      ...token,
+      error: refreshAccessTokenError,
+    };
+  }
+}
+
 export const authOptions: AuthOptions = {
   // Configure one or more authentication providers
-  providers: [
-    AzureADProvider({
-      clientId: process.env.AZURE_AD_CLIENT_ID!,
-      clientSecret: process.env.AZURE_AD_CLIENT_SECRET!,
-      tenantId: process.env.AZURE_AD_TENANT_ID!,
-      authorization: {
-        params: {
-          scope: `openid profile email ${process.env.AZURE_AD_APP_SCOPE}`,
-        },
-      },
-      idToken: true,
-    }),
-  ],
+  providers: [getAzureADProvider()],
+  secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
-    maxAge: 60 * 60, // 1h: Azure has ~1h 30 min, but setting 1h to ensure we force refresh before expire
   },
 
   callbacks: {
@@ -34,8 +89,19 @@ export const authOptions: AuthOptions = {
       if (account) {
         token.id_token = account.id_token;
         token.access_token = account.access_token;
+        token.refresh_token = account.refresh_token;
+        token.access_token_expires = account.expires_at
+          ? fromSecondsToMilliseconds(account.expires_at)
+          : 0;
       }
-      return token;
+
+      if (
+        token.access_token_expires &&
+        Date.now() < (token.access_token_expires as number)
+      ) {
+        return token;
+      }
+      return refreshAccessToken(token);
     },
     async session({ session, token }) {
       if (session) {
