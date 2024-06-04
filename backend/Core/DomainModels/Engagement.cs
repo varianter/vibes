@@ -7,6 +7,8 @@ public class Engagement
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
+    public int CustomerId { get; set; }
+
     public required Customer Customer { get; set; }
 
     public required EngagementState State { get; set; }

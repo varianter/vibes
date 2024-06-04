@@ -227,7 +227,7 @@ public class ProjectController : ControllerBase
 
         var project = _context.Project
             .Include(p => p.Customer)
-            .SingleOrDefault(p => p.Customer.Name == body.CustomerName
+            .SingleOrDefault(p => p.Customer.Id == customer.Id
                                   && p.Name == body.ProjectName
             );
 
