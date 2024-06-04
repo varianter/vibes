@@ -14,6 +14,7 @@ export default function RootLayout({
     <html>
       <Head>
         <title>Vibes Frontend</title>
+        <link rel="icon" href="/favicon.png" />
         <meta
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width"
