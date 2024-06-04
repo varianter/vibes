@@ -5,6 +5,11 @@ import {
 } from "@/app/api/auth/[...nextauth]/route";
 import VacationCalendar from "@/components/VacationCalendar";
 import { fetchWithToken } from "@/data/apiCallsWithToken";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Ferie | VIBES",
+};
 
 export default async function Ferie({
   params,

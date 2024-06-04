@@ -12,6 +12,11 @@ import {
   fetchEmployeesWithImageAndToken,
   fetchWithToken,
 } from "@/data/apiCallsWithToken";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Bemanning | VIBES",
+};
 
 export default async function Bemanning({
   params,

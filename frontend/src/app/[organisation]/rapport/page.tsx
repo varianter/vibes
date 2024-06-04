@@ -9,6 +9,11 @@ import { parseYearWeekFromUrlString } from "@/data/urlUtils";
 import React from "react";
 import { fetchWithToken } from "@/data/apiCallsWithToken";
 import { ReportContent } from "@/components/staffingReports/ReportContent";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Rapport | VIBES",
+};
 
 export default async function Rapport({
   params,
