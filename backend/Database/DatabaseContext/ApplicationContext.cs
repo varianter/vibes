@@ -47,12 +47,21 @@ public class ApplicationContext : DbContext
 
         modelBuilder.Entity<Organization>()
             .HasMany(organization => organization.Customers)
-            .WithOne(customer => customer.Organization);
+            .WithOne(customer => customer.Organization)
+            .HasForeignKey(customer => customer.OrganizationId);
 
+        modelBuilder.Entity<Customer>()
+            .HasIndex(customer => new {customer.OrganizationId, customer.Name})
+            .IsUnique();
 
         modelBuilder.Entity<Customer>()
             .HasMany(customer => customer.Projects)
-            .WithOne(project => project.Customer);
+            .WithOne(project => project.Customer)
+            .HasForeignKey(project => project.CustomerId);
+
+        modelBuilder.Entity<Engagement>()
+            .HasIndex(engagement => new {engagement.CustomerId, engagement.Name})
+            .IsUnique();
 
         modelBuilder.Entity<Engagement>()
             .Property(project => project.State)
