@@ -4,6 +4,13 @@ import NextTopLoader from "nextjs-toploader";
 
 import "./globals.css";
 import NavBar from "@/components/NavBar/NavBar";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  icons: {
+    icon: "/favicon.png",
+  },
+};
 
 export default function RootLayout({
   children,
