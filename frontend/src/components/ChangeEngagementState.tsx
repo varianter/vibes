@@ -1,6 +1,8 @@
 "use client";
+
 import { EngagementState } from "@/api-types";
 import { useState } from "react";
+import FilterButton from "./Buttons/FilterButton";
 
 export default function ChangeEngagementState({
   currentEngagement,
@@ -10,48 +12,34 @@ export default function ChangeEngagementState({
   const [engagementState, setEngagementState] =
     useState<EngagementState>(currentEngagement);
 
-  const handleChange = (newState: EngagementState) => {
+  function handleChange(newState: EngagementState) {
     setEngagementState(newState);
-  };
+  }
 
   return (
-    <form>
-      <span>
-        <label id="tilbud">
-          Tilbud
-          <input
-            aria-labelledby="tilbud"
-            type="radio"
-            value={EngagementState.Offer}
-            checked={engagementState === EngagementState.Offer}
-            onChange={(e) => handleChange(e.target.value as EngagementState)}
-          />
-        </label>
-      </span>
-      <span>
-        <label id="ordre">
-          Ordre
-          <input
-            aria-labelledby="ordre"
-            type="radio"
-            value={EngagementState.Order}
-            checked={engagementState === EngagementState.Order}
-            onChange={(e) => handleChange(e.target.value as EngagementState)}
-          />
-        </label>
-      </span>
-      <span>
-        <label id="avsluttet">
-          Avsluttet
-          <input
-            aria-labelledby="avsluttet"
-            type="radio"
-            value={EngagementState.Absence}
-            checked={engagementState === EngagementState.Absence}
-            onChange={(e) => handleChange(e.target.value as EngagementState)}
-          />
-        </label>
-      </span>
+    <form className="flex flex-row gap-4">
+      <FilterButton
+        label="Tilbud"
+        rounded={true}
+        value={EngagementState.Offer}
+        checked={engagementState === EngagementState.Offer}
+        onChange={(e) => handleChange(e.target.value as EngagementState)}
+      />
+      <FilterButton
+        label="Ordre"
+        rounded={true}
+        value={EngagementState.Order}
+        checked={engagementState === EngagementState.Order}
+        onChange={(e) => handleChange(e.target.value as EngagementState)}
+      />
+
+      <FilterButton
+        label="Avsluttet"
+        rounded={true}
+        value={EngagementState.Absence}
+        checked={engagementState === EngagementState.Absence}
+        onChange={(e) => handleChange(e.target.value as EngagementState)}
+      />
     </form>
   );
 }

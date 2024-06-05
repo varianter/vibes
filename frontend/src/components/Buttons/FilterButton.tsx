@@ -1,38 +1,29 @@
 export default function FilterButton({
   label,
-  onClick,
-  checked,
-  enabled = true,
+  rounded,
+  ...inputProps
 }: {
   label: string;
-  onClick: () => void;
-  checked: boolean;
-  enabled?: boolean;
-}) {
-  function handleToggle() {
-    if (enabled) {
-      onClick();
-    }
-  }
-
+  rounded?: boolean;
+} & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
-    <div className="flex items-center" onClick={handleToggle}>
+    <div className="flex items-center" onClick={inputProps.onClick}>
       <input
-        id="checkbox"
         type="checkbox"
-        className={`appearance-none border flex items-center border-opacity-50 m-[1px] mr-2 h-4 w-4 rounded-sm border-primary hover:border-primary checked:bg-primary
-          ${
-            !enabled &&
-            "border-black/20 hover:border-black/20 checked:bg-primary/50 bg-black/5"
-          }
-          ${
-            checked
-              ? "hover:bg-primary hover:brightness-[1.5]"
-              : "hover:bg-primary hover:bg-opacity-10"
-          }`}
-        checked={checked}
-        disabled={!enabled}
+        aria-labelledby={label.replaceAll(/ /g, "-")}
+        disabled={inputProps.disabled}
         readOnly
+        {...inputProps}
+        className={`appearance-none border flex items-center border-opacity-50 m-[1px] mr-2 h-4 w-4  border-primary hover:border-primary checked:bg-primary
+          ${inputProps.disabled &&
+          "border-black/20 hover:border-black/20 checked:bg-primary/50 bg-black/5"
+          }
+          ${inputProps.checked
+            ? "hover:bg-primary hover:brightness-[1.5]"
+            : "hover:bg-primary hover:bg-opacity-10"
+          }
+          ${rounded ? "rounded-full" : "rounded-sm"}
+          `}
       />
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -40,9 +31,8 @@ export default function FilterButton({
         height="12"
         viewBox="0 0 12 12"
         fill="none"
-        className={`absolute ml-[3px] pointer-events-none ${
-          !checked && "hidden"
-        }`}
+        className={`absolute ml-[3px] pointer-events-none ${!inputProps.checked && "hidden"
+          }`}
       >
         <path
           fillRule="evenodd"
@@ -51,7 +41,11 @@ export default function FilterButton({
           fill="white"
         />
       </svg>
-      <label className={`normal select-none ${!enabled && "text-black/50"}`}>
+      <label
+        id={label.replaceAll(/ /g, "-")}
+        className={`normal select-none ${inputProps.disabled && "text-black/50"
+          }`}
+      >
         {label}
       </label>
     </div>

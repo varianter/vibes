@@ -298,7 +298,7 @@ export function AddEngagementForm({
                 label="Fakturerbart"
                 onClick={handleBillableToggled}
                 checked={isBillable}
-                enabled={!isInternalProject}
+                disabled={isInternalProject}
               />
             </>
           )}
