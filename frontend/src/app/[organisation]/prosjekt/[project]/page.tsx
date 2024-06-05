@@ -1,5 +1,6 @@
 import { ProjectWithCustomerModel } from "@/api-types";
 import ChangeEngagementState from "@/components/ChangeEngagementState";
+import { EditEngagementHour } from "@/components/Staffing/EditEngagementHourModal/EditEngagementHour";
 import { fetchWithToken } from "@/data/apiCallsWithToken";
 
 export default async function Project({
@@ -19,6 +20,7 @@ export default async function Project({
         <h2>{project.customerName}</h2>
         <p>{project.bookingType}</p>
         <ChangeEngagementState currentEngagement={project.bookingType} />
+        <EditEngagementHour project={project} />
       </div>
     );
   } else {
