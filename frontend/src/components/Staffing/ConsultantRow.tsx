@@ -183,9 +183,9 @@ export default function ConsultantRows({
         <td>
           <div className="flex gap-2">
             <div className="flex flex-row align-center self-center gap-2">
-              {consultant.imageUrl ? (
+              {consultant.imageThumbUrl ? (
                 <Image
-                  src={consultant.imageUrl}
+                  src={consultant.imageThumbUrl}
                   alt={consultant.name}
                   className="w-8 h-8 rounded-full self-center object-contain"
                   width={32}
