@@ -58,10 +58,10 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
 
     return {
       ...token,
-      accessToken: newTokens.access_token,
-      accessTokenExpires:
+      access_token: newTokens.access_token,
+      access_token_expires:
         Date.now() + fromSecondsToMilliseconds(newTokens.expires_in),
-      refreshToken: newTokens.refresh_token ?? token.refreshToken, // Fall back to old refresh token
+      refresh_token: newTokens.refresh_token ?? token.refreshToken, // Fall back to old refresh token
     };
   } catch (error) {
     console.error(error);
