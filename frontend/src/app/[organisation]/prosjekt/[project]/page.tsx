@@ -15,10 +15,12 @@ export default async function Project({
 
   if (project) {
     return (
-      <div>
-        <h1>{project.projectName}</h1>
-        <h2>{project.customerName}</h2>
-        <ChangeEngagementState currentEngagement={project.bookingType} />
+      <div className="main p-4 pt-5 w-full flex flex-col gap-8">
+        <div className="flex flex-col gap-2">
+          <h1>{project.projectName}</h1>
+          <h2>{project.customerName}</h2>
+        </div>
+
         <EditEngagementHour project={project} />
       </div>
     );
