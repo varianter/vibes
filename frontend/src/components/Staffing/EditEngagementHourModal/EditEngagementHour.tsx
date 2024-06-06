@@ -17,6 +17,12 @@ import { WeekSpanTableHead } from "../WeekTableHead";
 import { AddConsultantCell } from "../AddConsultantCell";
 import { SelectOption } from "@/components/ComboBox";
 import { AddEngagementHoursRow } from "./AddEngagementHoursRow";
+import StaffingSums from "@/components/StaffingSums";
+import {
+  setWeeklyTotalBillable,
+  setWeeklyTotalBillableForProject,
+  useConsultantsFilter,
+} from "@/hooks/staffing/useConsultantsFilter";
 
 export function EditEngagementHour({
   project,
@@ -37,6 +43,11 @@ export function EditEngagementHour({
   const { consultants } = useContext(FilteredContext);
 
   const [chosenProject, setProject] = useState(project);
+
+  const [
+    weeklyTotalBillableAndOfferedState,
+    setweeklyTotalBillableAndOfferedState,
+  ] = useState<Map<number, number>>(new Map());
 
   const [selectedConsultants, setSelectedConsultants] = useState<
     ConsultantReadModel[]
@@ -66,6 +77,13 @@ export function EditEngagementHour({
           (c) => !intersection.includes(c.consultant.id),
         ),
       );
+    }
+    if (chosenProject) {
+      const weeklyTotalBillableAndOffered = setWeeklyTotalBillableForProject(
+        selectedConsultants,
+        chosenProject,
+      );
+      setweeklyTotalBillableAndOfferedState(weeklyTotalBillableAndOffered);
     }
   }, [selectedConsultants]);
 
@@ -172,6 +190,9 @@ export function EditEngagementHour({
             />
           </tr>
         </tbody>
+        <StaffingSums
+          weeklyTotalBillableAndOffered={weeklyTotalBillableAndOfferedState}
+        />
       </table>
     </div>
   );

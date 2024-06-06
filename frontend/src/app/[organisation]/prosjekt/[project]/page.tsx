@@ -18,7 +18,6 @@ export default async function Project({
       <div>
         <h1>{project.projectName}</h1>
         <h2>{project.customerName}</h2>
-        <p>{project.bookingType}</p>
         <ChangeEngagementState currentEngagement={project.bookingType} />
         <EditEngagementHour project={project} />
       </div>
