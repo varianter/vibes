@@ -18,7 +18,7 @@ const defaultFilters: StaffingFilters = {
   searchFilter: "",
   selectedWeekFilter: undefined,
   weekSpan: 0,
-  yearFilter: "",
+  rawYearFilter: "",
 };
 
 type FilterContextType = {
@@ -89,7 +89,7 @@ export type StaffingFilters = {
   availabilityFilter: boolean;
   departmentFilter: string;
   competenceFilter: string;
-  yearFilter: string;
+  rawYearFilter: string;
   selectedWeekFilter: Week | undefined;
   weekSpan: number;
   searchFilter: string;
@@ -157,7 +157,7 @@ function useUrlRouteFilter(): [StaffingFilters, UpdateFilters] {
       searchFilter,
       departmentFilter,
       competenceFilter,
-      yearFilter,
+      rawYearFilter: yearFilter,
       availabilityFilter,
       selectedWeekFilter: selectedWeek,
       weekSpan,

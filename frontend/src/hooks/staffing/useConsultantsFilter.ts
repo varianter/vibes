@@ -1,7 +1,7 @@
 import { YearRange } from "@/types";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { useContext, useEffect, useState } from "react";
-import { useYearsXpFilter } from "./useYearsXpFilter";
+import { useRawYearsFilter } from "./useRawYearFilter";
 import { useAvailabilityFilter } from "./useAvailabilityFilter";
 import { usePathname } from "next/navigation";
 import { ConsultantReadModel } from "@/api-types";
@@ -30,7 +30,7 @@ export function useSimpleConsultantsFilter() {
   const { departmentFilter, competenceFilter, searchFilter } =
     useContext(FilteredContext).activeFilters;
 
-  const { filteredYears } = useYearsXpFilter();
+  const { filteredYears } = useRawYearsFilter();
   const { availabilityFilterOn } = useAvailabilityFilter();
 
   const filteredConsultants = filterConsultants({
@@ -60,7 +60,7 @@ export function useConsultantsFilter() {
   const { departmentFilter, competenceFilter, searchFilter } =
     useContext(FilteredContext).activeFilters;
 
-  const { filteredYears } = useYearsXpFilter();
+  const { filteredYears } = useRawYearsFilter();
   const { availabilityFilterOn } = useAvailabilityFilter();
 
   const filteredConsultants = filterConsultants({

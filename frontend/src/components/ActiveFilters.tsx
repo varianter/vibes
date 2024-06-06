@@ -1,6 +1,6 @@
 "use client";
 import { useDepartmentFilter } from "@/hooks/staffing/useDepartmentFilter";
-import { useYearsXpFilter } from "@/hooks/staffing/useYearsXpFilter";
+import { useRawYearsFilter } from "@/hooks/staffing/useRawYearFilter";
 import { useAvailabilityFilter } from "@/hooks/staffing/useAvailabilityFilter";
 import { useContext } from "react";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
@@ -11,7 +11,7 @@ export default function ActiveFilters() {
 
   const { searchFilter } = activeFilters;
   const { filteredDepartments } = useDepartmentFilter();
-  const { filteredYears } = useYearsXpFilter();
+  const { filteredYears } = useRawYearsFilter();
   const { availabilityFilterOn } = useAvailabilityFilter();
 
   if (searchFilter != "") filterTextComponents.push(` "${searchFilter}"`);
