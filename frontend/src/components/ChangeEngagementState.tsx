@@ -5,7 +5,7 @@ import {
   ProjectWithCustomerModel,
   UpdateProjectWriteModel,
 } from "@/api-types";
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import FilterButton from "./Buttons/FilterButton";
 import { usePathname } from "next/navigation";
 
@@ -20,8 +20,18 @@ export default function ChangeEngagementState({
     project.bookingType,
   );
 
-  function handleChange(newState: EngagementState) {
+  async function handleChange(newState: EngagementState) {
     setEngagementState(newState);
+
+    const body: UpdateProjectWriteModel = {
+      engagementId: project.projectId,
+      projectState: newState,
+      startYear: 2024,
+      startWeek: 35,
+      weekSpan: 8,
+    };
+
+    await submitAddEngagementForm(body);
   }
 
   async function submitAddEngagementForm(body: UpdateProjectWriteModel) {
@@ -39,28 +49,8 @@ export default function ChangeEngagementState({
     }
   }
 
-  // Handler for form submission
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    // Needed to prevent the form from refreshing the page
-    event.preventDefault();
-    event.stopPropagation();
-
-    // Add your submission logic here
-
-    const body: UpdateProjectWriteModel = {
-      engagementId: project.projectId,
-      projectState: engagementState,
-      startYear: 2024,
-      startWeek: 35,
-      weekSpan: 8,
-    };
-
-    await submitAddEngagementForm(body);
-  }
-
   return (
-    <form onSubmit={handleSubmit} className="flex flex-row gap-4">
-      <p>{engagementState}</p>
+    <form className="flex flex-row gap-4">
       <FilterButton
         label="Tilbud"
         rounded={true}
@@ -83,7 +73,6 @@ export default function ChangeEngagementState({
         checked={engagementState === EngagementState.Closed}
         onChange={(e) => handleChange(e.target.value as EngagementState)}
       />
-      <button type="submit">submit</button>
     </form>
   );
 }
