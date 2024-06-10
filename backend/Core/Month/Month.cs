@@ -36,13 +36,11 @@ public class Month
         return Year * 100 + MonthNumber;
     }
 
-    // TODO: do we need this?
     public Week GetWeekNumberOfFirstDayInMonth()
     {
         return Week.FromDateTime(new DateTime(Year, MonthNumber, 1));
     }
 
-    // TODO: do we need this?
     public Week GetWeekNumberOfLastDayInMonth()
     {
         return Week.FromDateTime(new DateTime(Year, MonthNumber, DateTime.DaysInMonth(Year, MonthNumber)));
