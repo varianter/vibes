@@ -165,6 +165,7 @@ export function AddEngagementForm({
 
   async function submitAddEngagementForm(body: EngagementWriteModel) {
     const url = `/${organisationName}/bemanning/api/projects`;
+
     setIsSubmitting(true);
     try {
       const data = await fetch(url, {
@@ -259,14 +260,12 @@ export function AddEngagementForm({
             <>
               {/* Radio Button Group */}
               <div
-                className={`flex flex-row gap-4 ${
-                  selectedEngagement == null && "hidden"
-                }`}
+                className={`flex flex-row gap-4 ${selectedEngagement == null && "hidden"
+                  }`}
               >
                 <label
-                  className={`flex gap-2 normal items-center ${
-                    isOfferOptionDisabled && "text-black/50"
-                  }`}
+                  className={`flex gap-2 normal items-center ${isOfferOptionDisabled && "text-black/50"
+                    }`}
                 >
                   <input
                     type="radio"
@@ -279,9 +278,8 @@ export function AddEngagementForm({
                   Tilbud
                 </label>
                 <label
-                  className={`flex gap-2 normal items-center ${
-                    isOrderOptionDisabled && "text-black/50"
-                  }`}
+                  className={`flex gap-2 normal items-center ${isOrderOptionDisabled && "text-black/50"
+                    }`}
                 >
                   <input
                     type="radio"

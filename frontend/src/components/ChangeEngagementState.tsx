@@ -2,10 +2,10 @@
 
 import {
   EngagementState,
-  EngagementWriteModel,
   ProjectWithCustomerModel,
+  UpdateProjectWriteModel,
 } from "@/api-types";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import FilterButton from "./Buttons/FilterButton";
 import { usePathname } from "next/navigation";
 
@@ -24,22 +24,11 @@ export default function ChangeEngagementState({
     setEngagementState(newState);
   }
 
-  useEffect(() => {
-    const body: EngagementWriteModel = {
-      customerName: project.customerName,
-      projectName: project.projectName,
-      bookingType: engagementState,
-      isBillable: project.isBillable,
-    };
-
-    submitAddEngagementForm(body);
-  }, [engagementState]);
-
-  async function submitAddEngagementForm(body: EngagementWriteModel) {
-    const url = `/${organisationName}/bemanning/api/projects`;
+  async function submitAddEngagementForm(body: UpdateProjectWriteModel) {
+    const url = `/${organisationName}/bemanning/api/projects/updateState`;
     try {
       const data = await fetch(url, {
-        method: "put",
+        method: "PUT",
         body: JSON.stringify({
           ...body,
         }),
@@ -55,20 +44,23 @@ export default function ChangeEngagementState({
     // Needed to prevent the form from refreshing the page
     event.preventDefault();
     event.stopPropagation();
+
     // Add your submission logic here
 
-    const body: EngagementWriteModel = {
-      customerName: project.customerName,
-      projectName: project.projectName,
-      bookingType: engagementState,
-      isBillable: project.isBillable,
+    const body: UpdateProjectWriteModel = {
+      engagementId: project.projectId,
+      projectState: engagementState,
+      startYear: 2024,
+      startWeek: 35,
+      weekSpan: 8,
     };
 
     await submitAddEngagementForm(body);
   }
 
   return (
-    <form className="flex flex-row gap-4">
+    <form onSubmit={handleSubmit} className="flex flex-row gap-4">
+      <p>{engagementState}</p>
       <FilterButton
         label="Tilbud"
         rounded={true}
@@ -91,6 +83,7 @@ export default function ChangeEngagementState({
         checked={engagementState === EngagementState.Closed}
         onChange={(e) => handleChange(e.target.value as EngagementState)}
       />
+      <button type="submit">submit</button>
     </form>
   );
 }
