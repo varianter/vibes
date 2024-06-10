@@ -45,11 +45,6 @@ namespace Database.Migrations
                 table: "CompetenceConsultant",
                 columns: new[] { "ConsultantId", "CompetencesId" });
 
-            migrationBuilder.InsertData(
-                table: "Competence",
-                columns: new[] { "Id", "Name" },
-                values: new object[] { "development", "Utvikling" });
-
             migrationBuilder.CreateIndex(
                 name: "IX_Project_CustomerId_Name",
                 table: "Project",
@@ -76,11 +71,6 @@ namespace Database.Migrations
             migrationBuilder.DropIndex(
                 name: "IX_CompetenceConsultant_CompetencesId",
                 table: "CompetenceConsultant");
-
-            migrationBuilder.DeleteData(
-                table: "Competence",
-                keyColumn: "Id",
-                keyValue: "development");
 
             migrationBuilder.AlterColumn<string>(
                 name: "Name",
