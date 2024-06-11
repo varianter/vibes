@@ -14,6 +14,9 @@ function getAzureADProvider() {
     clientId: process.env.AZURE_AD_CLIENT_ID!,
     clientSecret: process.env.AZURE_AD_CLIENT_SECRET!,
     tenantId: process.env.AZURE_AD_TENANT_ID!,
+    httpOptions: {
+      timeout: 20000,
+    },
     authorization: {
       params: {
         scope: `openid profile email offline_access ${process.env.AZURE_AD_APP_SCOPE}`,
