@@ -3,7 +3,7 @@
 import { YearRange } from "@/types";
 import { useCallback, useContext } from "react";
 import { toggleValueFromFilter } from "./UrlStringFilter";
-import { rawYearRanges } from "@/components/ExperienceFilter";
+import { rawYearRanges } from "@/components/RawYearsFilter";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
 export function useRawYearsFilter() {

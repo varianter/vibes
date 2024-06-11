@@ -11,7 +11,7 @@ export const rawYearRanges: YearRange[] = [
   { label: "12+ K2", urlString: "12", start: 12 },
 ];
 
-export default function ExperienceFilter() {
+export default function RawYearsFilter() {
   const { toggleYearFilter, filteredYears } = useRawYearsFilter();
 
   if (rawYearRanges.length > 0) {

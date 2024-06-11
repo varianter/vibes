@@ -3,7 +3,7 @@ import DepartmentFilter from "./DepartmentFilter";
 import AvailabilityFilter from "./AvailabilityFilter";
 import SearchBarComponent from "./SearchBarComponent";
 import { ArrowLeft } from "react-feather";
-import ExperienceFilter from "./ExperienceFilter";
+import RawYearsFilter from "./RawYearsFilter";
 import CompetenceFilter from "./CompetenceFilter";
 
 // @ts-ignore
@@ -32,7 +32,7 @@ export default function StaffingSidebar({
           <SearchBarComponent />
           {isStaffing ? <AvailabilityFilter /> : null}
           <DepartmentFilter />
-          <ExperienceFilter />
+          <RawYearsFilter />
           <CompetenceFilter />
         </div>
       )}
