@@ -81,10 +81,11 @@ async function fetchConsultantsFromProject(
   selectedWeek: Week,
   selectedWeekSpan: number,
 ) {
-  const url = `/${organisationUrl}/bemanning/api/projects/staffings?projectId=${project.projectId
-    }&selectedWeek=${weekToString(
-      selectedWeek,
-    )}&selectedWeekSpan=${selectedWeekSpan}`;
+  const url = `/${organisationUrl}/bemanning/api/projects/staffings?projectId=${
+    project.projectId
+  }&selectedWeek=${weekToString(
+    selectedWeek,
+  )}&selectedWeekSpan=${selectedWeekSpan}`;
 
   try {
     const data = await fetch(url, {

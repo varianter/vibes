@@ -15,12 +15,14 @@ export default function FilterButton({
         readOnly
         {...inputProps}
         className={`appearance-none border flex items-center border-opacity-50 m-[1px] mr-2 h-4 w-4  border-primary hover:border-primary checked:bg-primary
-          ${inputProps.disabled &&
-          "border-black/20 hover:border-black/20 checked:bg-primary/50 bg-black/5"
+          ${
+            inputProps.disabled &&
+            "border-black/20 hover:border-black/20 checked:bg-primary/50 bg-black/5"
           }
-          ${inputProps.checked
-            ? "hover:bg-primary hover:brightness-[1.5]"
-            : "hover:bg-primary hover:bg-opacity-10"
+          ${
+            inputProps.checked
+              ? "hover:bg-primary hover:brightness-[1.5]"
+              : "hover:bg-primary hover:bg-opacity-10"
           }
           ${rounded ? "rounded-full" : "rounded-sm"}
           `}
@@ -31,8 +33,9 @@ export default function FilterButton({
         height="12"
         viewBox="0 0 12 12"
         fill="none"
-        className={`absolute ml-[3px] pointer-events-none ${!inputProps.checked && "hidden"
-          }`}
+        className={`absolute ml-[3px] pointer-events-none ${
+          !inputProps.checked && "hidden"
+        }`}
       >
         <path
           fillRule="evenodd"
@@ -43,8 +46,9 @@ export default function FilterButton({
       </svg>
       <label
         id={label.replaceAll(/ /g, "-")}
-        className={`normal select-none ${inputProps.disabled && "text-black/50"
-          }`}
+        className={`normal select-none ${
+          inputProps.disabled && "text-black/50"
+        }`}
       >
         {label}
       </label>

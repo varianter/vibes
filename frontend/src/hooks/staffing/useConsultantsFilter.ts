@@ -173,13 +173,13 @@ export function setWeeklyTotalBillable(
         weeklyTotalBillable.set(
           booking.weekNumber,
           (weeklyTotalBillable.get(booking.weekNumber) || 0) +
-          booking.bookingModel.totalBillable,
+            booking.bookingModel.totalBillable,
         );
         weeklyTotalBillableAndOffered.set(
           booking.weekNumber,
           (weeklyTotalBillableAndOffered.get(booking.weekNumber) || 0) +
-          booking.bookingModel.totalBillable +
-          booking.bookingModel.totalOffered,
+            booking.bookingModel.totalBillable +
+            booking.bookingModel.totalOffered,
         );
       } else {
         weeklyTotalBillable.set(
@@ -189,7 +189,7 @@ export function setWeeklyTotalBillable(
         weeklyTotalBillableAndOffered.set(
           booking.weekNumber,
           booking.bookingModel.totalBillable +
-          booking.bookingModel.totalOffered,
+            booking.bookingModel.totalOffered,
         );
       }
     });
@@ -217,7 +217,7 @@ export function setWeeklyTotalBillableForProject(
         weeklyTotalBillableAndOffered.set(
           weeklyHours.week,
           (weeklyTotalBillableAndOffered.get(weeklyHours.week) || 0) +
-          weeklyHours.hours,
+            weeklyHours.hours,
         );
       });
     }

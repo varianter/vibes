@@ -134,12 +134,13 @@ export function EditEngagementHour({
         />
       </div>
       <table
-        className={`w-full ${selectedWeekSpan > 23
+        className={`w-full ${
+          selectedWeekSpan > 23
             ? "min-w-[1400px]"
             : selectedWeekSpan > 11
-              ? "min-w-[850px]"
-              : "min-w-[700px]"
-          } table-fixed`}
+            ? "min-w-[850px]"
+            : "min-w-[700px]"
+        } table-fixed`}
       >
         <colgroup>
           <col span={1} className="w-10" />
@@ -208,10 +209,11 @@ async function fetchConsultantsFromProject(
   selectedWeek: Week,
   selectedWeekSpan: number,
 ) {
-  const url = `/${organisationUrl}/bemanning/api/projects/staffings?projectId=${project.projectId
-    }&selectedWeek=${weekToString(
-      selectedWeek,
-    )}&selectedWeekSpan=${selectedWeekSpan}`;
+  const url = `/${organisationUrl}/bemanning/api/projects/staffings?projectId=${
+    project.projectId
+  }&selectedWeek=${weekToString(
+    selectedWeek,
+  )}&selectedWeekSpan=${selectedWeekSpan}`;
 
   try {
     const data = await fetch(url, {

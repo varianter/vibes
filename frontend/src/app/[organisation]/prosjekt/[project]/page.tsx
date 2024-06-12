@@ -27,9 +27,10 @@ export default async function Project({
 
   const consultants =
     (await fetchEmployeesWithImageAndToken(
-      `${params.organisation}/staffings${selectedWeek
-        ? `?Year=${selectedWeek.year}&Week=${selectedWeek.weekNumber}`
-        : ""
+      `${params.organisation}/staffings${
+        selectedWeek
+          ? `?Year=${selectedWeek.year}&Week=${selectedWeek.weekNumber}`
+          : ""
       }${weekSpan ? `${selectedWeek ? "&" : "?"}WeekSpan=${weekSpan}` : ""}`,
     )) ?? [];
 

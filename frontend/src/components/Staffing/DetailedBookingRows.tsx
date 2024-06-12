@@ -107,11 +107,12 @@ export function DetailedBookingRows(props: {
             </div>
             <div className="flex flex-col justify-center text-left">
               <p
-                className={`xsmall text-black/75 whitespace-nowrap text-ellipsis overflow-x-hidden max-w-[145px] ${!(
+                className={`xsmall text-black/75 whitespace-nowrap text-ellipsis overflow-x-hidden max-w-[145px] ${
+                  !(
                     detailedBooking.bookingDetails.type == BookingType.Offer ||
                     detailedBooking.bookingDetails.type == BookingType.Booking
                   ) && "hidden"
-                  }`}
+                }`}
               >
                 {detailedBooking.bookingDetails.projectName}
               </p>
@@ -124,8 +125,9 @@ export function DetailedBookingRows(props: {
 
         {/* For offer dropdown open*/}
         <div
-          className={` z-50 bg-white flex flex-col p-1 absolute top-full mt-1 rounded-lg dropdown-shadow ${!editOfferDropdownIsOpen && "hidden"
-            }`}
+          className={` z-50 bg-white flex flex-col p-1 absolute top-full mt-1 rounded-lg dropdown-shadow ${
+            !editOfferDropdownIsOpen && "hidden"
+          }`}
         >
           <p className="xsmall px-3 py-2 text-black">
             Hvordan endte dette tilbudet?
@@ -316,10 +318,11 @@ function DetailedBookingCell({
       <div
         className={`flex flex-row justify-center items-center rounded px-1 border  ${getColorByStaffingType(
           detailedBooking.bookingDetails.type ?? BookingType.Offer,
-        )} ${hours == 0 && "bg-opacity-30"} ${isInputFocused || checkIfMarked()
+        )} ${hours == 0 && "bg-opacity-30"} ${
+          isInputFocused || checkIfMarked()
             ? "border-primary"
             : "border-transparent hover:border-primary/30"
-          }`}
+        }`}
         onMouseEnter={() => {
           setIsChangingHours(true);
         }}
@@ -334,16 +337,19 @@ function DetailedBookingCell({
             <button
               tabIndex={-1}
               disabled={hours == 0}
-              className={`my-1 p-1 rounded-full ${hours > 0 && "hover:bg-primary/10"
-                }  hidden ${numWeeks <= 8 && "md:flex"} ${numWeeks <= 12 && "lg:flex"
-                }  `}
+              className={`my-1 p-1 rounded-full ${
+                hours > 0 && "hover:bg-primary/10"
+              }  hidden ${numWeeks <= 8 && "md:flex"} ${
+                numWeeks <= 12 && "lg:flex"
+              }  `}
               onClick={() => {
                 setHours(Math.max(hours - 7.5, 0));
               }}
             >
               <Minus
-                className={`w-4 h-4 text-primary ${hours == 0 && "text-primary/50"
-                  }`}
+                className={`w-4 h-4 text-primary ${
+                  hours == 0 && "text-primary/50"
+                }`}
               />
             </button>
           )}
@@ -382,16 +388,18 @@ function DetailedBookingCell({
             setCurrentDragWeek(undefined);
             setStartDragWeek(undefined);
           }}
-          className={`small-medium rounded w-full py-2 bg-transparent focus:outline-none min-w-[24px] ${isChangingHours && numWeeks <= 12 ? "text-center" : "text-right"
-            } ${hours == 0 && "text-black/75"} `}
+          className={`small-medium rounded w-full py-2 bg-transparent focus:outline-none min-w-[24px] ${
+            isChangingHours && numWeeks <= 12 ? "text-center" : "text-right"
+          } ${hours == 0 && "text-black/75"} `}
         ></input>
         {isChangingHours &&
           numWeeks <= 12 &&
           detailedBooking.bookingDetails.type != BookingType.Vacation && (
             <button
               tabIndex={-1}
-              className={`my-1 p-1 rounded-full hover:bg-primary/10 hidden ${numWeeks <= 8 && "md:flex"
-                } ${numWeeks <= 12 && "lg:flex"} `}
+              className={`my-1 p-1 rounded-full hover:bg-primary/10 hidden ${
+                numWeeks <= 8 && "md:flex"
+              } ${numWeeks <= 12 && "lg:flex"} `}
               onClick={() => {
                 setHours(hours + 7.5);
               }}
