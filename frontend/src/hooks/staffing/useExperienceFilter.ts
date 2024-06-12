@@ -1,31 +1,30 @@
 "use client";
 
-import { YearRange } from "@/types";
-import { useCallback, useContext } from "react";
-import { toggleValueFromFilter } from "./UrlStringFilter";
-import { rawYearRanges } from "@/components/RawYearsFilter";
+import { useContext, useEffect, useState } from "react";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
 export function useExperienceFilter() {
   const { updateFilters, activeFilters } = useContext(FilteredContext);
-  const { rawYearFilter } = activeFilters;
+  const experienceFromFilter = activeFilters.experienceFromFilter;
+  const experienceToFilter = activeFilters.experienceToFilter;
 
-  const filteredYears = rawYearFilter
-    .split(",")
-    .map((urlString) => rawYearRanges.find((y) => y.urlString === urlString))
-    .filter((year) => year !== undefined) as YearRange[];
+  const [activeExperienceFrom, setActiveExperienceFrom] =
+    useState<string>(experienceFromFilter);
 
-  const toggleYearFilter = useCallback(
-    (y: YearRange) => {
-      const newYearFilter = toggleValueFromFilter(rawYearFilter, y.urlString);
-      updateFilters({ years: newYearFilter });
-    },
-    [updateFilters, rawYearFilter],
-  );
+  const [activeExperienceTo, setActiveExperienceTo] =
+    useState<string>(experienceToFilter);
+
+  useEffect(() => {
+    updateFilters({
+      experienceFrom: activeExperienceFrom,
+      experienceTo: activeExperienceTo,
+    });
+  }, [activeExperienceFrom, activeExperienceTo, updateFilters]);
 
   return {
-    filteredYears,
-    toggleYearFilter,
-    updateRoute: updateFilters,
+    activeExperienceFrom,
+    activeExperienceTo,
+    setActiveExperienceFrom,
+    setActiveExperienceTo,
   };
 }
