@@ -30,18 +30,16 @@ export default function CostumerRow({
         onMouseLeave={() => setIsRowHovered(false)}
       >
         <td
-          className={`border-l-2 ${
-            isListElementVisible
+          className={`border-l-2 ${isListElementVisible
               ? "border-l-secondary"
               : isRowHovered
-              ? "border-l-primary"
-              : "border-l-primary/5"
-          } `}
+                ? "border-l-primary"
+                : "border-l-primary/5"
+            } `}
         >
           <button
-            className={`p-2 rounded-lg ml-2 hover:bg-primary hover:bg-opacity-10 ${
-              isListElementVisible && "rotate-180"
-            }`}
+            className={`p-2 rounded-lg ml-2 hover:bg-primary hover:bg-opacity-10 ${isListElementVisible && "rotate-180"
+              }`}
             onClick={toggleListElementVisibility}
           >
             <ChevronDown className={`text-primary w-6 h-6`} />
@@ -49,9 +47,8 @@ export default function CostumerRow({
         </td>
         <td className="flex flex-row justify-between items-center h-[52px]">
           <p
-            className={`text-black text-start w-full whitespace-nowrap text-ellipsis overflow-x-hidden  ${
-              isListElementVisible ? "normal-medium" : "normal"
-            }`}
+            className={`text-black text-start w-full whitespace-nowrap text-ellipsis overflow-x-hidden  ${isListElementVisible ? "normal-medium" : "normal"
+              }`}
             style={{ lineHeight: "initial" }}
             onClick={toggleListElementVisibility}
           >
@@ -76,7 +73,7 @@ export default function CostumerRow({
       </tr>
       {isListElementVisible &&
         customer.engagements &&
-        customer.engagements.map((engagement, index) => (
+        customer.engagements.map((engagement) => (
           <tr key={`${engagement.engagementId}-details`} className="h-fit">
             <td className="border-l-secondary border-l-2">
               <div
@@ -91,14 +88,17 @@ export default function CostumerRow({
               </div>
             </td>
             <td className="flex flex-row gap-2 justify-start relative">
-              <div className="flex flex-col justify-center">
+              <Link
+                href={`prosjekt/${engagement.engagementId}`}
+                className="flex flex-col justify-center"
+              >
                 <p className="xsmall text-black/75 whitespace-nowrap text-ellipsis overflow-x-hidden max-w-[145px]">
                   {engagement.isBillable ? "Fakturerbart" : "Ikke-fakturerbart"}
                 </p>
                 <p className="text-black text-start small">
                   {engagement.engagementName}
                 </p>
-              </div>
+              </Link>
             </td>
           </tr>
         ))}
