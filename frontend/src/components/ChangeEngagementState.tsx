@@ -7,7 +7,7 @@ import {
 } from "@/api-types";
 import { useState } from "react";
 import FilterButton from "./Buttons/FilterButton";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function ChangeEngagementState({
   project,
@@ -15,6 +15,8 @@ export default function ChangeEngagementState({
   project: ProjectWithCustomerModel;
 }) {
   const organisationName = usePathname().split("/")[1];
+
+  const router = useRouter();
 
   const [engagementState, setEngagementState] = useState<EngagementState>(
     project.bookingType,
@@ -39,6 +41,7 @@ export default function ChangeEngagementState({
     };
 
     await submitAddEngagementForm(body);
+    router.refresh();
   }
 
   async function submitAddEngagementForm(body: UpdateProjectWriteModel) {
