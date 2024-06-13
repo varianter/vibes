@@ -37,7 +37,7 @@ export default function ChangeEngagementState({
       projectState: newState,
       startYear: startYear,
       startWeek: startWeek,
-      weekSpan: 8,
+      weekSpan: 26,
     };
 
     await submitAddEngagementForm(body);
