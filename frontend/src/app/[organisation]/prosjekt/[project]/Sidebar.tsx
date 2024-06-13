@@ -50,7 +50,7 @@ function Sidebar({ project }: { project: ProjectWithCustomerModel }) {
     <div className="sidebar z-10">
       <div className=" bg-primary/5 h-full flex flex-col gap-6 p-4 w-[300px]">
         <div className="flex flex-col gap-6">
-          <h2 className="text-h1">Filter</h2>
+          <h2 className="text-h1">Info</h2>
           <div className="flex flex-col gap-2">
             <h3>Om</h3>
             <InfoBox
