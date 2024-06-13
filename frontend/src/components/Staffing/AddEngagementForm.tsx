@@ -165,6 +165,7 @@ export function AddEngagementForm({
 
   async function submitAddEngagementForm(body: EngagementWriteModel) {
     const url = `/${organisationName}/bemanning/api/projects`;
+
     setIsSubmitting(true);
     try {
       const data = await fetch(url, {
@@ -298,7 +299,7 @@ export function AddEngagementForm({
                 label="Fakturerbart"
                 onClick={handleBillableToggled}
                 checked={isBillable}
-                enabled={!isInternalProject}
+                disabled={isInternalProject}
               />
             </>
           )}

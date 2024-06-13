@@ -4,7 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import { useRawYearsFilter } from "./useRawYearFilter";
 import { useAvailabilityFilter } from "./useAvailabilityFilter";
 import { usePathname } from "next/navigation";
-import { ConsultantReadModel } from "@/api-types";
+import { ConsultantReadModel, ProjectWithCustomerModel } from "@/api-types";
 
 async function getNumWorkHours(
   setNumWorkHours: Function,
@@ -205,7 +205,7 @@ interface WeeklyTotal {
   weeklyTotalBillableAndOffered: Map<number, number>;
 }
 
-function setWeeklyTotalBillable(
+export function setWeeklyTotalBillable(
   filteredConsultants: ConsultantReadModel[],
 ): WeeklyTotal {
   const weeklyTotalBillable = new Map<number, number>();
@@ -243,6 +243,30 @@ function setWeeklyTotalBillable(
     weeklyTotalBillable,
     weeklyTotalBillableAndOffered,
   };
+}
+
+export function setWeeklyTotalBillableForProject(
+  selectedConsultants: ConsultantReadModel[],
+  project: ProjectWithCustomerModel,
+) {
+  const weeklyTotalBillableAndOffered = new Map<number, number>();
+
+  selectedConsultants.map((consultant) => {
+    const bookingDetail = consultant.detailedBooking.find(
+      (booking) => booking.bookingDetails.projectId === project.projectId,
+    );
+
+    if (bookingDetail) {
+      bookingDetail.hours.map((weeklyHours) => {
+        weeklyTotalBillableAndOffered.set(
+          weeklyHours.week,
+          (weeklyTotalBillableAndOffered.get(weeklyHours.week) || 0) +
+            weeklyHours.hours,
+        );
+      });
+    }
+  });
+  return weeklyTotalBillableAndOffered;
 }
 
 function setWeeklyInvoiceRate(

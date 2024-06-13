@@ -26,6 +26,9 @@ export default {
       background_light_purple_hover: "#423D891A",
       text_light_black: "#333333BF",
     },
+    fontSize: {
+      h1: ["1.625rem", "2.5rem"],
+    },
     extend: {
       minWidth: {
         "8": "2rem",

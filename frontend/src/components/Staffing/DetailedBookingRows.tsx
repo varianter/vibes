@@ -18,6 +18,7 @@ import { Edit3, Minus, Plus, ThumbsDown, ThumbsUp } from "react-feather";
 import { updateBookingHoursBody, updateProjectStateBody } from "@/types";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { parseYearWeekFromString } from "@/data/urlUtils";
+import Link from "next/link";
 
 async function updateProjectState(
   organisationName: string,
@@ -92,19 +93,9 @@ export function DetailedBookingRows(props: {
     >
       <td className="border-l-secondary border-l-2"></td>
       <td className="flex flex-row gap-2 justify-start relative" ref={menuRef}>
-        <button
+        <Link
+          href={`prosjekt/${detailedBooking.bookingDetails.projectId}`}
           className={`flex items-center rounded`}
-          onClick={() =>
-            detailedBooking.bookingDetails.type == BookingType.Offer
-              ? setEditOfferDropdownIsOpen(true)
-              : openEngagementAndSetID(detailedBooking.bookingDetails.projectId)
-          }
-          disabled={
-            !(
-              detailedBooking.bookingDetails.type == BookingType.Offer ||
-              detailedBooking.bookingDetails.type == BookingType.Booking
-            )
-          }
         >
           <div className="flex flex-row items-center gap-3 justify-end">
             <div
@@ -130,7 +121,7 @@ export function DetailedBookingRows(props: {
               </p>
             </div>
           </div>
-        </button>
+        </Link>
 
         {/* For offer dropdown open*/}
         <div

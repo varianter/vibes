@@ -76,7 +76,7 @@ export default function CostumerRow({
       </tr>
       {isListElementVisible &&
         customer.engagements &&
-        customer.engagements.map((engagement, index) => (
+        customer.engagements.map((engagement) => (
           <tr key={`${engagement.engagementId}-details`} className="h-fit">
             <td className="border-l-secondary border-l-2">
               <div
@@ -91,14 +91,17 @@ export default function CostumerRow({
               </div>
             </td>
             <td className="flex flex-row gap-2 justify-start relative">
-              <div className="flex flex-col justify-center">
+              <Link
+                href={`prosjekt/${engagement.engagementId}`}
+                className="flex flex-col justify-center"
+              >
                 <p className="xsmall text-black/75 whitespace-nowrap text-ellipsis overflow-x-hidden max-w-[145px]">
                   {engagement.isBillable ? "Fakturerbart" : "Ikke-fakturerbart"}
                 </p>
                 <p className="text-black text-start small">
                   {engagement.engagementName}
                 </p>
-              </div>
+              </Link>
             </td>
           </tr>
         ))}

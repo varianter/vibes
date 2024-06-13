@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react";
+
 interface StaffingSumsProps {
-  weeklyTotalBillable: Map<number, number>;
+  weeklyTotalBillable?: Map<number, number>;
   weeklyTotalBillableAndOffered: Map<number, number>;
-  weeklyInvoiceRates: Map<number, number>;
+  weeklyInvoiceRates?: Map<number, number>;
 }
 
 export default function StaffingSums({
@@ -9,29 +11,41 @@ export default function StaffingSums({
   weeklyTotalBillableAndOffered,
   weeklyInvoiceRates,
 }: StaffingSumsProps) {
-  const totalBillableHours = Array.from(weeklyTotalBillable.values());
+  const [totalBillableHours, setTotalBillableHours] = useState<number[]>();
   const totalBillableAndOfferedHours = Array.from(
     weeklyTotalBillableAndOffered.values(),
   );
-  const weeklyInvoiceRatesArray = Array.from(weeklyInvoiceRates.values());
+  const [weeklyInvoiceRatesArray, setWeeklyInvoiceRatesArray] =
+    useState<number[]>();
+
+  useEffect(() => {
+    if (weeklyTotalBillable) {
+      setTotalBillableHours(Array.from(weeklyTotalBillable.values()));
+    }
+    if (weeklyInvoiceRates) {
+      setWeeklyInvoiceRatesArray(Array.from(weeklyInvoiceRates.values()));
+    }
+  }, [weeklyTotalBillable, weeklyInvoiceRates]);
 
   return (
     <thead>
-      <tr>
-        <td colSpan={2}>
-          <p className="small-medium text-black">Sum bemanning</p>
-        </td>
-        {totalBillableHours.map((totalBillableHour, index) => (
-          <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
-            <p className="small-medium text-right">
-              {totalBillableHour.toLocaleString("nb-No", {
-                maximumFractionDigits: 1,
-                minimumFractionDigits: 1,
-              })}
-            </p>
+      {weeklyTotalBillable && (
+        <tr>
+          <td colSpan={2}>
+            <p className="small-medium text-black">Sum bemanning</p>
           </td>
-        ))}
-      </tr>
+          {totalBillableHours?.map((totalBillableHour, index) => (
+            <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
+              <p className="small-medium text-right">
+                {totalBillableHour.toLocaleString("nb-No", {
+                  maximumFractionDigits: 1,
+                  minimumFractionDigits: 1,
+                })}
+              </p>
+            </td>
+          ))}
+        </tr>
+      )}
       <tr>
         <td colSpan={2}>
           <p className="small-medium text-black">Sum bemanning og tilbud</p>
@@ -49,18 +63,20 @@ export default function StaffingSums({
           ),
         )}
       </tr>
-      <tr>
-        <td colSpan={2}>
-          <p className="small-medium text-black">Fakureringsgrad</p>
-        </td>
-        {weeklyInvoiceRatesArray.map((indexRates, index) => (
-          <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
-            <p className="small-medium text-right">
-              {Math.round(indexRates * 100)}%
-            </p>
+      {weeklyInvoiceRatesArray && (
+        <tr>
+          <td colSpan={2}>
+            <p className="small-medium text-black">Fakureringsgrad</p>
           </td>
-        ))}
-      </tr>
+          {weeklyInvoiceRatesArray.map((indexRates, index) => (
+            <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
+              <p className="small-medium text-right">
+                {Math.round(indexRates * 100)}%
+              </p>
+            </td>
+          ))}
+        </tr>
+      )}
     </thead>
   );
 }
