@@ -69,6 +69,8 @@ export default function EngagementRows({
         yearFilter: [],
         consultants: selectedConsultants,
         availabilityFilterOn: false,
+        activeExperienceFrom: activeFilters.experienceFromFilter,
+        activeExperienceTo: activeFilters.experienceToFilter,
       }),
     );
   }, [selectedConsultants, activeFilters.departmentFilter]);
