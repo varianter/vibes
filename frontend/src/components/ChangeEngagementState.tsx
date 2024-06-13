@@ -23,11 +23,18 @@ export default function ChangeEngagementState({
   async function handleChange(newState: EngagementState) {
     setEngagementState(newState);
 
+    const currentDate = new Date();
+    const startYear = currentDate.getFullYear();
+    const startWeek = Math.ceil(
+      (currentDate.getTime() - new Date(startYear, 0, 1).getTime()) /
+        (7 * 24 * 60 * 60 * 1000),
+    );
+
     const body: UpdateProjectWriteModel = {
       engagementId: project.projectId,
       projectState: newState,
-      startYear: 2024,
-      startWeek: 35,
+      startYear: startYear,
+      startWeek: startWeek,
       weekSpan: 8,
     };
 
