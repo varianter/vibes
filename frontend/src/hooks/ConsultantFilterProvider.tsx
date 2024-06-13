@@ -18,7 +18,9 @@ const defaultFilters: StaffingFilters = {
   searchFilter: "",
   selectedWeekFilter: undefined,
   weekSpan: 0,
-  yearFilter: "",
+  rawYearFilter: "",
+  experienceFromFilter: "",
+  experienceToFilter: "",
 };
 
 type FilterContextType = {
@@ -83,16 +85,20 @@ interface UpdateFilterParams {
   week?: Week;
   numWeeks?: number;
   availability?: boolean;
+  experienceFrom?: string;
+  experienceTo?: string;
 }
 
 export type StaffingFilters = {
   availabilityFilter: boolean;
   departmentFilter: string;
   competenceFilter: string;
-  yearFilter: string;
+  rawYearFilter: string;
   selectedWeekFilter: Week | undefined;
   weekSpan: number;
   searchFilter: string;
+  experienceFromFilter: string;
+  experienceToFilter: string;
 };
 
 export type UpdateFilters = (updateParams: UpdateFilterParams) => void;
@@ -114,6 +120,12 @@ function useUrlRouteFilter(): [StaffingFilters, UpdateFilters] {
   const [yearFilter, setYearFilter] = useState(
     searchParams.get("yearFilter") || "",
   );
+  const [experienceFromFilter, setExperienceFromFilter] = useState(
+    searchParams.get("experienceFromFilter") || "",
+  );
+  const [experienceToFilter, setExperienceToFilter] = useState(
+    searchParams.get("experienceToFilter") || "",
+  );
   const [availabilityFilter, setAvailabilityFilter] = useState<boolean>(
     !!searchParams.get("availabilityFilter") || false,
   );
@@ -128,13 +140,15 @@ function useUrlRouteFilter(): [StaffingFilters, UpdateFilters] {
     const { departments = departmentFilter } = updateParams;
     const { competences = competenceFilter } = updateParams;
     const { years = yearFilter } = updateParams;
+    const { experienceFrom = experienceFromFilter } = updateParams;
+    const { experienceTo = experienceToFilter } = updateParams;
     const { week = selectedWeek } = updateParams;
     const { numWeeks = weekSpan } = updateParams;
     const { availability = availabilityFilter } = updateParams;
 
     const url = `${pathname}?search=${search}&depFilter=${departments}&compFilter=${competences}&yearFilter=${years}${
       week ? `&selectedWeek=${weekToString(week)}` : ""
-    }&availabilityFilter=${availability}&${
+    }&experienceFromFilter=${experienceFrom}&experienceToFilter=${experienceTo}&availabilityFilter=${availability}&${
       numWeeks ? `&weekSpan=${numWeeks}` : ""
     }`;
 
@@ -144,6 +158,8 @@ function useUrlRouteFilter(): [StaffingFilters, UpdateFilters] {
     setCompetenceFilter(competences);
     setAvailabilityFilter(availability);
     setSelectedWeek(week);
+    setExperienceFromFilter(experienceFrom);
+    setExperienceToFilter(experienceTo);
 
     if (updateParams.week || updateParams.numWeeks) {
       router.push(url);
@@ -157,9 +173,11 @@ function useUrlRouteFilter(): [StaffingFilters, UpdateFilters] {
       searchFilter,
       departmentFilter,
       competenceFilter,
-      yearFilter,
+      rawYearFilter: yearFilter,
       availabilityFilter,
       selectedWeekFilter: selectedWeek,
+      experienceFromFilter,
+      experienceToFilter,
       weekSpan,
     },
     updateRoute,

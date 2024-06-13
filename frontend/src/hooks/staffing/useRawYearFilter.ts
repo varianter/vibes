@@ -3,24 +3,24 @@
 import { YearRange } from "@/types";
 import { useCallback, useContext } from "react";
 import { toggleValueFromFilter } from "./UrlStringFilter";
-import { yearRanges } from "@/components/ExperienceFilter";
+import { rawYearRanges } from "@/components/RawYearsFilter";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
-export function useYearsXpFilter() {
+export function useRawYearsFilter() {
   const { updateFilters, activeFilters } = useContext(FilteredContext);
-  const { yearFilter } = activeFilters;
+  const { rawYearFilter } = activeFilters;
 
-  const filteredYears = yearFilter
+  const filteredYears = rawYearFilter
     .split(",")
-    .map((urlString) => yearRanges.find((y) => y.urlString === urlString))
+    .map((urlString) => rawYearRanges.find((y) => y.urlString === urlString))
     .filter((year) => year !== undefined) as YearRange[];
 
   const toggleYearFilter = useCallback(
     (y: YearRange) => {
-      const newYearFilter = toggleValueFromFilter(yearFilter, y.urlString);
+      const newYearFilter = toggleValueFromFilter(rawYearFilter, y.urlString);
       updateFilters({ years: newYearFilter });
     },
-    [updateFilters, yearFilter],
+    [updateFilters, rawYearFilter],
   );
 
   return {

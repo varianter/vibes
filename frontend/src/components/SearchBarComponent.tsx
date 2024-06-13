@@ -17,11 +17,7 @@ export default function SearchBarComponent({
   useEffect(() => {
     function keyDownHandler(e: { code: string }) {
       if (isDisabledHotkeys) return;
-      if (
-        (e.code.startsWith("Key") || e.code.includes("Backspace")) &&
-        inputRef &&
-        inputRef.current
-      ) {
+      if (e.code.startsWith("Key") && inputRef && inputRef.current) {
         inputRef.current.focus();
       }
       if (e.code.includes("Escape")) {

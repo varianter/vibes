@@ -1,7 +1,7 @@
 import { YearRange } from "@/types";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { useContext, useEffect, useState } from "react";
-import { useYearsXpFilter } from "./useYearsXpFilter";
+import { useRawYearsFilter } from "./useRawYearFilter";
 import { useAvailabilityFilter } from "./useAvailabilityFilter";
 import { usePathname } from "next/navigation";
 import { ConsultantReadModel } from "@/api-types";
@@ -27,10 +27,15 @@ async function getNumWorkHours(
 export function useSimpleConsultantsFilter() {
   const { consultants, setConsultants } = useContext(FilteredContext);
 
-  const { departmentFilter, competenceFilter, searchFilter } =
-    useContext(FilteredContext).activeFilters;
+  const {
+    departmentFilter,
+    competenceFilter,
+    searchFilter,
+    experienceFromFilter,
+    experienceToFilter,
+  } = useContext(FilteredContext).activeFilters;
 
-  const { filteredYears } = useYearsXpFilter();
+  const { filteredYears } = useRawYearsFilter();
   const { availabilityFilterOn } = useAvailabilityFilter();
 
   const filteredConsultants = filterConsultants({
@@ -40,6 +45,8 @@ export function useSimpleConsultantsFilter() {
     yearFilter: filteredYears,
     consultants,
     availabilityFilterOn,
+    activeExperienceFrom: experienceFromFilter,
+    activeExperienceTo: experienceToFilter,
   });
 
   return {
@@ -57,10 +64,15 @@ export function useConsultantsFilter() {
     getNumWorkHours(setNumWorkHours, organisationName);
   }, [organisationName]);
 
-  const { departmentFilter, competenceFilter, searchFilter } =
-    useContext(FilteredContext).activeFilters;
+  const {
+    departmentFilter,
+    competenceFilter,
+    searchFilter,
+    experienceFromFilter,
+    experienceToFilter,
+  } = useContext(FilteredContext).activeFilters;
 
-  const { filteredYears } = useYearsXpFilter();
+  const { filteredYears } = useRawYearsFilter();
   const { availabilityFilterOn } = useAvailabilityFilter();
 
   const filteredConsultants = filterConsultants({
@@ -70,6 +82,8 @@ export function useConsultantsFilter() {
     yearFilter: filteredYears,
     consultants,
     availabilityFilterOn,
+    activeExperienceFrom: experienceFromFilter,
+    activeExperienceTo: experienceToFilter,
   });
 
   const { weeklyTotalBillable, weeklyTotalBillableAndOffered } =
@@ -97,6 +111,8 @@ export function filterConsultants({
   yearFilter,
   consultants,
   availabilityFilterOn,
+  activeExperienceFrom,
+  activeExperienceTo,
 }: {
   search: string;
   departmentFilter: string;
@@ -104,6 +120,8 @@ export function filterConsultants({
   yearFilter: YearRange[];
   consultants: ConsultantReadModel[];
   availabilityFilterOn: Boolean;
+  activeExperienceFrom: string;
+  activeExperienceTo: string;
 }) {
   let newFilteredConsultants = consultants;
   if (search && search.length > 0) {
@@ -139,7 +157,33 @@ export function filterConsultants({
       (consultant) => !consultant.isOccupied,
     );
   }
+  if (activeExperienceFrom != "" || activeExperienceTo != "") {
+    newFilteredConsultants = newFilteredConsultants.filter((consultant) =>
+      experienceRange(consultant, activeExperienceFrom, activeExperienceTo),
+    );
+  }
   return newFilteredConsultants;
+}
+
+function experienceRange(
+  consultant: ConsultantReadModel,
+  experienceFrom: string,
+  experienceTo: string,
+) {
+  const experienceRange = {
+    start: parseInt(experienceFrom),
+    end: parseInt(experienceTo),
+  };
+  if (
+    (!experienceRange.start ||
+      consultant.yearsOfExperience >= experienceRange.start) &&
+    (!experienceRange.end ||
+      consultant.yearsOfExperience <= experienceRange.end)
+  )
+    return true;
+  else {
+    return false;
+  }
 }
 
 function inYearRanges(

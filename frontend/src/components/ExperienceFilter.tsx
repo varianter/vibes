@@ -1,36 +1,65 @@
 "use client";
 import { YearRange } from "@/types";
 import FilterButton from "./Buttons/FilterButton";
-import { useYearsXpFilter } from "@/hooks/staffing/useYearsXpFilter";
-
-export const yearRanges: YearRange[] = [
-  { label: "0-2 Kilimanjaro", urlString: "0-2", start: 0, end: 2 },
-  { label: "3-4 Mont Blanc", urlString: "3-4", start: 3, end: 4 },
-  { label: "5-7 Denali", urlString: "5-7", start: 5, end: 7 },
-  { label: "8-11 Cerro Torre", urlString: "8-11", start: 8, end: 11 },
-  { label: "12+ K2", urlString: "12", start: 12 },
-];
+import { useExperienceFilter } from "@/hooks/staffing/useExperienceFilter";
+import { useState } from "react";
 
 export default function ExperienceFilter() {
-  const { toggleYearFilter, filteredYears } = useYearsXpFilter();
+  const {
+    activeExperienceFrom,
+    setActiveExperienceFrom,
+    activeExperienceTo,
+    setActiveExperienceTo,
+  } = useExperienceFilter();
 
-  if (yearRanges.length > 0) {
-    return (
-      <div className="flex flex-col gap-2">
-        <p className="small">Erfaring</p>
-        <div className="flex flex-col gap-2 w-52">
-          {yearRanges?.map((range, index) => (
-            <FilterButton
-              key={range.label}
-              label={range.label}
-              onClick={() => toggleYearFilter(range)}
-              checked={filteredYears
-                .map((y) => y.urlString)
-                .includes(range.urlString)}
+  const [fromSearchIsActive, setFromSearchIsActive] = useState(false);
+  const [toSearchIsActive, setToSearchIsActive] = useState(false);
+
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="small">Antall år erfaring</p>
+      <div className="flex gap-2">
+        <div className={`flex flex-col gap-2`}>
+          <p className="small">Fra</p>
+          <div
+            className={`flex flex-row gap-2 border rounded-lg
+            px-3 py-2 hover:bg-primary/10 hover:border-primary ${
+              fromSearchIsActive ? "border-primary" : "border-primary/50"
+            } `}
+          >
+            <input
+              placeholder="Fra"
+              id="yearsExperienceFrom"
+              className="input focus:outline-none small w-full"
+              type="number"
+              onChange={(e) => setActiveExperienceFrom(e.target.value)}
+              value={activeExperienceFrom}
+              onFocus={() => setFromSearchIsActive(true)}
+              onBlur={() => setFromSearchIsActive(false)}
             />
-          ))}
+          </div>
+        </div>
+        <div className={`flex flex-col gap-2`}>
+          <p className="small">Til</p>
+          <div
+            className={`flex flex-row gap-2 border rounded-lg
+            px-3 py-2 hover:bg-primary/10 hover:border-primary ${
+              toSearchIsActive ? "border-primary" : "border-primary/50"
+            } `}
+          >
+            <input
+              placeholder="Til"
+              id="yearsExperienceTo"
+              className="input focus:outline-none small w-full"
+              type="number"
+              onChange={(e) => setActiveExperienceTo(e.target.value)}
+              value={activeExperienceTo}
+              onFocus={() => setToSearchIsActive(true)}
+              onBlur={() => setToSearchIsActive(false)}
+            />
+          </div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 }
