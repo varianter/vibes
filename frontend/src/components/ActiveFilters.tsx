@@ -13,6 +13,21 @@ export default function ActiveFilters() {
   const { filteredDepartments } = useDepartmentFilter();
   const { filteredYears } = useRawYearsFilter();
   const { availabilityFilterOn } = useAvailabilityFilter();
+  const { experienceFromFilter, experienceToFilter } = activeFilters;
+
+  if (experienceFromFilter != "" && experienceToFilter == "") {
+    filterTextComponents.push(`Fra ${experienceFromFilter} års erfaring`);
+  }
+
+  if (experienceFromFilter == "" && experienceToFilter != "") {
+    filterTextComponents.push(`Til ${experienceToFilter} års erfaring`);
+  }
+
+  if (experienceFromFilter != "" && experienceToFilter != "") {
+    filterTextComponents.push(
+      `Fra ${experienceFromFilter} til ${experienceToFilter} års erfaring`,
+    );
+  }
 
   if (searchFilter != "") filterTextComponents.push(` "${searchFilter}"`);
 
