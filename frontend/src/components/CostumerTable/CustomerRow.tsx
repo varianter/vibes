@@ -98,7 +98,7 @@ export default function CostumerRow({
                 <p className="xsmall text-black/75 whitespace-nowrap text-ellipsis overflow-x-hidden max-w-[145px]">
                   {engagement.isBillable ? "Fakturerbart" : "Ikke-fakturerbart"}
                 </p>
-                <p className="text-black text-start small">
+                <p className="text-black text-start small hover:underline">
                   {engagement.engagementName}
                 </p>
               </Link>

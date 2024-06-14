@@ -105,7 +105,7 @@ export function DetailedBookingRows(props: {
             >
               {getIconByBookingType(detailedBooking.bookingDetails.type, 20)}
             </div>
-            <div className="flex flex-col justify-center text-left">
+            <div className="flex flex-col justify-center text-left hover:underline">
               <p
                 className={`xsmall text-black/75 whitespace-nowrap text-ellipsis overflow-x-hidden max-w-[145px] ${
                   !(
