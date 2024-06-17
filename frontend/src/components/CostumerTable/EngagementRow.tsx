@@ -15,6 +15,7 @@ import { DateTime } from "luxon";
 import { getBookingTypeFromProjectState } from "../Staffing/EditEngagementHourModal/utils";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { filterConsultants } from "@/hooks/staffing/useConsultantsFilter";
+import Link from "next/link";
 
 export default function EngagementRows({
   engagement,
@@ -101,9 +102,12 @@ export default function EngagementRows({
           </button>
         </td>
         <td>
-          <div className="flex flex-col gap-1 ">
+          <Link
+            href={`../prosjekt/${engagement.engagementId}`}
+            className="flex flex-col gap-1 "
+          >
             <p
-              className={`text-black text-start ${
+              className={`text-black text-start hover:underline ${
                 isListElementVisible ? "normal-medium" : "normal"
               }`}
             >
@@ -114,7 +118,7 @@ export default function EngagementRows({
                 engagement.isBillable ? "Fakturerbart" : "Ikke fakturerbart"
               }`}
             </p>
-          </div>
+          </Link>
         </td>
         {weekList.map((day) => (
           <td key={day.weekNumber} className={`h-[52px] p-0.5`}>
