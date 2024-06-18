@@ -13,10 +13,6 @@ export function AddConsultantCell(props: {
   const [isAddStaffingHovered, setIsAddConsultantHovered] = useState(false);
   const [addNewConsultant, setAddNewConsultant] = useState<boolean>(false);
 
-  const { closeModal, openModal, modalRef } = useModal({
-    closeOnBackdropClick: false,
-  });
-
   function closeAddConsultant() {
     setAddNewConsultant(false);
   }
@@ -45,8 +41,6 @@ export function AddConsultantCell(props: {
         )}
         {addNewConsultant && (
           <AddConsultantModal
-            closeConsultantModal={closeModal}
-            easyModalRef={modalRef}
             onAddConsultant={props.onAddConsultant}
             consultantList={props.consultantList}
             closeAddConsultant={closeAddConsultant}

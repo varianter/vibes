@@ -1,13 +1,10 @@
 import { ConsultantReadModel } from "@/api-types";
-import { RefObject, ReactElement, useState, FormEvent } from "react";
+import { ReactElement, useState, FormEvent } from "react";
 import ActionButton from "../Buttons/ActionButton";
-import EasyModal from "../Modals/EasyModal";
 import ComboBox, { SelectOption } from "../ComboBox";
 import { Plus } from "react-feather";
 
 interface AddConsultantModalProps {
-  closeConsultantModal: () => void;
-  easyModalRef: RefObject<HTMLDialogElement>;
   onAddConsultant: (option: SelectOption) => void;
   consultantList: ConsultantReadModel[];
   closeAddConsultant: () => void;
@@ -17,7 +14,7 @@ export function AddConsultantModal(
   props: AddConsultantModalProps,
 ): ReactElement {
   // const { consultants } = useContext(FilteredContext);
-  const { closeConsultantModal, easyModalRef, closeAddConsultant } = props;
+  const { closeAddConsultant } = props;
 
   const consultantOptions =
     props.consultantList.map(
@@ -40,7 +37,6 @@ export function AddConsultantModal(
 
     // Cleanup
     setSelectedConsultant(null);
-    closeConsultantModal();
   }
 
   return (
