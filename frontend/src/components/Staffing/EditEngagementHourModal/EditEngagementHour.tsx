@@ -18,11 +18,7 @@ import { AddConsultantCell } from "../AddConsultantCell";
 import { SelectOption } from "@/components/ComboBox";
 import { AddEngagementHoursRow } from "./AddEngagementHoursRow";
 import StaffingSums from "@/components/StaffingSums";
-import {
-  setWeeklyTotalBillable,
-  setWeeklyTotalBillableForProject,
-  useConsultantsFilter,
-} from "@/hooks/staffing/useConsultantsFilter";
+import { setWeeklyTotalBillableForProject } from "@/hooks/staffing/useConsultantsFilter";
 import ChangeEngagementState from "@/components/ChangeEngagementState";
 
 export function EditEngagementHour({
