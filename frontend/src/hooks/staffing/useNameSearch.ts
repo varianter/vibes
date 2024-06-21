@@ -7,32 +7,14 @@ export function useNameSearch() {
 
   function setNameSearch(newSearch: string) {
     setActiveNameSearch(newSearch);
-    setLastSearchKeyStrokeTime(Date.now());
   }
 
   const [activeNameSearch, setActiveNameSearch] =
     useState<string>(searchFilter);
 
-  const [lastSearchKeyStrokeTime, setLastSearchKeyStrokeTime] =
-    useState<number>();
-
   useEffect(() => {
-    const nameSearchDebounceTimer = setTimeout(() => {
-      if (
-        lastSearchKeyStrokeTime &&
-        Date.now() - lastSearchKeyStrokeTime > 180
-      ) {
-        updateFilters({ search: activeNameSearch });
-      }
-    }, 180);
-
-    // this will clear Timeout
-    // when component unmount like in willComponentUnmount
-    // and show will not change to true
-    return () => {
-      clearTimeout(nameSearchDebounceTimer);
-    };
-  }, [activeNameSearch, lastSearchKeyStrokeTime, updateFilters]);
+    updateFilters({ search: activeNameSearch });
+  }, [activeNameSearch, updateFilters]);
 
   return { activeNameSearch, setNameSearch };
 }
