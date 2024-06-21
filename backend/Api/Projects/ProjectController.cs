@@ -96,13 +96,14 @@ public class ProjectController : ControllerBase
         var customer = service.GetCustomerFromId(orgUrlKey, customerId);
 
         if (customer is null) return NotFound();
-        
+
+
         return new CustomersWithProjectsReadModel(
-            customer.Id, 
-            customer.Name, 
-            customer.Projects.Where(p=>p.Staffings.Exists(s=> s.Week.CompareTo(thisWeek) >= 0)).Select(e =>
-            new EngagementReadModel(e.Id, e.Name, e.State, e.IsBillable)).ToList(),
-            customer.Projects.Where(p=> !(p.Staffings.Exists(s =>  s.Week.CompareTo(thisWeek) >= 0))).Select(e =>
+            customer.Id,
+            customer.Name,
+            customer.Projects.Where(p => p.Staffings.Any(s => s.Week.CompareTo(thisWeek) >= 0) && p.State != EngagementState.Closed).Select(e =>
+                new EngagementReadModel(e.Id, e.Name, e.State, e.IsBillable)).ToList(),
+            customer.Projects.Where(p => !(p.Staffings.Any(s => s.Week.CompareTo(thisWeek) >= 0)) || p.State == EngagementState.Closed).Select(e =>
                 new EngagementReadModel(e.Id, e.Name, e.State, e.IsBillable)).ToList());
     }
 
