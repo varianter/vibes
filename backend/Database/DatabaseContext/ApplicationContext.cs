@@ -22,6 +22,7 @@ public class ApplicationContext : DbContext
     public DbSet<Customer> Customer { get; set; } = null!;
     public DbSet<Engagement> Project { get; set; } = null!;
     public DbSet<Staffing> Staffing { get; set; } = null!;
+    public DbSet<Forecast> Forecast { get; set; } = null!;
 
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -33,6 +34,10 @@ public class ApplicationContext : DbContext
         configurationBuilder
             .Properties<Week>()
             .HaveConversion<WeekConverter>();
+
+        configurationBuilder
+            .Properties<Month>()
+            .HaveConversion<MonthConverter>();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -51,7 +56,7 @@ public class ApplicationContext : DbContext
             .HasForeignKey(customer => customer.OrganizationId);
 
         modelBuilder.Entity<Customer>()
-            .HasIndex(customer => new {customer.OrganizationId, customer.Name})
+            .HasIndex(customer => new { customer.OrganizationId, customer.Name })
             .IsUnique();
 
         modelBuilder.Entity<Customer>()
@@ -60,7 +65,7 @@ public class ApplicationContext : DbContext
             .HasForeignKey(project => project.CustomerId);
 
         modelBuilder.Entity<Engagement>()
-            .HasIndex(engagement => new {engagement.CustomerId, engagement.Name})
+            .HasIndex(engagement => new { engagement.CustomerId, engagement.Name })
             .IsUnique();
 
         modelBuilder.Entity<Engagement>()
@@ -128,10 +133,10 @@ public class ApplicationContext : DbContext
         /*modelBuilder.Entity<Consultant>()
             .HasMany(v => v.CompetenceConsultant)
             .WithMany();*/
-        
-        modelBuilder.Entity<Consultant>()  
-            .Property(c => c.TransferredVacationDays)  
-            .HasDefaultValue(0);  
+
+        modelBuilder.Entity<Consultant>()
+            .Property(c => c.TransferredVacationDays)
+            .HasDefaultValue(0);
 
         modelBuilder.Entity<CompetenceConsultant>()
             .HasKey(us => new { us.ConsultantId, us.CompetencesId });
@@ -145,6 +150,15 @@ public class ApplicationContext : DbContext
             .HasOne(us => us.Competence)
             .WithMany(s => s.CompetenceConsultant)
             .HasForeignKey(us => us.CompetencesId);
+
+        modelBuilder.Entity<Forecast>()
+        .HasOne(f => f.Consultant)
+        .WithMany(c => c.Forecasts)
+        .HasForeignKey(f => f.ConsultantId);
+
+        modelBuilder.Entity<Forecast>()
+        .Property(f => f.Month)
+        .HasConversion<MonthConverter>();
 
         modelBuilder.Entity<Competence>().HasData(new List<Competence>
         {
