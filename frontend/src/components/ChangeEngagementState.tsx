@@ -83,6 +83,13 @@ export default function ChangeEngagementState({
         checked={engagementState === EngagementState.Closed}
         onChange={(e) => handleChange(e.target.value as EngagementState)}
       />
+      <FilterButton
+        label="Tapt"
+        rounded={true}
+        value={EngagementState.Lost}
+        checked={engagementState === EngagementState.Lost}
+        onChange={(e) => handleChange(e.target.value as EngagementState)}
+      />
     </form>
   );
 }
