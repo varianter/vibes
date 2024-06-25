@@ -12,6 +12,12 @@ public static class ProjectControllerValidator
                CheckIfEngagementIsInOrganisation(updateProjectWriteModel.EngagementId, storageService, orgUrlKey);
     }
 
+    public static bool ValidateUpdateProjectNameWriteModel(UpdateProjectNameWriteModel updateProjectNameWriteModel, StorageService storageService, string orgUrlKey)
+    {
+        return CheckIfEngagementExists(updateProjectNameWriteModel.EngagementId, storageService) && 
+        CheckIfEngagementIsInOrganisation(updateProjectNameWriteModel.EngagementId, storageService, orgUrlKey);  
+    }
+
     private static bool CheckIfEngagementExists(int engagementId, StorageService storageService)
     {
         return storageService.GetProjectById(engagementId) is not null;

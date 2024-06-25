@@ -30,6 +30,11 @@ export interface updateProjectStateBody {
   weekSpan: number;
 }
 
+export interface updateProjectNameBody {
+  engagementId: string;
+  engagementName: string;
+}
+
 export interface WeekWithHours {
   week: number;
   hours: number;
