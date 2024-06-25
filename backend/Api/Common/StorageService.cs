@@ -458,6 +458,41 @@ public class StorageService
         return engagement;
     }
 
+    public Engagement UpdateProjectName(int engagementId, string engagementName, string orgUrlKey)
+    {
+        var engagement = _dbContext.Project
+            .Include(p => p.Customer)
+            .Include(p => p.Staffings)
+            .Include(p => p.Consultants)
+            .SingleOrDefault(p => p.Id == engagementId);
+        var similarEngagement = _dbContext.Project
+            //.Include(p => p.Customer)
+            .Include(p => p.Staffings)
+            //.Include(p=> p.Consultants)
+            .SingleOrDefault(
+                p => p.Customer == engagement.Customer && p.Name == engagement.Name && p.Id != engagementId);
+
+        if (similarEngagement is not null && similarEngagement.Name == engagementName)
+        {
+            similarEngagement.MergeEngagement(engagement);
+            //_dbContext.SaveChanges();
+            //foreach (var staffing in engagement.Staffings) _dbContext.Remove(staffing);
+            _dbContext.Project.Remove(_dbContext.Project.Find(engagement.Id));
+            _dbContext.SaveChanges();
+
+            //engagement = similarEngagement;
+        }
+        else
+        {
+            engagement.Name = engagementName;
+            _dbContext.SaveChanges();
+        }
+
+        _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
+
+        return engagement;
+    }
+
     public Engagement? GetProjectById(int id)
     {
         return _dbContext.Project.Find(id);
