@@ -11,11 +11,13 @@ export function AddEngagementHoursRow({
   weekList,
   project,
   consultantWWeekHours,
+  numWorkHours,
 }: {
   consultant: ConsultantReadModel;
   weekList: DateTime[];
   project?: ProjectWithCustomerModel;
   consultantWWeekHours?: ConsultantWithWeekHours;
+  numWorkHours: number;
 }) {
   const [hourDragValue, setHourDragValue] = useState<number | undefined>(
     undefined,
@@ -97,6 +99,7 @@ export function AddEngagementHoursRow({
             )?.hours || 0
           }
           updateHours={updateHours}
+          numWorkHours={numWorkHours}
         />
       ))}
     </tr>

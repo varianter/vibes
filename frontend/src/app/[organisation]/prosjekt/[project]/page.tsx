@@ -7,6 +7,7 @@ import { ProjectWithCustomerModel } from "@/api-types";
 import Sidebar from "./Sidebar";
 import { ConsultantFilterProvider } from "@/hooks/ConsultantFilterProvider";
 import { parseYearWeekFromUrlString } from "@/data/urlUtils";
+import { fetchWorkHoursPerWeek } from "@/hooks/fetchWorkHoursPerDay";
 
 export default async function Project({
   params,
@@ -24,6 +25,9 @@ export default async function Project({
     searchParams.selectedWeek || undefined,
   );
   const weekSpan = searchParams.weekSpan || undefined;
+
+  const numWorkHours =
+    (await fetchWorkHoursPerWeek(params.organisation)) ?? 37.5;
 
   const consultants =
     (await fetchEmployeesWithImageAndToken(
@@ -49,7 +53,7 @@ export default async function Project({
             <h2>{project.customerName}</h2>
           </div>
 
-          <EditEngagementHour project={project} />
+          <EditEngagementHour project={project} numWorkHours={numWorkHours} />
         </div>
       </ConsultantFilterProvider>
     );

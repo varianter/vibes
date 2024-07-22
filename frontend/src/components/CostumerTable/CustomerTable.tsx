@@ -12,9 +12,11 @@ import { WeekSpanTableHead } from "../Staffing/WeekTableHead";
 export default function CustomerTable({
   customer,
   orgUrl,
+  numWorkHours,
 }: {
   customer: CustomersWithProjectsReadModel;
   orgUrl: string;
+  numWorkHours: number;
 }) {
   const {
     selectedWeek,
@@ -111,6 +113,7 @@ export default function CustomerTable({
             selectedWeek={selectedWeek}
             selectedWeekSpan={selectedWeekSpan}
             weekList={weekList}
+            numWorkHours={numWorkHours}
           />
         ))}
       </>

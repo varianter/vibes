@@ -6,6 +6,7 @@ import CustomerSidebar from "@/components/CostumerTable/CustomerSidebar";
 import CustomerTable from "@/components/CostumerTable/CustomerTable";
 import { fetchWithToken } from "@/data/apiCallsWithToken";
 import { ConsultantFilterProvider } from "@/hooks/ConsultantFilterProvider";
+import { fetchWorkHoursPerWeek } from "@/hooks/fetchWorkHoursPerDay";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -27,6 +28,9 @@ export default async function Kunde({
       `organisations/${params.organisation}/departments`,
     )) ?? [];
 
+  const numWorkHours =
+    (await fetchWorkHoursPerWeek(params.organisation)) ?? 37.5;
+
   return (
     <ConsultantFilterProvider
       consultants={[]}
@@ -37,7 +41,11 @@ export default async function Kunde({
       {customer && (
         <>
           <CustomerSidebar customer={customer} />
-          <CustomerTable customer={customer} orgUrl={params.organisation} />
+          <CustomerTable
+            customer={customer}
+            orgUrl={params.organisation}
+            numWorkHours={numWorkHours}
+          />
         </>
       )}
     </ConsultantFilterProvider>
