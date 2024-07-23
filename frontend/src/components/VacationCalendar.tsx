@@ -136,6 +136,9 @@ export default function VacationCalendar({
           onChange={handleChange}
           className="custom-calendar"
           mapDays={({ date }) => {
+            const dateCopy = new DateObject(date);
+            dateCopy.add(1, "h");
+
             let isWeekend = [0, 6].includes(date.weekDay.index);
             if (
               vacationDays.vacationDays?.includes(
@@ -147,7 +150,7 @@ export default function VacationCalendar({
                   date.day > 9 ? date.day.toString() : "0" + date.day.toString()
                 }`,
               ) &&
-              date.toDate() <= new Date()
+              dateCopy.toDate() < new Date()
             )
               return {
                 disabled: true,
@@ -172,7 +175,7 @@ export default function VacationCalendar({
                 disabled: true,
                 style: { color: "#B91456", opacity: 0.5 },
               };
-            else if (isWeekend || date.toDate() <= new Date())
+            else if (isWeekend || dateCopy.toDate() < new Date())
               return {
                 disabled: true,
                 style: { color: "#00445B", opacity: 0.5 },
