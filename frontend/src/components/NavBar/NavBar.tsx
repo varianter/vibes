@@ -9,13 +9,6 @@ import {
 } from "@/app/api/auth/[...nextauth]/route";
 import NavBarDropdown from "./NavBarDropdown";
 
-export const navBarLinks: { text: string; path: string }[] = [
-  { text: "Bemanning", path: "bemanning" },
-  { text: "Kunder", path: "kunder" },
-  { text: "Konsulenter", path: "konsulenter" },
-  { text: "Rapporter", path: "rapport" },
-];
-
 export default async function NavBar() {
   const orgs =
     (await fetchWithToken<OrganisationReadModel[]>("organisations")) ?? [];
@@ -26,6 +19,13 @@ export default async function NavBar() {
 
   const initial =
     session && session.user && session.user.name ? session.user.name[0] : "N";
+
+  const navBarLinks: { text: string; path: string }[] = [
+    { text: "Bemanning", path: "bemanning" },
+    { text: "Kunder", path: "kunder" },
+    { text: "Konsulenter", path: "konsulenter" },
+    { text: "Rapporter", path: "rapport" },
+  ];
 
   return (
     <div className="bg-primary w-full header px-4">
@@ -42,7 +42,7 @@ export default async function NavBar() {
         </div>
       </div>
       <div className="flex sm:hidden">
-        <NavBarMobile orgs={orgs} initial={initial} />
+        <NavBarMobile orgs={orgs} initial={initial} navBarLinks={navBarLinks} />
       </div>
     </div>
   );

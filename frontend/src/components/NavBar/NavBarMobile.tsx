@@ -6,14 +6,15 @@ import NavBarLink from "./NavBarLink";
 import NavBarOrganisationDropdown from "./NavBarOrganisationDropdown";
 import NavBarDropdown from "./NavBarDropdown";
 import { Menu, X } from "react-feather";
-import { navBarLinks } from "./NavBar";
 
 export default function NavBarMobile({
   orgs,
   initial,
+  navBarLinks,
 }: {
   orgs: OrganisationReadModel[];
   initial: string;
+  navBarLinks: { text: string; path: string }[];
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
