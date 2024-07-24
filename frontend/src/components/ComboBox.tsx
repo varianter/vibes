@@ -209,7 +209,7 @@ export default function ComboBox({
             </p>
           </div>
         )}
-        isValidNewOption={() => true}
+        isValidNewOption={(inputText: string) => inputText.length > 0}
         isOptionDisabled={(option) => !!option?.disabled}
       />
     );
