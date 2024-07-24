@@ -175,9 +175,9 @@ function experienceRange(
     end: parseInt(experienceTo),
   };
   if (
-    (!experienceRange.start ||
+    (Number.isNaN(experienceRange.start) ||
       consultant.yearsOfExperience >= experienceRange.start) &&
-    (!experienceRange.end ||
+    (Number.isNaN(experienceRange.end) ||
       consultant.yearsOfExperience <= experienceRange.end)
   )
     return true;
