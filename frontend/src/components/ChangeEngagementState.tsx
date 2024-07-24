@@ -22,6 +22,8 @@ export default function ChangeEngagementState({
     project.bookingType,
   );
 
+  const isInternalProject = project.customerName === "Variant";
+
   async function handleChange(newState: EngagementState) {
     setEngagementState(newState);
 
@@ -67,6 +69,7 @@ export default function ChangeEngagementState({
         value={EngagementState.Offer}
         checked={engagementState === EngagementState.Offer}
         onChange={(e) => handleChange(e.target.value as EngagementState)}
+        disabled={isInternalProject}
       />
       <FilterButton
         label="Ordre"
@@ -74,6 +77,7 @@ export default function ChangeEngagementState({
         value={EngagementState.Order}
         checked={engagementState === EngagementState.Order}
         onChange={(e) => handleChange(e.target.value as EngagementState)}
+        disabled={isInternalProject}
       />
 
       <FilterButton
@@ -82,6 +86,7 @@ export default function ChangeEngagementState({
         value={EngagementState.Closed}
         checked={engagementState === EngagementState.Closed}
         onChange={(e) => handleChange(e.target.value as EngagementState)}
+        disabled={isInternalProject}
       />
       <FilterButton
         label="Tapt"
@@ -89,6 +94,7 @@ export default function ChangeEngagementState({
         value={EngagementState.Lost}
         checked={engagementState === EngagementState.Lost}
         onChange={(e) => handleChange(e.target.value as EngagementState)}
+        disabled={isInternalProject}
       />
     </form>
   );

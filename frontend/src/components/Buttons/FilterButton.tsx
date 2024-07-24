@@ -15,16 +15,16 @@ export default function FilterButton({
         readOnly
         {...inputProps}
         className={`appearance-none border flex items-center border-opacity-50 m-[1px] mr-2 h-4 w-4  border-primary hover:border-primary checked:bg-primary
+          
           ${
-            inputProps.disabled &&
-            "border-black/20 hover:border-black/20 checked:bg-primary/50 bg-black/5"
-          }
-          ${
-            inputProps.checked
+            inputProps.checked && !inputProps.disabled
               ? "hover:bg-primary hover:brightness-[1.5]"
               : "hover:bg-primary hover:bg-opacity-10"
           }
-          ${rounded ? "rounded-full" : "rounded-sm"}
+          ${rounded ? "rounded-full" : "rounded-sm"} ${
+            inputProps.disabled &&
+            "border-black border-opacity-20 bg-black/5 hover:bg-black hover:bg-opacity-5 hover:border-black hover:border-opacity-20 checked:bg-primary checked:bg-opacity-50 checked:hover:bg-primary checked:hover:bg-opacity-50"
+          }
           `}
       />
       <svg
