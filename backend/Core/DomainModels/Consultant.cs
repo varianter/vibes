@@ -57,7 +57,7 @@ public class Consultant
 
     public int GetPlannedVacationDays(DateOnly day)
     {
-        return Vacations.Where(v => v.Date.Year.Equals(day.Year)).Count(v => v.Date > day);
+        return Vacations.Where(v => v.Date.Year.Equals(day.Year)).Count(v => v.Date >= day);
     }
 
     public int GetRemainingVacationDays(DateOnly day)
