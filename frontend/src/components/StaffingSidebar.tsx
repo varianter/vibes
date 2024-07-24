@@ -18,9 +18,9 @@ export default function StaffingSidebar({
   closeSidebar: () => void;
 }) {
   return (
-    <div className="sidebar z-10">
+    <>
       {isSidebarOpen && (
-        <div className=" bg-primary/5 h-full flex flex-col gap-6 p-4 w-[300px]">
+        <div className="sidebar z-10 bg-primary/5 h-full flex flex-col gap-6 p-4 w-[300px] overflow-y-auto">
           <div className="flex flex-row justify-between items-center">
             <h1 className="">Filter</h1>
             <button
@@ -38,7 +38,11 @@ export default function StaffingSidebar({
           <CompetenceFilter />
         </div>
       )}
-      {!isSidebarOpen && <SearchBarComponent hidden={!isSidebarOpen} />}
-    </div>
+      {!isSidebarOpen && (
+        <div className="sidebar z-10">
+          <SearchBarComponent hidden={!isSidebarOpen} />
+        </div>
+      )}
+    </>
   );
 }
