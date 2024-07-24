@@ -83,7 +83,7 @@ export default function ComboBox({
     const menuListProps = { ...props, maxHeight: props.maxHeight - 55 };
 
     const creatableClassName = `sticky w-full bottom-0 pb-1 bg-white ${
-      menuOptions.length && "border-t border-black/10 pt-1"
+      menuOptions.length && inputValue.length && "border-t border-black/10 pt-1"
     }`;
 
     return (
