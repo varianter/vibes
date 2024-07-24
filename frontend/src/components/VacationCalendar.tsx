@@ -136,6 +136,7 @@ export default function VacationCalendar({
           onChange={handleChange}
           className="custom-calendar"
           mapDays={({ date }) => {
+            //Since the date object is created before the today object, an extra hour is added to a copied version of the date object to ensure that you can edit today
             const dateCopy = new DateObject(date);
             dateCopy.add(1, "h");
 
