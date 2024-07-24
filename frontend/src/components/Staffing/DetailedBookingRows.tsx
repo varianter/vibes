@@ -101,7 +101,7 @@ export function DetailedBookingRows(props: {
         >
           <div className="flex flex-row items-center gap-3 justify-end">
             <div
-              className={`min-w-8 w-8 h-8 flex justify-center items-center ${getColorByStaffingType(
+              className={`min-w-8 w-8 h-8 flex justify-center items-center rounded ${getColorByStaffingType(
                 detailedBooking.bookingDetails.type,
               )}`}
             >
