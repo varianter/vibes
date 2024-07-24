@@ -77,14 +77,20 @@ export default function ComboBox({
     if (!isCreatable || !Array.isArray(props?.children))
       return <components.MenuList {...props} />;
 
-    const menuOptions = props.children.slice(0, props.children.length - 1);
-    const createOption = props.children[props.children.length - 1];
+    const menuOptions = inputValue.length
+      ? props.children.slice(0, props.children.length - 1)
+      : props.children;
+    const createOption = inputValue.length
+      ? props.children[props.children.length - 1]
+      : null;
 
     const menuListProps = { ...props, maxHeight: props.maxHeight - 55 };
 
-    const creatableClassName = `sticky w-full bottom-0 pb-1 bg-white ${
-      menuOptions.length && "border-t border-black/10 pt-1"
-    }`;
+    const creatableClassName = inputValue.length
+      ? `sticky w-full bottom-0 pb-1 bg-white ${
+          menuOptions.length && "border-t border-black/10 pt-1"
+        }`
+      : "";
 
     return (
       <>
