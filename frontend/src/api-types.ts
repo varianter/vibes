@@ -231,6 +231,13 @@ export interface UpdateProjectWriteModel {
   weekSpan?: number;
 }
 
+export interface UpdateProjectNameWriteModel {
+  /** @format int32 */
+  engagementId?: number;
+  /** @minLength 1 */
+  projectName: string;
+}
+
 export interface VacationMetaData {
   /** @format int32 */
   daysTotal?: number;

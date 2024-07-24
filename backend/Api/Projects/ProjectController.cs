@@ -169,6 +169,41 @@ public class ProjectController : ControllerBase
         }
     }
 
+    [HttpPut]
+    [Route("updateProjectName")]
+    public ActionResult<List<EngagementReadModel>> Put([FromRoute] string orgUrlKey,
+        [FromBody] UpdateProjectNameWriteModel projectWriteModel)
+    {
+        // Merk: Service kommer snart via Dependency Injection, da slipper å lage ny hele tiden
+        var service = new StorageService(_cache, _context);
+
+        if (!ProjectControllerValidator.ValidateUpdateProjectNameWriteModel(projectWriteModel, service, orgUrlKey))
+            return BadRequest("Error in data");
+        if (ProjectControllerValidator.ValidateUpdateProjectNameAlreadyExist(projectWriteModel, service, orgUrlKey))
+            {return BadRequest("Name already in use");}
+            
+        try
+        {
+            Engagement engagement;
+                engagement = _context.Project
+                    .Include(p => p.Consultants)
+                    .Include(p => p.Staffings)
+                    .Single(p => p.Id == projectWriteModel.EngagementId);
+
+                engagement.Name = projectWriteModel.EngagementName;
+                _context.SaveChanges();
+
+            service.ClearConsultantCache(orgUrlKey);
+
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
     private bool EngagementHasSoftMatch(int id)
     {
         var engagementToChange = _context.Project
