@@ -23,8 +23,10 @@ import ChangeEngagementState from "@/components/ChangeEngagementState";
 
 export function EditEngagementHour({
   project,
+  numWorkHours,
 }: {
   project?: ProjectWithCustomerModel;
+  numWorkHours: number;
 }) {
   const {
     selectedWeek,
@@ -164,6 +166,7 @@ export function EditEngagementHour({
               }
               consultants={selectedConsultants}
               setConsultants={setSelectedConsultants}
+              numWorkHours={numWorkHours}
             />
           ))}
 
@@ -182,6 +185,7 @@ export function EditEngagementHour({
               weekList={weekList}
               project={chosenProject}
               consultantWWeekHours={consultant}
+              numWorkHours={numWorkHours}
             />
           ))}
           <tr>

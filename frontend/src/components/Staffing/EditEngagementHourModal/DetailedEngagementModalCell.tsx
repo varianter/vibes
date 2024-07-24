@@ -25,6 +25,7 @@ export function DetailedEngagementModalCell({
   firstDayInWeek,
   initHours,
   updateHours,
+  numWorkHours,
 }: {
   project?: ProjectWithCustomerModel;
   consultant: ConsultantReadModel;
@@ -38,6 +39,7 @@ export function DetailedEngagementModalCell({
   firstDayInWeek: DateTime;
   initHours: number;
   updateHours: (res: ConsultantReadModel | undefined) => void;
+  numWorkHours: number;
 }) {
   const [hours, setHours] = useState(initHours);
   const [isChangingHours, setIsChangingHours] = useState(false);
@@ -46,6 +48,8 @@ export function DetailedEngagementModalCell({
   const [isInputFocused, setIsInputFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const organisationName = usePathname().split("/")[1];
+
+  const workHoursPerDay = numWorkHours / 5;
 
   function updateSingularHours() {
     if (oldHours != hours && hourDragValue == undefined) {
@@ -137,7 +141,7 @@ export function DetailedEngagementModalCell({
               numWeeks <= 12 && "lg:flex"
             }  `}
             onClick={() => {
-              setHours(Math.max(hours - 7.5, 0));
+              setHours(Math.max(hours - workHoursPerDay, 0));
             }}
           >
             <Minus
@@ -152,7 +156,7 @@ export function DetailedEngagementModalCell({
           ref={inputRef}
           type="number"
           min="0"
-          step="7.5"
+          step={workHoursPerDay}
           value={hours}
           draggable={true}
           onChange={(e) =>
@@ -190,7 +194,7 @@ export function DetailedEngagementModalCell({
               numWeeks <= 8 && "md:flex"
             } ${numWeeks <= 12 && "lg:flex"} `}
             onClick={() => {
-              setHours(hours + 7.5);
+              setHours(hours + workHoursPerDay);
             }}
           >
             <Plus className="w-4 h-4 text-primary" />

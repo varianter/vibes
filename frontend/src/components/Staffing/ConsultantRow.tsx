@@ -212,6 +212,7 @@ export default function ConsultantRows({
                 modalRef={changeEngagementModalRef}
                 project={selectedProject}
                 onClose={onCloseEngagementModal}
+                numWorkHours={numWorkHours}
               />
             )}
           </div>
@@ -240,6 +241,7 @@ export default function ConsultantRows({
             consultant={currentConsultant}
             detailedBooking={db}
             openEngagementAndSetID={openEngagementAndSetID}
+            numWorkHours={numWorkHours}
           />
         ))}
       {isListElementVisible && addNewRow && (

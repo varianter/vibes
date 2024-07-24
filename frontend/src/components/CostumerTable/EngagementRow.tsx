@@ -23,12 +23,14 @@ export default function EngagementRows({
   selectedWeek,
   selectedWeekSpan,
   weekList,
+  numWorkHours,
 }: {
   engagement: EngagementReadModel;
   orgUrl: string;
   selectedWeek: Week;
   selectedWeekSpan: number;
   weekList: DateTime[];
+  numWorkHours: number;
 }) {
   const [isListElementVisible, setIsListElementVisible] = useState(false);
   const [isRowHovered, setIsRowHovered] = useState(false);
@@ -148,6 +150,7 @@ export default function EngagementRows({
             consultants={selectedConsultants}
             setConsultants={setSelectedConsultants}
             withBorder={true}
+            numWorkHours={numWorkHours}
           />
         ))}
     </>

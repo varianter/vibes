@@ -22,10 +22,12 @@ export function EditEngagementHourModal({
   modalRef,
   project,
   onClose,
+  numWorkHours,
 }: {
   modalRef: RefObject<HTMLDialogElement>;
   project?: ProjectWithCustomerModel;
   onClose: () => void;
+  numWorkHours: number;
 }) {
   const {
     selectedWeek,
@@ -164,6 +166,7 @@ export function EditEngagementHourModal({
                 }
                 consultants={selectedConsultants}
                 setConsultants={setSelectedConsultants}
+                numWorkHours={numWorkHours}
               />
             ))}
 
@@ -185,6 +188,7 @@ export function EditEngagementHourModal({
                 weekList={weekList}
                 project={chosenProject}
                 consultantWWeekHours={consultant}
+                numWorkHours={numWorkHours}
               />
             ))}
             <tr>

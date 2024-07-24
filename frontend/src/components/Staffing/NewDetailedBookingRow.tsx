@@ -53,10 +53,12 @@ export function DetailedBookingRows(props: {
   consultant: ConsultantReadModel;
   detailedBooking: DetailedBooking;
   openEngagementAndSetID: (id: number) => void;
+  numWorkHours: number;
 }) {
   const { setConsultants } = useContext(FilteredContext);
 
-  const { consultant, detailedBooking, openEngagementAndSetID } = props;
+  const { consultant, detailedBooking, openEngagementAndSetID, numWorkHours } =
+    props;
   const [hourDragValue, setHourDragValue] = useState<number | undefined>(
     undefined,
   );
@@ -187,6 +189,7 @@ export function DetailedBookingRows(props: {
             startDragWeek={startDragWeek}
             setStartDragWeek={setStartDragWeek}
             setCurrentDragWeek={setCurrentDragWeek}
+            numWorkHours={numWorkHours}
           />
         ))}
     </tr>
@@ -235,6 +238,7 @@ function DetailedBookingCell({
   startDragWeek,
   setStartDragWeek,
   setCurrentDragWeek,
+  numWorkHours,
 }: {
   detailedBooking: DetailedBooking;
   detailedBookingHours: WeeklyHours;
@@ -245,6 +249,7 @@ function DetailedBookingCell({
   setHourDragValue: React.Dispatch<React.SetStateAction<number | undefined>>;
   setStartDragWeek: React.Dispatch<React.SetStateAction<number | undefined>>;
   setCurrentDragWeek: React.Dispatch<React.SetStateAction<number | undefined>>;
+  numWorkHours: number;
 }) {
   const { setConsultants } = useContext(FilteredContext);
   const [hours, setHours] = useState(detailedBookingHours.hours);
@@ -256,6 +261,8 @@ function DetailedBookingCell({
   const inputRef = useRef<HTMLInputElement | null>(null);
   const organisationName = usePathname().split("/")[1];
   const numWeeks = detailedBooking.hours.length;
+
+  const workHoursPerDay = numWorkHours / 5;
 
   function updateSingularHours() {
     setIsDisabledHotkeys(false);
@@ -352,7 +359,7 @@ function DetailedBookingCell({
                 numWeeks <= 12 && "lg:flex"
               }  `}
               onClick={() => {
-                setHours(Math.max(hours - 7.5, 0));
+                setHours(Math.max(hours - workHoursPerDay, 0));
               }}
             >
               <Minus
@@ -367,7 +374,7 @@ function DetailedBookingCell({
           ref={inputRef}
           type="number"
           min="0"
-          step="7.5"
+          step={workHoursPerDay}
           value={hours}
           draggable={true}
           disabled={detailedBooking.bookingDetails.type == BookingType.Vacation}
@@ -410,7 +417,7 @@ function DetailedBookingCell({
                 numWeeks <= 8 && "md:flex"
               } ${numWeeks <= 12 && "lg:flex"} `}
               onClick={() => {
-                setHours(hours + 7.5);
+                setHours(hours + workHoursPerDay);
               }}
             >
               <Plus className="w-4 h-4 text-primary" />
