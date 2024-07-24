@@ -179,7 +179,9 @@ public class ProjectController : ControllerBase
 
         if (!ProjectControllerValidator.ValidateUpdateProjectNameWriteModel(projectWriteModel, service, orgUrlKey))
             return BadRequest("Error in data");
-
+        if (ProjectControllerValidator.ValidateUpdateProjectNameAlreadyExist(projectWriteModel, service, orgUrlKey))
+            {return BadRequest("Name already in use");}
+            
         try
         {
             Engagement engagement;
