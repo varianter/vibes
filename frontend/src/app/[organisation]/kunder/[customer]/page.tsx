@@ -29,7 +29,7 @@ export default async function Kunde({
     )) ?? [];
 
   const numWorkHours =
-    (await fetchWorkHoursPerWeek(params.organisation)) ?? 37.5;
+    (await fetchWorkHoursPerWeek(params.organisation)) || 37.5;
 
   return (
     <ConsultantFilterProvider
