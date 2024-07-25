@@ -27,7 +27,7 @@ export default async function Project({
   const weekSpan = searchParams.weekSpan || undefined;
 
   const numWorkHours =
-    (await fetchWorkHoursPerWeek(params.organisation)) ?? 37.5;
+    (await fetchWorkHoursPerWeek(params.organisation)) || 37.5;
 
   const consultants =
     (await fetchEmployeesWithImageAndToken(
