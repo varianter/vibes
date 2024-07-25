@@ -17,13 +17,13 @@ export default function FilterButton({
         className={`appearance-none border flex items-center border-opacity-50 m-[1px] mr-2 h-4 w-4  border-primary hover:border-primary checked:bg-primary
           
           ${
-            inputProps.checked && !inputProps.disabled
+            inputProps.checked
               ? "hover:bg-primary hover:brightness-[1.5]"
               : "hover:bg-primary hover:bg-opacity-10"
           }
           ${rounded ? "rounded-full" : "rounded-sm"} ${
             inputProps.disabled &&
-            "border-black border-opacity-20 bg-black/5 hover:bg-black hover:bg-opacity-5 hover:border-black hover:border-opacity-20 checked:bg-primary checked:bg-opacity-50 checked:hover:bg-primary checked:hover:bg-opacity-50"
+            "border-black/20 bg-black/5 pointer-events-none checked:bg-primary checked:bg-opacity-50"
           }
           `}
       />
