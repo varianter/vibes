@@ -28,7 +28,7 @@ public record ProjectWithCustomerModel(
 public record UpdateProjectWriteModel(int EngagementId, EngagementState ProjectState, int StartYear, int StartWeek,
     int WeekSpan);
 
-public record UpdateProjectNameWriteModel(int EngagementId, string EngagementName);
+public record UpdateEngagementNameWriteModel(int EngagementId, string EngagementName);
 
 
 public record CustomersWithProjectsReadModel(
