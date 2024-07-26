@@ -10,11 +10,14 @@ export async function PUT(
   const orgUrlKey = params.organisation;
   const requestBody = (await request.json()) as updateProjectNameBody;
 
-  const project =
-    (await putWithToken<EngagementReadModel, updateProjectNameBody>(
-      `${orgUrlKey}/projects/updateProjectName`,
-      requestBody,
-    )) ?? [];
-
-  return NextResponse.json(project);
+  try {
+    const project =
+      (await putWithToken<EngagementReadModel, updateProjectNameBody>(
+        `${orgUrlKey}/projects/updateProjectName`,
+        requestBody,
+      )) ?? [];
+    return NextResponse.json(project);
+  } catch (e) {
+    return NextResponse.json(e); //Finn ut hva vi bør returnere her for at EditEngagementName skjønner at noe er galt
+  }
 }
