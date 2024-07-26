@@ -8,6 +8,7 @@ import Sidebar from "./Sidebar";
 import { ConsultantFilterProvider } from "@/hooks/ConsultantFilterProvider";
 import { parseYearWeekFromUrlString } from "@/data/urlUtils";
 import { fetchWorkHoursPerWeek } from "@/hooks/fetchWorkHoursPerDay";
+import EditEngagementName from "@/components/EditEngagementName";
 
 export default async function Project({
   params,
@@ -49,7 +50,11 @@ export default async function Project({
         <Sidebar project={project} />
         <div className="main p-4 pt-5 w-full flex flex-col gap-8">
           <div className="flex flex-col gap-2">
-            <h1>{project.projectName}</h1>
+            <EditEngagementName
+              engagementName={project.projectName}
+              engagementId={project.projectId}
+              organisationName={params.organisation}
+            />
             <h2>{project.customerName}</h2>
           </div>
 
