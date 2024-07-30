@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
+
 namespace Api.Projects;
 
 [Authorize]
@@ -172,15 +173,15 @@ public class ProjectController : ControllerBase
     [HttpPut]
     [Route("updateProjectName")]
     public ActionResult<List<EngagementReadModel>> Put([FromRoute] string orgUrlKey,
-        [FromBody] UpdateProjectNameWriteModel projectWriteModel)
+        [FromBody] UpdateEngagementNameWriteModel engagementWriteModel)
     {
         // Merk: Service kommer snart via Dependency Injection, da slipper å lage ny hele tiden
         var service = new StorageService(_cache, _context);
 
-        if (!ProjectControllerValidator.ValidateUpdateProjectNameWriteModel(projectWriteModel, service, orgUrlKey))
-            return BadRequest("Error in data");
-        if (ProjectControllerValidator.ValidateUpdateProjectNameAlreadyExist(projectWriteModel, service, orgUrlKey))
-            {return BadRequest("Name already in use");}
+        if (!ProjectControllerValidator.ValidateUpdateEngagementNameWriteModel(engagementWriteModel, service, orgUrlKey))
+            return BadRequest(new ErrorResponseBody("1","Invalid body"));
+        if (ProjectControllerValidator.ValidateUpdateEngagementNameAlreadyExist(engagementWriteModel, service, orgUrlKey))
+            {return Conflict(new ErrorResponseBody("1872","Name already in use"));}
             
         try
         {
@@ -188,14 +189,17 @@ public class ProjectController : ControllerBase
                 engagement = _context.Project
                     .Include(p => p.Consultants)
                     .Include(p => p.Staffings)
-                    .Single(p => p.Id == projectWriteModel.EngagementId);
+                    .Single(p => p.Id == engagementWriteModel.EngagementId);
 
-                engagement.Name = projectWriteModel.EngagementName;
+                engagement.Name = engagementWriteModel.EngagementName;
                 _context.SaveChanges();
 
             service.ClearConsultantCache(orgUrlKey);
 
-            return Ok();
+            var responseModel =
+            new EngagementReadModel(engagement.Id, engagement.Name, engagement.State, engagement.IsBillable);
+
+        return Ok(responseModel);
         }
         catch (Exception e)
         {

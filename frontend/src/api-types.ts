@@ -231,11 +231,11 @@ export interface UpdateProjectWriteModel {
   weekSpan?: number;
 }
 
-export interface UpdateProjectNameWriteModel {
+export interface UpdateEngagementNameWriteModel {
   /** @format int32 */
   engagementId?: number;
   /** @minLength 1 */
-  projectName: string;
+  engagementName: string;
 }
 
 export interface VacationMetaData {

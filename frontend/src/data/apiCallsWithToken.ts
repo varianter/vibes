@@ -13,15 +13,11 @@ import { ConsultantReadModel, EmployeeItemChewbacca } from "@/api-types";
 
 type HttpMethod = "GET" | "PUT" | "POST" | "DELETE";
 
-export async function callApi<T, Body>(
+export async function callApiNoParse<Body>(
   path: string,
   method: HttpMethod,
   bodyInit?: Body,
-): Promise<T | undefined> {
-  if (process.env.NEXT_PUBLIC_NO_AUTH) {
-    return mockedCall<T>(path);
-  }
-
+): Promise<Response | undefined> {
   const session = await getCustomServerSession(authOptions);
 
   if (!session || !session.access_token) return;
@@ -51,16 +47,32 @@ export async function callApi<T, Body>(
 
   const completeUrl = `${apiBackendUrl}/${path}`;
 
+  const response = await fetch(completeUrl, options);
+  return response;
+}
+
+export async function callApi<T, Body>(
+  path: string,
+  method: HttpMethod,
+  bodyInit?: Body,
+): Promise<T | undefined> {
+  if (process.env.NEXT_PUBLIC_NO_AUTH) {
+    return mockedCall<T>(path);
+  }
+  const session = await getCustomServerSession(authOptions);
+
+  if (!session || !session.access_token) return;
+
   try {
-    const response = await fetch(completeUrl, options);
-    if (response.status == 204) {
+    const response = await callApiNoParse(path, method, bodyInit);
+    if (!response || response.status == 204) {
       return;
     }
     const json = await response.json();
     return json as T;
   } catch (e) {
     console.error(e);
-    throw new Error(`${options.method} ${completeUrl} failed`);
+    throw new Error(`${method} ${path} failed`);
   }
 }
 
@@ -157,6 +169,13 @@ export async function callEmployee(path: string) {
     console.error(e);
     throw new Error(`${options.method} ${completeUrl} failed`);
   }
+}
+
+export async function putWithTokenNoParse<BodyType>(
+  path: string,
+  body?: BodyType,
+): Promise<Response | undefined> {
+  return callApiNoParse<BodyType>(path, "PUT", body);
 }
 
 export async function putWithToken<ReturnType, BodyType>(
