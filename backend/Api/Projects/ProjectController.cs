@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
+
 namespace Api.Projects;
 
 [Authorize]
@@ -178,9 +179,9 @@ public class ProjectController : ControllerBase
         var service = new StorageService(_cache, _context);
 
         if (!ProjectControllerValidator.ValidateUpdateEngagementNameWriteModel(engagementWriteModel, service, orgUrlKey))
-            return BadRequest("Error in data");
+            return BadRequest(new ErrorResponseBody("1","Invalid body"));
         if (ProjectControllerValidator.ValidateUpdateEngagementNameAlreadyExist(engagementWriteModel, service, orgUrlKey))
-            {return BadRequest("Name already in use");}
+            {return Conflict(new ErrorResponseBody("1872","Name already in use"));}
             
         try
         {
