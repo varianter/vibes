@@ -78,8 +78,10 @@ export default function EditEngagementName({
               setNewEngagementName(e.target.value);
               setInputIsInvalid(false);
             }}
-            className={`h1 w-full px-2 ${
-              inputIsInvalid ? " text-error focus:outline-error" : ""
+            className={`h1 w-full px-2 rounded ${
+              inputIsInvalid
+                ? " text-error focus:outline-error focus:outline focus:outline-2"
+                : ""
             }`}
             autoFocus
             onBlur={() => {

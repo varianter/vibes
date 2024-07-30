@@ -39,6 +39,8 @@ export default async function Project({
       }${weekSpan ? `${selectedWeek ? "&" : "?"}WeekSpan=${weekSpan}` : ""}`,
     )) ?? [];
 
+  const isInternalProject = project?.customerName === "Variant";
+
   if (project) {
     return (
       <ConsultantFilterProvider
@@ -50,11 +52,16 @@ export default async function Project({
         <Sidebar project={project} />
         <div className="main p-4 pt-5 w-full flex flex-col gap-8">
           <div className="flex flex-col gap-2">
-            <EditEngagementName
-              engagementName={project.projectName}
-              engagementId={project.projectId}
-              organisationName={params.organisation}
-            />
+            {isInternalProject ? (
+              <h1>{project.projectName}</h1>
+            ) : (
+              <EditEngagementName
+                engagementName={project.projectName}
+                engagementId={project.projectId}
+                organisationName={params.organisation}
+              />
+            )}
+
             <h2>{project.customerName}</h2>
           </div>
 
