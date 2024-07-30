@@ -1,7 +1,6 @@
 "use client";
 import { UpdateEngagementNameWriteModel } from "@/api-types";
-import { useRef, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 import { Edit3 } from "react-feather";
 
 export default function EditEngagementName({
@@ -16,15 +15,12 @@ export default function EditEngagementName({
   const [newEngagementName, setNewEngagementName] = useState(engagementName);
   const [inputFieldIsActive, setInputFieldIsActive] = useState(false);
   const [lastUpdatedName, setLastUpdatedName] = useState(engagementName);
-
-  const router = useRouter();
+  const [inputIsInvalid, setInputIsInvalid] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   async function handleChange(newName: string) {
-    if (!newName) {
-      return;
-    }
-
     if (newName === lastUpdatedName) {
+      setInputFieldIsActive(false);
       return;
     }
     setNewEngagementName(newName);
@@ -35,23 +31,34 @@ export default function EditEngagementName({
     };
 
     const res = await submitAddEngagementForm(body);
-    setInputFieldIsActive(false);
-    setLastUpdatedName(newName);
+    const data = await res.json();
+
+    if (res.ok) {
+      setInputFieldIsActive(false);
+      setLastUpdatedName(newName);
+      setInputIsInvalid(false);
+    } else {
+      setInputIsInvalid(true);
+      setInputFieldIsActive(true);
+      if (data.code === "1872") {
+        setErrorMessage("Prosjektnavnet eksisterer hos kunden fra før");
+      } else if (data.code === "1") {
+        setErrorMessage("Prosjektnavn kan ikke være tomt");
+      } else {
+        setErrorMessage("Noe gikk galt, spør på slack");
+      }
+    }
   }
 
   async function submitAddEngagementForm(body: UpdateEngagementNameWriteModel) {
     const url = `/${organisationName}/bemanning/api/projects/updateProjectName`;
-    try {
-      const data = await fetch(url, {
-        method: "PUT",
-        body: JSON.stringify({
-          ...body,
-        }),
-      });
-      return data;
-    } catch (e) {
-      console.error("Error updating engagement name", e);
-    }
+    const res = await fetch(url, {
+      method: "PUT",
+      body: JSON.stringify({
+        ...body,
+      }),
+    });
+    return res;
   }
 
   return (
@@ -63,18 +70,26 @@ export default function EditEngagementName({
             e.preventDefault();
             handleChange(newEngagementName);
           }}
-          className="flex flex-row gap-2 items-center"
+          className="flex flex-col gap-2 "
         >
           <input
             value={newEngagementName}
-            onChange={(e) => setNewEngagementName(e.target.value)}
-            className="h1 w-full"
+            onChange={(e) => {
+              setNewEngagementName(e.target.value);
+              setInputIsInvalid(false);
+            }}
+            className={`h1 w-full px-2 ${
+              inputIsInvalid ? " text-error focus:outline-error" : ""
+            }`}
             autoFocus
             onBlur={() => {
               setInputFieldIsActive(false);
               handleChange(newEngagementName);
             }}
           />
+          {inputIsInvalid && (
+            <p className="small text-error/80 mb-2 italic">{errorMessage}</p>
+          )}
         </form>
       ) : (
         <div
