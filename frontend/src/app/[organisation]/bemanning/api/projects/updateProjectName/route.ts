@@ -10,10 +10,12 @@ export async function PUT(
   const orgUrlKey = params.organisation;
   const requestBody = (await request.json()) as updateProjectNameBody;
 
-  const response =
-    (await putWithTokenNoParse<updateProjectNameBody>(
-      `${orgUrlKey}/projects/updateProjectName`,
-      requestBody,
-    )) ?? [];
+  const response = await putWithTokenNoParse<updateProjectNameBody>(
+    `${orgUrlKey}/projects/updateProjectName`,
+    requestBody,
+  );
+  if (!response) {
+    return;
+  }
   return response;
 }
