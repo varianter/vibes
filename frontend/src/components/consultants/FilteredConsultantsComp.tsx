@@ -219,8 +219,8 @@ export default function FilteredConsultantsComp({
                       )}
                     </div>
                     {selectedEditConsultant?.id !== consultant.id ? (
-                      <p className="text-xs text-text_light_black">
-                        Erfaring {consultant.yearsOfExperience} år
+                      <p className="xsmall text-text_light_black">
+                        {consultant.yearsOfExperience} års erfaring
                       </p>
                     ) : null}
                   </div>
