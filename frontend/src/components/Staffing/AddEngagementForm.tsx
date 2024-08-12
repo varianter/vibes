@@ -77,12 +77,18 @@ export function AddEngagementForm({
           return sum;
         }
 
+        const isLostOrClosed =
+          project.bookingType === EngagementState.Closed ||
+          project.bookingType === EngagementState.Lost;
+
         return [
           ...sum,
           {
             value: `${project.engagementId}`,
             label: `${project.engagementName}`,
-            disabled: disabledProjectIds.includes(project.engagementId),
+            disabled:
+              disabledProjectIds.includes(project.engagementId) ||
+              isLostOrClosed,
           },
         ];
       },
