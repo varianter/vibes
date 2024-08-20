@@ -131,9 +131,7 @@ export function filterConsultants({
   }
   if (departmentFilter && departmentFilter.length > 0) {
     newFilteredConsultants = newFilteredConsultants?.filter((consultant) =>
-      departmentFilter
-        .toLowerCase()
-        .includes(consultant.department.id.toLowerCase()),
+      departmentFilter.includes(consultant.department.id),
     );
   }
   if (competenceFilter && competenceFilter.length > 0) {
