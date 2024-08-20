@@ -166,6 +166,57 @@ public class ReadModelFactory
                 vacationsPrWeek));
         }
 
+        var startDate = consultant.StartDate;
+        var endDate = consultant.EndDate;
+        
+        var firstDayInScope = weekSet.First().FirstDayOfWorkWeek();
+        var firstWorkDayOutOfScope = weekSet.Last().LastWorkDayOfWeek();
+
+        if (startDate.HasValue && startDate > firstDayInScope)
+        {
+            var startWeeks = weekSet.Select(week =>
+            {
+                var isStartWeek = week.ContainsDate((DateOnly)startDate);
+                var hasStarted = startDate < week.FirstDayOfWorkWeek();
+
+                var dayDifference = Math.Max((startDate.Value.ToDateTime(new TimeOnly()) - week.FirstDayOfWorkWeek().ToDateTime(new TimeOnly())).Days, 0);
+
+                var hours = isStartWeek ? dayDifference * consultant.Department.Organization.HoursPerWorkday :
+                    hasStarted ? 0 : consultant.Department.Organization.HoursPerWorkday * 5;
+                
+                return new WeeklyHours(
+                    week.ToSortableInt(), 0
+                );
+
+            }).ToList();
+            detailedBookings = detailedBookings.Append(new DetailedBooking(
+                new BookingDetails("Ikke Startet eller Sluttet", BookingType.PlannedAbsence,
+                    "Variant",
+                    0, true), //Empty projectName as vacation does not have a project, 0 as projectId as vacation is weird
+                startWeeks));
+        }
+        
+        if (endDate.HasValue && endDate < firstWorkDayOutOfScope)
+        {
+           var endWeeks = weekSet.Select(week =>
+            {
+                var isEndWeek = week.ContainsDate((DateOnly)endDate);
+                var hasEnded = endDate < week.FirstDayOfWorkWeek();
+
+                var dayDifference = Math.Max((week.LastWorkDayOfWeek().ToDateTime(new TimeOnly()) - endDate.Value.ToDateTime(new TimeOnly())).Days, 0);
+
+                var hours = hasEnded ? consultant.Department.Organization.HoursPerWorkday * 5 : isEndWeek ? dayDifference * consultant.Department.Organization.HoursPerWorkday :
+                     0;
+                
+                return new WeeklyHours(
+                    week.ToSortableInt(), hours
+                );
+
+            });
+        }
+        
+       
+
         var detailedBookingList = detailedBookings.ToList();
 
         return detailedBookingList;
