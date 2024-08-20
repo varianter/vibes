@@ -133,7 +133,7 @@ export function filterConsultants({
     newFilteredConsultants = newFilteredConsultants?.filter((consultant) =>
       departmentFilter
         .toLowerCase()
-        .includes(consultant.department.name.toLowerCase()),
+        .includes(consultant.department.id.toLowerCase()),
     );
   }
   if (competenceFilter && competenceFilter.length > 0) {
