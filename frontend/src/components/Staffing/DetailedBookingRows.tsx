@@ -341,8 +341,8 @@ function DetailedBookingCell({
         {isChangingHours &&
           numWeeks <= 12 &&
           detailedBooking.bookingDetails.type != BookingType.Vacation &&
-          detailedBooking.bookingDetails.projectName !=
-            "Ikke startet eller sluttet" && (
+          detailedBooking.bookingDetails.type !=
+            BookingType.NotStartedOrQuit && (
             <button
               tabIndex={-1}
               disabled={hours == 0}
@@ -372,8 +372,7 @@ function DetailedBookingCell({
           draggable={true}
           disabled={
             detailedBooking.bookingDetails.type == BookingType.Vacation ||
-            detailedBooking.bookingDetails.projectName ==
-              "Ikke startet eller sluttet"
+            detailedBooking.bookingDetails.type != BookingType.NotStartedOrQuit
           }
           onChange={(e) =>
             hourDragValue == undefined && setHours(Number(e.target.value))
@@ -408,8 +407,8 @@ function DetailedBookingCell({
         {isChangingHours &&
           numWeeks <= 12 &&
           detailedBooking.bookingDetails.type != BookingType.Vacation &&
-          detailedBooking.bookingDetails.projectName !=
-            "Ikke startet eller sluttet" && (
+          detailedBooking.bookingDetails.type !=
+            BookingType.NotStartedOrQuit && (
             <button
               tabIndex={-1}
               className={`my-1 p-1 rounded-full hover:bg-primary/10 hidden ${

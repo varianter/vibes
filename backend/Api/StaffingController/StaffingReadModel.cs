@@ -86,7 +86,8 @@ public record WeeklyBookingReadModel(
     [property: Required] double TotalSellableTime,
     [property: Required] double TotalHolidayHours,
     [property: Required] double TotalVacationHours,
-    [property: Required] double TotalOverbooking);
+    [property: Required] double TotalOverbooking, 
+    [property: Required] double TotalNotStartedOrQuit);
 
 public record BookingDetails(
     [property: Required] string ProjectName,
@@ -104,5 +105,6 @@ public enum BookingType
     Booking,
     PlannedAbsence,
     Vacation,
-    Available
+    Available,
+    NotStartedOrQuit
 }

@@ -1,7 +1,14 @@
 import { BookedHoursPerWeek, ConsultantReadModel } from "@/api-types";
 import { HoveredWeek } from "@/components/Staffing/HoveredWeek";
 import InfoPill from "@/components/Staffing/InfoPill";
-import { AlertTriangle, Coffee, FileText, Moon, Sun } from "react-feather";
+import {
+  AlertTriangle,
+  Calendar,
+  Coffee,
+  FileText,
+  Moon,
+  Sun,
+} from "react-feather";
 import { getInfopillVariantByColumnCount } from "@/components/Staffing/helpers/utils";
 import React from "react";
 
@@ -148,14 +155,27 @@ export function WeekCell(props: {
               variant={getInfopillVariantByColumnCount(columnCount)}
             />
           )}
+          {bookedHoursPerWeek.bookingModel.totalNotStartedOrQuit > 0 && (
+            <InfoPill
+              text={bookedHoursPerWeek.bookingModel.totalNotStartedOrQuit.toLocaleString(
+                "nb-No",
+                {
+                  maximumFractionDigits: 1,
+                  minimumFractionDigits: 0,
+                },
+              )}
+              colors="bg-absence/60 text-absence_darker border-absence_darker"
+              icon={<Calendar size="12" />}
+              variant={getInfopillVariantByColumnCount(columnCount)}
+            />
+          )}
         </div>
         <p
           className={`text-right ${
             isListElementVisible ? "normal-medium" : "normal"
           }`}
         >
-          {bookedHoursPerWeek.bookingModel.totalPlannedAbsences > 0 &&
-          checkIfNotStartedOrQuit(consultant, bookedHoursPerWeek, numWorkHours)
+          {checkIfNotStartedOrQuit(consultant, bookedHoursPerWeek, numWorkHours)
             ? "-"
             : bookedHoursPerWeek.bookingModel.totalBillable.toLocaleString(
                 "nb-No",
@@ -171,17 +191,11 @@ function checkIfNotStartedOrQuit(
   bookedHoursPerWeek: BookedHoursPerWeek,
   numWorkHours: number,
 ) {
-  const project = consultant.detailedBooking.find(
-    (b) => b.bookingDetails.projectName == "Ikke startet eller sluttet",
-  );
-  const hours = project?.hours.find(
-    (h) => h.week == bookedHoursPerWeek.sortableWeek,
-  );
-
-  if (!hours?.hours) return false;
+  const notStartedOrQuitHours =
+    bookedHoursPerWeek.bookingModel.totalNotStartedOrQuit;
 
   return (
-    hours?.hours ==
+    notStartedOrQuitHours ==
     numWorkHours - bookedHoursPerWeek.bookingModel.totalHolidayHours
   );
 }

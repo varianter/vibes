@@ -175,13 +175,13 @@ public class ReadModelFactory
         if (startDate.HasValue && startDate > firstDayInScope)
         {
             var startWeeks = GetHoursNotStartedOrQuit(startDate, weekSet, consultant, false);
-            detailedBookings = detailedBookings.Append(CreateDetailedBooking(startWeeks));
+            detailedBookings = detailedBookings.Append(CreateNotStartedOrQuitDetailedBooking(startWeeks));
         }
 
         if (endDate.HasValue && endDate < firstWorkDayOutOfScope)
         {
             var endWeeks = GetHoursNotStartedOrQuit(endDate, weekSet, consultant, true);
-            detailedBookings = detailedBookings.Append(CreateDetailedBooking(endWeeks));
+            detailedBookings = detailedBookings.Append(CreateNotStartedOrQuitDetailedBooking(endWeeks));
         }
        
 
@@ -216,12 +216,12 @@ public class ReadModelFactory
             .ToList();
     }
     
-    private static DetailedBooking CreateDetailedBooking(List<WeeklyHours> weeks)
+    private static DetailedBooking CreateNotStartedOrQuitDetailedBooking(List<WeeklyHours> weeks)
     {
         return new DetailedBooking(
-            new BookingDetails("Ikke startet eller sluttet", BookingType.PlannedAbsence,
+            new BookingDetails("Ikke startet eller sluttet", BookingType.NotStartedOrQuit,
                 "Ikke startet eller sluttet",
-                0, true), //Empty projectName as vacation does not have a project, 0 as projectId as vacation is weird
+                0, true), //Empty projectName as NotStartedOrQuit does not have a project, 0 as projectId as NotStartedOrQuit since its just used to mark not started or quit
             weeks
         );
     }
@@ -247,6 +247,10 @@ public class ReadModelFactory
         var totalAbsence = DetailedBooking.GetTotalHoursPrBookingTypeAndWeek(detailedBookingsArray,
             BookingType.PlannedAbsence,
             week);
+
+        var totalNotStartedOrQuit =
+            DetailedBooking.GetTotalHoursPrBookingTypeAndWeek(detailedBookingsArray, BookingType.NotStartedOrQuit,
+                week);
         
         var totalExludableAbsence = detailedBookingsArray
             .Where(s => s.BookingDetails.Type == BookingType.PlannedAbsence &&  s.BookingDetails.ExcludeFromBilling )
@@ -257,7 +261,7 @@ public class ReadModelFactory
             BookingType.Vacation,
             week);
 
-        var bookedTime = totalBillable + totalAbsence + totalVacations + totalHolidayHours + totalNonBillable;
+        var bookedTime = totalBillable + totalAbsence + totalVacations + totalHolidayHours + totalNonBillable + totalNotStartedOrQuit;
         var hoursPrWorkDay = consultant.Department.Organization.HoursPerWorkday;
 
         var totalSellableTime =
@@ -273,7 +277,7 @@ public class ReadModelFactory
             GetDatesForWeek(week),
             new WeeklyBookingReadModel(totalBillable, totalOffered, totalAbsence, totalExludableAbsence,  totalSellableTime,
                 totalHolidayHours, totalVacations,
-                totalOverbooked)
+                totalOverbooked, totalNotStartedOrQuit)
         );
     }
 
