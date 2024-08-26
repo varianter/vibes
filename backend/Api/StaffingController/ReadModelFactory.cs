@@ -168,58 +168,62 @@ public class ReadModelFactory
 
         var startDate = consultant.StartDate;
         var endDate = consultant.EndDate;
-        
+
         var firstDayInScope = weekSet.First().FirstDayOfWorkWeek();
         var firstWorkDayOutOfScope = weekSet.Last().LastWorkDayOfWeek();
 
         if (startDate.HasValue && startDate > firstDayInScope)
         {
-            var startWeeks = weekSet.Select(week =>
-            {
-                var isStartWeek = week.ContainsDate((DateOnly)startDate);
-                var hasStarted = startDate < week.FirstDayOfWorkWeek();
-
-                var dayDifference = Math.Max((startDate.Value.ToDateTime(new TimeOnly()) - week.FirstDayOfWorkWeek().ToDateTime(new TimeOnly())).Days, 0);
-
-                var hours = isStartWeek ? dayDifference * consultant.Department.Organization.HoursPerWorkday :
-                    hasStarted ? 0 : consultant.Department.Organization.HoursPerWorkday * 5;
-                
-                return new WeeklyHours(
-                    week.ToSortableInt(), 0
-                );
-
-            }).ToList();
-            detailedBookings = detailedBookings.Append(new DetailedBooking(
-                new BookingDetails("Ikke Startet eller Sluttet", BookingType.PlannedAbsence,
-                    "Variant",
-                    0, true), //Empty projectName as vacation does not have a project, 0 as projectId as vacation is weird
-                startWeeks));
+            var startWeeks = GetHoursNotStartedOrQuit(startDate, weekSet, consultant, false);
+            detailedBookings = detailedBookings.Append(CreateDetailedBooking(startWeeks));
         }
-        
+
         if (endDate.HasValue && endDate < firstWorkDayOutOfScope)
         {
-           var endWeeks = weekSet.Select(week =>
-            {
-                var isEndWeek = week.ContainsDate((DateOnly)endDate);
-                var hasEnded = endDate < week.FirstDayOfWorkWeek();
-
-                var dayDifference = Math.Max((week.LastWorkDayOfWeek().ToDateTime(new TimeOnly()) - endDate.Value.ToDateTime(new TimeOnly())).Days, 0);
-
-                var hours = hasEnded ? consultant.Department.Organization.HoursPerWorkday * 5 : isEndWeek ? dayDifference * consultant.Department.Organization.HoursPerWorkday :
-                     0;
-                
-                return new WeeklyHours(
-                    week.ToSortableInt(), hours
-                );
-
-            });
+            var endWeeks = GetHoursNotStartedOrQuit(endDate, weekSet, consultant, true);
+            detailedBookings = detailedBookings.Append(CreateDetailedBooking(endWeeks));
         }
-        
        
 
         var detailedBookingList = detailedBookings.ToList();
 
         return detailedBookingList;
+    }
+
+    private static List<WeeklyHours> GetHoursNotStartedOrQuit(DateOnly? date, List<Week> weekSet, Consultant consultant, bool quit)
+    {
+        return weekSet
+            .Select(week =>
+            {
+                var isTargetWeek = week.ContainsDate((DateOnly)date);
+                var hasReached = date < week.FirstDayOfWorkWeek();
+
+                var maxWorkHoursForWeek = consultant.Department.Organization.HoursPerWorkday * 5 -
+                                          consultant.Department.Organization.GetTotalHolidayHoursOfWeek(week);
+
+                var dayDifference = quit ? 
+                    Math.Max((date.Value.ToDateTime(new TimeOnly()) - week.FirstDayOfWorkWeek().ToDateTime(new TimeOnly())).Days, 0) : 
+                    Math.Max((week.LastWorkDayOfWeek().ToDateTime(new TimeOnly()) - date.Value.ToDateTime(new TimeOnly())).Days, 0);
+
+                var hours = isTargetWeek ? dayDifference * consultant.Department.Organization.HoursPerWorkday : quit ? (
+                    hasReached ? consultant.Department.Organization.HoursPerWorkday * 5 : 0) : (
+                    hasReached ? 0 : consultant.Department.Organization.HoursPerWorkday * 5) ;
+
+                return new WeeklyHours(
+                    week.ToSortableInt(), Math.Min(hours, maxWorkHoursForWeek)
+                );
+            })
+            .ToList();
+    }
+    
+    private static DetailedBooking CreateDetailedBooking(List<WeeklyHours> weeks)
+    {
+        return new DetailedBooking(
+            new BookingDetails("Ikke startet eller sluttet", BookingType.PlannedAbsence,
+                "Ikke startet eller sluttet",
+                0, true), //Empty projectName as vacation does not have a project, 0 as projectId as vacation is weird
+            weeks
+        );
     }
 
     private static BookedHoursPerWeek GetBookedHours(Week week, IEnumerable<DetailedBooking> detailedBookings,
