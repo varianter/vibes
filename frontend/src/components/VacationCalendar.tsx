@@ -20,6 +20,8 @@ export default function VacationCalendar({
     vacationDays.vacationDays?.map((date) => new DateObject(date)) ?? [],
   );
   const [vacationInformation, setVacationInformation] = useState(vacationDays);
+  const [savedMessage, setSavedMessage] = useState("");
+
   const today = new DateObject();
 
   function handleChange(e: Value) {
@@ -40,7 +42,10 @@ export default function VacationCalendar({
     ) {
       const newDates = dates.filter((item) => valueDates.indexOf(item) < 0);
       addVacationDay(newDates[0]).then((res) => {
-        if (res) setVacationInformation({ ...res });
+        if (res) {
+          setSavedMessage(`Ferie ${newDates[0]} ble lagret`);
+          setVacationInformation({ ...res });
+        }
       });
     }
     if (
@@ -49,7 +54,10 @@ export default function VacationCalendar({
     ) {
       const removeDates = valueDates.filter((item) => dates.indexOf(item) < 0);
       removeVacationDay(removeDates[0]).then((res) => {
-        if (res) setVacationInformation({ ...res });
+        if (res) {
+          setSavedMessage(`Ferie ${removeDates[0]} ble fjernet`);
+          setVacationInformation({ ...res });
+        }
       });
     }
     setValue(e);
@@ -70,6 +78,7 @@ export default function VacationCalendar({
       return (await data.json()) as VacationReadModel;
     } catch (e) {
       console.error("Error updating staffing", e);
+      setSavedMessage(`Noe gikk galt og ferien ${vacationDay} ble ikke lagret`);
     }
   }
 
@@ -88,6 +97,9 @@ export default function VacationCalendar({
       return (await data.json()) as VacationReadModel;
     } catch (e) {
       console.error("Error updating staffing", e);
+      setSavedMessage(
+        `Noe gikk galt og fjerningen av ${vacationDay} ble ikke lagret`,
+      );
     }
   }
 
@@ -122,67 +134,76 @@ export default function VacationCalendar({
         </div>
       </div>
 
-      <div className="flex flex-col justify-center m-4">
-        <h1 className="text-black">{consultant.name}</h1>
-        <p className="normal text-black">{consultant.department.name}</p>
-        <p></p>
-        <Calendar
-          multiple
-          fullYear
-          weekStartDayIndex={1}
-          displayWeekNumbers
-          currentDate={today}
-          value={value}
-          onChange={handleChange}
-          className="custom-calendar"
-          mapDays={({ date }) => {
-            //Since the date object is created before the today object, an extra hour is added to a copied version of the date object to ensure that you can edit today
-            const dateCopy = new DateObject(date);
-            dateCopy.add(1, "h");
+      <div className="flex flex-row gap-3 w-full">
+        <div className="flex flex-col justify-center m-4">
+          <h1 className="text-black">{consultant.name}</h1>
+          <p className="normal text-black">{consultant.department.name}</p>
+          <p></p>
+          <Calendar
+            multiple
+            fullYear
+            weekStartDayIndex={1}
+            displayWeekNumbers
+            currentDate={today}
+            value={value}
+            onChange={handleChange}
+            className="custom-calendar"
+            mapDays={({ date }) => {
+              //Since the date object is created before the today object, an extra hour is added to a copied version of the date object to ensure that you can edit today
+              const dateCopy = new DateObject(date);
+              dateCopy.add(1, "h");
 
-            let isWeekend = [0, 6].includes(date.weekDay.index);
-            if (
-              vacationDays.vacationDays?.includes(
-                `${date.year.toString()}-${
-                  date.month.number > 9
-                    ? date.month.number.toString()
-                    : "0" + date.month.number.toString()
-                }-${
-                  date.day > 9 ? date.day.toString() : "0" + date.day.toString()
-                }`,
-              ) &&
-              dateCopy.toDate() < new Date()
-            )
-              return {
-                disabled: true,
-                style: {
-                  color: "#00445B",
-                  opacity: 0.5,
-                  backgroundColor: "#C8EEFB",
-                },
-              };
-            else if (
-              publicHolidays.includes(
-                `${date.year.toString()}-${
-                  date.month.number > 9
-                    ? date.month.number.toString()
-                    : "0" + date.month.number.toString()
-                }-${
-                  date.day > 9 ? date.day.toString() : "0" + date.day.toString()
-                }`,
+              let isWeekend = [0, 6].includes(date.weekDay.index);
+              if (
+                vacationDays.vacationDays?.includes(
+                  `${date.year.toString()}-${
+                    date.month.number > 9
+                      ? date.month.number.toString()
+                      : "0" + date.month.number.toString()
+                  }-${
+                    date.day > 9
+                      ? date.day.toString()
+                      : "0" + date.day.toString()
+                  }`,
+                ) &&
+                dateCopy.toDate() < new Date()
               )
-            )
-              return {
-                disabled: true,
-                style: { color: "#B91456", opacity: 0.5 },
-              };
-            else if (isWeekend || dateCopy.toDate() < new Date())
-              return {
-                disabled: true,
-                style: { color: "#00445B", opacity: 0.5 },
-              };
-          }}
-        />
+                return {
+                  disabled: true,
+                  style: {
+                    color: "#00445B",
+                    opacity: 0.5,
+                    backgroundColor: "#C8EEFB",
+                  },
+                };
+              else if (
+                publicHolidays.includes(
+                  `${date.year.toString()}-${
+                    date.month.number > 9
+                      ? date.month.number.toString()
+                      : "0" + date.month.number.toString()
+                  }-${
+                    date.day > 9
+                      ? date.day.toString()
+                      : "0" + date.day.toString()
+                  }`,
+                )
+              )
+                return {
+                  disabled: true,
+                  style: { color: "#B91456", opacity: 0.5 },
+                };
+              else if (isWeekend || dateCopy.toDate() < new Date())
+                return {
+                  disabled: true,
+                  style: { color: "#00445B", opacity: 0.5 },
+                };
+            }}
+          />
+        </div>
+        <p className="absolute right-1 p-4 hidden lg:flex normal-semibold">
+          {savedMessage}
+        </p>
       </div>
     </div>
   );
