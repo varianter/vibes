@@ -104,7 +104,7 @@ export default function VacationCalendar({
     }
   }
 
-  function checkIfDateIsPublicHoliday(date: DateObject) {
+  function dateIsPublicHoliday(date: DateObject) {
     return publicHolidays.includes(
       `${date.year.toString()}-${
         date.month.number > 9
@@ -114,10 +114,7 @@ export default function VacationCalendar({
     );
   }
 
-  function checkIfDateIsVacationDayInThePast(
-    date: DateObject,
-    dateCopy: DateObject,
-  ) {
+  function dateIsVacationDayInThePast(date: DateObject, dateCopy: DateObject) {
     return (
       vacationDays.vacationDays?.includes(
         `${date.year.toString()}-${
@@ -129,11 +126,11 @@ export default function VacationCalendar({
     );
   }
 
-  function checkIfDateIsWeekend(date: DateObject) {
+  function dateIsWeekend(date: DateObject) {
     return [0, 6].includes(date.weekDay.index);
   }
 
-  function checkIfDateIsPast(date: DateObject) {
+  function dateIsPast(date: DateObject) {
     return date.toDate() < new Date();
   }
 
@@ -142,7 +139,7 @@ export default function VacationCalendar({
     const dateCopy = new DateObject(date);
     dateCopy.add(1, "h");
 
-    if (checkIfDateIsVacationDayInThePast(date, dateCopy))
+    if (dateIsVacationDayInThePast(date, dateCopy))
       return {
         disabled: true,
         style: {
@@ -151,12 +148,12 @@ export default function VacationCalendar({
           backgroundColor: "#C8EEFB",
         },
       };
-    else if (checkIfDateIsPublicHoliday(date))
+    else if (dateIsPublicHoliday(date))
       return {
         disabled: true,
         style: { color: "#B91456", opacity: 0.5 },
       };
-    else if (checkIfDateIsWeekend(date) || checkIfDateIsPast(dateCopy))
+    else if (dateIsWeekend(date) || dateIsPast(dateCopy))
       return {
         disabled: true,
         style: { color: "#00445B", opacity: 0.5 },
