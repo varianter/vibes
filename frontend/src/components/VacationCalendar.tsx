@@ -103,6 +103,39 @@ export default function VacationCalendar({
     }
   }
 
+  function checkIfDateIsPublicHoliday(date: DateObject) {
+    return publicHolidays.includes(
+      `${date.year.toString()}-${
+        date.month.number > 9
+          ? date.month.number.toString()
+          : "0" + date.month.number.toString()
+      }-${date.day > 9 ? date.day.toString() : "0" + date.day.toString()}`,
+    );
+  }
+
+  function checkIfDateIsVacationDayInThePast(
+    date: DateObject,
+    dateCopy: DateObject,
+  ) {
+    return (
+      vacationDays.vacationDays?.includes(
+        `${date.year.toString()}-${
+          date.month.number > 9
+            ? date.month.number.toString()
+            : "0" + date.month.number.toString()
+        }-${date.day > 9 ? date.day.toString() : "0" + date.day.toString()}`,
+      ) && dateCopy.toDate() < new Date()
+    );
+  }
+
+  function checkIfDateIsWeekend(date: DateObject) {
+    return [0, 6].includes(date.weekDay.index);
+  }
+
+  function checkIfDateIsPast(date: DateObject) {
+    return date.toDate() < new Date();
+  }
+
   return (
     <div className="flex flex-row">
       <div className="sidebar z-10">
@@ -138,7 +171,6 @@ export default function VacationCalendar({
         <div className="flex flex-col justify-center m-4">
           <h1 className="text-black">{consultant.name}</h1>
           <p className="normal text-black">{consultant.department.name}</p>
-          <p></p>
           <Calendar
             multiple
             fullYear
@@ -153,21 +185,7 @@ export default function VacationCalendar({
               const dateCopy = new DateObject(date);
               dateCopy.add(1, "h");
 
-              let isWeekend = [0, 6].includes(date.weekDay.index);
-              if (
-                vacationDays.vacationDays?.includes(
-                  `${date.year.toString()}-${
-                    date.month.number > 9
-                      ? date.month.number.toString()
-                      : "0" + date.month.number.toString()
-                  }-${
-                    date.day > 9
-                      ? date.day.toString()
-                      : "0" + date.day.toString()
-                  }`,
-                ) &&
-                dateCopy.toDate() < new Date()
-              )
+              if (checkIfDateIsVacationDayInThePast(date, dateCopy))
                 return {
                   disabled: true,
                   style: {
@@ -176,24 +194,15 @@ export default function VacationCalendar({
                     backgroundColor: "#C8EEFB",
                   },
                 };
-              else if (
-                publicHolidays.includes(
-                  `${date.year.toString()}-${
-                    date.month.number > 9
-                      ? date.month.number.toString()
-                      : "0" + date.month.number.toString()
-                  }-${
-                    date.day > 9
-                      ? date.day.toString()
-                      : "0" + date.day.toString()
-                  }`,
-                )
-              )
+              else if (checkIfDateIsPublicHoliday(date))
                 return {
                   disabled: true,
                   style: { color: "#B91456", opacity: 0.5 },
                 };
-              else if (isWeekend || dateCopy.toDate() < new Date())
+              else if (
+                checkIfDateIsWeekend(date) ||
+                checkIfDateIsPast(dateCopy)
+              )
                 return {
                   disabled: true,
                   style: { color: "#00445B", opacity: 0.5 },
