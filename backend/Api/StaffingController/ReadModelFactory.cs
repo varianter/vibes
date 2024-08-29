@@ -174,13 +174,13 @@ public class ReadModelFactory
 
         if (startDate.HasValue && startDate > firstDayInScope)
         {
-            var startWeeks = GetHoursNotStartedOrQuit(startDate, weekSet, consultant, false);
+            var startWeeks = GetNonEmploymentHoursNotStartedOrQuit(startDate, weekSet, consultant, false);
             detailedBookings = detailedBookings.Append(CreateNotStartedOrQuitDetailedBooking(startWeeks));
         }
 
         if (endDate.HasValue && endDate < firstWorkDayOutOfScope)
         {
-            var endWeeks = GetHoursNotStartedOrQuit(endDate, weekSet, consultant, true);
+            var endWeeks = GetNonEmploymentHoursNotStartedOrQuit(endDate, weekSet, consultant, true);
             detailedBookings = detailedBookings.Append(CreateNotStartedOrQuitDetailedBooking(endWeeks));
         }
        
@@ -190,40 +190,41 @@ public class ReadModelFactory
         return detailedBookingList;
     }
 
-    private static List<WeeklyHours> GetHoursNotStartedOrQuit(DateOnly? date, List<Week> weekSet, Consultant consultant, bool quit)
+    private static List<WeeklyHours> GetNonEmploymentHoursNotStartedOrQuit(DateOnly? date, List<Week> weekSet, Consultant consultant, bool quit)
     {
         return weekSet
             .Select(week =>
             {
                 var isTargetWeek = week.ContainsDate((DateOnly)date);
-                var hasReached = date < week.FirstDayOfWorkWeek();
 
                 var maxWorkHoursForWeek = consultant.Department.Organization.HoursPerWorkday * 5 -
                                           consultant.Department.Organization.GetTotalHolidayHoursOfWeek(week);
 
-                var hours = quit
-                    ? GetHoursForWeekWhenQuitting(date, week, isTargetWeek, hasReached, consultant)
-                    : GetHoursForWeekWhenStarting(date, week, isTargetWeek, hasReached, consultant);
+                var hoursOutsideEmployment = quit
+                    ? GetNonEmployedHoursForWeekWhenQuitting(date, week, isTargetWeek, consultant)
+                    : GetNonEmployedHoursForWeekWhenStarting(date, week, isTargetWeek, consultant);
 
                 return new WeeklyHours(
-                    week.ToSortableInt(), Math.Min(hours, maxWorkHoursForWeek)
+                    week.ToSortableInt(), Math.Min(hoursOutsideEmployment, maxWorkHoursForWeek)
                 );
             })
             .ToList();
     }
 
-    private static double GetHoursForWeekWhenStarting(DateOnly? startDate, Week week, Boolean isStartWeek,
-        bool hasStarted, Consultant consultant)
+    private static double GetNonEmployedHoursForWeekWhenStarting(DateOnly? startDate, Week week, Boolean isStartWeek,
+         Consultant consultant)
     {
+        var hasStarted = startDate < week.FirstDayOfWorkWeek();
         var dayDifference = Math.Max((week.LastWorkDayOfWeek().ToDateTime(new TimeOnly()) - startDate.Value.ToDateTime(new TimeOnly())).Days, 0);
 
         return isStartWeek ? dayDifference * consultant.Department.Organization.HoursPerWorkday : 
             hasStarted ? 0 : consultant.Department.Organization.HoursPerWorkday * 5 ;
     }
 
-    private static double GetHoursForWeekWhenQuitting(DateOnly? endDate, Week week, bool isFinalWeek, bool hasQuit,
+    private static double GetNonEmployedHoursForWeekWhenQuitting(DateOnly? endDate, Week week, bool isFinalWeek, 
         Consultant consultant)
     {
+        var hasQuit = endDate < week.FirstDayOfWorkWeek();
         var dayDifference = Math.Max((endDate.Value.ToDateTime(new TimeOnly()) - week.FirstDayOfWorkWeek().ToDateTime(new TimeOnly())).Days, 0);
 
         return isFinalWeek ? dayDifference * consultant.Department.Organization.HoursPerWorkday :
