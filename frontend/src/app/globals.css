@@ -157,7 +157,7 @@
     line-height: 2.5rem;
   }
 
-  input[type="checkbox"] {
+  .checkBoxWithCustomCheckmark {
     /* Add if not using autoprefixer */
     -webkit-appearance: none;
     appearance: none;
@@ -167,13 +167,14 @@
     margin: 0;
   }
 
-  input[type="checkbox"] {
+  .checkBoxWithCustomCheckmark {
     appearance: none;
     display: grid;
     place-content: center;
   }
 
-  input[type="checkbox"]::before {
+  /*Here an svg has been converted to a clip-path, which is why that field is so long*/
+  .checkBoxWithCustomCheckmark::before {
     content: "";
     width: 12px;
     height: 12px;
@@ -244,11 +245,11 @@
     );
   }
 
-  input[type="checkbox"]:checked {
+  .checkBoxWithCustomCheckmark:checked {
     background-color: #423d89;
   }
 
-  input[type="checkbox"]:checked::before {
+  .checkBoxWithCustomCheckmark:checked::before {
     transform: scale(1);
   }
 }

@@ -14,7 +14,7 @@ export default function FilterButton({
         disabled={inputProps.disabled}
         readOnly
         {...inputProps}
-        className={`border flex items-center border-opacity-50 m-[1px] mr-2 h-4 w-4  border-primary hover:border-primary
+        className={`checkBoxWithCustomCheckmark border flex items-center border-opacity-50 m-[1px] mr-2 h-4 w-4  border-primary hover:border-primary
           
           ${
             inputProps.checked
