@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import type { Value } from "react-multi-date-picker";
 import { Calendar, DateObject } from "react-multi-date-picker";
 import InfoBox from "./InfoBox";
+import { map } from "lodash";
 
 export default function VacationCalendar({
   consultant,
@@ -136,6 +137,32 @@ export default function VacationCalendar({
     return date.toDate() < new Date();
   }
 
+  function mapDayToStyling(date: DateObject) {
+    //Since the date object is created before the today object, an extra hour is added to a copied version of the date object to ensure that you can edit today
+    const dateCopy = new DateObject(date);
+    dateCopy.add(1, "h");
+
+    if (checkIfDateIsVacationDayInThePast(date, dateCopy))
+      return {
+        disabled: true,
+        style: {
+          color: "#00445B",
+          opacity: 0.5,
+          backgroundColor: "#C8EEFB",
+        },
+      };
+    else if (checkIfDateIsPublicHoliday(date))
+      return {
+        disabled: true,
+        style: { color: "#B91456", opacity: 0.5 },
+      };
+    else if (checkIfDateIsWeekend(date) || checkIfDateIsPast(dateCopy))
+      return {
+        disabled: true,
+        style: { color: "#00445B", opacity: 0.5 },
+      };
+  }
+
   return (
     <div className="flex flex-row">
       <div className="sidebar z-10">
@@ -180,34 +207,7 @@ export default function VacationCalendar({
             value={value}
             onChange={handleChange}
             className="custom-calendar"
-            mapDays={({ date }) => {
-              //Since the date object is created before the today object, an extra hour is added to a copied version of the date object to ensure that you can edit today
-              const dateCopy = new DateObject(date);
-              dateCopy.add(1, "h");
-
-              if (checkIfDateIsVacationDayInThePast(date, dateCopy))
-                return {
-                  disabled: true,
-                  style: {
-                    color: "#00445B",
-                    opacity: 0.5,
-                    backgroundColor: "#C8EEFB",
-                  },
-                };
-              else if (checkIfDateIsPublicHoliday(date))
-                return {
-                  disabled: true,
-                  style: { color: "#B91456", opacity: 0.5 },
-                };
-              else if (
-                checkIfDateIsWeekend(date) ||
-                checkIfDateIsPast(dateCopy)
-              )
-                return {
-                  disabled: true,
-                  style: { color: "#00445B", opacity: 0.5 },
-                };
-            }}
+            mapDays={({ date }) => mapDayToStyling(date)}
           />
         </div>
         <p className="absolute right-1 p-4 hidden lg:flex normal-semibold">
