@@ -201,13 +201,9 @@ public class ReadModelFactory
                 var maxWorkHoursForWeek = consultant.Department.Organization.HoursPerWorkday * 5 -
                                           consultant.Department.Organization.GetTotalHolidayHoursOfWeek(week);
 
-                var dayDifference = quit ? 
-                    Math.Max((date.Value.ToDateTime(new TimeOnly()) - week.FirstDayOfWorkWeek().ToDateTime(new TimeOnly())).Days, 0) : 
-                    Math.Max((week.LastWorkDayOfWeek().ToDateTime(new TimeOnly()) - date.Value.ToDateTime(new TimeOnly())).Days, 0);
-
-                var hours = isTargetWeek ? dayDifference * consultant.Department.Organization.HoursPerWorkday : quit ? (
-                    hasReached ? consultant.Department.Organization.HoursPerWorkday * 5 : 0) : (
-                    hasReached ? 0 : consultant.Department.Organization.HoursPerWorkday * 5) ;
+                var hours = quit
+                    ? GetHoursForWeekWhenQuitting(date, week, isTargetWeek, hasReached, consultant)
+                    : GetHoursForWeekWhenStarting(date, week, isTargetWeek, hasReached, consultant);
 
                 return new WeeklyHours(
                     week.ToSortableInt(), Math.Min(hours, maxWorkHoursForWeek)
@@ -215,6 +211,26 @@ public class ReadModelFactory
             })
             .ToList();
     }
+
+    private static double GetHoursForWeekWhenStarting(DateOnly? startDate, Week week, Boolean isStartWeek,
+        bool hasStarted, Consultant consultant)
+    {
+        var dayDifference = Math.Max((week.LastWorkDayOfWeek().ToDateTime(new TimeOnly()) - startDate.Value.ToDateTime(new TimeOnly())).Days, 0);
+
+        return isStartWeek ? dayDifference * consultant.Department.Organization.HoursPerWorkday : 
+            hasStarted ? 0 : consultant.Department.Organization.HoursPerWorkday * 5 ;
+    }
+
+    private static double GetHoursForWeekWhenQuitting(DateOnly? endDate, Week week, bool isFinalWeek, bool hasQuit,
+        Consultant consultant)
+    {
+        var dayDifference = Math.Max((endDate.Value.ToDateTime(new TimeOnly()) - week.FirstDayOfWorkWeek().ToDateTime(new TimeOnly())).Days, 0);
+
+        return isFinalWeek ? dayDifference * consultant.Department.Organization.HoursPerWorkday :
+            hasQuit ? consultant.Department.Organization.HoursPerWorkday * 5 : 0;
+    }
+    
+    
     
     private static DetailedBooking CreateNotStartedOrQuitDetailedBooking(List<WeeklyHours> weeks)
     {

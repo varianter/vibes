@@ -372,7 +372,7 @@ function DetailedBookingCell({
           draggable={true}
           disabled={
             detailedBooking.bookingDetails.type == BookingType.Vacation ||
-            detailedBooking.bookingDetails.type != BookingType.NotStartedOrQuit
+            detailedBooking.bookingDetails.type == BookingType.NotStartedOrQuit
           }
           onChange={(e) =>
             hourDragValue == undefined && setHours(Number(e.target.value))
