@@ -215,7 +215,7 @@ public class ReadModelFactory
          Consultant consultant)
     {
         var hasStarted = startDate < week.FirstDayOfWorkWeek();
-        var dayDifference = Math.Max((week.LastWorkDayOfWeek().ToDateTime(new TimeOnly()) - startDate.Value.ToDateTime(new TimeOnly())).Days, 0);
+        var dayDifference = Math.Max((startDate.Value.ToDateTime(new TimeOnly()) - week.FirstDayOfWorkWeek().ToDateTime(new TimeOnly())).Days, 0);
 
         return isStartWeek ? dayDifference * consultant.Department.Organization.HoursPerWorkday : 
             hasStarted ? 0 : consultant.Department.Organization.HoursPerWorkday * 5 ;
@@ -225,7 +225,7 @@ public class ReadModelFactory
         Consultant consultant)
     {
         var hasQuit = endDate < week.FirstDayOfWorkWeek();
-        var dayDifference = Math.Max((endDate.Value.ToDateTime(new TimeOnly()) - week.FirstDayOfWorkWeek().ToDateTime(new TimeOnly())).Days, 0);
+        var dayDifference = Math.Max((week.LastWorkDayOfWeek().ToDateTime(new TimeOnly()) - endDate.Value.ToDateTime(new TimeOnly())).Days, 0); 
 
         return isFinalWeek ? dayDifference * consultant.Department.Organization.HoursPerWorkday :
             hasQuit ? consultant.Department.Organization.HoursPerWorkday * 5 : 0;
