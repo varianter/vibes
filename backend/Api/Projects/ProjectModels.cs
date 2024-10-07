@@ -21,11 +21,11 @@ public record EngagementWriteModel(
     string CustomerName);
 
 public record ProjectWithCustomerModel(
-    [property: Required] string ProjectName,
-    [property: Required] string CustomerName,
-    [property: Required] EngagementState BookingType,
-    [property: Required] bool IsBillable,
-    [property: Required] int ProjectId)
+    string ProjectName,
+    string CustomerName,
+    EngagementState BookingType,
+    bool IsBillable,
+    int ProjectId)
 {
     public ProjectWithCustomerModel(Engagement engagement) : this(engagement.Name, engagement.Customer.Name,
         engagement.State, engagement.IsBillable, engagement.Id)
