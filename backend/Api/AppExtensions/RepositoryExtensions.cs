@@ -1,4 +1,5 @@
-using Core.IRepositories;
+using Core.Engagement;
+using Core.Organization;
 using Infrastructure.Repositories;
 
 namespace Api.AppExtensions;

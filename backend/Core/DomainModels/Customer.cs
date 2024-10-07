@@ -10,6 +10,6 @@ public class Customer
     public string? OrganizationId { get; set; }
 
     public required string Name { get; set; }
-    public required Organization Organization { get; set; }
-    public required List<Engagement> Projects { get; set; }
+    public required Organization.Organization Organization { get; set; }
+    public required List<Engagement.Engagement> Projects { get; set; }
 }

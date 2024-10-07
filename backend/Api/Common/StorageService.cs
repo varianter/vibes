@@ -1,6 +1,8 @@
 using Api.Consultants;
 using Api.Organisation;
 using Core.DomainModels;
+using Core.Engagement;
+using Core.Organization;
 using Infrastructure.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;

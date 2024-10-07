@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Core.DomainModels;
+using Core.Engagement;
 
 namespace Api.Projects;
 

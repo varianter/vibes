@@ -1,4 +1,6 @@
 using Core.DomainModels;
+using Core.Engagement;
+using Core.Organization;
 using Infrastructure.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 

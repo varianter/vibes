@@ -4,7 +4,7 @@ public class Staffing
 {
     public required int EngagementId { get; set; }
 
-    public required Engagement Engagement { get; set; } = null!;
+    public required Engagement.Engagement Engagement { get; set; } = null!;
 
     public required int ConsultantId { get; set; }
 

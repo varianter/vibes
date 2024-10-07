@@ -1,5 +1,5 @@
 using Core.DomainModels;
-using Core.IRepositories;
+using Core.Organization;
 using Infrastructure.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 

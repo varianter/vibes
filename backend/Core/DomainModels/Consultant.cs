@@ -25,7 +25,7 @@ public class Consultant
 
     public List<PlannedAbsence> PlannedAbsences { get; set; } = new();
 
-    public List<Engagement> Projects { get; set; } = new();
+    public List<Engagement.Engagement> Projects { get; set; } = new();
 
     public List<Staffing> Staffings { get; set; } = new();
     

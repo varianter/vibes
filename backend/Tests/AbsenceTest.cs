@@ -1,5 +1,7 @@
 using Api.StaffingController;
 using Core.DomainModels;
+using Core.Engagement;
+using Core.Organization;
 using NSubstitute;
 
 namespace Tests;

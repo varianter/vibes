@@ -1,6 +1,4 @@
-using Core.DomainModels;
-
-namespace Core.IRepositories;
+namespace Core.Engagement;
 
 public interface IEngagementRepository
 {

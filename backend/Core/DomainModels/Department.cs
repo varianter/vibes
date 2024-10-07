@@ -9,6 +9,6 @@ public class Department
     public required string Id { get; set; }
     public required string Name { get; set; }
     public int? Hotkey { get; set; }
-    public required Organization Organization { get; set; }
+    public required Organization.Organization Organization { get; set; }
     [JsonIgnore] public required List<Consultant> Consultants { get; set; }
 }

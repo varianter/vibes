@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
+using Core.DomainModels;
 
-namespace Core.DomainModels;
+namespace Core.Organization;
 
 public class Organization
 {

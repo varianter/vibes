@@ -1,6 +1,7 @@
 using Api.Common;
 using Api.Organisation;
 using Core.DomainModels;
+using Core.Engagement;
 
 namespace Api.StaffingController;
 

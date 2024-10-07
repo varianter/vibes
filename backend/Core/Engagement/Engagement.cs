@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using Core.DomainModels;
 
-namespace Core.DomainModels;
+namespace Core.Engagement;
 
 public class Engagement
 {
