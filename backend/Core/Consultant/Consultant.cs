@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using Core.Organization;
 
-namespace Core.DomainModels;
+namespace Core.Consultant;
 
 public class Consultant
 {
@@ -21,28 +22,25 @@ public class Consultant
 
     public ICollection<CompetenceConsultant> CompetenceConsultant { get; set; } = new List<CompetenceConsultant>();
 
-    public List<Vacation> Vacations { get; set; } = new();
+    public List<Vacation.Vacation> Vacations { get; set; } = new();
 
-    public List<PlannedAbsence> PlannedAbsences { get; set; } = new();
+    public List<PlannedAbsence.PlannedAbsence> PlannedAbsences { get; set; } = new();
 
     public List<Engagement.Engagement> Projects { get; set; } = new();
 
-    public List<Staffing> Staffings { get; set; } = new();
-    
+    public List<Staffing.Staffing> Staffings { get; set; } = new();
+
 
     public int YearsOfExperience
     {
         get
         {
-            
             var currentDate = DateOnly.FromDateTime(DateTime.Now);
             var graduationDate = new DateOnly(GraduationYear, 8, 1);
             var yearDifference = currentDate.Year - graduationDate.Year;
 
-            if (currentDate.Month < graduationDate.Month || (currentDate.Month == graduationDate.Month && currentDate.Day < graduationDate.Day))
-                {
-                    yearDifference--;
-                }
+            if (currentDate.Month < graduationDate.Month ||
+                (currentDate.Month == graduationDate.Month && currentDate.Day < graduationDate.Day)) yearDifference--;
             // Check if < 0 because the consultant has not yet graduated (before 1.August the same year as graduation), the years of experience is 0
             return yearDifference < 0 ? 0 : yearDifference;
         }

@@ -1,15 +1,13 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Core.DomainModels;
+namespace Core.Absence;
 
-public class Customer
+public class Absence
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; set; }
-
-    public string? OrganizationId { get; set; }
+    public required int Id { get; set; }
 
     public required string Name { get; set; }
+    public required bool ExcludeFromBillRate { get; set; } = false;
     public required Organization.Organization Organization { get; set; }
-    public required List<Engagement.Engagement> Projects { get; set; }
 }

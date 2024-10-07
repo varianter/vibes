@@ -1,7 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
-using Api.Organisation;
-using Core.DomainModels;
+using Core.Consultant;
 
 namespace Api.Consultants;
 
@@ -26,9 +24,9 @@ public record SingleConsultantReadModel(
             consultant.StartDate,
             consultant.EndDate,
             consultant.CompetenceConsultant
-            .Where(cc => cc != null && cc.Competence != null)
-            .Select(cc => new CompetenceReadModel(cc.Competence.Id, cc.Competence.Name))
-            .ToList(),
+                .Where(cc => cc != null && cc.Competence != null)
+                .Select(cc => new CompetenceReadModel(cc.Competence.Id, cc.Competence.Name))
+                .ToList(),
             new UpdateDepartmentReadModel(consultant.Department.Id, consultant.Department.Name),
             consultant.GraduationYear,
             consultant.YearsOfExperience,
@@ -61,7 +59,8 @@ public record ConsultantsEmploymentReadModel(
     }
 }
 
-public record ConsultantWriteModel(int? Id,
+public record ConsultantWriteModel(
+    int? Id,
     string Name,
     string Email,
     DateTime? StartDate,

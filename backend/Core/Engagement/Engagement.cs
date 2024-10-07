@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using Core.DomainModels;
 
 namespace Core.Engagement;
 
@@ -10,13 +9,13 @@ public class Engagement
 
     public int CustomerId { get; set; }
 
-    public required Customer Customer { get; set; }
+    public required Customer.Customer Customer { get; set; }
 
     public required EngagementState State { get; set; }
 
-    public List<Consultant> Consultants { get; set; } = new();
+    public List<Consultant.Consultant> Consultants { get; set; } = new();
 
-    public required List<Staffing> Staffings { get; set; } = new();
+    public required List<Staffing.Staffing> Staffings { get; set; } = new();
 
     public required string Name { get; set; }
 
@@ -32,7 +31,7 @@ public class Engagement
             if (crashStaffing is not null)
                 crashStaffing.Hours += s.Hours;
             else
-                Staffings.Add(new Staffing
+                Staffings.Add(new Staffing.Staffing
                 {
                     EngagementId = Id,
                     Engagement = this,

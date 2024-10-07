@@ -1,6 +1,7 @@
 using System.Globalization;
 using Api.Common;
-using Core.DomainModels;
+using Core.Consultant;
+using Core.Vacation;
 using Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

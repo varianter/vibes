@@ -1,4 +1,6 @@
-namespace Core.DomainModels;
+using Core.DomainModels;
+
+namespace Core.Staffing;
 
 public class Staffing
 {
@@ -8,7 +10,7 @@ public class Staffing
 
     public required int ConsultantId { get; set; }
 
-    public required Consultant Consultant { get; set; } = null!;
+    public required Consultant.Consultant Consultant { get; set; } = null!;
 
     public required Week Week { get; set; }
 

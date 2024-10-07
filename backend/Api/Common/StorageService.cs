@@ -1,8 +1,13 @@
 using Api.Consultants;
 using Api.Organisation;
+using Core.Consultant;
+using Core.Customer;
 using Core.DomainModels;
 using Core.Engagement;
 using Core.Organization;
+using Core.PlannedAbsence;
+using Core.Staffing;
+using Core.Vacation;
 using Infrastructure.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -153,9 +158,10 @@ public class StorageService
                 ? staffing
                 : new List<Staffing>();
 
-            consultant.PlannedAbsences = plannedAbsencePrConsultant.TryGetValue(consultant.Id, out var plannedAbsences)
-                ? plannedAbsences
-                : new List<PlannedAbsence>();
+            consultant.PlannedAbsences =
+                plannedAbsencePrConsultant.TryGetValue(consultant.Id, out var plannedAbsences)
+                    ? plannedAbsences
+                    : new List<PlannedAbsence>();
 
             consultant.Vacations = vacationsPrConsultant.TryGetValue(consultant.Id, out var vacations)
                 ? vacations

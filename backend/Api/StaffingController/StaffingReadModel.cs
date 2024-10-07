@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Core.Consultant;
 using Core.DomainModels;
 
 // ReSharper disable NotAccessedPositionalProperty.Global
@@ -23,7 +24,8 @@ public record StaffingReadModel(
             consultant.Id,
             consultant.Name,
             consultant.Email,
-            consultant.CompetenceConsultant.Select(cc => new CompetenceReadModel(cc.Competence.Id, cc.Competence.Name)).ToList(),
+            consultant.CompetenceConsultant.Select(cc => new CompetenceReadModel(cc.Competence.Id, cc.Competence.Name))
+                .ToList(),
             new UpdateDepartmentReadModel(consultant.Department.Id, consultant.Department.Name),
             consultant.YearsOfExperience,
             consultant.Degree ?? Degree.Master,
@@ -72,7 +74,8 @@ public record DetailedBooking(
         Week week, bool careAboutBillable = false, bool isBillable = true)
     {
         return list
-            .Where(s => s.BookingDetails.Type == type && ( !careAboutBillable || s.BookingDetails.IsBillable == isBillable))
+            .Where(s => s.BookingDetails.Type == type &&
+                        (!careAboutBillable || s.BookingDetails.IsBillable == isBillable))
             .Select(wh => wh.TotalHoursForWeek(week))
             .Sum();
     }
@@ -86,7 +89,7 @@ public record WeeklyBookingReadModel(
     [property: Required] double TotalSellableTime,
     [property: Required] double TotalHolidayHours,
     [property: Required] double TotalVacationHours,
-    [property: Required] double TotalOverbooking, 
+    [property: Required] double TotalOverbooking,
     [property: Required] double TotalNotStartedOrQuit);
 
 public record BookingDetails(

@@ -1,8 +1,10 @@
 using Api.Common;
 using Api.StaffingController;
+using Core.Consultant;
 using Core.DomainModels;
 using Core.Engagement;
 using Core.Organization;
+using Core.Staffing;
 using Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
