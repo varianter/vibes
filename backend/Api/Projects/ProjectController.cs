@@ -1,12 +1,12 @@
 using Api.Common;
 using Api.StaffingController;
 using Core.DomainModels;
+using Core.IRepositories;
 using Database.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-
 
 namespace Api.Projects;
 
@@ -19,11 +19,17 @@ public class ProjectController : ControllerBase
 
     private readonly IMemoryCache _cache;
     private readonly ApplicationContext _context;
+    private readonly IEngagementRepository _engagementRepository;
 
-    public ProjectController(ApplicationContext context, IMemoryCache cache)
+    private readonly IOrganisationRepository _organisationRepository;
+
+    public ProjectController(ApplicationContext context, IMemoryCache cache,
+        IOrganisationRepository organisationRepository, IEngagementRepository engagementRepository)
     {
         _context = context;
         _cache = cache;
+        _organisationRepository = organisationRepository;
+        _engagementRepository = engagementRepository;
     }
 
     [HttpGet]
@@ -31,21 +37,14 @@ public class ProjectController : ControllerBase
     public ActionResult<ProjectWithCustomerModel> GetProject([FromRoute] string orgUrlKey,
         [FromRoute] int projectId)
     {
-        var service = new StorageService(_cache, _context);
-
-        var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
+        var selectedOrg = _organisationRepository.GetOrganizationByUrlKey(orgUrlKey);
         if (selectedOrg is null) return BadRequest("Selected org not found");
 
-        var project = service.GetProjectWithCustumerById(projectId);
+        var engagement = _engagementRepository.GetEngagementById(projectId);
 
-        if (project is null)
-        {
-            return NoContent();
-        }
+        if (engagement is null) return NoContent();
 
-        var responseModel =
-            new ProjectWithCustomerModel(project.Name, project.Customer.Name, project.State, project.IsBillable, project.Id);
-
+        var responseModel = new ProjectWithCustomerModel(engagement);
         return Ok(responseModel);
     }
 
@@ -57,7 +56,7 @@ public class ProjectController : ControllerBase
         if (selectedOrgId is null) return BadRequest();
 
         var absenceReadModels = new EngagementPerCustomerReadModel(-1, AbsenceCustomerName,
-            _context.Absence.Where(a=> a.Organization.UrlKey == orgUrlKey).Select(absence =>
+            _context.Absence.Where(a => a.Organization.UrlKey == orgUrlKey).Select(absence =>
                 new EngagementReadModel(absence.Id, absence.Name, EngagementState.Absence, false)).ToList());
 
         var projectReadModels = _context.Project.Include(project => project.Customer)
@@ -72,28 +71,28 @@ public class ProjectController : ControllerBase
             .ToList();
 
         projectReadModels.Add(absenceReadModels);
-        List<EngagementPerCustomerReadModel> sortedProjectReadModels = projectReadModels.OrderBy(project => project.CustomerName).ToList();
+        var sortedProjectReadModels = projectReadModels.OrderBy(project => project.CustomerName).ToList();
         return sortedProjectReadModels;
     }
-    
-    
+
+
     [HttpGet]
     [Route("{customerId}")]
     public ActionResult<CustomersWithProjectsReadModel> GetCustomerWithEngagements(
         [FromRoute] string orgUrlKey,
         [FromRoute] int customerId
-        )
+    )
     {
         var selectedOrgId = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrgId is null) return BadRequest();
 
         var thisWeek = Week.FromDateTime(DateTime.Now);
-        
+
         var service = new StorageService(_cache, _context);
 
         if (customerId == -1) //CustomerId == -1 means PlannedAbsences
             return Ok(HandleGetAbsenceWithAbsences(orgUrlKey));
-        
+
         var customer = service.GetCustomerFromId(orgUrlKey, customerId);
 
         if (customer is null) return NotFound();
@@ -102,9 +101,11 @@ public class ProjectController : ControllerBase
         return new CustomersWithProjectsReadModel(
             customer.Id,
             customer.Name,
-            customer.Projects.Where(p => p.Staffings.Any(s => s.Week.CompareTo(thisWeek) >= 0) && p.State != EngagementState.Closed).Select(e =>
+            customer.Projects.Where(p =>
+                p.Staffings.Any(s => s.Week.CompareTo(thisWeek) >= 0) && p.State != EngagementState.Closed).Select(e =>
                 new EngagementReadModel(e.Id, e.Name, e.State, e.IsBillable)).ToList(),
-            customer.Projects.Where(p => !(p.Staffings.Any(s => s.Week.CompareTo(thisWeek) >= 0)) || p.State == EngagementState.Closed).Select(e =>
+            customer.Projects.Where(p =>
+                !p.Staffings.Any(s => s.Week.CompareTo(thisWeek) >= 0) || p.State == EngagementState.Closed).Select(e =>
                 new EngagementReadModel(e.Id, e.Name, e.State, e.IsBillable)).ToList());
     }
 
@@ -178,28 +179,29 @@ public class ProjectController : ControllerBase
         // Merk: Service kommer snart via Dependency Injection, da slipper å lage ny hele tiden
         var service = new StorageService(_cache, _context);
 
-        if (!ProjectControllerValidator.ValidateUpdateEngagementNameWriteModel(engagementWriteModel, service, orgUrlKey))
-            return BadRequest(new ErrorResponseBody("1","Invalid body"));
-        if (ProjectControllerValidator.ValidateUpdateEngagementNameAlreadyExist(engagementWriteModel, service, orgUrlKey))
-            {return Conflict(new ErrorResponseBody("1872","Name already in use"));}
-            
+        if (!ProjectControllerValidator.ValidateUpdateEngagementNameWriteModel(engagementWriteModel, service,
+                orgUrlKey))
+            return BadRequest(new ErrorResponseBody("1", "Invalid body"));
+        if (ProjectControllerValidator.ValidateUpdateEngagementNameAlreadyExist(engagementWriteModel, service,
+                orgUrlKey)) return Conflict(new ErrorResponseBody("1872", "Name already in use"));
+
         try
         {
             Engagement engagement;
-                engagement = _context.Project
-                    .Include(p => p.Consultants)
-                    .Include(p => p.Staffings)
-                    .Single(p => p.Id == engagementWriteModel.EngagementId);
+            engagement = _context.Project
+                .Include(p => p.Consultants)
+                .Include(p => p.Staffings)
+                .Single(p => p.Id == engagementWriteModel.EngagementId);
 
-                engagement.Name = engagementWriteModel.EngagementName;
-                _context.SaveChanges();
+            engagement.Name = engagementWriteModel.EngagementName;
+            _context.SaveChanges();
 
             service.ClearConsultantCache(orgUrlKey);
 
             var responseModel =
-            new EngagementReadModel(engagement.Id, engagement.Name, engagement.State, engagement.IsBillable);
+                new EngagementReadModel(engagement.Id, engagement.Name, engagement.State, engagement.IsBillable);
 
-        return Ok(responseModel);
+            return Ok(responseModel);
         }
         catch (Exception e)
         {
@@ -294,10 +296,7 @@ public class ProjectController : ControllerBase
 
         return Ok(responseModel);
     }
-    
-    
-    
-    
+
 
     private ProjectWithCustomerModel HandleAbsenceChange(EngagementWriteModel body, string orgUrlKey)
     {
@@ -312,13 +311,10 @@ public class ProjectController : ControllerBase
 
         var readModel = new CustomersWithProjectsReadModel(-1, AbsenceCustomerName + " og Ferie",
             _context.Absence.Where(a => a.Organization.UrlKey == orgUrlKey).Select(absence =>
-                new EngagementReadModel(absence.Id, absence.Name, EngagementState.Absence, false)).ToList(), new List<EngagementReadModel>()); 
+                new EngagementReadModel(absence.Id, absence.Name, EngagementState.Absence, false)).ToList(),
+            new List<EngagementReadModel>());
 
         readModel.ActiveEngagements.Add(vacation);
         return readModel;
     }
-    
-    
-    
-    
 }
