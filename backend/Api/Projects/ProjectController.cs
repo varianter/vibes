@@ -31,7 +31,7 @@ public class ProjectController(
 
         var engagement = await engagementRepository.GetEngagementById(projectId, ct);
 
-        if (engagement is null) return NoContent();
+        if (engagement is null) return NotFound();
 
         var responseModel = new ProjectWithCustomerModel(engagement);
         return Ok(responseModel);
