@@ -2,7 +2,7 @@ using Api.Common;
 using Api.StaffingController;
 using Core.DomainModels;
 using Core.IRepositories;
-using Database.DatabaseContext;
+using Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -34,13 +34,13 @@ public class ProjectController : ControllerBase
 
     [HttpGet]
     [Route("get/{projectId}")]
-    public ActionResult<ProjectWithCustomerModel> GetProject([FromRoute] string orgUrlKey,
-        [FromRoute] int projectId)
+    public async Task<ActionResult<ProjectWithCustomerModel>> GetProject([FromRoute] string orgUrlKey,
+        [FromRoute] int projectId, CancellationToken ct)
     {
-        var selectedOrg = _organisationRepository.GetOrganizationByUrlKey(orgUrlKey);
+        var selectedOrg = await _organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
         if (selectedOrg is null) return BadRequest("Selected org not found");
 
-        var engagement = _engagementRepository.GetEngagementById(projectId);
+        var engagement = await _engagementRepository.GetEngagementById(projectId, ct);
 
         if (engagement is null) return NoContent();
 

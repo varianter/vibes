@@ -1,11 +1,12 @@
 using Api.Common;
 using Core.DomainModels;
-using Database.DatabaseContext;
+using Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Api.StaffingController;
+
 [Authorize]
 [Route("/v0/{orgUrlKey}/staffings")]
 [ApiController]
@@ -38,7 +39,7 @@ public class StaffingController : ControllerBase
         var readModels = new ReadModelFactory(service).GetConsultantReadModelsForWeeks(orgUrlKey, weekSet);
         return Ok(readModels);
     }
-    
+
     [HttpGet]
     [Route("project/{projectId}")]
     public ActionResult<List<StaffingReadModel>> GetConsultantsInProject(
@@ -62,22 +63,27 @@ public class StaffingController : ControllerBase
             // -1 as projectId and isAbsence == true is a workaround to get vacations
             case true when projectId == -1:
             {
-                var vacationReadModel = new ReadModelFactory(service).GetConsultantsReadModelsForVacationsAndWeeks(orgUrlKey, weekSet);
+                var vacationReadModel =
+                    new ReadModelFactory(service).GetConsultantsReadModelsForVacationsAndWeeks(orgUrlKey, weekSet);
                 return Ok(vacationReadModel);
             }
             case true:
             {
-                var absenceReadModel = new ReadModelFactory(service).GetConsultantsReadModelsForAbsenceAndWeeks(orgUrlKey, weekSet, projectId);
+                var absenceReadModel =
+                    new ReadModelFactory(service).GetConsultantsReadModelsForAbsenceAndWeeks(orgUrlKey, weekSet,
+                        projectId);
                 return Ok(absenceReadModel);
             }
             default:
             {
-                var readModels = new ReadModelFactory(service).GetConsultantsReadModelsForProjectAndWeeks(orgUrlKey, weekSet, projectId);
+                var readModels =
+                    new ReadModelFactory(service).GetConsultantsReadModelsForProjectAndWeeks(orgUrlKey, weekSet,
+                        projectId);
                 return Ok(readModels);
             }
         }
     }
-    
+
 
     [HttpPut]
     [Route("update")]

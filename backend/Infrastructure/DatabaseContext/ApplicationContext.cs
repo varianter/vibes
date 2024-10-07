@@ -1,8 +1,8 @@
 using Core.DomainModels;
-using Database.ValueConverters;
+using Infrastructure.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 
-namespace Database.DatabaseContext;
+namespace Infrastructure.DatabaseContext;
 
 public class ApplicationContext : DbContext
 {
@@ -51,7 +51,7 @@ public class ApplicationContext : DbContext
             .HasForeignKey(customer => customer.OrganizationId);
 
         modelBuilder.Entity<Customer>()
-            .HasIndex(customer => new {customer.OrganizationId, customer.Name})
+            .HasIndex(customer => new { customer.OrganizationId, customer.Name })
             .IsUnique();
 
         modelBuilder.Entity<Customer>()
@@ -60,7 +60,7 @@ public class ApplicationContext : DbContext
             .HasForeignKey(project => project.CustomerId);
 
         modelBuilder.Entity<Engagement>()
-            .HasIndex(engagement => new {engagement.CustomerId, engagement.Name})
+            .HasIndex(engagement => new { engagement.CustomerId, engagement.Name })
             .IsUnique();
 
         modelBuilder.Entity<Engagement>()
@@ -128,10 +128,10 @@ public class ApplicationContext : DbContext
         /*modelBuilder.Entity<Consultant>()
             .HasMany(v => v.CompetenceConsultant)
             .WithMany();*/
-        
-        modelBuilder.Entity<Consultant>()  
-            .Property(c => c.TransferredVacationDays)  
-            .HasDefaultValue(0);  
+
+        modelBuilder.Entity<Consultant>()
+            .Property(c => c.TransferredVacationDays)
+            .HasDefaultValue(0);
 
         modelBuilder.Entity<CompetenceConsultant>()
             .HasKey(us => new { us.ConsultantId, us.CompetencesId });

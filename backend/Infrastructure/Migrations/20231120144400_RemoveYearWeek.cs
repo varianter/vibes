@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Database.Migrations
+namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class RemoveYearWeek : Migration

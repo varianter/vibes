@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using Database.DatabaseContext;
+using Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Api.Organisation;
 

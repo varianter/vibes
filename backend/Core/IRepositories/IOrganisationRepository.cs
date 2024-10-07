@@ -4,5 +4,5 @@ namespace Core.IRepositories;
 
 public interface IOrganisationRepository
 {
-    public Organization? GetOrganizationByUrlKey(string urlKey);
+    public Task<Organization?> GetOrganizationByUrlKey(string urlKey, CancellationToken cancellationToken);
 }

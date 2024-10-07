@@ -4,5 +4,5 @@ namespace Core.IRepositories;
 
 public interface IEngagementRepository
 {
-    public Engagement? GetEngagementById(int id);
+    public Task<Engagement?> GetEngagementById(int id, CancellationToken cancellationToken);
 }

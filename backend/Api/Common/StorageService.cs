@@ -1,7 +1,7 @@
 using Api.Consultants;
 using Api.Organisation;
 using Core.DomainModels;
-using Database.DatabaseContext;
+using Infrastructure.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -21,19 +21,15 @@ public class StorageService
 
     public Consultant? GetConsultantByEmail(string orgUrlKey, string email)
     {
-        var consultant = _dbContext.Consultant.Include(c => c.Department).ThenInclude(d => d.Organization).SingleOrDefault(c => c.Email == email);
-        if (consultant is null || consultant.Department.Organization.UrlKey != orgUrlKey)
-        {
-            return null;
-        }
+        var consultant = _dbContext.Consultant.Include(c => c.Department).ThenInclude(d => d.Organization)
+            .SingleOrDefault(c => c.Email == email);
+        if (consultant is null || consultant.Department.Organization.UrlKey != orgUrlKey) return null;
 
         return consultant;
-
     }
 
     public List<Consultant> GetConsultants(string orgUrlKey)
     {
-
         var consultants = _dbContext.Consultant
             .Include(c => c.Department)
             .ThenInclude(d => d.Organization)
@@ -43,12 +39,10 @@ public class StorageService
             .ToList();
 
         return consultants;
-
     }
 
     public List<Consultant> GetConsultantsEmploymentVariant(string orgUrlKey)
     {
-
         var consultants = _dbContext.Consultant
             .Include(c => c.Department)
             .ThenInclude(d => d.Organization)
@@ -331,7 +325,7 @@ public class StorageService
     }
 
     public Consultant CreateConsultant(Organization org, ConsultantWriteModel body)
-    {  
+    {
         var consultant = new Consultant
         {
             Name = body.Name,
@@ -351,11 +345,11 @@ public class StorageService
             Competence = _dbContext.Competence.Single(comp => comp.Id == c.Id),
             Consultant = consultant,
             CompetencesId = c.Id,
-            ConsultantId = consultant.Id,
+            ConsultantId = consultant.Id
         }));
-        
+
         _dbContext.Consultant.Add(consultant);
-        
+
 
         _dbContext.SaveChanges();
         ClearConsultantCache(org.UrlKey);
@@ -365,34 +359,32 @@ public class StorageService
 
     public Consultant UpdateConsultant(Organization org, ConsultantWriteModel body)
     {
-
         var consultant = _dbContext.Consultant
             .Include(c => c.CompetenceConsultant)
             .Single(c => c.Id == body.Id);
 
-        if(consultant is not null) {
-            consultant.Name = body.Name; 
+        if (consultant is not null)
+        {
+            consultant.Name = body.Name;
             consultant.Email = body.Email;
             consultant.StartDate = body.StartDate.HasValue ? DateOnly.FromDateTime(body.StartDate.Value.Date) : null;
             consultant.EndDate = body.EndDate.HasValue ? DateOnly.FromDateTime(body.EndDate.Value.Date) : null;
             consultant.Department = _dbContext.Department.Single(d => d.Id == body.Department.Id);
             consultant.GraduationYear = body.GraduationYear;
             consultant.Degree = body.Degree;
-        
+
             // Clear the CompetenceConsultant collection
             consultant.CompetenceConsultant.Clear();
 
             // For each new competence, create a new CompetenceConsultant entity
             foreach (var competence in body?.Competences)
-            {
                 consultant.CompetenceConsultant.Add(new CompetenceConsultant
                 {
                     ConsultantId = consultant.Id,
                     CompetencesId = competence.Id,
                     Competence = _dbContext.Competence.Single(comp => comp.Id == competence.Id),
-                    Consultant = consultant,
+                    Consultant = consultant
                 });
-            }
         }
 
         _dbContext.SaveChanges();
@@ -403,7 +395,8 @@ public class StorageService
 
     public Customer UpdateOrCreateCustomer(Organization org, string customerName, string orgUrlKey)
     {
-        var customer = _dbContext.Customer.Where(c=> c.Organization == org).SingleOrDefault(c => c.Name == customerName);
+        var customer = _dbContext.Customer.Where(c => c.Organization == org)
+            .SingleOrDefault(c => c.Name == customerName);
 
         if (customer is null)
         {
@@ -462,10 +455,10 @@ public class StorageService
     {
         return _dbContext.Project.Find(id);
     }
-    
+
     public Engagement? GetProjectWithCustumerById(int id)
     {
-        return _dbContext.Project.Include(p=> p.Customer).SingleOrDefault(p=>p.Id==id);
+        return _dbContext.Project.Include(p => p.Customer).SingleOrDefault(p => p.Id == id);
     }
 
     public Engagement GetProjectWithOrganisationById(int id)
@@ -482,7 +475,7 @@ public class StorageService
         return _dbContext.Customer
             .Include(c => c.Organization)
             .Include(c => c.Projects)
-            .ThenInclude(p=>p.Staffings)
+            .ThenInclude(p => p.Staffings)
             .SingleOrDefault(customer => customer.Organization.UrlKey == orgUrlKey && customer.Id.Equals(customerId));
     }
 
@@ -497,7 +490,8 @@ public class StorageService
         if (org is null) return null;
         var year = DateOnly.FromDateTime(DateTime.Now).Year;
         //Get the public holidays for the next three years, and return them as a list
-        return org.GetPublicHolidays(year).Concat(org.GetPublicHolidays(year + 1)).Concat(org.GetPublicHolidays(year + 2)).ToList();
+        return org.GetPublicHolidays(year).Concat(org.GetPublicHolidays(year + 1))
+            .Concat(org.GetPublicHolidays(year + 2)).ToList();
     }
 
     public void RemoveVacationDay(int consultantId, DateOnly date, string orgUrlKey)
@@ -506,7 +500,7 @@ public class StorageService
 
         _dbContext.Vacation.Remove(vacation);
         _dbContext.SaveChanges();
-        
+
         _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
     }
 
@@ -522,9 +516,7 @@ public class StorageService
         };
         _dbContext.Add(vacation);
         _dbContext.SaveChanges();
-        
+
         _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
-
     }
-
 }

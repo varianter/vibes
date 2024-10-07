@@ -1,23 +1,17 @@
 using Core.DomainModels;
 using Core.IRepositories;
-using Database.DatabaseContext;
+using Infrastructure.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 
-namespace Database.Repositories;
+namespace Infrastructure.Repositories;
 
-public class EngagementDbRepository : IEngagementRepository
+public class EngagementDbRepository(ApplicationContext context) : IEngagementRepository
 {
-    private readonly ApplicationContext _context;
-
-    public EngagementDbRepository(ApplicationContext context)
+    public Task<Engagement?> GetEngagementById(int id, CancellationToken cancellationToken)
     {
-        _context = context;
-    }
-
-    public Engagement? GetEngagementById(int id)
-    {
-        // Her trenger jeg en bedre måte å deale med relasjoner: Ideelt kanskje et customer-repository på et vis? 
-        // How to relasjoner i repository?
-        return _context.Project.Include(p => p.Customer).SingleOrDefault(p => p.Id == id);
+        return context.Project
+            .AsNoTracking()
+            .Include(p => p.Customer)
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
 }

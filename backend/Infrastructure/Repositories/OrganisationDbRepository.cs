@@ -1,20 +1,16 @@
 using Core.DomainModels;
 using Core.IRepositories;
-using Database.DatabaseContext;
+using Infrastructure.DatabaseContext;
+using Microsoft.EntityFrameworkCore;
 
-namespace Database.Repositories;
+namespace Infrastructure.Repositories;
 
-public class OrganisationDbRepository : IOrganisationRepository
+public class OrganisationDbRepository(ApplicationContext context) : IOrganisationRepository
 {
-    private readonly ApplicationContext _context;
-
-    public OrganisationDbRepository(ApplicationContext context)
+    public Task<Organization?> GetOrganizationByUrlKey(string urlKey, CancellationToken cancellationToken)
     {
-        _context = context;
-    }
-
-    public Organization? GetOrganizationByUrlKey(string urlKey)
-    {
-        return _context.Organization.SingleOrDefault(organization => organization.UrlKey == urlKey);
+        return context.Organization
+            .AsNoTracking()
+            .SingleOrDefaultAsync(organization => organization.UrlKey == urlKey, cancellationToken);
     }
 }

@@ -1,7 +1,7 @@
 using Core.DomainModels;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Database.ValueConverters;
+namespace Infrastructure.ValueConverters;
 
 public class WeekConverter : ValueConverter<Week, int>
 {
