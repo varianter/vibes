@@ -13,34 +13,23 @@ namespace Api.Projects;
 [Authorize]
 [Route("/v0/{orgUrlKey}/projects")]
 [ApiController]
-public class ProjectController : ControllerBase
+public class ProjectController(
+    ApplicationContext context,
+    IMemoryCache cache,
+    IOrganisationRepository organisationRepository,
+    IEngagementRepository engagementRepository) : ControllerBase
 {
     private const string AbsenceCustomerName = "Variant - Fravær";
-
-    private readonly IMemoryCache _cache;
-    private readonly ApplicationContext _context;
-    private readonly IEngagementRepository _engagementRepository;
-
-    private readonly IOrganisationRepository _organisationRepository;
-
-    public ProjectController(ApplicationContext context, IMemoryCache cache,
-        IOrganisationRepository organisationRepository, IEngagementRepository engagementRepository)
-    {
-        _context = context;
-        _cache = cache;
-        _organisationRepository = organisationRepository;
-        _engagementRepository = engagementRepository;
-    }
 
     [HttpGet]
     [Route("get/{projectId}")]
     public async Task<ActionResult<ProjectWithCustomerModel>> GetProject([FromRoute] string orgUrlKey,
         [FromRoute] int projectId, CancellationToken ct)
     {
-        var selectedOrg = await _organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
+        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
         if (selectedOrg is null) return BadRequest("Selected org not found");
 
-        var engagement = await _engagementRepository.GetEngagementById(projectId, ct);
+        var engagement = await engagementRepository.GetEngagementById(projectId, ct);
 
         if (engagement is null) return NoContent();
 
@@ -52,14 +41,14 @@ public class ProjectController : ControllerBase
     public ActionResult<List<EngagementPerCustomerReadModel>> Get(
         [FromRoute] string orgUrlKey)
     {
-        var selectedOrgId = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
+        var selectedOrgId = context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrgId is null) return BadRequest();
 
         var absenceReadModels = new EngagementPerCustomerReadModel(-1, AbsenceCustomerName,
-            _context.Absence.Where(a => a.Organization.UrlKey == orgUrlKey).Select(absence =>
+            context.Absence.Where(a => a.Organization.UrlKey == orgUrlKey).Select(absence =>
                 new EngagementReadModel(absence.Id, absence.Name, EngagementState.Absence, false)).ToList());
 
-        var projectReadModels = _context.Project.Include(project => project.Customer)
+        var projectReadModels = context.Project.Include(project => project.Customer)
             .Where(project => project.Customer.Organization.UrlKey == orgUrlKey)
             .GroupBy(project => project.Customer)
             .Select(a =>
@@ -83,12 +72,12 @@ public class ProjectController : ControllerBase
         [FromRoute] int customerId
     )
     {
-        var selectedOrgId = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
+        var selectedOrgId = context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrgId is null) return BadRequest();
 
         var thisWeek = Week.FromDateTime(DateTime.Now);
 
-        var service = new StorageService(_cache, _context);
+        var service = new StorageService(cache, context);
 
         if (customerId == -1) //CustomerId == -1 means PlannedAbsences
             return Ok(HandleGetAbsenceWithAbsences(orgUrlKey));
@@ -112,15 +101,15 @@ public class ProjectController : ControllerBase
     [HttpDelete]
     public ActionResult Delete(int id)
     {
-        var engagement = _context.Project
+        var engagement = context.Project
             .Include(p => p.Customer)
             .Include(p => p.Staffings)
             .Include(p => p.Consultants)
             .SingleOrDefault(p => p.Id == id);
         if (engagement is not null)
         {
-            _context.Project.Remove(engagement);
-            _context.SaveChanges();
+            context.Project.Remove(engagement);
+            context.SaveChanges();
         }
 
         return Ok();
@@ -132,7 +121,7 @@ public class ProjectController : ControllerBase
         [FromBody] UpdateProjectWriteModel projectWriteModel)
     {
         // Merk: Service kommer snart via Dependency Injection, da slipper å lage ny hele tiden
-        var service = new StorageService(_cache, _context);
+        var service = new StorageService(cache, context);
 
         if (!ProjectControllerValidator.ValidateUpdateProjectWriteModel(projectWriteModel, service, orgUrlKey))
             return BadRequest("Error in data");
@@ -146,13 +135,13 @@ public class ProjectController : ControllerBase
             }
             else
             {
-                engagement = _context.Project
+                engagement = context.Project
                     .Include(p => p.Consultants)
                     .Include(p => p.Staffings)
                     .Single(p => p.Id == projectWriteModel.EngagementId);
 
                 engagement.State = projectWriteModel.ProjectState;
-                _context.SaveChanges();
+                context.SaveChanges();
             }
 
             var selectedWeek = new Week(projectWriteModel.StartYear, projectWriteModel.StartWeek);
@@ -177,7 +166,7 @@ public class ProjectController : ControllerBase
         [FromBody] UpdateEngagementNameWriteModel engagementWriteModel)
     {
         // Merk: Service kommer snart via Dependency Injection, da slipper å lage ny hele tiden
-        var service = new StorageService(_cache, _context);
+        var service = new StorageService(cache, context);
 
         if (!ProjectControllerValidator.ValidateUpdateEngagementNameWriteModel(engagementWriteModel, service,
                 orgUrlKey))
@@ -188,13 +177,13 @@ public class ProjectController : ControllerBase
         try
         {
             Engagement engagement;
-            engagement = _context.Project
+            engagement = context.Project
                 .Include(p => p.Consultants)
                 .Include(p => p.Staffings)
                 .Single(p => p.Id == engagementWriteModel.EngagementId);
 
             engagement.Name = engagementWriteModel.EngagementName;
-            _context.SaveChanges();
+            context.SaveChanges();
 
             service.ClearConsultantCache(orgUrlKey);
 
@@ -212,11 +201,11 @@ public class ProjectController : ControllerBase
 
     private bool EngagementHasSoftMatch(int id)
     {
-        var engagementToChange = _context.Project
+        var engagementToChange = context.Project
             .Include(p => p.Customer)
             .Single(p => p.Id == id);
 
-        return _context.Project
+        return context.Project
             .SingleOrDefault(
                 p => p.Customer == engagementToChange.Customer && p.Name == engagementToChange.Name &&
                      (p.State == EngagementState.Offer ||
@@ -226,12 +215,12 @@ public class ProjectController : ControllerBase
 
     private Engagement MergeProjects(int id)
     {
-        var engagementToChange = _context.Project
+        var engagementToChange = context.Project
             .Include(p => p.Staffings)
             .Include(p => p.Customer)
             .Single(p => p.Id == id);
 
-        var engagementToKeep = _context.Project
+        var engagementToKeep = context.Project
             .Include(p => p.Staffings)
             .Single(
                 p =>
@@ -243,10 +232,10 @@ public class ProjectController : ControllerBase
                     && p.Id != id);
 
         engagementToKeep.MergeEngagement(engagementToChange);
-        _context.Remove(engagementToChange);
-        _context.SaveChanges();
+        context.Remove(engagementToChange);
+        context.SaveChanges();
 
-        return _context.Project
+        return context.Project
             .Include(p => p.Consultants)
             .Include(p => p.Staffings)
             .Single(p => p.Id == engagementToKeep.Id);
@@ -257,9 +246,9 @@ public class ProjectController : ControllerBase
     public ActionResult<ProjectWithCustomerModel> Put([FromRoute] string orgUrlKey,
         [FromBody] EngagementWriteModel body)
     {
-        var service = new StorageService(_cache, _context);
+        var service = new StorageService(cache, context);
 
-        var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
+        var selectedOrg = context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrg is null) return BadRequest("Selected org not found");
 
         if (body.CustomerName == AbsenceCustomerName)
@@ -267,7 +256,7 @@ public class ProjectController : ControllerBase
 
         var customer = service.UpdateOrCreateCustomer(selectedOrg, body.CustomerName, orgUrlKey);
 
-        var project = _context.Project
+        var project = context.Project
             .Include(p => p.Customer)
             .SingleOrDefault(p => p.Customer.Id == customer.Id
                                   && p.Name == body.ProjectName
@@ -285,10 +274,10 @@ public class ProjectController : ControllerBase
                 IsBillable = body.IsBillable
             };
 
-            _context.Project.Add(project);
+            context.Project.Add(project);
         }
 
-        _context.SaveChanges();
+        context.SaveChanges();
         service.ClearConsultantCache(orgUrlKey);
 
         var responseModel =
@@ -300,7 +289,7 @@ public class ProjectController : ControllerBase
 
     private ProjectWithCustomerModel HandleAbsenceChange(EngagementWriteModel body, string orgUrlKey)
     {
-        var absence = _context.Absence.Single(a => a.Name == body.ProjectName && a.Organization.UrlKey == orgUrlKey);
+        var absence = context.Absence.Single(a => a.Name == body.ProjectName && a.Organization.UrlKey == orgUrlKey);
         return new ProjectWithCustomerModel(absence.Name, AbsenceCustomerName, EngagementState.Absence, false,
             absence.Id);
     }
@@ -310,7 +299,7 @@ public class ProjectController : ControllerBase
         var vacation = new EngagementReadModel(-1, "Ferie", EngagementState.Absence, false);
 
         var readModel = new CustomersWithProjectsReadModel(-1, AbsenceCustomerName + " og Ferie",
-            _context.Absence.Where(a => a.Organization.UrlKey == orgUrlKey).Select(absence =>
+            context.Absence.Where(a => a.Organization.UrlKey == orgUrlKey).Select(absence =>
                 new EngagementReadModel(absence.Id, absence.Name, EngagementState.Absence, false)).ToList(),
             new List<EngagementReadModel>());
 
