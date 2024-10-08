@@ -1,5 +1,4 @@
 using Api.Consultants;
-using Api.Organisation;
 using Core.Consultants;
 using Core.Customers;
 using Core.DomainModels;
@@ -424,49 +423,9 @@ public class StorageService
         return customer;
     }
 
-    public Engagement UpdateProjectState(int engagementId, EngagementState projectState, string orgUrlKey)
-    {
-        var engagement = _dbContext.Project
-            .Include(p => p.Customer)
-            .Include(p => p.Staffings)
-            .Include(p => p.Consultants)
-            .SingleOrDefault(p => p.Id == engagementId);
-        var similarEngagement = _dbContext.Project
-            //.Include(p => p.Customer)
-            .Include(p => p.Staffings)
-            //.Include(p=> p.Consultants)
-            .SingleOrDefault(
-                p => p.Customer == engagement.Customer && p.Name == engagement.Name && p.Id != engagementId);
-
-        if (similarEngagement is not null && similarEngagement.State == projectState)
-        {
-            similarEngagement.MergeEngagement(engagement);
-            //_dbContext.SaveChanges();
-            //foreach (var staffing in engagement.Staffings) _dbContext.Remove(staffing);
-            _dbContext.Project.Remove(_dbContext.Project.Find(engagement.Id));
-            _dbContext.SaveChanges();
-
-            //engagement = similarEngagement;
-        }
-        else
-        {
-            engagement.State = projectState;
-            _dbContext.SaveChanges();
-        }
-
-        _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
-
-        return engagement;
-    }
-
     public Engagement? GetProjectById(int id)
     {
         return _dbContext.Project.Find(id);
-    }
-
-    public Engagement? GetProjectWithCustumerById(int id)
-    {
-        return _dbContext.Project.Include(p => p.Customer).SingleOrDefault(p => p.Id == id);
     }
 
     public Engagement GetProjectWithOrganisationById(int id)
@@ -490,16 +449,6 @@ public class StorageService
     public List<Vacation> LoadConsultantVacation(int consultantId)
     {
         return _dbContext.Vacation.Where(v => v.ConsultantId == consultantId).ToList();
-    }
-
-    public List<DateOnly>? LoadPublicHolidays(string orgUrlKey)
-    {
-        var org = _dbContext.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
-        if (org is null) return null;
-        var year = DateOnly.FromDateTime(DateTime.Now).Year;
-        //Get the public holidays for the next three years, and return them as a list
-        return org.GetPublicHolidays(year).Concat(org.GetPublicHolidays(year + 1))
-            .Concat(org.GetPublicHolidays(year + 2)).ToList();
     }
 
     public void RemoveVacationDay(int consultantId, DateOnly date, string orgUrlKey)
