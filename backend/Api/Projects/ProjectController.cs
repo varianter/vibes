@@ -41,10 +41,10 @@ public class ProjectController(
     }
 
     [HttpGet]
-    public ActionResult<List<EngagementPerCustomerReadModel>> Get(
-        [FromRoute] string orgUrlKey)
+    public async Task<ActionResult<List<EngagementPerCustomerReadModel>>> Get(
+        [FromRoute] string orgUrlKey, CancellationToken ct)
     {
-        var selectedOrgId = context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
+        var selectedOrgId = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
         if (selectedOrgId is null) return BadRequest();
 
         var absenceReadModels = new EngagementPerCustomerReadModel(-1, AbsenceCustomerName,
@@ -70,12 +70,13 @@ public class ProjectController(
 
     [HttpGet]
     [Route("{customerId}")]
-    public ActionResult<CustomersWithProjectsReadModel> GetCustomerWithEngagements(
+    public async Task<ActionResult<CustomersWithProjectsReadModel>> GetCustomerWithEngagements(
         [FromRoute] string orgUrlKey,
-        [FromRoute] int customerId
+        [FromRoute] int customerId,
+        CancellationToken ct
     )
     {
-        var selectedOrgId = context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
+        var selectedOrgId = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
         if (selectedOrgId is null) return BadRequest();
 
         var thisWeek = Week.FromDateTime(DateTime.Now);
@@ -179,8 +180,7 @@ public class ProjectController(
 
         try
         {
-            Engagement engagement;
-            engagement = context.Project
+            var engagement = context.Project
                 .Include(p => p.Consultants)
                 .Include(p => p.Staffings)
                 .Single(p => p.Id == engagementWriteModel.EngagementId);
@@ -246,12 +246,12 @@ public class ProjectController(
 
 
     [HttpPut]
-    public ActionResult<ProjectWithCustomerModel> Put([FromRoute] string orgUrlKey,
-        [FromBody] EngagementWriteModel body)
+    public async Task<ActionResult<ProjectWithCustomerModel>> Put([FromRoute] string orgUrlKey,
+        [FromBody] EngagementWriteModel body, CancellationToken ct)
     {
         var service = new StorageService(cache, context);
 
-        var selectedOrg = context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
+        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
         if (selectedOrg is null) return BadRequest("Selected org not found");
 
         if (body.CustomerName == AbsenceCustomerName)
@@ -280,7 +280,7 @@ public class ProjectController(
             context.Project.Add(project);
         }
 
-        context.SaveChanges();
+        await context.SaveChangesAsync(ct);
         service.ClearConsultantCache(orgUrlKey);
 
         var responseModel =
