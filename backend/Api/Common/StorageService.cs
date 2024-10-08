@@ -55,7 +55,7 @@ public class StorageService
             .ThenInclude(d => d.Organization)
             .Where(c => c.Department.Organization.UrlKey == orgUrlKey)
             .ToList();
-
+        
         return consultants;
     }
 
