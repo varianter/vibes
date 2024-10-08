@@ -23,12 +23,15 @@ public class VacationsController(
     public async Task<ActionResult<List<DateOnly>>> GetPublicHolidays([FromRoute] string orgUrlKey,
         CancellationToken ct)
     {
-        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
-        if (selectedOrg is null) return BadRequest();
+        var organization = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
+        if (organization is null) return BadRequest();
 
-        var service = new StorageService(cache, context);
-        var publicHolidays = service.LoadPublicHolidays(orgUrlKey);
-        if (publicHolidays is null) return BadRequest("Something went wrong fetching public holidays");
+        var year = DateOnly.FromDateTime(DateTime.Now).Year;
+
+        var publicHolidays =
+            organization.GetPublicHolidays(year)
+                .Concat(organization.GetPublicHolidays(year + 1))
+                .Concat(organization.GetPublicHolidays(year + 2)).ToList();
 
         return publicHolidays;
     }
