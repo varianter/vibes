@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using Api.AppExtensions;
 using Api.Options;
 using Infrastructure.DatabaseContext;
+using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;

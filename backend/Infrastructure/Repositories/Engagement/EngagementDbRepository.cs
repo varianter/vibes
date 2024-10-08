@@ -2,11 +2,11 @@ using Core.Engagements;
 using Infrastructure.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Repositories;
+namespace Infrastructure.Repositories.Engagement;
 
 public class EngagementDbRepository(ApplicationContext context) : IEngagementRepository
 {
-    public Task<Engagement?> GetEngagementById(int id, CancellationToken cancellationToken)
+    public Task<Core.Engagements.Engagement?> GetEngagementById(int id, CancellationToken cancellationToken)
     {
         return context.Project
             .AsNoTracking()
