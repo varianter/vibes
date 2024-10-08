@@ -1,4 +1,4 @@
-namespace Core.Engagement;
+namespace Core.Engagements;
 
 public interface IEngagementRepository
 {

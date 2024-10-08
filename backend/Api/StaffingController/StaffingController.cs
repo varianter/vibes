@@ -1,7 +1,7 @@
 using Api.Common;
 using Core.DomainModels;
-using Core.PlannedAbsence;
-using Core.Staffing;
+using Core.PlannedAbsences;
+using Core.Staffings;
 using Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

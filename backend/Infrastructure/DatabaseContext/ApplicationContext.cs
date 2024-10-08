@@ -1,12 +1,12 @@
-using Core.Absence;
-using Core.Consultant;
-using Core.Customer;
+using Core.Absences;
+using Core.Consultants;
+using Core.Customers;
 using Core.DomainModels;
-using Core.Engagement;
-using Core.Organization;
-using Core.PlannedAbsence;
-using Core.Staffing;
-using Core.Vacation;
+using Core.Engagements;
+using Core.Organizations;
+using Core.PlannedAbsences;
+using Core.Staffings;
+using Core.Vacations;
 using Infrastructure.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 

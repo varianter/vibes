@@ -1,5 +1,5 @@
-using Core.Engagement;
-using Core.Organization;
+using Core.Engagements;
+using Core.Organizations;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;

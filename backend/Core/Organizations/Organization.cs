@@ -1,6 +1,8 @@
 using System.Text.Json.Serialization;
+using Core.Absences;
+using Core.Customers;
 
-namespace Core.Organization;
+namespace Core.Organizations;
 
 public class Organization
 {
@@ -14,7 +16,7 @@ public class Organization
 
     [JsonIgnore] public List<Department> Departments { get; set; }
 
-    public required List<Customer.Customer> Customers { get; set; }
+    public required List<Customer> Customers { get; set; }
 
-    public List<Absence.Absence> AbsenceTypes { get; set; }
+    public List<Absence> AbsenceTypes { get; set; }
 }

@@ -1,5 +1,4 @@
-using Core.DomainModels;
-using Core.Engagement;
+using Core.Engagements;
 using Infrastructure.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 

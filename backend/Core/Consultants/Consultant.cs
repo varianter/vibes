@@ -1,7 +1,11 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using Core.Organization;
+using Core.Engagements;
+using Core.Organizations;
+using Core.PlannedAbsences;
+using Core.Staffings;
+using Core.Vacations;
 
-namespace Core.Consultant;
+namespace Core.Consultants;
 
 public class Consultant
 {
@@ -22,13 +26,13 @@ public class Consultant
 
     public ICollection<CompetenceConsultant> CompetenceConsultant { get; set; } = new List<CompetenceConsultant>();
 
-    public List<Vacation.Vacation> Vacations { get; set; } = new();
+    public List<Vacation> Vacations { get; set; } = new();
 
-    public List<PlannedAbsence.PlannedAbsence> PlannedAbsences { get; set; } = new();
+    public List<PlannedAbsence> PlannedAbsences { get; set; } = new();
 
-    public List<Engagement.Engagement> Projects { get; set; } = new();
+    public List<Engagement> Projects { get; set; } = new();
 
-    public List<Staffing.Staffing> Staffings { get; set; } = new();
+    public List<Staffing> Staffings { get; set; } = new();
 
 
     public int YearsOfExperience

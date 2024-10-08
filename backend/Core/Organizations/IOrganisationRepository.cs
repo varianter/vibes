@@ -1,4 +1,4 @@
-namespace Core.Organization;
+namespace Core.Organizations;
 
 public interface IOrganisationRepository
 {

@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Core.Consultant;
+using Core.Consultants;
 
 namespace Api.Consultants;
 

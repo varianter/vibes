@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Core.Consultant;
+using Core.Consultants;
 using Core.DomainModels;
 
 // ReSharper disable NotAccessedPositionalProperty.Global

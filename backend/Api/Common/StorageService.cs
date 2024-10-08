@@ -1,13 +1,13 @@
 using Api.Consultants;
 using Api.Organisation;
-using Core.Consultant;
-using Core.Customer;
+using Core.Consultants;
+using Core.Customers;
 using Core.DomainModels;
-using Core.Engagement;
-using Core.Organization;
-using Core.PlannedAbsence;
-using Core.Staffing;
-using Core.Vacation;
+using Core.Engagements;
+using Core.Organizations;
+using Core.PlannedAbsences;
+using Core.Staffings;
+using Core.Vacations;
 using Infrastructure.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -55,7 +55,7 @@ public class StorageService
             .ThenInclude(d => d.Organization)
             .Where(c => c.Department.Organization.UrlKey == orgUrlKey)
             .ToList();
-        
+
         return consultants;
     }
 
@@ -159,11 +159,11 @@ public class StorageService
                 : new List<Staffing>();
 
             consultant.PlannedAbsences =
-                plannedAbsencePrConsultant.TryGetValue(consultant.Id, out var plannedAbsences)
+                plannedAbsencePrConsultant.TryGetValue(consultant.Id, out List<PlannedAbsence>? plannedAbsences)
                     ? plannedAbsences
                     : new List<PlannedAbsence>();
 
-            consultant.Vacations = vacationsPrConsultant.TryGetValue(consultant.Id, out var vacations)
+            consultant.Vacations = vacationsPrConsultant.TryGetValue(consultant.Id, out List<Vacation>? vacations)
                 ? vacations
                 : new List<Vacation>();
 

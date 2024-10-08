@@ -1,7 +1,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Core.Consultants;
 
-namespace Core.Organization;
+namespace Core.Organizations;
 
 public class Department
 {
@@ -11,5 +12,5 @@ public class Department
     public required string Name { get; set; }
     public int? Hotkey { get; set; }
     public required Organization Organization { get; set; }
-    [JsonIgnore] public required List<Consultant.Consultant> Consultants { get; set; }
+    [JsonIgnore] public required List<Consultant> Consultants { get; set; }
 }

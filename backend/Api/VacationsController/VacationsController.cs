@@ -1,7 +1,7 @@
 using System.Globalization;
 using Api.Common;
-using Core.Consultant;
-using Core.Vacation;
+using Core.Consultants;
+using Core.Vacations;
 using Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
