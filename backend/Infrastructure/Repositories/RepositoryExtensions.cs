@@ -1,10 +1,11 @@
 using Core.Engagements;
 using Core.Organizations;
-using Infrastructure.Repositories;
+using Infrastructure.Repositories.Engagement;
+using Infrastructure.Repositories.Organization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Api.AppExtensions;
+namespace Infrastructure.Repositories;
 
 public static class RepositoryExtensions
 {
@@ -12,5 +13,6 @@ public static class RepositoryExtensions
     {
         builder.Services.AddScoped<IOrganisationRepository, OrganisationDbRepository>();
         builder.Services.AddScoped<IEngagementRepository, EngagementDbRepository>();
+        builder.Services.AddScoped<IDepartmentRepository, DepartmentDbRepository>();
     }
 }
