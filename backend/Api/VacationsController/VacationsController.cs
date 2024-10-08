@@ -1,7 +1,8 @@
 using System.Globalization;
 using Api.Common;
-using Core.DomainModels;
-using Database.DatabaseContext;
+using Core.Consultants;
+using Core.Vacations;
+using Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -41,7 +42,6 @@ public class VacationsController : ControllerBase
     public ActionResult<VacationReadModel> GetVacations([FromRoute] string orgUrlKey,
         [FromRoute] int consultantId)
     {
-
         var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrg is null) return BadRequest();
 
@@ -63,7 +63,6 @@ public class VacationsController : ControllerBase
         [FromRoute] int consultantId,
         [FromRoute] string date)
     {
-
         var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrg is null) return BadRequest();
 
@@ -96,7 +95,6 @@ public class VacationsController : ControllerBase
         [FromRoute] int consultantId,
         [FromRoute] string date)
     {
-
         var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrg is null) return BadRequest();
 

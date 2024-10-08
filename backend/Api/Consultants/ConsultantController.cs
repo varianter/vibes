@@ -1,6 +1,5 @@
 using Api.Common;
-using Core.DomainModels;
-using Database.DatabaseContext;
+using Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -12,7 +11,6 @@ namespace Api.Consultants;
 [ApiController]
 public class ConsultantController : ControllerBase
 {
-    
     private readonly IMemoryCache _cache;
     private readonly ApplicationContext _context;
 
@@ -21,8 +19,8 @@ public class ConsultantController : ControllerBase
         _context = context;
         _cache = cache;
     }
-    
-    
+
+
     [HttpGet]
     [Route("{Email}")]
     public ActionResult<SingleConsultantReadModel> Get([FromRoute] string orgUrlKey,
@@ -31,14 +29,11 @@ public class ConsultantController : ControllerBase
         var service = new StorageService(_cache, _context);
 
         var consultant = service.GetConsultantByEmail(orgUrlKey, email ?? "");
-        
 
-        if (consultant is null)
-        {
-            return NotFound();
-        }
-        
-        return Ok( new SingleConsultantReadModel(consultant));
+
+        if (consultant is null) return NotFound();
+
+        return Ok(new SingleConsultantReadModel(consultant));
     }
 
     [HttpGet]
@@ -48,10 +43,10 @@ public class ConsultantController : ControllerBase
 
         var consultants = service.GetConsultants(orgUrlKey);
 
-        List<SingleConsultantReadModel> readModels = consultants
+        var readModels = consultants
             .Select(c => new SingleConsultantReadModel(c))
             .ToList();
-        
+
         return Ok(readModels);
     }
 
@@ -62,12 +57,12 @@ public class ConsultantController : ControllerBase
         var service = new StorageService(_cache, _context);
 
         var consultants = service.GetConsultantsEmploymentVariant(orgUrlKey);
-    
-        List<ConsultantsEmploymentReadModel> readModels = consultants
+
+        var readModels = consultants
             .Select(c => new ConsultantsEmploymentReadModel(c))
             .ToList();
-        
-        
+
+
         return Ok(readModels);
     }
 
@@ -75,14 +70,12 @@ public class ConsultantController : ControllerBase
     public ActionResult<SingleConsultantReadModel> Put([FromRoute] string orgUrlKey,
         [FromBody] ConsultantWriteModel body)
     {
-
         var service = new StorageService(_cache, _context);
 
         var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
         if (selectedOrg is null) return BadRequest("Selected org not found");
 
         var consultant = service.UpdateConsultant(selectedOrg, body);
-
 
 
         var responseModel =
@@ -95,7 +88,6 @@ public class ConsultantController : ControllerBase
     public ActionResult<SingleConsultantReadModel> Post([FromRoute] string orgUrlKey,
         [FromBody] ConsultantWriteModel body)
     {
-
         var service = new StorageService(_cache, _context);
 
         var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);

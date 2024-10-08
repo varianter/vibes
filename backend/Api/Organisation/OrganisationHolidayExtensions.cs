@@ -1,4 +1,5 @@
 using Core.DomainModels;
+using Core.Organizations;
 using PublicHoliday;
 
 namespace Api.Organisation;
@@ -64,6 +65,7 @@ public static class OrganisationHolidayExtensions
                 .ToList();
             publicHolidays = publicHolidays.Concat(list).Distinct().ToList();
         }
+
         return publicHolidays;
     }
 }
