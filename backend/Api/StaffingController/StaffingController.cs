@@ -12,17 +12,8 @@ namespace Api.StaffingController;
 [Authorize]
 [Route("/v0/{orgUrlKey}/staffings")]
 [ApiController]
-public class StaffingController : ControllerBase
+public class StaffingController(ApplicationContext context, IMemoryCache cache) : ControllerBase
 {
-    private readonly IMemoryCache _cache;
-    private readonly ApplicationContext _context;
-
-    public StaffingController(ApplicationContext context, IMemoryCache cache)
-    {
-        _context = context;
-        _cache = cache;
-    }
-
     [HttpGet]
     public ActionResult<List<StaffingReadModel>> Get(
         [FromRoute] string orgUrlKey,
@@ -37,7 +28,7 @@ public class StaffingController : ControllerBase
 
         var weekSet = selectedWeek.GetNextWeeks(numberOfWeeks);
 
-        var service = new StorageService(_cache, _context);
+        var service = new StorageService(cache, context);
         var readModels = new ReadModelFactory(service).GetConsultantReadModelsForWeeks(orgUrlKey, weekSet);
         return Ok(readModels);
     }
@@ -58,7 +49,7 @@ public class StaffingController : ControllerBase
 
         var weekSet = selectedWeek.GetNextWeeks(numberOfWeeks);
 
-        var service = new StorageService(_cache, _context);
+        var service = new StorageService(cache, context);
 
         switch (isAbsence)
         {
@@ -94,7 +85,7 @@ public class StaffingController : ControllerBase
         [FromBody] StaffingWriteModel staffingWriteModel
     )
     {
-        var service = new StorageService(_cache, _context);
+        var service = new StorageService(cache, context);
 
         if (!StaffingControllerValidator.ValidateStaffingWriteModel(staffingWriteModel, service, orgUrlKey))
             return BadRequest();
@@ -139,7 +130,7 @@ public class StaffingController : ControllerBase
         [FromBody] SeveralStaffingWriteModel severalStaffingWriteModel
     )
     {
-        var service = new StorageService(_cache, _context);
+        var service = new StorageService(cache, context);
 
         if (!StaffingControllerValidator.ValidateStaffingWriteModel(severalStaffingWriteModel, service, orgUrlKey))
             return BadRequest();

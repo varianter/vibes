@@ -1,6 +1,7 @@
 using System.Globalization;
 using Api.Common;
 using Core.Consultants;
+using Core.Organizations;
 using Core.Vacations;
 using Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
@@ -12,25 +13,20 @@ namespace Api.VacationsController;
 [Authorize]
 [Route("/v0/{orgUrlKey}/vacations")]
 [ApiController]
-public class VacationsController : ControllerBase
+public class VacationsController(
+    ApplicationContext context,
+    IMemoryCache cache,
+    IOrganisationRepository organisationRepository) : ControllerBase
 {
-    private readonly IMemoryCache _cache;
-    private readonly ApplicationContext _context;
-
-    public VacationsController(ApplicationContext context, IMemoryCache cache)
-    {
-        _context = context;
-        _cache = cache;
-    }
-
     [HttpGet]
     [Route("publicHolidays")]
-    public ActionResult<List<DateOnly>> GetPublicHolidays([FromRoute] string orgUrlKey)
+    public async Task<ActionResult<List<DateOnly>>> GetPublicHolidays([FromRoute] string orgUrlKey,
+        CancellationToken ct)
     {
-        var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
+        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
         if (selectedOrg is null) return BadRequest();
 
-        var service = new StorageService(_cache, _context);
+        var service = new StorageService(cache, context);
         var publicHolidays = service.LoadPublicHolidays(orgUrlKey);
         if (publicHolidays is null) return BadRequest("Something went wrong fetching public holidays");
 
@@ -39,13 +35,13 @@ public class VacationsController : ControllerBase
 
     [HttpGet]
     [Route("{consultantId}/get")]
-    public ActionResult<VacationReadModel> GetVacations([FromRoute] string orgUrlKey,
-        [FromRoute] int consultantId)
+    public async Task<ActionResult<VacationReadModel>> GetVacations([FromRoute] string orgUrlKey,
+        [FromRoute] int consultantId, CancellationToken ct)
     {
-        var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
+        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
         if (selectedOrg is null) return BadRequest();
 
-        var service = new StorageService(_cache, _context);
+        var service = new StorageService(cache, context);
 
         if (!VacationsValidator.ValidateVacation(consultantId, service, orgUrlKey))
             return BadRequest();
@@ -59,14 +55,15 @@ public class VacationsController : ControllerBase
 
     [HttpDelete]
     [Route("{consultantId}/{date}/delete")]
-    public ActionResult<VacationReadModel> DeleteVacation([FromRoute] string orgUrlKey,
+    public async Task<ActionResult<VacationReadModel>> DeleteVacation([FromRoute] string orgUrlKey,
         [FromRoute] int consultantId,
-        [FromRoute] string date)
+        [FromRoute] string date,
+        CancellationToken ct)
     {
-        var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
+        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
         if (selectedOrg is null) return BadRequest();
 
-        var service = new StorageService(_cache, _context);
+        var service = new StorageService(cache, context);
 
         if (!VacationsValidator.ValidateVacation(consultantId, service, orgUrlKey))
             return BadRequest();
@@ -91,14 +88,15 @@ public class VacationsController : ControllerBase
 
     [HttpPut]
     [Route("{consultantId}/{date}/update")]
-    public ActionResult<VacationReadModel> UpdateVacation([FromRoute] string orgUrlKey,
+    public async Task<ActionResult<VacationReadModel>> UpdateVacation([FromRoute] string orgUrlKey,
         [FromRoute] int consultantId,
-        [FromRoute] string date)
+        [FromRoute] string date,
+        CancellationToken ct)
     {
-        var selectedOrg = _context.Organization.SingleOrDefault(org => org.UrlKey == orgUrlKey);
+        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
         if (selectedOrg is null) return BadRequest();
 
-        var service = new StorageService(_cache, _context);
+        var service = new StorageService(cache, context);
 
         if (!VacationsValidator.ValidateVacation(consultantId, service, orgUrlKey))
             return BadRequest();
