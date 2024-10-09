@@ -10,7 +10,7 @@ public class PlannedAbsence
     public required Absence Absence { get; set; } = null!;
 
     public required int ConsultantId { get; set; }
-    public required Consultant Consultant { get; set; } = null!;
+    public required Consultant? Consultant { get; set; } = null!;
     public required Week Week { get; set; }
     public double Hours { get; set; } = 0;
 

@@ -16,7 +16,7 @@ public record SingleConsultantReadModel(
     [property: Required] Degree Degree)
 
 {
-    public SingleConsultantReadModel(Consultant consultant)
+    public SingleConsultantReadModel(Consultant? consultant)
         : this(
             consultant.Id,
             consultant.Name,

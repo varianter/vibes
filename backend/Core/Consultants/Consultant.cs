@@ -80,7 +80,7 @@ public class Competence
 public class CompetenceConsultant
 {
     public int ConsultantId { get; set; }
-    public Consultant Consultant { get; set; } = null!;
+    public Consultant? Consultant { get; set; } = null!;
     public required string CompetencesId { get; set; }
     public Competence Competence { get; set; } = null!;
 }

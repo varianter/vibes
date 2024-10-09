@@ -1,5 +1,7 @@
+using Core.Consultants;
 using Core.Engagements;
 using Core.Organizations;
+using Infrastructure.Repositories.Consultants;
 using Infrastructure.Repositories.Engagement;
 using Infrastructure.Repositories.Organization;
 using Microsoft.AspNetCore.Builder;
@@ -16,5 +18,7 @@ public static class RepositoryExtensions
 
         builder.Services.AddScoped<IEngagementRepository, EngagementDbRepository>();
         builder.Services.AddScoped<IDepartmentRepository, DepartmentDbRepository>();
+
+        builder.Services.AddScoped<IConsultantRepository, ConsultantDbRepository>();
     }
 }

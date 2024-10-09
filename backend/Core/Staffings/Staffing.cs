@@ -12,7 +12,7 @@ public class Staffing
 
     public required int ConsultantId { get; set; }
 
-    public required Consultant Consultant { get; set; } = null!;
+    public required Consultant? Consultant { get; set; } = null!;
 
     public required Week Week { get; set; }
 

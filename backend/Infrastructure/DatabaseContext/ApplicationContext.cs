@@ -18,7 +18,7 @@ public class ApplicationContext : DbContext
     {
     }
 
-    public DbSet<Consultant> Consultant { get; set; } = null!;
+    public DbSet<Consultant?> Consultant { get; set; } = null!;
     public DbSet<Competence> Competence { get; set; } = null!;
     public DbSet<CompetenceConsultant> CompetenceConsultant { get; set; } = null!;
     public DbSet<Department> Department { get; set; } = null!;

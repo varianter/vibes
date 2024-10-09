@@ -1,4 +1,5 @@
 using Api.Common;
+using Core.Consultants;
 using Core.Organizations;
 using Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
@@ -13,17 +14,15 @@ namespace Api.Consultants;
 public class ConsultantController(
     ApplicationContext context,
     IMemoryCache cache,
-    IOrganisationRepository organisationRepository) : ControllerBase
+    IOrganisationRepository organisationRepository,
+    IConsultantRepository consultantRepository) : ControllerBase
 {
     [HttpGet]
     [Route("{Email}")]
-    public ActionResult<SingleConsultantReadModel> Get([FromRoute] string orgUrlKey,
+    public async Task<ActionResult<SingleConsultantReadModel>> Get([FromRoute] string orgUrlKey, CancellationToken ct,
         [FromRoute(Name = "Email")] string? email = "")
     {
-        var service = new StorageService(cache, context);
-
-        var consultant = service.GetConsultantByEmail(orgUrlKey, email ?? "");
-
+        var consultant = await consultantRepository.GetConsultantByEmail(orgUrlKey, email ?? "", ct);
 
         if (consultant is null) return NotFound();
 
@@ -31,11 +30,9 @@ public class ConsultantController(
     }
 
     [HttpGet]
-    public ActionResult<List<SingleConsultantReadModel>> GetAll([FromRoute] string orgUrlKey)
+    public async Task<OkObjectResult> GetAll([FromRoute] string orgUrlKey, CancellationToken ct)
     {
-        var service = new StorageService(cache, context);
-
-        var consultants = service.GetConsultants(orgUrlKey);
+        var consultants = await consultantRepository.GetConsultantsInOrganizationByUrlKey(orgUrlKey, ct);
 
         var readModels = consultants
             .Select(c => new SingleConsultantReadModel(c))
@@ -46,11 +43,9 @@ public class ConsultantController(
 
     [HttpGet]
     [Route("employment")]
-    public ActionResult<List<ConsultantsEmploymentReadModel>> GetConsultantsEmployment([FromRoute] string orgUrlKey)
+    public async Task<OkObjectResult> GetConsultantsEmployment([FromRoute] string orgUrlKey, CancellationToken ct)
     {
-        var service = new StorageService(cache, context);
-
-        var consultants = service.GetConsultantsEmploymentVariant(orgUrlKey);
+        var consultants = await consultantRepository.GetConsultantsInOrganizationByUrlKey(orgUrlKey, ct);
 
         var readModels = consultants
             .Select(c => new ConsultantsEmploymentReadModel(c))
@@ -71,7 +66,6 @@ public class ConsultantController(
         if (selectedOrg is null) return BadRequest("Selected org not found");
 
         var consultant = service.UpdateConsultant(selectedOrg, body);
-
 
         var responseModel =
             new SingleConsultantReadModel(consultant);
