@@ -25,39 +25,6 @@ public class StorageService
         _dbContext = context;
     }
 
-    public Consultant? GetConsultantByEmail(string orgUrlKey, string email)
-    {
-        var consultant = _dbContext.Consultant.Include(c => c.Department).ThenInclude(d => d.Organization)
-            .SingleOrDefault(c => c.Email == email);
-        if (consultant is null || consultant.Department.Organization.UrlKey != orgUrlKey) return null;
-
-        return consultant;
-    }
-
-    public List<Consultant> GetConsultants(string orgUrlKey)
-    {
-        var consultants = _dbContext.Consultant
-            .Include(c => c.Department)
-            .ThenInclude(d => d.Organization)
-            .Include(c => c.CompetenceConsultant)
-            .ThenInclude(cc => cc.Competence)
-            .Where(c => c.Department.Organization.UrlKey == orgUrlKey)
-            .ToList();
-
-        return consultants;
-    }
-
-    public List<Consultant> GetConsultantsEmploymentVariant(string orgUrlKey)
-    {
-        var consultants = _dbContext.Consultant
-            .Include(c => c.Department)
-            .ThenInclude(d => d.Organization)
-            .Where(c => c.Department.Organization.UrlKey == orgUrlKey)
-            .ToList();
-
-        return consultants;
-    }
-
     public void ClearConsultantCache(string orgUrlKey)
     {
         _cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
@@ -158,11 +125,11 @@ public class StorageService
                 : new List<Staffing>();
 
             consultant.PlannedAbsences =
-                plannedAbsencePrConsultant.TryGetValue(consultant.Id, out List<PlannedAbsence>? plannedAbsences)
+                plannedAbsencePrConsultant.TryGetValue(consultant.Id, out var plannedAbsences)
                     ? plannedAbsences
                     : new List<PlannedAbsence>();
 
-            consultant.Vacations = vacationsPrConsultant.TryGetValue(consultant.Id, out List<Vacation>? vacations)
+            consultant.Vacations = vacationsPrConsultant.TryGetValue(consultant.Id, out var vacations)
                 ? vacations
                 : new List<Vacation>();
 
@@ -331,7 +298,7 @@ public class StorageService
         ClearConsultantCache(orgUrlKey);
     }
 
-    public Consultant CreateConsultant(Organization org, ConsultantWriteModel body)
+    public Consultant? CreateConsultant(Organization org, ConsultantWriteModel body)
     {
         var consultant = new Consultant
         {
@@ -364,7 +331,7 @@ public class StorageService
         return consultant;
     }
 
-    public Consultant UpdateConsultant(Organization org, ConsultantWriteModel body)
+    public Consultant? UpdateConsultant(Organization org, ConsultantWriteModel body)
     {
         var consultant = _dbContext.Consultant
             .Include(c => c.CompetenceConsultant)

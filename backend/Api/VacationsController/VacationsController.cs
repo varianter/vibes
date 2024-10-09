@@ -16,7 +16,8 @@ namespace Api.VacationsController;
 public class VacationsController(
     ApplicationContext context,
     IMemoryCache cache,
-    IOrganisationRepository organisationRepository) : ControllerBase
+    IOrganisationRepository organisationRepository,
+    IConsultantRepository consultantRepository) : ControllerBase
 {
     [HttpGet]
     [Route("publicHolidays")]
@@ -46,12 +47,12 @@ public class VacationsController(
 
         var service = new StorageService(cache, context);
 
-        if (!VacationsValidator.ValidateVacation(consultantId, service, orgUrlKey))
-            return BadRequest();
-
         var vacationDays = service.LoadConsultantVacation(consultantId);
-        var consultant = service.GetBaseConsultantById(consultantId);
-        if (consultant is null) return BadRequest();
+        var consultant = await consultantRepository.GetConsultantById(consultantId, ct);
+
+        if (consultant is null || !VacationsValidator.ValidateVacation(consultant, orgUrlKey))
+            return NotFound();
+
         var vacationMetaData = new VacationMetaData(consultant, DateOnly.FromDateTime(DateTime.Now));
         return new VacationReadModel(consultantId, vacationDays, vacationMetaData);
     }
@@ -68,8 +69,11 @@ public class VacationsController(
 
         var service = new StorageService(cache, context);
 
-        if (!VacationsValidator.ValidateVacation(consultantId, service, orgUrlKey))
-            return BadRequest();
+        var vacationDays = service.LoadConsultantVacation(consultantId);
+        var consultant = await consultantRepository.GetConsultantById(consultantId, ct);
+
+        if (consultant is null || !VacationsValidator.ValidateVacation(consultant, orgUrlKey))
+            return NotFound();
 
         try
         {
@@ -82,9 +86,6 @@ public class VacationsController(
             return BadRequest("Something went wrong");
         }
 
-        var vacationDays = service.LoadConsultantVacation(consultantId);
-        var consultant = service.GetBaseConsultantById(consultantId);
-        if (consultant is null) return BadRequest();
         var vacationMetaData = new VacationMetaData(consultant, DateOnly.FromDateTime(DateTime.Now));
         return new VacationReadModel(consultantId, vacationDays, vacationMetaData);
     }
@@ -101,8 +102,11 @@ public class VacationsController(
 
         var service = new StorageService(cache, context);
 
-        if (!VacationsValidator.ValidateVacation(consultantId, service, orgUrlKey))
-            return BadRequest();
+        var vacationDays = service.LoadConsultantVacation(consultantId);
+        var consultant = await consultantRepository.GetConsultantById(consultantId, ct);
+
+        if (consultant is null || !VacationsValidator.ValidateVacation(consultant, orgUrlKey))
+            return NotFound();
 
         try
         {
@@ -115,9 +119,7 @@ public class VacationsController(
             return BadRequest("Something went wrong");
         }
 
-        var vacationDays = service.LoadConsultantVacation(consultantId);
-        var consultant = service.GetBaseConsultantById(consultantId);
-        if (consultant is null) return BadRequest();
+
         var vacationMetaData = new VacationMetaData(consultant, DateOnly.FromDateTime(DateTime.Now));
         return new VacationReadModel(consultantId, vacationDays, vacationMetaData);
     }
