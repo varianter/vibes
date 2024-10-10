@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Api.Common;
 using Core.Consultants;
 using Core.DomainModels;
@@ -26,8 +25,6 @@ public class StaffingController(ApplicationContext context, IMemoryCache cache, 
         [FromQuery(Name = "WeekSpan")] int numberOfWeeks = 8,
         [FromQuery(Name = "includeOccupied")] bool includeOccupied = true)
     {
-        var watch = Stopwatch.StartNew();
-
         var selectedWeek = selectedYearParam is null || selectedWeekParam is null
             ? Week.FromDateTime(DateTime.Now)
             : new Week((int)selectedYearParam, (int)selectedWeekParam);
@@ -40,9 +37,6 @@ public class StaffingController(ApplicationContext context, IMemoryCache cache, 
 
         var readModels = new ReadModelFactory(service)
             .GetConsultantReadModelsForWeeks(consultants, weekSet);
-
-        watch.Stop();
-        Console.WriteLine($"GET Staffing: {watch.ElapsedMilliseconds}");
 
         return Ok(readModels);
     }

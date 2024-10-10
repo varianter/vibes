@@ -21,9 +21,11 @@ public class StaffingCacheRepository(IStaffingRepository sourceRepository, IMemo
         }
 
         var queriedStaffingLists = await sourceRepository.GetStaffingForConsultants(nonCachedIds, ct);
-
-        queriedStaffingLists.ToList()
-            .ForEach(consultantStaffing => result.Add(consultantStaffing.Key, consultantStaffing.Value));
+        foreach (var (cId, staffings) in queriedStaffingLists)
+        {
+            result.Add(cId, staffings);
+            cache.Set(StaffingCacheKey(cId), staffings);
+        }
 
         return result;
     }

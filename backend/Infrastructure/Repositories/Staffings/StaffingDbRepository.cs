@@ -11,8 +11,6 @@ public class StaffingDbRepository(ApplicationContext context) : IStaffingReposit
     {
         var ids = consultantIds.ToArray();
 
-        Console.Out.WriteLine($"Quering {consultantIds.Count} from DB");
-
         return await context.Staffing
             .Where(s => ids.Contains(s.ConsultantId))
             .Include(s => s.Consultant)
