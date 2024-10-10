@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Api.Common;
 using Core.DomainModels;
 using Core.PlannedAbsences;
@@ -12,7 +13,8 @@ namespace Api.StaffingController;
 [Authorize]
 [Route("/v0/{orgUrlKey}/staffings")]
 [ApiController]
-public class StaffingController(ApplicationContext context, IMemoryCache cache) : ControllerBase
+public class StaffingController(ApplicationContext context, IMemoryCache cache, IStaffingRepository staffingRepository)
+    : ControllerBase
 {
     [HttpGet]
     public ActionResult<List<StaffingReadModel>> Get(
@@ -22,6 +24,8 @@ public class StaffingController(ApplicationContext context, IMemoryCache cache) 
         [FromQuery(Name = "WeekSpan")] int numberOfWeeks = 8,
         [FromQuery(Name = "includeOccupied")] bool includeOccupied = true)
     {
+        var watch = Stopwatch.StartNew();
+
         var selectedWeek = selectedYearParam is null || selectedWeekParam is null
             ? Week.FromDateTime(DateTime.Now)
             : new Week((int)selectedYearParam, (int)selectedWeekParam);
@@ -30,6 +34,10 @@ public class StaffingController(ApplicationContext context, IMemoryCache cache) 
 
         var service = new StorageService(cache, context);
         var readModels = new ReadModelFactory(service).GetConsultantReadModelsForWeeks(orgUrlKey, weekSet);
+
+        watch.Stop();
+        Console.WriteLine($"GET Staffing: {watch.ElapsedMilliseconds}");
+
         return Ok(readModels);
     }
 
@@ -80,9 +88,10 @@ public class StaffingController(ApplicationContext context, IMemoryCache cache) 
 
     [HttpPut]
     [Route("update")]
-    public ActionResult<StaffingReadModel> Put(
+    public async Task<ActionResult<StaffingReadModel>> Put(
         [FromRoute] string orgUrlKey,
-        [FromBody] StaffingWriteModel staffingWriteModel
+        [FromBody] StaffingWriteModel staffingWriteModel,
+        CancellationToken ct
     )
     {
         var service = new StorageService(cache, context);
@@ -96,10 +105,14 @@ public class StaffingController(ApplicationContext context, IMemoryCache cache) 
             {
                 case BookingType.Booking:
                 case BookingType.Offer:
-                    service.UpdateOrCreateStaffing(
-                        new StaffingKey(staffingWriteModel.EngagementId, staffingWriteModel.ConsultantId, selectedWeek),
-                        staffingWriteModel.Hours, orgUrlKey
-                    );
+                    var updatedStaffing = CreateStaffing(
+                        new StaffingKey(staffingWriteModel.EngagementId,
+                            staffingWriteModel.ConsultantId, selectedWeek), staffingWriteModel.Hours);
+
+                    await staffingRepository.UpsertStaffing(updatedStaffing, ct);
+
+                    //TODO: Remove this once repositories for planned absence and vacations are done too
+                    service.ClearConsultantCache(orgUrlKey);
                     break;
                 case BookingType.PlannedAbsence:
                     service.UpdateOrCreatePlannedAbsence(
@@ -125,9 +138,10 @@ public class StaffingController(ApplicationContext context, IMemoryCache cache) 
 
     [HttpPut]
     [Route("update/several")]
-    public ActionResult<StaffingReadModel> Put(
+    public async Task<ActionResult<StaffingReadModel>> Put(
         [FromRoute] string orgUrlKey,
-        [FromBody] SeveralStaffingWriteModel severalStaffingWriteModel
+        [FromBody] SeveralStaffingWriteModel severalStaffingWriteModel,
+        CancellationToken ct
     )
     {
         var service = new StorageService(cache, context);
@@ -147,8 +161,13 @@ public class StaffingController(ApplicationContext context, IMemoryCache cache) 
             {
                 case BookingType.Booking:
                 case BookingType.Offer:
-                    service.UpdateOrCreateStaffings(severalStaffingWriteModel.ConsultantId,
+                    var updatedStaffings = UpsertMultipleStaffings(severalStaffingWriteModel.ConsultantId,
                         severalStaffingWriteModel.EngagementId, weekSet, severalStaffingWriteModel.Hours, orgUrlKey);
+
+                    await staffingRepository.UpsertMultipleStaffings(updatedStaffings, ct);
+
+                    //TODO: Remove this once repositories for planned absence and vacations are done too
+                    service.ClearConsultantCache(orgUrlKey);
                     break;
                 case BookingType.PlannedAbsence:
                     service.UpdateOrCreatePlannedAbsences(severalStaffingWriteModel.ConsultantId,
@@ -169,6 +188,81 @@ public class StaffingController(ApplicationContext context, IMemoryCache cache) 
 
         return new ReadModelFactory(service).GetConsultantReadModelForWeeks(
             severalStaffingWriteModel.ConsultantId, weekSet);
+    }
+
+    //TODO: Divide this more neatly into various functions for readability. 
+    // This is skipped for now to avoid massive scope-creep. Comments are added for a temporary readability-buff
+    private List<Staffing> UpsertMultipleStaffings(int consultantId, int engagementId,
+        List<Week> weeks,
+        double hours,
+        string orgUrlKey)
+    {
+        // Get base data we need.
+        var consultant = context.Consultant.Single(c => c.Id == consultantId);
+        var project = context.Project.Single(p => p.Id == engagementId);
+
+        var org = context.Organization.FirstOrDefault(o => o.UrlKey == orgUrlKey);
+
+        // Create one new staffing for each week 
+        var staffingsToUpsert = weeks.Select(week =>
+        {
+            // This is a variable as we may change it to adapt to maximum possible booking
+            var newHours = hours;
+            if (org != null)
+            {
+                // Calculates the max hours we can add without overbooking due to vacations, absences, etc
+                var holidayHours = org.GetTotalHolidayHoursOfWeek(week);
+                var vacations = context.Vacation.Where(v => v.ConsultantId.Equals(consultantId)).ToList();
+                var vacationHours = vacations.Count(v => week.ContainsDate(v.Date)) * org.HoursPerWorkday;
+                var plannedAbsenceHours = context.PlannedAbsence
+                    .Where(pa => pa.Week.Equals(week) && pa.ConsultantId.Equals(consultantId))
+                    .Select(pa => pa.Hours).Sum();
+
+                var total = holidayHours + vacationHours + plannedAbsenceHours;
+
+                newHours = hours + total > org.HoursPerWorkday * 5
+                    ? Math.Max(org.HoursPerWorkday * 5 - total, 0)
+                    : hours;
+            }
+
+            var defaultStaffing = new Staffing
+            {
+                EngagementId = engagementId,
+                Engagement = project,
+                ConsultantId = consultantId,
+                Consultant = consultant,
+                Hours = newHours,
+                Week = week
+            };
+
+            var staffing = context.Staffing
+                .FirstOrDefault(s => s.EngagementId.Equals(engagementId)
+                                     && s.ConsultantId.Equals(consultantId)
+                                     && s.Week.Equals(week), defaultStaffing);
+
+            // Set it again in case it was found in query above
+            staffing.Hours = newHours;
+            return staffing;
+        }).ToList();
+
+        return staffingsToUpsert;
+    }
+
+    private Staffing CreateStaffing(StaffingKey staffingKey, double hours)
+    {
+        // TODO; Rewrite this to not query relations
+        var consultant = context.Consultant.Single(c => c.Id == staffingKey.ConsultantId);
+        var project = context.Project.Single(p => p.Id == staffingKey.EngagementId);
+
+        return new Staffing
+        {
+            EngagementId = staffingKey.EngagementId,
+            Engagement = project,
+            ConsultantId = staffingKey.ConsultantId,
+            Consultant = consultant,
+            Hours = hours,
+            Week = staffingKey.Week
+        };
     }
 }
 
