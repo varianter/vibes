@@ -18,16 +18,15 @@ public class StaffingDbRepository(ApplicationContext context) : IStaffingReposit
 
     public async Task UpsertMultipleStaffings(List<Staffing> staffings, CancellationToken ct)
     {
-        var upsertJobs = staffings.Select<Staffing, Task>(async staffing => await UpsertStaffing(staffing, ct));
-
-        await Task.WhenAll(upsertJobs);
+        foreach (var staffing in staffings) await UpsertStaffing(staffing, ct);
     }
 
     public async Task UpsertStaffing(Staffing staffing, CancellationToken ct)
     {
-        var existingStaffing =
-            await context.Staffing.FindAsync(
-                new StaffingKey(staffing.EngagementId, staffing.ConsultantId, staffing.Week), ct);
+        var existingStaffing = context.Staffing
+            .FirstOrDefault(s => s.EngagementId.Equals(staffing.EngagementId)
+                                 && s.ConsultantId.Equals(staffing.ConsultantId)
+                                 && s.Week.Equals(staffing.Week));
 
         if (existingStaffing is null)
         {

@@ -9,7 +9,10 @@ public class StaffingCacheRepository(IStaffingRepository sourceRepository, IMemo
     {
         if (cache.TryGetValue<List<Staffing>>(StaffingCacheKey(consultantId), out var staffingList))
             if (staffingList is not null)
+            {
+                Console.Out.WriteLineAsync($"Cache hit, ID: {consultantId}");
                 return staffingList;
+            }
 
         staffingList = await sourceRepository.GetStaffingForConsultant(consultantId, ct);
         cache.Set(StaffingCacheKey(consultantId), staffingList);

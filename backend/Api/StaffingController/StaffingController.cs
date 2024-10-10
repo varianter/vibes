@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Api.Common;
+using Core.Consultants;
 using Core.DomainModels;
 using Core.PlannedAbsences;
 using Core.Staffings;
@@ -17,8 +18,9 @@ public class StaffingController(ApplicationContext context, IMemoryCache cache, 
     : ControllerBase
 {
     [HttpGet]
-    public ActionResult<List<StaffingReadModel>> Get(
+    public async Task<OkObjectResult> Get(
         [FromRoute] string orgUrlKey,
+        CancellationToken ct,
         [FromQuery(Name = "Year")] int? selectedYearParam = null,
         [FromQuery(Name = "Week")] int? selectedWeekParam = null,
         [FromQuery(Name = "WeekSpan")] int numberOfWeeks = 8,
@@ -33,7 +35,11 @@ public class StaffingController(ApplicationContext context, IMemoryCache cache, 
         var weekSet = selectedWeek.GetNextWeeks(numberOfWeeks);
 
         var service = new StorageService(cache, context);
-        var readModels = new ReadModelFactory(service).GetConsultantReadModelsForWeeks(orgUrlKey, weekSet);
+        var consultants = service.LoadConsultants(orgUrlKey);
+        consultants = await AddRelationalDataToConsultant(consultants, ct);
+
+        var readModels = new ReadModelFactory(service)
+            .GetConsultantReadModelsForWeeks(consultants, weekSet);
 
         watch.Stop();
         Console.WriteLine($"GET Staffing: {watch.ElapsedMilliseconds}");
@@ -190,6 +196,15 @@ public class StaffingController(ApplicationContext context, IMemoryCache cache, 
             severalStaffingWriteModel.ConsultantId, weekSet);
     }
 
+    // TODO: Move this to a future application layer. This is to consolidate data from various repositories such as Staffing or PlannedAbsence
+    private async Task<List<Consultant>> AddRelationalDataToConsultant(List<Consultant> consultants,
+        CancellationToken ct)
+    {
+        foreach (var c in consultants) c.Staffings = await staffingRepository.GetStaffingForConsultant(c.Id, ct);
+
+        return consultants;
+    }
+
     //TODO: Divide this more neatly into various functions for readability. 
     // This is skipped for now to avoid massive scope-creep. Comments are added for a temporary readability-buff
     private List<Staffing> UpsertMultipleStaffings(int consultantId, int engagementId,
@@ -225,20 +240,22 @@ public class StaffingController(ApplicationContext context, IMemoryCache cache, 
                     : hours;
             }
 
-            var defaultStaffing = new Staffing
-            {
-                EngagementId = engagementId,
-                Engagement = project,
-                ConsultantId = consultantId,
-                Consultant = consultant,
-                Hours = newHours,
-                Week = week
-            };
 
             var staffing = context.Staffing
                 .FirstOrDefault(s => s.EngagementId.Equals(engagementId)
                                      && s.ConsultantId.Equals(consultantId)
-                                     && s.Week.Equals(week), defaultStaffing);
+                                     && s.Week.Equals(week));
+
+            if (staffing is null)
+                return new Staffing
+                {
+                    EngagementId = engagementId,
+                    Engagement = project,
+                    ConsultantId = consultantId,
+                    Consultant = consultant,
+                    Hours = newHours,
+                    Week = week
+                };
 
             // Set it again in case it was found in query above
             staffing.Hours = newHours;
