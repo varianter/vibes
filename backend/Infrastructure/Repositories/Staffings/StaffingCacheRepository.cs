@@ -11,7 +11,7 @@ public class StaffingCacheRepository(IStaffingRepository sourceRepository, IMemo
         var nonCachedIds = new List<int>();
         var result = new Dictionary<int, List<Staffing>>();
 
-        foreach (var consultantId in consultantIds)
+        foreach (var consultantId in consultantIds.Distinct())
         {
             var staffingList = GetStaffingsFromCache(consultantId);
             if (staffingList is null)
