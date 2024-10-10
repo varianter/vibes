@@ -200,9 +200,16 @@ public class StaffingController(ApplicationContext context, IMemoryCache cache, 
     private async Task<List<Consultant>> AddRelationalDataToConsultant(List<Consultant> consultants,
         CancellationToken ct)
     {
-        foreach (var c in consultants) c.Staffings = await staffingRepository.GetStaffingForConsultant(c.Id, ct);
-
-        return consultants;
+        var consultantStaffings =
+            await staffingRepository.GetStaffingForConsultants(consultants.Select(c => c.Id).ToList(), ct);
+        return consultants.Select(c =>
+        {
+            var hasStaffing = consultantStaffings.TryGetValue(c.Id, out var staffings);
+            if (!hasStaffing || staffings is null)
+                staffings = new List<Staffing>();
+            c.Staffings = staffings;
+            return c;
+        }).ToList();
     }
 
     //TODO: Divide this more neatly into various functions for readability. 

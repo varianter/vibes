@@ -6,6 +6,22 @@ namespace Infrastructure.Repositories.Staffings;
 
 public class StaffingDbRepository(ApplicationContext context) : IStaffingRepository
 {
+    public async Task<Dictionary<int, List<Staffing>>> GetStaffingForConsultants(List<int> consultantIds,
+        CancellationToken ct)
+    {
+        var ids = consultantIds.ToArray();
+
+        Console.Out.WriteLine($"Quering {consultantIds.Count} from DB");
+
+        return await context.Staffing
+            .Where(s => ids.Contains(s.ConsultantId))
+            .Include(s => s.Consultant)
+            .Include(staffing => staffing.Engagement)
+            .ThenInclude(project => project.Customer)
+            .GroupBy(staffing => staffing.Consultant.Id)
+            .ToDictionaryAsync(group => group.Key, grouping => grouping.ToList(), ct);
+    }
+
     public async Task<List<Staffing>> GetStaffingForConsultant(int consultantId, CancellationToken ct)
     {
         return await context.Staffing

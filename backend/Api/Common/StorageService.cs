@@ -100,12 +100,6 @@ public class StorageService
             .OrderBy(consultant => consultant.Name)
             .ToList();
 
-        var staffingPrConsultant = _dbContext.Staffing
-            .Include(s => s.Consultant)
-            .Include(staffing => staffing.Engagement)
-            .ThenInclude(project => project.Customer)
-            .GroupBy(staffing => staffing.Consultant.Id)
-            .ToDictionary(group => group.Key, grouping => grouping.ToList());
 
         var plannedAbsencePrConsultant = _dbContext.PlannedAbsence
             .Include(absence => absence.Absence)
@@ -120,16 +114,12 @@ public class StorageService
 
         var hydratedConsultants = consultantList.Select(consultant =>
         {
-            consultant.Staffings = staffingPrConsultant.TryGetValue(consultant.Id, out var staffing)
-                ? staffing
-                : new List<Staffing>();
-
             consultant.PlannedAbsences =
                 plannedAbsencePrConsultant.TryGetValue(consultant.Id, out var plannedAbsences)
                     ? plannedAbsences
                     : new List<PlannedAbsence>();
 
-            consultant.Vacations = vacationsPrConsultant.TryGetValue(consultant.Id, out var vacations)
+            consultant.Vacations = vacationsPrConsultant.TryGetValue(consultant.Id, out List<Vacation>? vacations)
                 ? vacations
                 : new List<Vacation>();
 
