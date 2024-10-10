@@ -5,6 +5,7 @@ using Core.PlannedAbsences;
 using Core.Staffings;
 using Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -17,7 +18,7 @@ public class StaffingController(ApplicationContext context, IMemoryCache cache, 
     : ControllerBase
 {
     [HttpGet]
-    public async Task<OkObjectResult> Get(
+    public async Task<Ok<List<StaffingReadModel>>> Get(
         [FromRoute] string orgUrlKey,
         CancellationToken ct,
         [FromQuery(Name = "Year")] int? selectedYearParam = null,
@@ -38,7 +39,7 @@ public class StaffingController(ApplicationContext context, IMemoryCache cache, 
         var readModels = new ReadModelFactory(service)
             .GetConsultantReadModelsForWeeks(consultants, weekSet);
 
-        return Ok(readModels);
+        return TypedResults.Ok(readModels);
     }
 
     [HttpGet]
