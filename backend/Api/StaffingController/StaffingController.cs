@@ -162,7 +162,7 @@ public class StaffingController(ApplicationContext context, IMemoryCache cache, 
             {
                 case BookingType.Booking:
                 case BookingType.Offer:
-                    var updatedStaffings = UpsertMultipleStaffings(severalStaffingWriteModel.ConsultantId,
+                    var updatedStaffings = GenerateUpdatedStaffings(severalStaffingWriteModel.ConsultantId,
                         severalStaffingWriteModel.EngagementId, weekSet, severalStaffingWriteModel.Hours, orgUrlKey);
 
                     await staffingRepository.UpsertMultipleStaffings(updatedStaffings, ct);
@@ -209,7 +209,7 @@ public class StaffingController(ApplicationContext context, IMemoryCache cache, 
 
     //TODO: Divide this more neatly into various functions for readability. 
     // This is skipped for now to avoid massive scope-creep. Comments are added for a temporary readability-buff
-    private List<Staffing> UpsertMultipleStaffings(int consultantId, int engagementId,
+    private List<Staffing> GenerateUpdatedStaffings(int consultantId, int engagementId,
         List<Week> weeks,
         double hours,
         string orgUrlKey)

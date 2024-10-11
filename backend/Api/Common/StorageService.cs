@@ -100,13 +100,6 @@ public class StorageService
             .OrderBy(consultant => consultant.Name)
             .ToList();
 
-
-        var plannedAbsencePrConsultant = _dbContext.PlannedAbsence
-            .Include(absence => absence.Absence)
-            .Include(absence => absence.Consultant)
-            .GroupBy(absence => absence.Consultant.Id)
-            .ToDictionary(grouping => grouping.Key, grouping => grouping.ToList());
-
         var vacationsPrConsultant = _dbContext.Vacation
             .Include(vacation => vacation.Consultant)
             .GroupBy(vacation => vacation.Consultant.Id)
@@ -114,12 +107,7 @@ public class StorageService
 
         var hydratedConsultants = consultantList.Select(consultant =>
         {
-            consultant.PlannedAbsences =
-                plannedAbsencePrConsultant.TryGetValue(consultant.Id, out var plannedAbsences)
-                    ? plannedAbsences
-                    : new List<PlannedAbsence>();
-
-            consultant.Vacations = vacationsPrConsultant.TryGetValue(consultant.Id, out List<Vacation>? vacations)
+            consultant.Vacations = vacationsPrConsultant.TryGetValue(consultant.Id, out var vacations)
                 ? vacations
                 : new List<Vacation>();
 
@@ -149,10 +137,7 @@ public class StorageService
 
     public void UpdateOrCreatePlannedAbsence(PlannedAbsenceKey plannedAbsenceKey, double hours, string orgUrlKey)
     {
-        var plannedAbsence = _dbContext.PlannedAbsence
-            .FirstOrDefault(pa => pa.AbsenceId.Equals(plannedAbsenceKey.AbsenceId)
-                                  && pa.ConsultantId.Equals(plannedAbsenceKey.ConsultantId)
-                                  && pa.Week.Equals(plannedAbsenceKey.Week));
+        var plannedAbsence = _dbContext
 
         if (plannedAbsence is null)
             _dbContext.Add(CreateAbsence(plannedAbsenceKey, hours));
