@@ -35,12 +35,10 @@ public class PlannedAbsenceDbRepository(ApplicationContext context) : IPlannedAb
                                   && pa.Week.Equals(plannedAbsence.Week));
 
         if (existingPlannedAbsence is null)
-        {
             await context.PlannedAbsence.AddAsync(plannedAbsence, ct);
-            return;
-        }
+        else
+            existingPlannedAbsence.Hours = plannedAbsence.Hours;
 
-        existingPlannedAbsence.Hours = plannedAbsence.Hours;
         await context.SaveChangesAsync(ct);
     }
 

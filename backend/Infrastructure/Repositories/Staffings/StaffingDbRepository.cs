@@ -43,12 +43,10 @@ public class StaffingDbRepository(ApplicationContext context) : IStaffingReposit
                                  && s.Week.Equals(staffing.Week));
 
         if (existingStaffing is null)
-        {
             await context.Staffing.AddAsync(staffing, ct);
-            return;
-        }
+        else
+            existingStaffing.Hours = staffing.Hours;
 
-        existingStaffing.Hours = staffing.Hours;
         await context.SaveChangesAsync(ct);
     }
 }
