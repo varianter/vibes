@@ -100,13 +100,6 @@ public class StorageService
             .OrderBy(consultant => consultant.Name)
             .ToList();
 
-
-        var plannedAbsencePrConsultant = _dbContext.PlannedAbsence
-            .Include(absence => absence.Absence)
-            .Include(absence => absence.Consultant)
-            .GroupBy(absence => absence.Consultant.Id)
-            .ToDictionary(grouping => grouping.Key, grouping => grouping.ToList());
-
         var vacationsPrConsultant = _dbContext.Vacation
             .Include(vacation => vacation.Consultant)
             .GroupBy(vacation => vacation.Consultant.Id)
@@ -114,12 +107,7 @@ public class StorageService
 
         var hydratedConsultants = consultantList.Select(consultant =>
         {
-            consultant.PlannedAbsences =
-                plannedAbsencePrConsultant.TryGetValue(consultant.Id, out var plannedAbsences)
-                    ? plannedAbsences
-                    : new List<PlannedAbsence>();
-
-            consultant.Vacations = vacationsPrConsultant.TryGetValue(consultant.Id, out List<Vacation>? vacations)
+            consultant.Vacations = vacationsPrConsultant.TryGetValue(consultant.Id, out var vacations)
                 ? vacations
                 : new List<Vacation>();
 
@@ -129,81 +117,7 @@ public class StorageService
         return hydratedConsultants;
     }
 
-    private PlannedAbsence CreateAbsence(PlannedAbsenceKey plannedAbsenceKey, double hours)
-    {
-        var consultant = _dbContext.Consultant.Single(c => c.Id == plannedAbsenceKey.ConsultantId);
-        var absence = _dbContext.Absence.Single(a => a.Id == plannedAbsenceKey.AbsenceId);
 
-        var plannedAbsence = new PlannedAbsence
-        {
-            AbsenceId = plannedAbsenceKey.AbsenceId,
-            Absence = absence,
-            ConsultantId = plannedAbsenceKey.ConsultantId,
-            Consultant = consultant,
-            Hours = hours,
-            Week = plannedAbsenceKey.Week
-        };
-        return plannedAbsence;
-    }
-
-
-    public void UpdateOrCreatePlannedAbsence(PlannedAbsenceKey plannedAbsenceKey, double hours, string orgUrlKey)
-    {
-        var plannedAbsence = _dbContext.PlannedAbsence
-            .FirstOrDefault(pa => pa.AbsenceId.Equals(plannedAbsenceKey.AbsenceId)
-                                  && pa.ConsultantId.Equals(plannedAbsenceKey.ConsultantId)
-                                  && pa.Week.Equals(plannedAbsenceKey.Week));
-
-        if (plannedAbsence is null)
-            _dbContext.Add(CreateAbsence(plannedAbsenceKey, hours));
-        else
-            plannedAbsence.Hours = hours;
-
-        _dbContext.SaveChanges();
-        ClearConsultantCache(orgUrlKey);
-    }
-
-
-    public void UpdateOrCreatePlannedAbsences(int consultantId, int absenceId, List<Week> weeks, double hours,
-        string orgUrlKey)
-    {
-        var consultant = _dbContext.Consultant.Single(c => c.Id == consultantId);
-        var absence = _dbContext.Absence.Single(a => a.Id == absenceId);
-
-        var org = _dbContext.Organization.FirstOrDefault(o => o.UrlKey == orgUrlKey);
-        foreach (var week in weeks)
-        {
-            var newHours = hours;
-            if (org != null)
-            {
-                var holidayHours = org.GetTotalHolidayHoursOfWeek(week);
-                newHours = holidayHours + hours > org.HoursPerWorkday * 5
-                    ? Math.Max(org.HoursPerWorkday * 5 - holidayHours, 0)
-                    : hours;
-            }
-
-            var plannedAbsence = _dbContext.PlannedAbsence
-                .FirstOrDefault(pa => pa.AbsenceId.Equals(absenceId)
-                                      && pa.ConsultantId.Equals(consultantId)
-                                      && pa.Week.Equals(week));
-
-            if (plannedAbsence is null)
-                _dbContext.Add(new PlannedAbsence
-                {
-                    AbsenceId = absenceId,
-                    Absence = absence,
-                    ConsultantId = consultantId,
-                    Consultant = consultant,
-                    Hours = newHours,
-                    Week = week
-                });
-            else
-                plannedAbsence.Hours = newHours;
-        }
-
-        _dbContext.SaveChanges();
-        ClearConsultantCache(orgUrlKey);
-    }
 
     public Consultant? CreateConsultant(Organization org, ConsultantWriteModel body)
     {
