@@ -14,7 +14,7 @@ namespace Api.StaffingController;
 [Authorize]
 [Route("/v0/{orgUrlKey}/staffings")]
 [ApiController]
-public class StaffingController(ApplicationContext context, IMemoryCache cache, IStaffingRepository staffingRepository)
+public class StaffingController(ApplicationContext context, IMemoryCache cache, IStaffingRepository staffingRepository, IPlannedAbsenceRepository plannedAbsenceRepository)
     : ControllerBase
 {
     [HttpGet]
@@ -116,9 +116,14 @@ public class StaffingController(ApplicationContext context, IMemoryCache cache, 
                     service.ClearConsultantCache(orgUrlKey);
                     break;
                 case BookingType.PlannedAbsence:
-                    service.UpdateOrCreatePlannedAbsence(
-                        new PlannedAbsenceKey(staffingWriteModel.EngagementId, staffingWriteModel.ConsultantId,
-                            selectedWeek), staffingWriteModel.Hours, orgUrlKey);
+                    var updatedAbsence = CreateAbsence(new PlannedAbsenceKey(staffingWriteModel.EngagementId,
+                        staffingWriteModel.ConsultantId,
+                        selectedWeek), staffingWriteModel.Hours);
+                    
+                    await plannedAbsenceRepository.UpsertPlannedAbsence(updatedAbsence, ct);
+                    
+                    //TODO: Remove this once repositories for planned absence and vacations are done too
+                    service.ClearConsultantCache(orgUrlKey);
                     break;
                 case BookingType.Vacation:
                     break;
@@ -171,8 +176,13 @@ public class StaffingController(ApplicationContext context, IMemoryCache cache, 
                     service.ClearConsultantCache(orgUrlKey);
                     break;
                 case BookingType.PlannedAbsence:
-                    service.UpdateOrCreatePlannedAbsences(severalStaffingWriteModel.ConsultantId,
+                    var updatedAbsences = GenerateUpdatedAbsences(severalStaffingWriteModel.ConsultantId,
                         severalStaffingWriteModel.EngagementId, weekSet, severalStaffingWriteModel.Hours, orgUrlKey);
+                    
+                    await plannedAbsenceRepository.UpsertMultiplePlannedAbsences(updatedAbsences, ct);
+                    
+                    //TODO: Remove this once repositories for planned absence and vacations are done too
+                    service.ClearConsultantCache(orgUrlKey);
                     break;
                 case BookingType.Vacation:
                     break;
@@ -267,6 +277,45 @@ public class StaffingController(ApplicationContext context, IMemoryCache cache, 
         return staffingsToUpsert;
     }
 
+    private List<PlannedAbsence> GenerateUpdatedAbsences(int consultantId, int absenceId, List<Week> weeks, double hours,
+        string orgUrlKey)
+    {
+        var consultant = context.Consultant.Single(c => c.Id == consultantId);
+        var absence = context.Absence.Single(a => a.Id == absenceId);
+
+        var org = context.Organization.FirstOrDefault(o => o.UrlKey == orgUrlKey);
+        return weeks.Select(week =>
+        {
+            var newHours = hours;
+            if (org != null)
+            {
+                var holidayHours = org.GetTotalHolidayHoursOfWeek(week);
+                newHours = holidayHours + hours > org.HoursPerWorkday * 5
+                    ? Math.Max(org.HoursPerWorkday * 5 - holidayHours, 0)
+                    : hours;
+            }
+
+            var plannedAbsence = context.PlannedAbsence
+                .FirstOrDefault(pa => pa.AbsenceId.Equals(absenceId)
+                                      && pa.ConsultantId.Equals(consultantId)
+                                      && pa.Week.Equals(week));
+
+            if (plannedAbsence is null)
+                plannedAbsence = new PlannedAbsence
+                {
+                    AbsenceId = absenceId,
+                    Absence = absence,
+                    ConsultantId = consultantId,
+                    Consultant = consultant,
+                    Hours = newHours,
+                    Week = week
+                };
+            else
+                plannedAbsence.Hours = newHours;
+            
+            return plannedAbsence;
+        }).ToList();
+    }
     private Staffing CreateStaffing(StaffingKey staffingKey, double hours)
     {
         // TODO; Rewrite this to not query relations
@@ -282,6 +331,23 @@ public class StaffingController(ApplicationContext context, IMemoryCache cache, 
             Hours = hours,
             Week = staffingKey.Week
         };
+    }
+    
+    private PlannedAbsence CreateAbsence(PlannedAbsenceKey plannedAbsenceKey, double hours)
+    {
+        var consultant = context.Consultant.Single(c => c.Id == plannedAbsenceKey.ConsultantId);
+        var absence = context.Absence.Single(a => a.Id == plannedAbsenceKey.AbsenceId);
+
+        var plannedAbsence = new PlannedAbsence
+        {
+            AbsenceId = plannedAbsenceKey.AbsenceId,
+            Absence = absence,
+            ConsultantId = plannedAbsenceKey.ConsultantId,
+            Consultant = consultant,
+            Hours = hours,
+            Week = plannedAbsenceKey.Week
+        };
+        return plannedAbsence;
     }
 }
 
