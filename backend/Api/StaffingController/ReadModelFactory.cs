@@ -14,12 +14,12 @@ public class ReadModelFactory
         _storageService = storageService;
     }
 
-    public List<StaffingReadModel> GetConsultantReadModelsForWeeks(string orgUrlKey, List<Week> weeks)
+    public List<StaffingReadModel> GetConsultantReadModelsForWeeks(List<Consultant> consultants, List<Week> weeks)
     {
         var firstDayInScope = weeks.First().FirstDayOfWorkWeek();
         var firstWorkDayOutOfScope = weeks.Last().LastWorkDayOfWeek();
 
-        return _storageService.LoadConsultants(orgUrlKey)
+        return consultants
             .Where(c => c.EndDate == null || c.EndDate > firstDayInScope)
             .Where(c => c.StartDate == null || c.StartDate < firstWorkDayOutOfScope)
             .Select(consultant => MapToReadModelList(consultant, weeks))

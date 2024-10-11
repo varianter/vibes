@@ -1,9 +1,11 @@
 using Core.Consultants;
 using Core.Engagements;
 using Core.Organizations;
+using Core.Staffings;
 using Infrastructure.Repositories.Consultants;
 using Infrastructure.Repositories.Engagement;
 using Infrastructure.Repositories.Organization;
+using Infrastructure.Repositories.Staffings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,6 +20,9 @@ public static class RepositoryExtensions
 
         builder.Services.AddScoped<IEngagementRepository, EngagementDbRepository>();
         builder.Services.AddScoped<IDepartmentRepository, DepartmentDbRepository>();
+
+        builder.Services.AddScoped<IStaffingRepository, StaffingDbRepository>();
+        builder.Services.Decorate<IStaffingRepository, StaffingCacheRepository>();
 
         builder.Services.AddScoped<IConsultantRepository, ConsultantDbRepository>();
     }
