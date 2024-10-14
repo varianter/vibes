@@ -38,6 +38,7 @@ export enum BookingType {
   PlannedAbsence = "PlannedAbsence",
   Vacation = "Vacation",
   Available = "Available",
+  NotStartedOrQuit = "NotStartedOrQuit",
 }
 
 export interface ConsultantReadModel {
@@ -273,7 +274,10 @@ export interface WeeklyBookingReadModel {
   totalVacationHours: number;
   /** @format double */
   totalOverbooking: number;
+  /** @format double */
   totalExludableAbsence: number;
+  /** @format double */
+  totalNotStartedOrQuit: number;
 }
 
 export interface WeeklyHours {

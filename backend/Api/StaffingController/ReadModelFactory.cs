@@ -1,6 +1,7 @@
 using Api.Common;
-using Api.Organisation;
+using Core.Consultants;
 using Core.DomainModels;
+using Core.Engagements;
 
 namespace Api.StaffingController;
 
@@ -13,12 +14,12 @@ public class ReadModelFactory
         _storageService = storageService;
     }
 
-    public List<StaffingReadModel> GetConsultantReadModelsForWeeks(string orgUrlKey, List<Week> weeks)
+    public List<StaffingReadModel> GetConsultantReadModelsForWeeks(List<Consultant> consultants, List<Week> weeks)
     {
         var firstDayInScope = weeks.First().FirstDayOfWorkWeek();
         var firstWorkDayOutOfScope = weeks.Last().LastWorkDayOfWeek();
 
-        return _storageService.LoadConsultants(orgUrlKey)
+        return consultants
             .Where(c => c.EndDate == null || c.EndDate > firstDayInScope)
             .Where(c => c.StartDate == null || c.StartDate < firstWorkDayOutOfScope)
             .Select(consultant => MapToReadModelList(consultant, weeks))
@@ -132,7 +133,7 @@ public class ReadModelFactory
             .Select(grouping => new DetailedBooking(
                 new BookingDetails(grouping.Key, BookingType.PlannedAbsence,
                     grouping.Key,
-                    grouping.First().Absence.Id,//Empty projectName as PlannedAbsence does not have a project
+                    grouping.First().Absence.Id, //Empty projectName as PlannedAbsence does not have a project
                     grouping.First().Absence.ExcludeFromBillRate),
                 weekSet.Select(week =>
                     new WeeklyHours(
@@ -142,7 +143,6 @@ public class ReadModelFactory
                                 absence.Week.Equals(week))
                             .Sum(absence => absence.Hours)
                     )).ToList()
-
             ));
 
 
@@ -166,9 +166,87 @@ public class ReadModelFactory
                 vacationsPrWeek));
         }
 
+        var startDate = consultant.StartDate;
+        var endDate = consultant.EndDate;
+
+        var firstDayInScope = weekSet.First().FirstDayOfWorkWeek();
+        var firstWorkDayOutOfScope = weekSet.Last().LastWorkDayOfWeek();
+
+        if (startDate.HasValue && startDate > firstDayInScope)
+        {
+            var startWeeks = GetNonEmploymentHoursNotStartedOrQuit(startDate, weekSet, consultant, false);
+            detailedBookings = detailedBookings.Append(CreateNotStartedOrQuitDetailedBooking(startWeeks));
+        }
+
+        if (endDate.HasValue && endDate < firstWorkDayOutOfScope)
+        {
+            var endWeeks = GetNonEmploymentHoursNotStartedOrQuit(endDate, weekSet, consultant, true);
+            detailedBookings = detailedBookings.Append(CreateNotStartedOrQuitDetailedBooking(endWeeks));
+        }
+
+
         var detailedBookingList = detailedBookings.ToList();
 
         return detailedBookingList;
+    }
+
+    private static List<WeeklyHours> GetNonEmploymentHoursNotStartedOrQuit(DateOnly? date, List<Week> weekSet,
+        Consultant consultant, bool quit)
+    {
+        return weekSet
+            .Select(week =>
+            {
+                var isTargetWeek = week.ContainsDate((DateOnly)date);
+
+                var maxWorkHoursForWeek = consultant.Department.Organization.HoursPerWorkday * 5 -
+                                          consultant.Department.Organization.GetTotalHolidayHoursOfWeek(week);
+
+                var hoursOutsideEmployment = quit
+                    ? GetNonEmployedHoursForWeekWhenQuitting(date, week, isTargetWeek, consultant)
+                    : GetNonEmployedHoursForWeekWhenStarting(date, week, isTargetWeek, consultant);
+
+                return new WeeklyHours(
+                    week.ToSortableInt(), Math.Min(hoursOutsideEmployment, maxWorkHoursForWeek)
+                );
+            })
+            .ToList();
+    }
+
+    private static double GetNonEmployedHoursForWeekWhenStarting(DateOnly? startDate, Week week, bool isStartWeek,
+        Consultant consultant)
+    {
+        var hasStarted = startDate < week.FirstDayOfWorkWeek();
+        var dayDifference =
+            Math.Max(
+                (startDate.Value.ToDateTime(new TimeOnly()) - week.FirstDayOfWorkWeek().ToDateTime(new TimeOnly()))
+                .Days, 0);
+
+        return isStartWeek ? dayDifference * consultant.Department.Organization.HoursPerWorkday :
+            hasStarted ? 0 : consultant.Department.Organization.HoursPerWorkday * 5;
+    }
+
+    private static double GetNonEmployedHoursForWeekWhenQuitting(DateOnly? endDate, Week week, bool isFinalWeek,
+        Consultant consultant)
+    {
+        var hasQuit = endDate < week.FirstDayOfWorkWeek();
+        var dayDifference =
+            Math.Max(
+                (week.LastWorkDayOfWeek().ToDateTime(new TimeOnly()) - endDate.Value.ToDateTime(new TimeOnly())).Days,
+                0);
+
+        return isFinalWeek ? dayDifference * consultant.Department.Organization.HoursPerWorkday :
+            hasQuit ? consultant.Department.Organization.HoursPerWorkday * 5 : 0;
+    }
+
+
+    private static DetailedBooking CreateNotStartedOrQuitDetailedBooking(List<WeeklyHours> weeks)
+    {
+        return new DetailedBooking(
+            new BookingDetails("Ikke startet eller sluttet", BookingType.NotStartedOrQuit,
+                "Ikke startet eller sluttet",
+                0, true), //Empty projectName as NotStartedOrQuit does not have a project, 0 as projectId as NotStartedOrQuit since its just used to mark not started or quit
+            weeks
+        );
     }
 
     private static BookedHoursPerWeek GetBookedHours(Week week, IEnumerable<DetailedBooking> detailedBookings,
@@ -192,17 +270,22 @@ public class ReadModelFactory
         var totalAbsence = DetailedBooking.GetTotalHoursPrBookingTypeAndWeek(detailedBookingsArray,
             BookingType.PlannedAbsence,
             week);
-        
+
+        var totalNotStartedOrQuit =
+            DetailedBooking.GetTotalHoursPrBookingTypeAndWeek(detailedBookingsArray, BookingType.NotStartedOrQuit,
+                week);
+
         var totalExludableAbsence = detailedBookingsArray
-            .Where(s => s.BookingDetails.Type == BookingType.PlannedAbsence &&  s.BookingDetails.ExcludeFromBilling )
+            .Where(s => s.BookingDetails.Type == BookingType.PlannedAbsence && s.BookingDetails.ExcludeFromBilling)
             .Select(wh => wh.TotalHoursForWeek(week))
-            .Sum();        
+            .Sum();
 
         var totalVacations = DetailedBooking.GetTotalHoursPrBookingTypeAndWeek(detailedBookingsArray,
             BookingType.Vacation,
             week);
 
-        var bookedTime = totalBillable + totalAbsence + totalVacations + totalHolidayHours + totalNonBillable;
+        var bookedTime = totalBillable + totalAbsence + totalVacations + totalHolidayHours + totalNonBillable +
+                         totalNotStartedOrQuit;
         var hoursPrWorkDay = consultant.Department.Organization.HoursPerWorkday;
 
         var totalSellableTime =
@@ -216,9 +299,10 @@ public class ReadModelFactory
             week.WeekNumber,
             week.ToSortableInt(),
             GetDatesForWeek(week),
-            new WeeklyBookingReadModel(totalBillable, totalOffered, totalAbsence, totalExludableAbsence,  totalSellableTime,
+            new WeeklyBookingReadModel(totalBillable, totalOffered, totalAbsence, totalExludableAbsence,
+                totalSellableTime,
                 totalHolidayHours, totalVacations,
-                totalOverbooked)
+                totalOverbooked, totalNotStartedOrQuit)
         );
     }
 

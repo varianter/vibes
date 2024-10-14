@@ -156,4 +156,100 @@
     font-family: "Graphik-Regular", sans-serif;
     line-height: 2.5rem;
   }
+
+  .checkBoxWithCustomCheckmark {
+    /* Add if not using autoprefixer */
+    -webkit-appearance: none;
+    appearance: none;
+    /* For iOS < 15 to remove gradient background */
+    background-color: #fff;
+    /* Not removed via appearance */
+    margin: 0;
+  }
+
+  .checkBoxWithCustomCheckmark {
+    appearance: none;
+    display: grid;
+    place-content: center;
+  }
+
+  /*Here an svg has been converted to a clip-path, which is why that field is so long*/
+  .checkBoxWithCustomCheckmark::before {
+    content: "";
+    width: 12px;
+    height: 12px;
+    transform: scale(0);
+    box-shadow: inset 12px 12px #ffffff;
+    transform-origin: bottom left;
+    clip-path: polygon(
+      10.3536px 2.64645px,
+      10.3536px 2.64645px,
+      10.406304px 2.70842496px,
+      10.447296px 2.77622328px,
+      10.476576px 2.84838912px,
+      10.494144px 2.92346664px,
+      10.5px 3px,
+      10.494144px 3.07653336px,
+      10.476576px 3.15161088px,
+      10.447296px 3.22377672px,
+      10.406304px 3.29157504px,
+      10.3536px 3.35355px,
+      4.85355px 8.85355px,
+      4.85355px 8.85355px,
+      4.79157504px 8.9062729px,
+      4.72377672px 8.9472796px,
+      4.65161088px 8.9765701px,
+      4.57653336px 8.9941444px,
+      4.5px 9.0000025px,
+      4.42346664px 8.9941444px,
+      4.34838912px 8.9765701px,
+      4.27622328px 8.9472796px,
+      4.20842496px 8.9062729px,
+      4.14645px 8.85355px,
+      1.64645px 6.35355px,
+      1.64645px 6.35355px,
+      1.5937271px 6.29157504px,
+      1.5527204px 6.22377672px,
+      1.5234299px 6.15161088px,
+      1.5058556px 6.07653336px,
+      1.4999975px 6px,
+      1.5058556px 5.92346664px,
+      1.5234299px 5.84838912px,
+      1.5527204px 5.77622328px,
+      1.5937271px 5.70842496px,
+      1.64645px 5.64645px,
+      1.64645px 5.64645px,
+      1.70842496px 5.5937271px,
+      1.77622328px 5.5527204px,
+      1.84838912px 5.5234299px,
+      1.92346664px 5.5058556px,
+      2px 5.4999975px,
+      2.07653336px 5.5058556px,
+      2.15161088px 5.5234299px,
+      2.22377672px 5.5527204px,
+      2.29157504px 5.5937271px,
+      2.35355px 5.64645px,
+      4.5px 7.79289px,
+      9.64645px 2.64645px,
+      9.64645px 2.64645px,
+      9.70842528px 2.5937271px,
+      9.77622464px 2.5527204px,
+      9.84839236px 2.5234299px,
+      9.92347272px 2.5058556px,
+      10.00001px 2.4999975px,
+      10.07654848px 2.5058556px,
+      10.15163244px 2.5234299px,
+      10.22380616px 2.5527204px,
+      10.29161392px 2.5937271px,
+      10.3536px 2.64645px
+    );
+  }
+
+  .checkBoxWithCustomCheckmark:checked {
+    background-color: #423d89;
+  }
+
+  .checkBoxWithCustomCheckmark:checked::before {
+    transform: scale(1);
+  }
 }

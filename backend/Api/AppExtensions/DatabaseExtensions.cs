@@ -1,4 +1,4 @@
-using Database.DatabaseContext;
+using Infrastructure.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.AppExtensions;

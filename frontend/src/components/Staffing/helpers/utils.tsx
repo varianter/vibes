@@ -5,7 +5,14 @@ import {
   EngagementState,
 } from "@/api-types";
 import React, { ReactElement } from "react";
-import { Briefcase, Coffee, FileText, Moon, Sun } from "react-feather";
+import {
+  Briefcase,
+  Calendar,
+  Coffee,
+  FileText,
+  Moon,
+  Sun,
+} from "react-feather";
 import { InfoPillVariant } from "@/components/Staffing/InfoPill";
 
 export function getColorByStaffingType(type: BookingType): string {
@@ -20,6 +27,8 @@ export function getColorByStaffingType(type: BookingType): string {
       return "bg-absence";
     case BookingType.Available:
       return "bg-available";
+    case BookingType.NotStartedOrQuit:
+      return "bg-absence/60";
     default:
       return "";
   }
@@ -69,6 +78,8 @@ export function getIconByBookingType(
       return <Moon size={size} className="text-absence_darker" />;
     case BookingType.Available:
       return <Coffee size={size} className="text-available_darker" />;
+    case BookingType.NotStartedOrQuit:
+      return <Calendar size={size} className="text-absence_darker/70" />;
     default:
       return <></>;
   }
