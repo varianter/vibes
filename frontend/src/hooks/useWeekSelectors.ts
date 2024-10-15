@@ -35,7 +35,7 @@ export function useWeekSelectors() {
     );
   }, [selectedWeek, selectedWeekSpan]);
 
-  function changeSelectedWeek(numberOfWeeks: number) {    
+  function changeSelectedWeek(numberOfWeeks: number) {
     const date = selectedWeek
       ? DateTime.now().set({
           weekYear: selectedWeek.year,
@@ -43,8 +43,8 @@ export function useWeekSelectors() {
         })
       : DateTime.now();
 
-    const newDate = date.plus({ week: numberOfWeeks }).plus({day:4});
-    
+    const newDate = date.plus({ week: numberOfWeeks }).plus({ day: 4 });
+
     setSelectedWeek({ year: newDate.year, weekNumber: newDate.weekNumber });
   }
 
