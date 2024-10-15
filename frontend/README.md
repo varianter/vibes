@@ -1,16 +1,18 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-# Useful commands 
+# Useful commands
+
 Run:
+
 ```bash
   yarn dev
 ```
 
 Autofix formatting:
+
 ```bash
 yarn prettier
 ```
-
 
 ## Getting Started
 
