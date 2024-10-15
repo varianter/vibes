@@ -43,7 +43,7 @@ export function useWeekSelectors() {
         })
       : DateTime.now();
 
-    const newDate = date.plus({ week: numberOfWeeks });
+    const newDate = date.plus({ week: numberOfWeeks }).plus({ day: 4 });
 
     setSelectedWeek({ year: newDate.year, weekNumber: newDate.weekNumber });
   }

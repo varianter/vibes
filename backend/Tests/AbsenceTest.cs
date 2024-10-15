@@ -1,5 +1,13 @@
 using Api.StaffingController;
+using Core.Absences;
+using Core.Consultants;
+using Core.Customers;
 using Core.DomainModels;
+using Core.Engagements;
+using Core.Organizations;
+using Core.PlannedAbsences;
+using Core.Staffings;
+using Core.Vacations;
 using NSubstitute;
 
 namespace Tests;
@@ -20,8 +28,8 @@ public class Tests
     [TestCase(0, 0, 0, 30, 7.5)]
     [TestCase(0, 7.5, 0, 22.5, 7.5)]
     public void AvailabilityCalculation(
-        int vacationDays, 
-        double plannedAbsenceHours, 
+        int vacationDays,
+        double plannedAbsenceHours,
         int numberOfHolidays,
         double staffedHours,
         double expectedSellableHours)

@@ -1,7 +1,8 @@
 using System.Text.Json.Serialization;
 using Api.AppExtensions;
 using Api.Options;
-using Database.DatabaseContext;
+using Infrastructure.DatabaseContext;
+using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
@@ -18,8 +19,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization(opt => { opt.FallbackPolicy = opt.DefaultPolicy; });
 
 builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection));
-
 builder.Services.AddMemoryCache();
+builder.AddRepositories();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
