@@ -15,14 +15,10 @@ export function useSelectedWeek() {
         })
       : DateTime.now();
 
-    const newDate = date.plus({ week: numberOfWeeks });
-    let newYear = newDate.year;
-    if (newDate.month === 12 && newDate.weekNumber === 1 ){
-      newYear = newDate.year + 1;
-    }
-
+    const newDate = date.plus({ week: numberOfWeeks }).plus({day: 4});
+    
     updateFilters({
-      week: { year: newYear, weekNumber: newDate.weekNumber },
+      week: { year: newDate.year, weekNumber: newDate.weekNumber },
     });
   }
 
