@@ -42,9 +42,8 @@ export function useWeekSelectors() {
           weekNumber: selectedWeek.weekNumber,
         })
       : DateTime.now();
-
-    const newDate = date.plus({ week: numberOfWeeks }).plus({ day: 4 });
-
+    //finds thursday in week. allways correct year
+    const newDate = date.plus({ week: numberOfWeeks }).plus({ day: - date.weekday + 4 }); 
     setSelectedWeek({ year: newDate.year, weekNumber: newDate.weekNumber });
   }
 
