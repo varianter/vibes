@@ -9,7 +9,6 @@ public class EngagementDbRepository(ApplicationContext context) : IEngagementRep
     public Task<Core.Engagements.Engagement?> GetEngagementById(int id, CancellationToken cancellationToken)
     {
         return context.Project
-            .AsNoTracking()
             .Include(p => p.Customer)
             .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }

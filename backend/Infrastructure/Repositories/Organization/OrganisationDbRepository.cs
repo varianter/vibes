@@ -10,7 +10,6 @@ public class OrganisationDbRepository(ApplicationContext context) : IOrganisatio
         CancellationToken cancellationToken)
     {
         return context.Organization
-            .AsNoTracking()
             .SingleOrDefaultAsync(organization => organization.UrlKey == urlKey, cancellationToken);
     }
 }
