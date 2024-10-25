@@ -190,7 +190,7 @@ public class StorageService
 
     public Customer UpdateOrCreateCustomer(Organization org, string customerName, string orgUrlKey)
     {
-        var customer = _dbContext.Customer.Where(c => c.Organization == org)
+        var customer = _dbContext.Customer.Where(c => c.OrganizationId == org.Id)
             .SingleOrDefault(c => c.Name == customerName);
 
         if (customer is null)
@@ -199,7 +199,7 @@ public class StorageService
             {
                 Name = customerName,
                 Organization = org,
-                Projects = new List<Engagement>()
+                Projects = []
             };
 
             _dbContext.Customer.Add(customer);
