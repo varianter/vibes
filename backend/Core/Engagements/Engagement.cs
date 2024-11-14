@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using Core.Agreements;
 using Core.Consultants;
 using Core.Customers;
 using Core.Staffings;
@@ -13,6 +14,8 @@ public class Engagement
     public int CustomerId { get; set; }
 
     public required Customer Customer { get; set; }
+
+    public Agreement? Agreement { get; set; }
 
     public required EngagementState State { get; set; }
 

@@ -36,8 +36,6 @@ export default function AddNewConsultantModal({
       return;
     }
 
-    console.log(newConsultant);
-
     const createdConsultant = await fetch(
       `/${organisation}/konsulenter/api/consultant`,
       {

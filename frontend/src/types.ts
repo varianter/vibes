@@ -44,3 +44,30 @@ export interface ConsultantWithWeekHours {
   consultant: ConsultantReadModel;
   weekWithHours: WeekWithHours[];
 }
+
+export interface Agreement {
+  agreementId: number;
+  engagementId: number;
+  startDate?: Date;
+  endDate: Date;
+  nextPriceAdjustmentDate?: Date;
+  priceAdjustmentIndex?: string;
+  notes?: string;
+  files?: FileReference[];
+}
+
+export interface AgreementWriteModel {
+  engagementId: number;
+  startDate?: Date;
+  endDate: Date;
+  nextPriceAdjustmentDate?: Date;
+  priceAdjustmentIndex?: string;
+  notes?: string;
+  files?: FileReference[];
+}
+
+export interface FileReference {
+  fileName: string;
+  blobName: string;
+  uploadedOn: Date;
+}

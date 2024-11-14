@@ -1,0 +1,34 @@
+using System.ComponentModel.DataAnnotations.Schema;
+using Core.Engagements;
+
+namespace Core.Agreements
+{
+    public class Agreement
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
+        public int EngagementId { get; set; }
+
+        public required Engagement Engagement { get; set; }
+
+        public ICollection<FileReference> Files { get; set; } = new List<FileReference>();
+
+        public DateTime? StartDate { get; set; }
+
+        public required DateTime EndDate { get; set; }
+
+        public DateTime? NextPriceAdjustmentDate { get; set; }
+
+        public string? PriceAdjustmentIndex { get; set; }
+
+        public string? Notes { get; set; } = string.Empty;
+    }
+
+    public class FileReference
+    {
+        public string FileName { get; set; } = string.Empty;
+        public string BlobName { get; set; } = string.Empty; // URI to the blob storage
+        public DateTime UploadedOn { get; set; }
+    }
+}
