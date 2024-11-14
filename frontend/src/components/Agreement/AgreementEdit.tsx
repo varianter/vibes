@@ -122,7 +122,7 @@ export function AgreementEdit({
             <div className="max-w-xl">
               <EditTextarea
                 value={agreement.notes}
-                label="notes"
+                label="Notat"
                 name="notes"
                 inEdit={inEdit}
               />
