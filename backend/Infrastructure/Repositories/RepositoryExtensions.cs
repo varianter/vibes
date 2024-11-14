@@ -1,3 +1,4 @@
+using Core.Agreements;
 using Core.Consultants;
 using Core.Engagements;
 using Core.Organizations;
@@ -29,5 +30,6 @@ public static class RepositoryExtensions
         builder.Services.Decorate<IStaffingRepository, StaffingCacheRepository>();
 
         builder.Services.AddScoped<IConsultantRepository, ConsultantDbRepository>();
+        builder.Services.AddScoped<IAgreementsRepository, AgreementDbRepository>();
     }
 }

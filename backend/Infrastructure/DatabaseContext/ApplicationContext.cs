@@ -1,4 +1,5 @@
 using Core.Absences;
+using Core.Agreements;
 using Core.Consultants;
 using Core.Customers;
 using Core.DomainModels;
@@ -30,6 +31,7 @@ public class ApplicationContext : DbContext
     public DbSet<Customer> Customer { get; set; } = null!;
     public DbSet<Engagement> Project { get; set; } = null!;
     public DbSet<Staffing> Staffing { get; set; } = null!;
+    public DbSet<Agreement> Agreements { get; set; } = null!;
 
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -163,6 +165,20 @@ public class ApplicationContext : DbContext
             new() { Id = "development", Name = "Utvikling" }
         });
 
+        modelBuilder.Entity<Agreement>(entity =>
+        {
+            entity.OwnsMany(e => e.Files, a =>
+            {
+                a.WithOwner().HasForeignKey("AgreementId");
+                a.Property<int>("Id");
+                a.HasKey("Id");
+            });
+
+            entity.HasOne(a => a.Engagement)
+                  .WithOne(e => e.Agreement)
+                  .HasForeignKey<Agreement>(a => a.EngagementId);
+        });
+
         modelBuilder.Entity<Organization>()
             .HasData(new
             {
@@ -188,6 +204,8 @@ public class ApplicationContext : DbContext
             Degree = Degree.Master,
             GraduationYear = 2019
         });
+
+        
 
         base.OnModelCreating(modelBuilder);
     }

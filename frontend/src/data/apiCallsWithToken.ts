@@ -65,13 +65,16 @@ export async function callApi<T, Body>(
 
   try {
     const response = await callApiNoParse(path, method, bodyInit);
-    if (!response || response.status == 204) {
+    if (!response || response.status == 204 || !response.ok) {
+      const responseText = await response?.text();
+      console.error(
+        `Failed to fetch data from ${path}. Response text: ${responseText}`,
+      );
       return;
     }
     const json = await response.json();
     return json as T;
   } catch (e) {
-    console.error(e);
     throw new Error(`${method} ${path} failed`);
   }
 }

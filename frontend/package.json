@@ -13,6 +13,7 @@
     "generate-types": "npx swagger-typescript-api -p http://localhost:7172/swagger/v0/swagger.json -o ./src -n api-types.ts --no-client"
   },
   "dependencies": {
+    "@azure/storage-blob": "^12.25.0",
     "@headlessui/react": "^1.7.17",
     "@types/node": "20.5.9",
     "@types/react": "18.2.21",
