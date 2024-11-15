@@ -2,6 +2,7 @@
 import {
   deleteFile,
   getAgreementForProject,
+  getPriceAdjustmentIndexes,
   saveChanges,
 } from "@/actions/agreementActions";
 import { ProjectWithCustomerModel } from "@/api-types";
@@ -12,6 +13,7 @@ import { EditDateInput } from "./components/EditDateInput";
 import { Agreement } from "@/types";
 import { getDownloadUrl } from "@/actions/blobActions";
 import { EditTextarea } from "./components/EditTextarea";
+import { EditSelect } from "./components/EditSelect";
 
 export function AgreementEdit({
   project,
@@ -22,6 +24,9 @@ export function AgreementEdit({
   const organisation = params.organisation as string;
   const [agreement, setAgreement] = useState<Agreement | null>();
   const [inEdit, setInEdit] = useState<boolean>(false);
+  const [priceAdjustmentIndexes, setPriceAdjustmentIndexes] = useState<
+    { value: string; label: string }[]
+  >([]);
 
   useEffect(() => {
     async function getAgreement() {
@@ -30,6 +35,8 @@ export function AgreementEdit({
           project.projectId,
           organisation,
         );
+        await getPriceIndexes();
+
         if (agree?.agreementId) {
           setAgreement(agree);
         } else {
@@ -39,6 +46,15 @@ export function AgreementEdit({
     }
     getAgreement();
   }, [organisation, project.projectId]);
+
+  async function getPriceIndexes() {
+    if (organisation) {
+      const indexes = await getPriceAdjustmentIndexes(organisation);
+      setPriceAdjustmentIndexes(
+        indexes ? indexes.map((index) => ({ value: index, label: index })) : [],
+      );
+    }
+  }
 
   async function save(formData: FormData) {
     try {
@@ -51,6 +67,7 @@ export function AgreementEdit({
       if (res) {
         setAgreement(res);
         setInEdit(false);
+        await getPriceIndexes();
       } else {
         console.error("Failed to save agreement");
       }
@@ -94,13 +111,13 @@ export function AgreementEdit({
             />
             <EditDateInput
               value={agreement.startDate ?? null}
-              label="Start dato"
+              label="Startdato"
               name="startDate"
               inEdit={inEdit}
             />
             <EditDateInput
               value={agreement.endDate}
-              label="Slutt dato"
+              label="Utløpsdato"
               name="endDate"
               inEdit={inEdit}
               required={true}
@@ -111,90 +128,110 @@ export function AgreementEdit({
               name="nextPriceAdjustmentDate"
               inEdit={inEdit}
             />
-            <EditInput
+            <EditSelect
               value={agreement.priceAdjustmentIndex}
               label="Prisjusteringsindeks"
               name="priceAdjustmentIndex"
               inEdit={inEdit}
+              options={priceAdjustmentIndexes}
+              onChange={(value) =>
+                setAgreement((prev) =>
+                  prev ? { ...prev, priceAdjustmentIndex: value } : prev,
+                )
+              }
             />
           </div>
           <div className="flex flex-row pt-2 pb-2 justify-between">
-            <div className="max-w-xl">
-              <EditTextarea
-                value={agreement.notes}
-                label="Notat"
-                name="notes"
-                inEdit={inEdit}
-              />
-            </div>
-
-            <div className="flex flex-col max-w-xl">
-              {agreement.files && agreement.files?.length > 0 ? (
-                <label
-                  htmlFor="files"
-                  className="block text-sm font-medium text-gray-700 pb-2"
-                >
-                  Filer
-                </label>
-              ) : null}
-              {inEdit ? (
-                <>
-                  <input type="file" name="files" multiple />
-                  {agreement.files?.map((file) => (
-                    <div key={file.blobName} className="pt-2">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          let agreementCopy = { ...agreement };
-                          agreementCopy.files = agreementCopy.files?.filter(
-                            (f) => f.blobName !== file.blobName,
-                          );
-                          setAgreement(agreementCopy);
-                          deleteFile(
-                            file.blobName,
-                            agreementCopy,
-                            organisation,
-                          );
-                        }}
-                        className=" cursor-pointer pr-2"
-                      >
-                        X
-                      </button>
-                      {file.fileName}
-                    </div>
-                  ))}
-                </>
-              ) : (
-                <div className="flex flex-col">
-                  {agreement.files?.map((file) => (
-                    <div
-                      className="flex flex-row items-center pb-2"
-                      key={file.blobName}
-                    >
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          download(file.blobName, file.fileName);
-                        }}
-                        className="border border-primary p-1 rounded mr-2"
-                      >
-                        Last ned
-                      </button>
-                      <div>{file.fileName}</div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            {agreement.options || inEdit ? (
+              <div className="flex-1 max-w-xl pr-2">
+                <EditTextarea
+                  value={agreement.options}
+                  label="Opsjoner"
+                  name="options"
+                  inEdit={inEdit}
+                />
+              </div>
+            ) : null}
+            {agreement.priceAdjustmentProcess || inEdit ? (
+              <div className="flex-1 max-w-xl pr-2">
+                <EditTextarea
+                  value={agreement.priceAdjustmentProcess}
+                  label="Prisjusteringsprosess"
+                  name="priceAdjustmentProcess"
+                  inEdit={inEdit}
+                />
+              </div>
+            ) : null}
+            {agreement.notes || inEdit ? (
+              <div className="flex-1 max-w-xl">
+                <EditTextarea
+                  value={agreement.notes}
+                  label="Notat"
+                  name="notes"
+                  inEdit={inEdit}
+                />
+              </div>
+            ) : null}
           </div>
+
+          <div className="flex flex-col max-w-xl pb-5">
+            {agreement.files && agreement.files?.length > 0 ? (
+              <label
+                htmlFor="files"
+                className="block text-sm font-medium text-gray-700 pb-2"
+              >
+                Filer
+              </label>
+            ) : null}
+            {inEdit ? (
+              <>
+                <input type="file" name="files" multiple />
+                {agreement.files?.map((file, i) => (
+                  <div key={file.blobName + i} className="pt-2">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        let agreementCopy = { ...agreement };
+                        agreementCopy.files = agreementCopy.files?.filter(
+                          (f) => f.blobName !== file.blobName,
+                        );
+                        setAgreement(agreementCopy);
+                        deleteFile(file.blobName, agreementCopy, organisation);
+                      }}
+                      className=" cursor-pointer pr-2"
+                    >
+                      X
+                    </button>
+                    {file.fileName}
+                  </div>
+                ))}
+              </>
+            ) : (
+              <div className="flex flex-col">
+                {agreement.files?.map((file, i) => (
+                  <button
+                    key={file.blobName + i}
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      download(file.blobName, file.fileName);
+                    }}
+                    className="border-none w-fit pb-2"
+                  >
+                    <div>{file.fileName}</div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           {inEdit ? (
             <button
               type="submit"
               className="border border-primary p-1 rounded w-fit"
             >
-              Save
+              Lagre
             </button>
           ) : (
             <button
@@ -205,7 +242,7 @@ export function AgreementEdit({
               }}
               className="border border-primary p-1 rounded w-fit"
             >
-              Edit
+              Rediger
             </button>
           )}
         </form>
@@ -216,9 +253,9 @@ export function AgreementEdit({
               setAgreement({
                 agreementId: -1,
                 engagementId: project.projectId,
-                startDate: new Date(),
+                startDate: undefined,
                 endDate: new Date(),
-                nextPriceAdjustmentDate: new Date(),
+                nextPriceAdjustmentDate: undefined,
                 priceAdjustmentIndex: "",
                 notes: "",
                 files: [],

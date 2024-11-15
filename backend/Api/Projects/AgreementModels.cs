@@ -10,6 +10,8 @@ public record AgreementReadModel(
     DateTime? NextPriceAdjustmentDate,
     string? PriceAdjustmentIndex,
     string? Notes,
+    string? Options,
+    string? PriceAdjustmentProcess,
     List<FileReferenceReadModel> Files
 );
 
@@ -26,6 +28,8 @@ public record AgreementWriteModel(
     DateTime? NextPriceAdjustmentDate,
     string? PriceAdjustmentIndex,
     string? Notes,
+    string? Options,
+    string? PriceAdjustmentProcess,
     List<FileReferenceWriteModel> Files
 );
 

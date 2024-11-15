@@ -12,4 +12,6 @@ public interface IAgreementsRepository
 
     public Task DeleteAgreementAsync(int id, CancellationToken cancellationToken);
 
+    public Task<List<string?>> GetPriceAdjustmentIndexesAsync(CancellationToken cancellationToken);
+
 }

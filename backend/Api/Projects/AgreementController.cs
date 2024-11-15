@@ -1,14 +1,8 @@
-using Api.Common;
-using Api.StaffingController;
 using Core.Agreements;
-using Core.Consultants;
-using Core.DomainModels;
 using Core.Organizations;
-using Core.Staffings;
 using Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Api.Projects;
@@ -43,6 +37,8 @@ public class AgreementController(
             NextPriceAdjustmentDate: agreement.NextPriceAdjustmentDate,
             PriceAdjustmentIndex: agreement.PriceAdjustmentIndex,
             Notes: agreement.Notes,
+            Options: agreement.Options,
+            PriceAdjustmentProcess: agreement.PriceAdjustmentProcess,
             Files: agreement.Files.Select(f => new FileReferenceReadModel(
                 FileName: f.FileName,
                 BlobName: f.BlobName,
@@ -72,6 +68,8 @@ public class AgreementController(
             NextPriceAdjustmentDate: agreement.NextPriceAdjustmentDate,
             PriceAdjustmentIndex: agreement.PriceAdjustmentIndex,
             Notes: agreement.Notes,
+            Options: agreement.Options,
+            PriceAdjustmentProcess: agreement.PriceAdjustmentProcess,
             Files: agreement.Files.Select(f => new FileReferenceReadModel(
                 FileName: f.FileName,
                 BlobName: f.BlobName,
@@ -86,8 +84,6 @@ public class AgreementController(
     public async Task<ActionResult<AgreementWriteModel>> Post([FromRoute] string orgUrlKey,
         [FromBody] AgreementWriteModel body, CancellationToken ct)
     {
-
-        Console.WriteLine(body);
 
         var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
         if (selectedOrg is null) return BadRequest("Selected org not found");
@@ -104,6 +100,8 @@ public class AgreementController(
             NextPriceAdjustmentDate = body.NextPriceAdjustmentDate,
             PriceAdjustmentIndex = body.PriceAdjustmentIndex,
             Notes = body.Notes,
+            Options = body.Options,
+            PriceAdjustmentProcess = body.PriceAdjustmentProcess,
             Files = body.Files.Select(f => new FileReference
             {
                 FileName = f.FileName,
@@ -122,6 +120,8 @@ public class AgreementController(
             NextPriceAdjustmentDate: agreement.NextPriceAdjustmentDate,
             PriceAdjustmentIndex: agreement.PriceAdjustmentIndex,
             Notes: agreement.Notes,
+            Options: agreement.Options,
+            PriceAdjustmentProcess: agreement.PriceAdjustmentProcess,
             Files: agreement.Files.Select(f => new FileReferenceReadModel(
                 FileName: f.FileName,
                 BlobName: f.BlobName,
@@ -149,6 +149,8 @@ public class AgreementController(
         agreement.NextPriceAdjustmentDate = body.NextPriceAdjustmentDate;
         agreement.PriceAdjustmentIndex = body.PriceAdjustmentIndex;
         agreement.Notes = body.Notes;
+        agreement.Options = body.Options;
+        agreement.PriceAdjustmentProcess = body.PriceAdjustmentProcess;
         agreement.Files = body.Files.Select(f => new FileReference
         {
             FileName = f.FileName,
@@ -166,6 +168,8 @@ public class AgreementController(
             NextPriceAdjustmentDate: agreement.NextPriceAdjustmentDate,
             PriceAdjustmentIndex: agreement.PriceAdjustmentIndex,
             Notes: agreement.Notes,
+            Options: agreement.Options,
+            PriceAdjustmentProcess: agreement.PriceAdjustmentProcess,
             Files: agreement.Files.Select(f => new FileReferenceReadModel(
                 FileName: f.FileName,
                 BlobName: f.BlobName,
@@ -189,5 +193,17 @@ public class AgreementController(
         await agreementsRepository.DeleteAgreementAsync(agreementId, ct);
 
         return Ok();
+    }
+
+    [HttpGet]
+    [Route("priceAdjustmentIndexes")]
+    public async Task<ActionResult<List<string>>> GetPriceAdjustmentIndexes([FromRoute] string orgUrlKey, CancellationToken ct)
+    {
+        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
+        if (selectedOrg is null) return BadRequest("Selected org not found");
+
+        var priceAdjustmentIndexes = await agreementsRepository.GetPriceAdjustmentIndexesAsync(ct);
+
+        return Ok(priceAdjustmentIndexes);
     }
 }

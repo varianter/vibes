@@ -41,4 +41,14 @@ public class AgreementDbRepository(ApplicationContext context) : IAgreementsRepo
             await context.SaveChangesAsync(cancellationToken);
         }
     }
+
+    public async Task<List<string?>> GetPriceAdjustmentIndexesAsync(CancellationToken cancellationToken)
+    {
+        var priceAdjustmentIndexes = await context.Agreements
+            .Select(p => p.PriceAdjustmentIndex)
+            .Distinct()
+            .ToListAsync(cancellationToken);
+
+        return priceAdjustmentIndexes;
+    }
 }
