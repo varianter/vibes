@@ -29,6 +29,8 @@ export async function saveChanges(
         : undefined,
       priceAdjustmentIndex: formData.get("priceAdjustmentIndex") as string,
       notes: formData.get("notes") as string,
+      options: formData.get("options") as string,
+      priceAdjustmentProcess: formData.get("priceAdjustmentProcess") as string,
       files: oldFiles,
     };
 
@@ -151,5 +153,17 @@ export async function deleteAgreement(agreementId: number, orgUrlKey: string) {
     return res;
   } catch (e) {
     console.error("Error deleting agreement", e);
+  }
+}
+
+export async function getPriceAdjustmentIndexes(orgUrlKey: string) {
+  try {
+    const res = await fetchWithToken<string[]>(
+      `${orgUrlKey}/agreements/priceAdjustmentIndexes`,
+    );
+
+    return res;
+  } catch (e) {
+    console.error("Error fetching price adjustment indexes", e);
   }
 }

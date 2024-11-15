@@ -23,6 +23,8 @@ namespace Core.Agreements
         public string? PriceAdjustmentIndex { get; set; }
 
         public string? Notes { get; set; } = string.Empty;
+        public string? Options { get; set; } = string.Empty;
+        public string? PriceAdjustmentProcess { get; set; } = string.Empty;
     }
 
     public class FileReference

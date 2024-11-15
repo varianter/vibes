@@ -53,6 +53,8 @@ export interface Agreement {
   nextPriceAdjustmentDate?: Date;
   priceAdjustmentIndex?: string;
   notes?: string;
+  options?: string;
+  priceAdjustmentProcess?: string;
   files?: FileReference[];
 }
 
@@ -63,6 +65,8 @@ export interface AgreementWriteModel {
   nextPriceAdjustmentDate?: Date;
   priceAdjustmentIndex?: string;
   notes?: string;
+  options?: string;
+  priceAdjustmentProcess?: string;
   files?: FileReference[];
 }
 
