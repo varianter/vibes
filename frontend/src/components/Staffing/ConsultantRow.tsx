@@ -83,21 +83,28 @@ export default function ConsultantRows({
   const organisationUrl = usePathname().split("/")[1];
 
   function getStatusConsultant(consultant: ConsultantReadModel) {
-    const statuses = consultant.detailedBooking.map(
-      (e) => e.bookingDetails.agreementStatus,
+    const statuses = consultant.detailedBooking.map((e) =>
+      stringToAgreementStatus(e.bookingDetails.agreementStatus),
     );
-    const mapped = statuses
-      .filter((e) => e !== undefined)
-      .map((el: string) => AgreementStatus[el as keyof typeof AgreementStatus]);
 
     if (statuses) {
-      if (mapped.includes(AgreementStatus.None)) {
+      if (statuses.includes(AgreementStatus.None)) {
         return "red";
-      } else if (mapped.includes(AgreementStatus.Expired)) {
+      } else if (statuses.includes(AgreementStatus.Expired)) {
         return "orange";
       } else {
         return null;
       }
+    }
+  }
+
+  function stringToAgreementStatus(status: string | undefined) {
+    if (status === "Active") {
+      return AgreementStatus.Active;
+    } else if (status === "Expired") {
+      return AgreementStatus.Expired;
+    } else {
+      return AgreementStatus.None;
     }
   }
 
