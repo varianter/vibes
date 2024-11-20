@@ -8,7 +8,7 @@ import {
   StorageSharedKeyCredential,
 } from "@azure/storage-blob";
 
-export async function uploadFiles(engagementId: number, files: File[]) {
+export async function uploadFiles(files: File[]) {
   const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
   if (!connectionString) {
     throw new Error("Azure Storage connection string is not defined.");
@@ -23,7 +23,7 @@ export async function uploadFiles(engagementId: number, files: File[]) {
     const uploadedFiles = await Promise.all(
       files.map(async (file) => {
         const uploaded = new Date();
-        const blobName = `${engagementId}${file.name}`;
+        const blobName = `${file.name}${uploaded}`;
 
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);

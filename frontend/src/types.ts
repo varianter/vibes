@@ -46,8 +46,10 @@ export interface ConsultantWithWeekHours {
 }
 
 export interface Agreement {
+  name: string;
   agreementId: number;
-  engagementId: number;
+  customerId?: number;
+  engagementId?: number;
   startDate?: Date;
   endDate: Date;
   nextPriceAdjustmentDate?: Date;
@@ -59,7 +61,9 @@ export interface Agreement {
 }
 
 export interface AgreementWriteModel {
-  engagementId: number;
+  name: string;
+  customerId?: number;
+  engagementId?: number;
   startDate?: Date;
   endDate: Date;
   nextPriceAdjustmentDate?: Date;
