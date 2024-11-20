@@ -9,11 +9,9 @@ namespace Core.Agreements
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
     public string? Name { get; set; } = string.Empty;
-    // Foreign key to Customer
     public int? CustomerId { get; set; }
     public Customer? Customer { get; set; }
 
-    // Foreign key to Engagement
     public int? EngagementId { get; set; }
     public Engagement? Engagement { get; set; }
 
@@ -25,11 +23,11 @@ namespace Core.Agreements
     public DateTime? NextPriceAdjustmentDate { get; set; }
 
     public string? PriceAdjustmentIndex { get; set; }
-
     public string? Notes { get; set; } = string.Empty;
     public string? Options { get; set; } = string.Empty;
     public string? PriceAdjustmentProcess { get; set; } = string.Empty;
 }
+
 
     public class FileReference
     {
