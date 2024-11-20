@@ -1,4 +1,5 @@
 import {
+  AgreementStatus,
   BookingType,
   ConsultantReadModel,
   DetailedBooking,
@@ -29,7 +30,6 @@ import { updateBookingHoursBody, updateProjectStateBody } from "@/types";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { parseYearWeekFromString } from "@/data/urlUtils";
 import Link from "next/link";
-import { getAgreementsForProject } from "@/actions/agreementActions";
 
 async function updateProjectState(
   organisationName: string,
@@ -67,10 +67,30 @@ export function DetailedBookingRows(props: {
   openEngagementAndSetID: (id: number) => void;
   numWorkHours: number;
 }) {
-  const colors: { color: string; text: string; icon: Icon }[] = [
-    { color: "green", text: "Avtale aktiv", icon: CheckCircle },
-    { color: "red", text: "Ingen avtaler funnet", icon: AlertCircle },
-    { color: "orange", text: "Avtale utgått", icon: AlertCircle },
+  const colors: {
+    color: string;
+    text: string;
+    icon: Icon;
+    status: AgreementStatus;
+  }[] = [
+    {
+      color: "green",
+      text: "Avtale aktiv",
+      icon: CheckCircle,
+      status: AgreementStatus.Active,
+    },
+    {
+      color: "red",
+      text: "Ingen avtaler funnet",
+      icon: AlertCircle,
+      status: AgreementStatus.None,
+    },
+    {
+      color: "orange",
+      text: "Avtale utgått",
+      icon: AlertCircle,
+      status: AgreementStatus.Expired,
+    },
   ];
   const { setConsultants } = useContext(FilteredContext);
 
@@ -112,22 +132,10 @@ export function DetailedBookingRows(props: {
   }, []);
 
   async function getColorIcon() {
-    const agreements = await getAgreementsForProject(
-      detailedBooking.bookingDetails.projectId,
-      organisationName,
-    );
-    if (agreements) {
-      const endDate = Math.max(
-        ...agreements.map((p) => new Date(p.endDate).getTime()),
-      );
-      const today = new Date().getTime();
-      if (today > endDate) {
-        return setAlertColor(colors.find((c) => c.color == "orange"));
-      } else {
-        return setAlertColor(colors.find((c) => c.color == "green"));
-      }
-    } else {
-      return setAlertColor(colors.find((c) => c.color == "red"));
+    const status = detailedBooking.bookingDetails?.agreementStatus;
+    if (status) {
+      const color = colors.find((c) => AgreementStatus[c.status] === status);
+      setAlertColor(color);
     }
   }
 
@@ -138,7 +146,7 @@ export function DetailedBookingRows(props: {
     >
       <td className=" border-l-secondary border-l-2 w-full">
         <div className="relative flex justify-center group items-center">
-          {alert ? <alert.icon color={alert.color} /> : <Loader />}
+          {alert && <alert.icon color={alert.color} />}
           <div className="absolute left-full ml-2 hidden group-hover:block bg-black text-white text-xs rounded py-1 px-2 w-max z-30">
             {alert?.text}
             <div className="absolute top-1/2 transform -translate-y-1/2 left-0 ml-[-8px] w-0 h-0 border-r-8 border-r-black border-y-8 border-y-transparent border-l-0"></div>

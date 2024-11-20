@@ -30,6 +30,13 @@ export interface BookingDetails {
   /** @format int32 */
   projectId: number;
   isBillable: boolean;
+  agreementStatus?: string;
+}
+
+export enum AgreementStatus {
+  Active,
+  Expired,
+  None,
 }
 
 export enum BookingType {

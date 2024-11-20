@@ -93,6 +93,30 @@ public class ReadModelFactory
     {
         weekSet.Sort();
 
+        var projectsStatuses = consultant.Projects.Select(p => {
+            // Get the endDate furthest away for the engagement 
+            var endDate = p.Agreements
+                .Where(a => a.EngagementId == p.Id)
+                .Select(a => a?.EndDate)
+                .DefaultIfEmpty((DateTime?)null)
+                .Max();
+
+            var dateToday = DateOnly.FromDateTime(DateTime.Today);
+            var status = endDate.HasValue 
+                ? endDate < dateToday.ToDateTime(TimeOnly.MinValue) 
+                    ? AgreementStatus.Expired
+                    : AgreementStatus.Active
+                : AgreementStatus.None;
+
+            return new {
+                p.Id,
+                status
+            };
+        }).ToList();
+
+
+
+
         // var billableProjects = UniqueWorkTypes(projects, billableStaffing);
         var billableBookings = consultant.Staffings
             .Where(staffing => staffing.Engagement.State == EngagementState.Order)
@@ -101,7 +125,7 @@ public class ReadModelFactory
             .Select(grouping => new DetailedBooking(
                 new BookingDetails(grouping.First().Engagement.Name, BookingType.Booking,
                     grouping.First().Engagement.Customer.Name,
-                    grouping.Key, false, grouping.First().Engagement.IsBillable),
+                    grouping.Key, false, grouping.First().Engagement.IsBillable, projectsStatuses.First(p => p.Id == grouping.Key).status),
                 weekSet.Select(week =>
                     new WeeklyHours(
                         week.ToSortableInt(), grouping
@@ -117,7 +141,7 @@ public class ReadModelFactory
             .Select(grouping => new DetailedBooking(
                 new BookingDetails(grouping.First().Engagement.Name, BookingType.Offer,
                     grouping.First().Engagement.Customer.Name,
-                    grouping.Key, false, grouping.First().Engagement.IsBillable),
+                    grouping.Key, false, grouping.First().Engagement.IsBillable, projectsStatuses.First(p => p.Id == grouping.Key).status),
                 weekSet.Select(week =>
                     new WeeklyHours(
                         week.ToSortableInt(),
