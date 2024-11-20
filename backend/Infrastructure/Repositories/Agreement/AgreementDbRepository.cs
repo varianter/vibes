@@ -13,11 +13,20 @@ public class AgreementDbRepository(ApplicationContext context) : IAgreementsRepo
             .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
 
-    public Task<Core.Agreements.Agreement?> GetAgreementByEngagementId(int engagementId, CancellationToken cancellationToken)
+    public Task<List<Core.Agreements.Agreement>> GetAgreementsByEngagementId(int engagementId, CancellationToken cancellationToken)
     {
         return context.Agreements
             .Include(p => p.Files)
-            .FirstOrDefaultAsync(p => p.EngagementId == engagementId, cancellationToken);
+            .Where(p => p.EngagementId == engagementId)
+            .ToListAsync(cancellationToken);
+    }
+
+    public Task<List<Core.Agreements.Agreement>> GetAgreementsByCustomerId(int customerId, CancellationToken cancellationToken)
+    {
+        return context.Agreements
+            .Include(p => p.Files)
+            .Where(p => p.CustomerId == customerId)
+            .ToListAsync(cancellationToken);
     }
 
     public async Task AddAgreementAsync(Agreement agreement, CancellationToken cancellationToken)

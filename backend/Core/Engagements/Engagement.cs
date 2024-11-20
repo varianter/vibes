@@ -15,7 +15,7 @@ public class Engagement
 
     public required Customer Customer { get; set; }
 
-    public Agreement? Agreement { get; set; }
+    public ICollection<Agreement> Agreements { get; set; } = new List<Agreement>();
 
     public required EngagementState State { get; set; }
 

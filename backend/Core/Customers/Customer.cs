@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using Core.Agreements;
 using Core.Engagements;
 using Core.Organizations;
 
@@ -10,7 +11,7 @@ public class Customer
     public int Id { get; set; }
 
     public string? OrganizationId { get; set; }
-
+    public ICollection<Agreement> Agreements { get; set; } = new List<Agreement>();
     public required string Name { get; set; }
     public required Organization Organization { get; set; }
     public required List<Engagement> Projects { get; set; }

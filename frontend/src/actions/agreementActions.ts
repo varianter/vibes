@@ -17,7 +17,13 @@ export async function saveChanges(
   try {
     const agreementId = formData.get("agreementId") as string;
     let agreementData: AgreementWriteModel = {
-      engagementId: Number(formData.get("engagementId") as string),
+      name: formData.get("name") as string,
+      engagementId: formData.get("engagementId")
+        ? Number(formData.get("engagementId") as string)
+        : undefined,
+      customerId: formData.get("customerId")
+        ? Number(formData.get("customerId") as string)
+        : undefined,
       startDate: (formData.get("startDate") as string)
         ? new Date(formData.get("startDate") as string)
         : undefined,
@@ -40,7 +46,7 @@ export async function saveChanges(
     );
 
     if (validFiles.length > 0) {
-      const fileRes = await uploadFiles(agreementData.engagementId, validFiles);
+      const fileRes = await uploadFiles(validFiles);
       agreementData.files = [...(agreementData.files ?? []), ...fileRes];
     }
 
@@ -56,7 +62,10 @@ export async function saveChanges(
         if (validFiles.length > 0) {
           await deleteFiles(
             validFiles.map(
-              (file) => `${agreementData.engagementId}${file.name}`,
+              (file) =>
+                `${file.name}${agreementData.files?.find(
+                  (f) => f.fileName === file.name,
+                )?.uploadedOn}`,
             ),
           );
         }
@@ -71,7 +80,10 @@ export async function saveChanges(
         if (validFiles.length > 0) {
           await deleteFiles(
             validFiles.map(
-              (file) => `${agreementData.engagementId}${file.name}`,
+              (file) =>
+                `${file.name}${agreementData.files?.find(
+                  (f) => f.fileName === file.name,
+                )?.uploadedOn}`,
             ),
           );
         }
@@ -100,18 +112,33 @@ export async function deleteFile(
   }
 }
 
-export async function getAgreementForProject(
+export async function getAgreementsForProject(
   projectId: number,
   orgUrlKey: string,
 ) {
   try {
-    const res = await fetchWithToken<Agreement>(
+    const res = await fetchWithToken<Agreement[]>(
       `${orgUrlKey}/agreements/get/engagement/${projectId}`,
     );
 
     return await res;
   } catch (e) {
     console.error("Error fetching agreement for project", e);
+  }
+}
+
+export async function getAgreementsForCustomer(
+  customerId: number,
+  orgUrlKey: string,
+) {
+  try {
+    const res = await fetchWithToken<Agreement[]>(
+      `${orgUrlKey}/agreements/get/customer/${customerId}`,
+    );
+
+    return await res;
+  } catch (e) {
+    console.error("Error fetching agreement for customer", e);
   }
 }
 
@@ -153,6 +180,19 @@ export async function deleteAgreement(agreementId: number, orgUrlKey: string) {
     return res;
   } catch (e) {
     console.error("Error deleting agreement", e);
+  }
+}
+
+export async function deleteAgreementWithFiles(
+  agreement: Agreement,
+  org: string,
+) {
+  try {
+    await deleteFiles(agreement.files?.map((file) => file.blobName) ?? []);
+
+    return await deleteAgreement(agreement.agreementId, org);
+  } catch (e) {
+    console.error("Error deleting agreement with files", e);
   }
 }
 

@@ -167,16 +167,22 @@ public class ApplicationContext : DbContext
 
         modelBuilder.Entity<Agreement>(entity =>
         {
-            entity.OwnsMany(e => e.Files, a =>
-            {
-                a.WithOwner().HasForeignKey("AgreementId");
-                a.Property<int>("Id");
-                a.HasKey("Id");
-            });
+            entity.HasOne(a => a.Customer)
+                .WithMany(c => c.Agreements)
+                .HasForeignKey(a => a.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(a => a.Engagement)
-                  .WithOne(e => e.Agreement)
-                  .HasForeignKey<Agreement>(a => a.EngagementId);
+                .WithMany(e => e.Agreements)
+                .HasForeignKey(a => a.EngagementId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.OwnsMany(a => a.Files, fr =>
+            {
+                fr.WithOwner().HasForeignKey("AgreementId");
+                fr.Property<int>("Id");
+                fr.HasKey("Id");
+            });
         });
 
         modelBuilder.Entity<Organization>()
