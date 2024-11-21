@@ -1,11 +1,7 @@
 "use client";
-import {
-  AgreementStatus,
-  ConsultantReadModel,
-  ProjectWithCustomerModel,
-} from "@/api-types";
+import { ConsultantReadModel, ProjectWithCustomerModel } from "@/api-types";
 import React, { useContext, useEffect, useState } from "react";
-import { AlertCircle, ChevronDown, Plus } from "react-feather";
+import { ChevronDown, Plus } from "react-feather";
 import { DetailedBookingRows } from "@/components/Staffing/DetailedBookingRows";
 import { WeekCell } from "@/components/Staffing/WeekCell";
 import { useModal } from "@/hooks/useModal";
@@ -81,32 +77,6 @@ export default function ConsultantRows({
   >(undefined);
 
   const organisationUrl = usePathname().split("/")[1];
-
-  function getStatusConsultant(consultant: ConsultantReadModel) {
-    const statuses = consultant.detailedBooking.map((e) =>
-      stringToAgreementStatus(e.bookingDetails.agreementStatus),
-    );
-
-    if (statuses) {
-      if (statuses.includes(AgreementStatus.None)) {
-        return "red";
-      } else if (statuses.includes(AgreementStatus.Expired)) {
-        return "orange";
-      } else {
-        return null;
-      }
-    }
-  }
-
-  function stringToAgreementStatus(status: string | undefined) {
-    if (status === "Active") {
-      return AgreementStatus.Active;
-    } else if (status === "Expired") {
-      return AgreementStatus.Expired;
-    } else {
-      return AgreementStatus.None;
-    }
-  }
 
   useEffect(() => {
     async function fetchProject() {
@@ -211,14 +181,7 @@ export default function ConsultantRows({
           </button>
         </td>
         <td>
-          <div className="flex gap-1 items-center">
-            {getStatusConsultant(currentConsultant)! && (
-              <AlertCircle
-                color={getStatusConsultant(currentConsultant)!}
-                size={20}
-              />
-            )}
-
+          <div className="flex gap-2">
             <div className="flex flex-row align-center self-center gap-2">
               {consultant.imageThumbUrl ? (
                 <Image

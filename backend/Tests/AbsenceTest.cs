@@ -1,6 +1,5 @@
 using Api.StaffingController;
 using Core.Absences;
-using Core.Agreements;
 using Core.Consultants;
 using Core.Customers;
 using Core.DomainModels;
@@ -57,26 +56,6 @@ public class Tests
             Consultants = Substitute.For<List<Consultant>>()
         };
 
-        var customer = new Customer
-        {
-            Id = 1,
-            Name = "TestCustomer",
-            Organization = org,
-            Projects = new List<Engagement>()
-        };
-
-        var engagement = new Engagement
-        {
-            Id = 1,
-            Customer = customer,
-            State = EngagementState.Order,
-            IsBillable = true,
-            Staffings = new List<Staffing>(),
-            Name = "TestProject",
-
-        };
-
-        customer.Projects.Add(engagement);
 
         Consultant consultant = new()
         {
@@ -84,11 +63,8 @@ public class Tests
             Name = "Test Variant",
             Email = "tv@v.no",
             GraduationYear = 2010,
-            Department = department,
-            Projects = new List<Engagement>()
+            Department = department
         };
-
-        consultant.Projects.Add(engagement);
 
         var mondayDateOnly = numberOfHolidays switch
         {
@@ -100,17 +76,12 @@ public class Tests
         };
 
         var week = Week.FromDateOnly(mondayDateOnly);
-    
-
-
-        Agreement agreement = new()
-        {
-            Id = 1,
-            EndDate = new DateTime(2023, 12, 31),
-            StartDate = new DateTime(2023, 1, 1),
-            EngagementId = 1,
-            Engagement = engagement,
-        };
+        var project = Substitute.For<Engagement>();
+        var customer = Substitute.For<Customer>();
+        customer.Name = "TestCustomer";
+        project.Customer = customer;
+        project.State = EngagementState.Order;
+        project.IsBillable = true;
 
 
         // TODO: Change this to update consultant data
@@ -137,11 +108,11 @@ public class Tests
         if (staffedHours > 0)
             consultant.Staffings.Add(new Staffing
             {
-                Engagement = engagement,
+                Engagement = project,
                 Consultant = consultant,
                 Hours = staffedHours,
                 Week = week,
-                EngagementId = engagement.Id,
+                EngagementId = project.Id,
                 ConsultantId = consultant.Id
             });
 
@@ -191,11 +162,8 @@ public class Tests
             Name = "Test Variant",
             Email = "tv@v.no",
             GraduationYear = 2010,
-            Department = department,
-            Projects = new List<Engagement>()
+            Department = department
         };
-
-        consultant.Projects.Add(Substitute.For<Engagement>());
 
         var week = new Week(2000, 1);
 
