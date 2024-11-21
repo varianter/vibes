@@ -98,15 +98,7 @@ public record BookingDetails(
     [property: Required] string CustomerName,
     [property: Required] int ProjectId,
     [property: Required] bool ExcludeFromBilling = false,
-    [property: Required] bool IsBillable = false,
-    [property: Required] AgreementStatus AgreementStatus = AgreementStatus.None);
-
-public enum AgreementStatus
-{
-    Active,
-    Expired,
-    None
-}
+    [property: Required] bool IsBillable = false);
 
 public record WeeklyHours([property: Required] int Week, [property: Required] double Hours);
 
