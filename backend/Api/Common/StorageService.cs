@@ -46,6 +46,8 @@ public class StorageService
         var consultant = _dbContext.Consultant
             .Include(c => c.Department)
             .ThenInclude(d => d.Organization)
+            .Include(c => c.Projects)
+            .ThenInclude(p => p.Agreements)
             .Single(c => c.Id == consultantId);
 
         consultant.Staffings = _dbContext.Staffing.Where(staffing =>
@@ -66,6 +68,8 @@ public class StorageService
         var consultant = _dbContext.Consultant
             .Include(c => c.Department)
             .ThenInclude(d => d.Organization)
+            .Include(c => c.Projects)
+            .ThenInclude(p => p.Agreements)
             .Single(c => c.Id == consultantId);
 
 
@@ -96,6 +100,8 @@ public class StorageService
             .ThenInclude(department => department.Organization)
             .Include(c => c.CompetenceConsultant)
             .ThenInclude(cc => cc.Competence)
+            .Include(c => c.Projects)
+            .ThenInclude(p => p.Agreements)
             .Where(consultant => consultant.Department.Organization.UrlKey == orgUrlKey)
             .OrderBy(consultant => consultant.Name)
             .ToList();
