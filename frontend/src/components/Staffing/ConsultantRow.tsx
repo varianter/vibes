@@ -216,7 +216,6 @@ export default function ConsultantRows({
               <AlertCircle
                 color={getStatusConsultant(currentConsultant)!}
                 size={20}
-                onClick={() => console.log("clicked")}
               />
             )}
 
