@@ -112,14 +112,10 @@ export function DetailedBookingRows(props: {
   }, []);
 
   async function getColorIcon() {
-    const agreements = await getAgreementsForProject(
-      detailedBooking.bookingDetails.projectId,
-      organisationName,
-    );
-    if (agreements) {
-      const endDate = Math.max(
-        ...agreements.map((p) => new Date(p.endDate).getTime()),
-      );
+    const endDateString = detailedBooking.bookingDetails.endDateAgreement;
+    if (endDateString !== null) {
+      const endDate = new Date(endDateString).getTime();
+
       const today = new Date().getTime();
       if (today > endDate) {
         return setAlertColor(colors.find((c) => c.color == "orange"));
@@ -138,7 +134,7 @@ export function DetailedBookingRows(props: {
     >
       <td className=" border-l-secondary border-l-2 w-full">
         <div className="relative flex justify-center group items-center">
-          {alert ? <alert.icon color={alert.color} /> : <Loader />}
+          {alert && <alert.icon color={alert.color} />}
           <div className="absolute left-full ml-2 hidden group-hover:block bg-black text-white text-xs rounded py-1 px-2 w-max z-30">
             {alert?.text}
             <div className="absolute top-1/2 transform -translate-y-1/2 left-0 ml-[-8px] w-0 h-0 border-r-8 border-r-black border-y-8 border-y-transparent border-l-0"></div>

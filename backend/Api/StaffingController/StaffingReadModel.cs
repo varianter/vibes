@@ -98,7 +98,8 @@ public record BookingDetails(
     [property: Required] string CustomerName,
     [property: Required] int ProjectId,
     [property: Required] bool ExcludeFromBilling = false,
-    [property: Required] bool IsBillable = false);
+    [property: Required] bool IsBillable = false,
+    DateTime? EndDateAgreement = null);
 
 public record WeeklyHours([property: Required] int Week, [property: Required] double Hours);
 
