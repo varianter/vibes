@@ -49,8 +49,11 @@ public class StorageService
             .Single(c => c.Id == consultantId);
 
         consultant.Staffings = _dbContext.Staffing.Where(staffing =>
-                staffing.Week.Equals(week) && staffing.ConsultantId == consultantId).Include(s => s.Engagement)
-            .ThenInclude(p => p.Customer).ToList();
+                staffing.Week.Equals(week) && staffing.ConsultantId == consultantId)
+                .Include(s => s.Engagement)
+                .ThenInclude(p => p.Customer)
+                .Include(s => s.Engagement)
+                .ThenInclude(e => e.Agreements).ToList();
 
         consultant.PlannedAbsences = _dbContext.PlannedAbsence
             .Where(absence => absence.Week.Equals(week) && absence.ConsultantId == consultantId).Include(a => a.Absence)
@@ -70,8 +73,12 @@ public class StorageService
 
 
         consultant.Staffings = _dbContext.Staffing.Where(staffing =>
-                weeks.Contains(staffing.Week) && staffing.ConsultantId == consultantId).Include(s => s.Engagement)
-            .ThenInclude(p => p.Customer).ToList();
+                weeks.Contains(staffing.Week) && staffing.ConsultantId == consultantId)
+                .Include(s => s.Engagement)
+                .ThenInclude(p => p.Customer)
+                .Include(s => s.Engagement)
+                .ThenInclude(e => e.Agreements)
+                .ToList();
 
         consultant.PlannedAbsences = _dbContext.PlannedAbsence
             .Where(absence => weeks.Contains(absence.Week) && absence.ConsultantId == consultantId)
