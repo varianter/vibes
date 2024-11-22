@@ -113,7 +113,7 @@ export function DetailedBookingRows(props: {
 
   async function getColorIcon() {
     const endDateString = detailedBooking.bookingDetails.endDateAgreement;
-    if (endDateString !== null) {
+    if (endDateString && endDateString !== null) {
       const endDate = new Date(endDateString).getTime();
 
       const today = new Date().getTime();
@@ -123,7 +123,9 @@ export function DetailedBookingRows(props: {
         return setAlertColor(colors.find((c) => c.color == "green"));
       }
     } else {
-      return setAlertColor(colors.find((c) => c.color == "red"));
+      if (endDateString === null) {
+        return setAlertColor(colors.find((c) => c.color == "red"));
+      }
     }
   }
 

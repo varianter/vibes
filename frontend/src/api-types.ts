@@ -30,7 +30,7 @@ export interface BookingDetails {
   /** @format int32 */
   projectId: number;
   isBillable: boolean;
-  endDateAgreement: string | null;
+  endDateAgreement?: string | null;
 }
 
 export enum BookingType {
