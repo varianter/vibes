@@ -1,7 +1,7 @@
 "use client";
 import { ConsultantReadModel, ProjectWithCustomerModel } from "@/api-types";
 import React, { useContext, useEffect, useState } from "react";
-import { ChevronDown, Plus } from "react-feather";
+import { AlertCircle, ChevronDown, Plus } from "react-feather";
 import { DetailedBookingRows } from "@/components/Staffing/DetailedBookingRows";
 import { WeekCell } from "@/components/Staffing/WeekCell";
 import { useModal } from "@/hooks/useModal";
@@ -155,6 +155,28 @@ export default function ConsultantRows({
     }
   }
 
+  function getAlert() {
+    const dates = consultant.detailedBooking
+      .filter((e) => e.bookingDetails.projectId > 0)
+      .map((e) => e.bookingDetails.endDateAgreement);
+
+    if (dates.some((e) => e === null)) {
+      return <AlertCircle color="red" size={20} />;
+    } else if (dates.length > 0) {
+      const newestDate = dates.reduce((a, b) => {
+        return new Date(a as string) < new Date(b as string) ? a : b;
+      });
+
+      const now = DateTime.now();
+      const endDate = DateTime.fromISO(newestDate as string);
+      if (endDate < now) {
+        return <AlertCircle color="orange" size={20} />;
+      } else {
+        return null;
+      }
+    }
+  }
+
   return (
     <>
       <tr
@@ -181,7 +203,8 @@ export default function ConsultantRows({
           </button>
         </td>
         <td>
-          <div className="flex gap-2">
+          <div className="flex gap-1 items-center">
+            {getAlert()}
             <div className="flex flex-row align-center self-center gap-2">
               {consultant.imageThumbUrl ? (
                 <Image

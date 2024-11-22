@@ -198,6 +198,7 @@ public class AgreementController(
                 UploadedOn: f.UploadedOn
             )).ToList()
         );
+        cache.Remove($"consultantCacheKey/{orgUrlKey}");
 
         return Ok(responseModel);
     }
@@ -294,6 +295,8 @@ public class AgreementController(
             )).ToList()
         );
 
+        cache.Remove($"consultantCacheKey/{orgUrlKey}");
+
         return Ok(responseModel);
     }
 
@@ -308,6 +311,7 @@ public class AgreementController(
         if (agreement is null) return NotFound();
 
         await agreementsRepository.DeleteAgreementAsync(agreementId, ct);
+        cache.Remove($"consultantCacheKey/{orgUrlKey}");
 
         return Ok("Deleted");
     }
