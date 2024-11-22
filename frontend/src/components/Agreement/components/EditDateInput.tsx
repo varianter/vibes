@@ -4,12 +4,14 @@ export function EditDateInput({
   label,
   inEdit,
   required = false,
+  onClick,
 }: {
   value: Date | null;
   name: string;
   label: string;
   inEdit: boolean;
   required?: boolean;
+  onClick?: (e?: any) => any;
 }) {
   return (
     <div className="mb-4 pr-4">
@@ -17,7 +19,7 @@ export function EditDateInput({
         <>
           <label
             htmlFor={label}
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm p-2 font-medium text-gray-700"
           >
             {label}
           </label>
@@ -30,18 +32,21 @@ export function EditDateInput({
               value ? new Date(value).toISOString().split("T")[0] : undefined
             }
             type="date"
-            className="border border-gray-300 rounded-md p-1 mt-1 block w-full"
+            className="border-2 shadow-sm border-primary rounded-md px-2 pt-1 mt-1 block w-full"
           />
         </>
       ) : (
         <>
           <label
             htmlFor={label}
-            className="block text-sm font-medium text-gray-700"
+            className="block  px-2 text-sm font-medium text-gray-700"
           >
             {label}
           </label>
-          <p className="mt-1">
+          <p
+            onClick={onClick}
+            className="mt-1 bg-primary/5 shadow-sm border border-primary/5 pr-10 p-2 rounded-md"
+          >
             {value ? new Date(value).toLocaleDateString() : ""}
           </p>
         </>

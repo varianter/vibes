@@ -3,14 +3,16 @@ export function EditTextarea({
   name,
   label,
   inEdit,
+  onClick,
 }: {
   value?: string;
   name: string;
   label: string;
   inEdit: boolean;
+  onClick?: (e?: any) => any;
 }) {
   return (
-    <div className="mb-4 pr-4">
+    <div className="mb-7 pr-4">
       {inEdit ? (
         <>
           <label
@@ -26,21 +28,30 @@ export function EditTextarea({
             name={name}
             defaultValue={value}
             aria-label={label}
-            className="border border-gray-300 rounded-md p-1 mt-1 block w-full"
+            className="border-2 border-primary rounded-md p-1 mt-1 block w-full"
           />
         </>
       ) : (
         <>
-          {value ? (
-            <label
-              htmlFor={label}
-              className="block text-sm font-medium text-gray-700"
-            >
-              {label}
-            </label>
-          ) : null}
+          <label
+            htmlFor={label}
+            className="block text-sm px-2 font-bold text-gray-700"
+          >
+            {label}
+          </label>
 
-          <p className="mt-1">{value}</p>
+          {value ? (
+            <p onClick={onClick} className="mt-1 px-2">
+              {value}
+            </p>
+          ) : (
+            <p
+              onClick={onClick}
+              className="mt-1 px-2 italic text-text_light_black/50"
+            >
+              {"Legg til tekst her"}
+            </p>
+          )}
         </>
       )}
     </div>

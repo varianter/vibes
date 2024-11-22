@@ -19,6 +19,9 @@ import { getDownloadUrl } from "@/actions/blobActions";
 import { EditTextarea } from "./components/EditTextarea";
 import { EditSelect } from "./components/EditSelect";
 import { EditInput } from "./components/EditInput";
+import { AgreementButton } from "./components/AgreementButton";
+import InfoPill from "../Staffing/InfoPill";
+import { Delete, Download, X } from "react-feather";
 
 export function AgreementEdit({
   project,
@@ -155,10 +158,14 @@ export function AgreementEdit({
           <form
             action={(form) => save(form, i)}
             key={agreement.agreementId}
-            className="border p-3 mt-2"
+            className="border-primary/5 bg-primary/5 shadow-md rounded-md p-4 mr-32 mt-2"
           >
-            <div className="w-fit">
+            <div className="w-full">
               <EditInput
+                onClick={(e) => {
+                  e.preventDefault();
+                  setInEditIndex(i);
+                }}
                 value={agreement.name ?? null}
                 label="Navn"
                 name="name"
@@ -166,7 +173,7 @@ export function AgreementEdit({
               />
             </div>
 
-            <div className="flex flex-row flex-wrap justify-between">
+            <div className="flex flex-row flex-wrap justify-start items-start gap-16">
               {agreement.agreementId !== -1 && (
                 <input
                   type="hidden"
@@ -187,12 +194,20 @@ export function AgreementEdit({
                 value={agreement.customerId ? agreement.customerId : undefined}
               />
               <EditDateInput
+                onClick={(e) => {
+                  e.preventDefault();
+                  setInEditIndex(i);
+                }}
                 value={agreement.startDate ?? null}
                 label="Startdato"
                 name="startDate"
                 inEdit={inEditIndex === i}
               />
               <EditDateInput
+                onClick={(e) => {
+                  e.preventDefault();
+                  setInEditIndex(i);
+                }}
                 value={agreement.endDate}
                 label="Utløpsdato"
                 name="endDate"
@@ -200,12 +215,20 @@ export function AgreementEdit({
                 required={true}
               />
               <EditDateInput
+                onClick={(e) => {
+                  e.preventDefault();
+                  setInEditIndex(i);
+                }}
                 value={agreement.nextPriceAdjustmentDate ?? null}
                 label="Neste prisjustering"
                 name="nextPriceAdjustmentDate"
                 inEdit={inEditIndex === i}
               />
               <EditSelect
+                onClick={(e) => {
+                  e.preventDefault();
+                  setInEditIndex(i);
+                }}
                 value={agreement.priceAdjustmentIndex}
                 label="Prisjusteringsindeks"
                 name="priceAdjustmentIndex"
@@ -214,51 +237,63 @@ export function AgreementEdit({
                 onChange={(value) => handlePriceAdjustmentIndexChange(value, i)}
               />
             </div>
-            <div className="flex flex-row pt-2 pb-2 justify-between">
-              {agreement.options || inEditIndex === i ? (
-                <div className="flex-1 max-w-xl pr-2">
-                  <EditTextarea
-                    value={agreement.options}
-                    label="Opsjoner"
-                    name="options"
-                    inEdit={inEditIndex === i}
-                  />
-                </div>
-              ) : null}
-              {agreement.priceAdjustmentProcess || inEditIndex === i ? (
-                <div className="flex-1 max-w-xl pr-2">
-                  <EditTextarea
-                    value={agreement.priceAdjustmentProcess}
-                    label="Prisjusteringsprosess"
-                    name="priceAdjustmentProcess"
-                    inEdit={inEditIndex === i}
-                  />
-                </div>
-              ) : null}
-              {agreement.notes || inEditIndex === i ? (
-                <div className="flex-1 max-w-xl">
-                  <EditTextarea
-                    value={agreement.notes}
-                    label="Notat"
-                    name="notes"
-                    inEdit={inEditIndex === i}
-                  />
-                </div>
-              ) : null}
+            <div className="flex flex-col pt-2 pb-2 justify-between">
+              <div className="flex-1 pr-2">
+                <EditTextarea
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setInEditIndex(i);
+                  }}
+                  value={agreement.options}
+                  label="Opsjoner"
+                  name="options"
+                  inEdit={inEditIndex === i}
+                />
+              </div>
+
+              <div className="flex-1  pr-2">
+                <EditTextarea
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setInEditIndex(i);
+                  }}
+                  value={agreement.priceAdjustmentProcess}
+                  label="Prisjusteringsprosess"
+                  name="priceAdjustmentProcess"
+                  inEdit={inEditIndex === i}
+                />
+              </div>
+              <div className="flex-1 ">
+                <EditTextarea
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setInEditIndex(i);
+                  }}
+                  value={agreement.notes}
+                  label="Notat"
+                  name="notes"
+                  inEdit={inEditIndex === i}
+                />
+              </div>
             </div>
 
             <div className="flex flex-col max-w-xl pb-5">
               {agreement.files && agreement.files?.length > 0 ? (
                 <label
                   htmlFor="files"
-                  className="block text-sm font-medium text-gray-700 pb-2"
+                  className="block px-2 text-sm font-medium text-gray-700 pb-2"
                 >
                   Filer
                 </label>
               ) : null}
               {inEditIndex === i ? (
                 <>
-                  <input type="file" name="files" multiple />
+                  <input
+                    type="file"
+                    name="files"
+                    multiple
+                    className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                  />
                   {agreement.files?.map((file, ind) => (
                     <div key={file.blobName + ind} className="pt-2">
                       <button
@@ -278,16 +313,21 @@ export function AgreementEdit({
                             organisation,
                           );
                         }}
-                        className=" cursor-pointer pr-2"
+                        className="cursor-pointer  pr-2"
                       >
-                        X
+                        <InfoPill
+                          variant="wide"
+                          text=""
+                          colors={""}
+                          icon={<X size="12" />}
+                        />
                       </button>
                       {file.fileName}
                     </div>
                   ))}
                 </>
               ) : (
-                <div className="flex flex-col">
+                <div className="flex flex-row">
                   {agreement.files?.map((file, ind) => (
                     <button
                       key={file.blobName + ind}
@@ -296,9 +336,15 @@ export function AgreementEdit({
                         e.preventDefault();
                         download(file.blobName, file.fileName);
                       }}
-                      className="border-none w-fit pb-2"
+                      className="border-2  border-primary flex gap-1 flex-row items-center rounded shadow-sm py-1 px-2 bg-primary/10 w-fit"
                     >
                       <div>{file.fileName}</div>
+                      <InfoPill
+                        variant="wide"
+                        text=""
+                        colors={"text-primary"}
+                        icon={<Download size="15" />}
+                      />
                     </button>
                   ))}
                 </div>
@@ -306,26 +352,25 @@ export function AgreementEdit({
             </div>
 
             {inEditIndex === i ? (
-              <button
+              <AgreementButton
+                buttonText="Lagre"
                 type="submit"
-                className="border border-primary p-1 rounded w-fit"
-              >
-                Lagre
-              </button>
+                className="border border-black shadow-md bg-primary text-white font-semibold py-2 px-4 rounded-md  w-fit"
+              />
             ) : (
               <div className="flex flex-row justify-between">
-                <button
+                <AgreementButton
                   type="button"
+                  buttonText="Rediger"
                   onClick={(e) => {
                     e.preventDefault();
                     setInEditIndex(i);
                   }}
-                  className="border border-primary p-1 rounded w-fit"
-                >
-                  Rediger
-                </button>
-                <button
+                />
+
+                <AgreementButton
                   type="button"
+                  buttonText="Slett"
                   onClick={async (e) => {
                     e.preventDefault();
                     let agreementsCopy = [...agreements];
@@ -333,10 +378,8 @@ export function AgreementEdit({
                     setAgreements(agreementsCopy);
                     await deleteAgreementWithFiles(agreement, organisation);
                   }}
-                  className="border border-primary p-1 rounded w-fit"
-                >
-                  Slett
-                </button>
+                  className="border-primary bg-holiday_darker text-white "
+                />
               </div>
             )}
           </form>
