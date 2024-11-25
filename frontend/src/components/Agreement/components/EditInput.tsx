@@ -30,12 +30,15 @@ export function EditInput({
             aria-label={label}
             defaultValue={value}
             type="text"
-            className="shadow-sm w-full border-2 border-primary focus:outline-primary active:outline-primary bg-white rounded-md mr-10 pr-10 p-2 mt-1 block"
+            className="shadow-sm w-full border-one_and_a_half border-primary focus:outline-none focus:bg-primary/10 transitionEase bg-white rounded-md mr-10 pr-10 p-2 mt-1 block"
           />
         </>
       ) : (
         <>
-          <h2 className="block text-sm font-bold pl-2 text-gray-700">
+          <h2
+            className="block text-sm font-bold pl-2 text-gray-700 hover:cursor-pointer"
+            onClick={onClick}
+          >
             {value}
           </h2>
         </>

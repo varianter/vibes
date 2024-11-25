@@ -17,7 +17,7 @@ export function EditTextarea({
         <>
           <label
             htmlFor={label}
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium pl-2 text-gray-700"
           >
             {label}
           </label>
@@ -28,7 +28,7 @@ export function EditTextarea({
             name={name}
             defaultValue={value}
             aria-label={label}
-            className="border-2 border-primary rounded-md p-1 mt-1 block w-full"
+            className="border-one_and_a_half border-primary/80 rounded-md p-2 mt-1 block w-full focus:outline-none focus:bg-primary/10 transitionEase"
           />
         </>
       ) : (
@@ -41,8 +41,16 @@ export function EditTextarea({
           </label>
 
           {value ? (
-            <p onClick={onClick} className="mt-1 px-2">
-              {value}
+            <p>
+              {value.split(/\r?\n/).map((line, index) => (
+                <p
+                  onClick={onClick}
+                  className="mt-1 px-2 hover:cursor-pointer"
+                  key={index}
+                >
+                  {line}
+                </p>
+              ))}
             </p>
           ) : (
             <p

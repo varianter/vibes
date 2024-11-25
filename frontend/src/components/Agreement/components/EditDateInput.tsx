@@ -32,7 +32,7 @@ export function EditDateInput({
               value ? new Date(value).toISOString().split("T")[0] : undefined
             }
             type="date"
-            className="border-2 shadow-sm border-primary rounded-md px-2 pt-1 mt-1 block w-full"
+            className="border-one_and_a_half shadow-sm border-primary rounded-md px-2 pt-1 mt-1 block w-full"
           />
         </>
       ) : (
@@ -45,7 +45,7 @@ export function EditDateInput({
           </label>
           <p
             onClick={onClick}
-            className="mt-1 bg-primary/5 shadow-sm border border-primary/5 pr-10 p-2 rounded-md"
+            className="mt-1 bg-primary/5 shadow-sm border border-primary/5 pr-10 p-2 rounded-md hover:bg-primary_darker/10"
           >
             {value ? new Date(value).toLocaleDateString() : ""}
           </p>

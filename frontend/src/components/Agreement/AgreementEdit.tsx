@@ -292,7 +292,7 @@ export function AgreementEdit({
                     type="file"
                     name="files"
                     multiple
-                    className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                    className="file-upload"
                   />
                   {agreement.files?.map((file, ind) => (
                     <div key={file.blobName + ind} className="pt-2">
@@ -336,7 +336,7 @@ export function AgreementEdit({
                         e.preventDefault();
                         download(file.blobName, file.fileName);
                       }}
-                      className="border-2  border-primary flex gap-1 flex-row items-center rounded shadow-sm py-1 px-2 bg-primary/10 w-fit"
+                      className="border-one_and_a_half  border-primary/50 flex gap-1 flex-row items-center rounded-sm shadow-sm py-1 px-1.5 bg-primary/10 w-fit"
                     >
                       <div>{file.fileName}</div>
                       <InfoPill
