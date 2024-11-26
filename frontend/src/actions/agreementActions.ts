@@ -8,6 +8,7 @@ import {
 } from "@/data/apiCallsWithToken";
 import { Agreement, AgreementWriteModel, FileReference } from "@/types";
 import { deleteFiles, uploadFiles } from "./blobActions";
+import { addHours } from "date-fns";
 
 export async function saveChanges(
   formData: FormData,
@@ -39,7 +40,8 @@ export async function saveChanges(
       priceAdjustmentProcess: formData.get("priceAdjustmentProcess") as string,
       files: oldFiles,
     };
-
+    console.log("date", typeof agreementData.nextPriceAdjustmentDate);
+    console.log("date date", formData.get("nextPriceAdjustmentDate") as string);
     const files = formData.getAll("files") as File[];
     const validFiles = files.filter(
       (file) => file.size > 0 && file.name !== "undefined",

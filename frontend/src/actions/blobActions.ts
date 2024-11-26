@@ -1,4 +1,5 @@
 "use server";
+
 import {
   authOptions,
   getCustomServerSession,
@@ -11,7 +12,6 @@ import {
   generateBlobSASQueryParameters,
   StorageSharedKeyCredential,
 } from "@azure/storage-blob";
-
 export async function uploadFiles(files: File[]) {
   const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
   if (!connectionString) {

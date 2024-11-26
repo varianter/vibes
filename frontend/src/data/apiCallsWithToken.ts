@@ -74,7 +74,10 @@ export async function callApi<T, Body>(
     let result: T;
 
     if (contentType && contentType.includes("application/json")) {
-      result = await response.json();
+      let text = await response.text();
+      console.log(text);
+      result = JSON.parse(text) as T;
+      console.log(result);
     } else {
       result = (await response.text()) as unknown as T;
     }

@@ -13,6 +13,15 @@ export function EditDateInput({
   required?: boolean;
   onClick?: (e?: any) => any;
 }) {
+  console.log(typeof value);
+  console.log(value);
+  console.log(
+    "toLocaleDateString",
+    value
+      ? new Date(value).toLocaleDateString("no-NO", { timeZone: "CET" })
+      : "",
+  );
+  console.log("toIso", value ? new Date(value).toISOString() : "");
   return (
     <div className="mb-4 pr-4">
       {inEdit ? (
@@ -47,7 +56,9 @@ export function EditDateInput({
             onClick={onClick}
             className="mt-1 bg-primary/5 shadow-sm border border-primary/5 pr-10 p-2 rounded-md hover:bg-primary_darker/10"
           >
-            {value ? new Date(value).toLocaleDateString() : ""}
+            {value
+              ? new Date(new Date(value).toISOString()).toLocaleDateString()
+              : ""}
           </p>
         </>
       )}

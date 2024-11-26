@@ -37,23 +37,40 @@ export function AgreementEdit({
     { value: string; label: string }[]
   >([]);
 
+  function ensureDatesOnAgreement(agreement: Agreement) {
+    if (typeof agreement.endDate === "string") {
+      agreement.endDate = new Date(agreement.endDate);
+    }
+
+    if (typeof agreement.startDate === "string") {
+      agreement.startDate = new Date(agreement.startDate);
+    }
+
+    if (typeof agreement.nextPriceAdjustmentDate === "string") {
+      agreement.nextPriceAdjustmentDate = new Date(
+        agreement.nextPriceAdjustmentDate,
+      );
+    }
+
+    return agreement;
+  }
+
   useEffect(() => {
     async function getAgreements() {
       if (organisation) {
         if (project) {
-          const agree = await getAgreementsForProject(
+          let agree = await getAgreementsForProject(
             project.projectId,
             organisation,
           );
+
+          agree = agree?.map(ensureDatesOnAgreement);
 
           await getPriceIndexes();
 
           if (agree && agree.length > 0) {
             setAgreements(
-              agree.sort(
-                (a, b) =>
-                  new Date(b.endDate).getTime() - new Date(a.endDate).getTime(),
-              ),
+              agree.sort((a, b) => b.endDate.getTime() - a.endDate.getTime()),
             );
             setInEditIndex(null);
           } else {
@@ -70,10 +87,7 @@ export function AgreementEdit({
 
           if (agree && agree.length > 0) {
             setAgreements(
-              agree.sort(
-                (a, b) =>
-                  new Date(b.endDate).getTime() - new Date(a.endDate).getTime(),
-              ),
+              agree.sort((a, b) => b.endDate.getTime() - a.endDate.getTime()),
             );
             setInEditIndex(null);
           } else {
