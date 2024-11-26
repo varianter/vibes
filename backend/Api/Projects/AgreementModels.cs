@@ -19,7 +19,8 @@ public record AgreementReadModel(
 public record FileReferenceReadModel(
     string FileName,
     string BlobName,
-    DateTime UploadedOn
+    DateTime UploadedOn,
+    string? UploadedBy
 );
 
 public record AgreementWriteModel(
@@ -34,7 +35,7 @@ public record AgreementWriteModel(
     string? Options,
     string? PriceAdjustmentProcess,
     List<FileReferenceWriteModel> Files
-): IValidatableObject
+) : IValidatableObject
 {
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
@@ -51,6 +52,6 @@ public record AgreementWriteModel(
 public record FileReferenceWriteModel(
     string FileName,
     string BlobName,
-    DateTime UploadedOn
+    DateTime UploadedOn,
+    string? UploadedBy
 );
-    

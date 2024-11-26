@@ -441,6 +441,9 @@ namespace Infrastructure.Migrations
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
+                            b1.Property<string>("UploadedBy")
+                                .HasColumnType("nvarchar(max)");
+
                             b1.Property<DateTime>("UploadedOn")
                                 .HasColumnType("datetime2");
 

@@ -20,9 +20,6 @@ import { EditTextarea } from "./components/EditTextarea";
 import { EditSelect } from "./components/EditSelect";
 import { EditInput } from "./components/EditInput";
 import { AgreementButton } from "./components/AgreementButton";
-import InfoPill from "../Staffing/InfoPill";
-import { Delete, Download, X } from "react-feather";
-import { format } from "date-fns";
 import { AgreementFileTable } from "./components/AgreementFileTable";
 
 export function AgreementEdit({
