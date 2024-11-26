@@ -12,9 +12,9 @@ import {
   ProjectWithCustomerModel,
 } from "@/api-types";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Fragment } from "react";
 import { EditDateInput } from "./components/EditDateInput";
-import { Agreement } from "@/types";
+import { Agreement, FileReference } from "@/types";
 import { getDownloadUrl } from "@/actions/blobActions";
 import { EditTextarea } from "./components/EditTextarea";
 import { EditSelect } from "./components/EditSelect";
@@ -22,6 +22,8 @@ import { EditInput } from "./components/EditInput";
 import { AgreementButton } from "./components/AgreementButton";
 import InfoPill from "../Staffing/InfoPill";
 import { Delete, Download, X } from "react-feather";
+import { format } from "date-fns";
+import { AgreementFileTable } from "./components/AgreementFileTable";
 
 export function AgreementEdit({
   project,
@@ -263,7 +265,7 @@ export function AgreementEdit({
                   inEdit={inEditIndex === i}
                 />
               </div>
-              <div className="flex-1 ">
+              <div className="flex-1 pr-2">
                 <EditTextarea
                   onClick={(e) => {
                     e.preventDefault();
@@ -277,78 +279,47 @@ export function AgreementEdit({
               </div>
             </div>
 
-            <div className="flex flex-col max-w-xl pb-5">
+            <div className="flex flex-col max-w-3xl pb-5">
               {agreement.files && agreement.files?.length > 0 ? (
                 <label
                   htmlFor="files"
-                  className="block px-2 text-sm font-medium text-gray-700 pb-2"
+                  className="block px-2 font-medium text-gray-700"
+                  style={{ fontSize: "1.1rem" }}
                 >
                   Filer
                 </label>
               ) : null}
               {inEditIndex === i ? (
-                <>
+                <div className="px-2">
                   <input
                     type="file"
                     name="files"
                     multiple
                     className="file-upload"
                   />
-                  {agreement.files?.map((file, ind) => (
-                    <div key={file.blobName + ind} className="pt-2">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-
-                          let agreementsCopy = [...agreements];
-
-                          agreementsCopy[i].files = agreementsCopy[
-                            i
-                          ].files?.filter((f) => f.blobName !== file.blobName);
-                          setAgreements(agreementsCopy);
-                          deleteFile(
-                            file.blobName,
-                            agreementsCopy[i],
-                            organisation,
-                          );
-                        }}
-                        className="cursor-pointer  pr-2"
-                      >
-                        <InfoPill
-                          variant="wide"
-                          text=""
-                          colors={""}
-                          icon={<X size="12" />}
-                        />
-                      </button>
-                      {file.fileName}
-                    </div>
-                  ))}
-                </>
-              ) : (
-                <div className="flex flex-row">
-                  {agreement.files?.map((file, ind) => (
-                    <button
-                      key={file.blobName + ind}
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        download(file.blobName, file.fileName);
-                      }}
-                      className="border-one_and_a_half  border-primary/50 flex gap-1 flex-row items-center rounded-sm shadow-sm py-1 px-1.5 bg-primary/10 w-fit"
-                    >
-                      <div>{file.fileName}</div>
-                      <InfoPill
-                        variant="wide"
-                        text=""
-                        colors={"text-primary"}
-                        icon={<Download size="15" />}
-                      />
-                    </button>
-                  ))}
                 </div>
+              ) : (
+                <></>
               )}
+              <div className="flex flex-row w-full">
+                <AgreementFileTable
+                  agreement={agreement}
+                  inEditIndex={inEditIndex}
+                  i={i}
+                  onDelete={(e: any, file: FileReference) => {
+                    e.preventDefault();
+
+                    let agreementsCopy = [...agreements];
+
+                    agreementsCopy[i].files = agreementsCopy[i].files?.filter(
+                      (f) => f.blobName !== file.blobName,
+                    );
+                    setAgreements(agreementsCopy);
+                    deleteFile(file.blobName, agreementsCopy[i], organisation);
+                  }}
+                  download={download}
+                />
+              </div>
             </div>
 
             {inEditIndex === i ? (
