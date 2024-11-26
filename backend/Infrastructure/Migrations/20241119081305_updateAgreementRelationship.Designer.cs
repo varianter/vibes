@@ -447,7 +447,6 @@ namespace Infrastructure.Migrations
                             b1.Property<DateTime>("UploadedOn")
                                 .HasColumnType("datetime2");
 
-
                             b1.HasKey("Id");
 
                             b1.HasIndex("AgreementId");
