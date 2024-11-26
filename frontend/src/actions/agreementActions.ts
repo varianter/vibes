@@ -8,7 +8,6 @@ import {
 } from "@/data/apiCallsWithToken";
 import { Agreement, AgreementWriteModel, FileReference } from "@/types";
 import { deleteFiles, uploadFiles } from "./blobActions";
-import { authOptions, getCustomServerSession } from "@/app/api/auth/[...nextauth]/route";
 
 export async function saveChanges(
   formData: FormData,
@@ -45,7 +44,6 @@ export async function saveChanges(
     const validFiles = files.filter(
       (file) => file.size > 0 && file.name !== "undefined",
     );
-   
 
     if (validFiles.length > 0) {
       const fileRes = await uploadFiles(validFiles);
