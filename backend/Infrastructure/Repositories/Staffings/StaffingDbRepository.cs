@@ -16,6 +16,8 @@ public class StaffingDbRepository(ApplicationContext context) : IStaffingReposit
             .Include(s => s.Consultant)
             .Include(staffing => staffing.Engagement)
             .ThenInclude(project => project.Customer)
+            .Include(staffing => staffing.Engagement)
+            .ThenInclude(project => project.Agreements)
             .GroupBy(staffing => staffing.Consultant.Id)
             .ToDictionaryAsync(group => group.Key, grouping => grouping.ToList(), ct);
     }
