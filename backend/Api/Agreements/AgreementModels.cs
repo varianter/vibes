@@ -1,15 +1,17 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+// ReSharper disable NotAccessedPositionalProperty.Global
+// ReSharper disable ClassNeverInstantiated.Global
+
+namespace Api.Agreements;
 
 public record AgreementReadModel(
     int AgreementId,
     string? Name,
     int? CustomerId,
     int? EngagementId,
-    DateTime? StartDate,
-    DateTime EndDate,
-    DateTime? NextPriceAdjustmentDate,
+    DateTimeOffset? StartDate,
+    DateTimeOffset EndDate,
+    DateTimeOffset? NextPriceAdjustmentDate,
     string? PriceAdjustmentIndex,
     string? Notes,
     string? Options,
@@ -19,7 +21,7 @@ public record AgreementReadModel(
 public record FileReferenceReadModel(
     string FileName,
     string BlobName,
-    DateTime UploadedOn,
+    DateTimeOffset UploadedOn,
     string? UploadedBy
 );
 
@@ -43,7 +45,7 @@ public record AgreementWriteModel(
         {
             yield return new ValidationResult(
                 "At least one of CustomerId or EngagementId must be provided.",
-                new[] { nameof(CustomerId), nameof(EngagementId) });
+                [nameof(CustomerId), nameof(EngagementId)]);
         }
     }
 }

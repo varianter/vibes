@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Api.Projects;
+namespace Api.Agreements;
 
 [Authorize]
 [Route("/v0/{orgUrlKey}/agreements")]
@@ -36,9 +36,9 @@ public class AgreementController(
             AgreementId: agreement.Id,
             EngagementId: agreement.EngagementId,
             CustomerId: agreement.CustomerId,
-            StartDate: agreement.StartDate,
-            EndDate: agreement.EndDate,
-            NextPriceAdjustmentDate: agreement.NextPriceAdjustmentDate,
+            StartDate: agreement.StartDate is null ? null : new DateTimeOffset((DateTime)agreement.StartDate, TimeSpan.Zero),
+            EndDate: new DateTimeOffset(agreement.EndDate, TimeSpan.Zero) ,
+            NextPriceAdjustmentDate: agreement.NextPriceAdjustmentDate is null ? null : new DateTimeOffset((DateTime)agreement.NextPriceAdjustmentDate, TimeSpan.Zero),
             PriceAdjustmentIndex: agreement.PriceAdjustmentIndex,
             Notes: agreement.Notes,
             Options: agreement.Options,
@@ -46,7 +46,7 @@ public class AgreementController(
             Files: agreement.Files.Select(f => new FileReferenceReadModel(
                 FileName: f.FileName,
                 BlobName: f.BlobName,
-                UploadedOn: f.UploadedOn,
+                UploadedOn: new DateTimeOffset(f.UploadedOn, TimeSpan.Zero),
                 UploadedBy: f.UploadedBy ?? "Unknown"
             )).ToList()
         );
@@ -63,7 +63,7 @@ public class AgreementController(
 
         var agreements = await agreementsRepository.GetAgreementsByEngagementId(engagementId, ct);
 
-        if (agreements is null || !agreements.Any()) return NotFound();
+        if (agreements.Count == 0) return NotFound();
 
         var responseModels = agreements.Select(agreement => new AgreementReadModel(
             AgreementId: agreement.Id,
@@ -89,7 +89,7 @@ public class AgreementController(
     }
 
     [HttpGet]
-    [Route("get/customer/{customerId}")]
+    [Route("get/customer/{customerId:int}")]
     public async Task<ActionResult<List<AgreementReadModel>>> GetAgreementsByCustomer([FromRoute] string orgUrlKey,
         [FromRoute] int customerId, CancellationToken ct)
     {
@@ -98,7 +98,7 @@ public class AgreementController(
 
         var agreements = await agreementsRepository.GetAgreementsByCustomerId(customerId, ct);
 
-        if (agreements is null || !agreements.Any()) return NotFound();
+        if (agreements.Count == 0) return NotFound();
 
         var responseModels = agreements.Select(agreement => new AgreementReadModel(
             AgreementId: agreement.Id,
@@ -146,7 +146,7 @@ public class AgreementController(
         Customer? customer = null;
         if (body.CustomerId != null)
         {
-            customer = await context.Customer.FindAsync(body.CustomerId.Value);
+            customer = await context.Customer.FindAsync([body.CustomerId.Value], ct);
             if (customer == null)
                 return BadRequest("Customer not found");
         }
@@ -154,7 +154,7 @@ public class AgreementController(
         Engagement? engagement = null;
         if (body.EngagementId != null)
         {
-            engagement = await context.Project.FindAsync(body.EngagementId.Value);
+            engagement = await context.Project.FindAsync([body.EngagementId.Value], ct);
             if (engagement is null)
                 return BadRequest("Engagement not found");
         }
@@ -232,10 +232,9 @@ public class AgreementController(
         if (agreement is null)
             return NotFound("Agreement not found");
 
-        Customer? customer = null;
         if (body.CustomerId is not null)
         {
-            customer = await context.Customer.FindAsync(body.CustomerId);
+            var customer = await context.Customer.FindAsync([body.CustomerId], cancellationToken: ct);
             if (customer is null)
                 return BadRequest("Customer not found");
 
@@ -248,10 +247,9 @@ public class AgreementController(
             agreement.Customer = null;
         }
 
-        Engagement? engagement = null;
         if (body.EngagementId is not null)
         {
-            engagement = await context.Project.FindAsync(body.EngagementId);
+            var engagement = await context.Project.FindAsync([body.EngagementId], cancellationToken: ct);
             if (engagement is null)
                 return BadRequest("Engagement not found");
 
