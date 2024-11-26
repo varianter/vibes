@@ -78,4 +78,5 @@ export interface FileReference {
   fileName: string;
   blobName: string;
   uploadedOn: Date;
+  uploadedBy?: string;
 }

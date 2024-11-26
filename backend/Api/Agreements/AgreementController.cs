@@ -46,7 +46,8 @@ public class AgreementController(
             Files: agreement.Files.Select(f => new FileReferenceReadModel(
                 FileName: f.FileName,
                 BlobName: f.BlobName,
-                UploadedOn: f.UploadedOn
+                UploadedOn: f.UploadedOn,
+                UploadedBy: f.UploadedBy ?? "Unknown"
             )).ToList()
         );
         return Ok(responseModel);
@@ -79,7 +80,8 @@ public class AgreementController(
             Files: agreement.Files.Select(f => new FileReferenceReadModel(
                 FileName: f.FileName,
                 BlobName: f.BlobName,
-                UploadedOn: f.UploadedOn
+                UploadedOn: f.UploadedOn,
+                UploadedBy: f.UploadedBy ?? "Unknown"
             )).ToList()
         )).ToList();
 
@@ -113,7 +115,8 @@ public class AgreementController(
             Files: agreement.Files.Select(f => new FileReferenceReadModel(
                 FileName: f.FileName,
                 BlobName: f.BlobName,
-                UploadedOn: f.UploadedOn
+                UploadedOn: f.UploadedOn,
+                UploadedBy: f.UploadedBy ?? "Unknown"
             )).ToList()
         )).ToList();
 
@@ -174,7 +177,8 @@ public class AgreementController(
             {
                 FileName = f.FileName,
                 BlobName = f.BlobName,
-                UploadedOn = f.UploadedOn
+                UploadedOn = f.UploadedOn,
+                UploadedBy = f.UploadedBy ?? "Unknown"
             }).ToList()
         };
 
@@ -195,7 +199,8 @@ public class AgreementController(
             Files: agreement.Files.Select(f => new FileReferenceReadModel(
                 FileName: f.FileName,
                 BlobName: f.BlobName,
-                UploadedOn: f.UploadedOn
+                UploadedOn: f.UploadedOn,
+                UploadedBy: f.UploadedBy ?? "Unknown"
             )).ToList()
         );
         cache.Remove($"consultantCacheKey/{orgUrlKey}");
@@ -271,7 +276,8 @@ public class AgreementController(
         {
             FileName = f.FileName,
             BlobName = f.BlobName,
-            UploadedOn = f.UploadedOn
+            UploadedOn = f.UploadedOn,
+            UploadedBy = f.UploadedBy ?? "Unknown"
         }).ToList();
 
         await agreementsRepository.UpdateAgreementAsync(agreement, ct);
@@ -291,7 +297,8 @@ public class AgreementController(
             Files: agreement.Files.Select(f => new FileReferenceReadModel(
                 FileName: f.FileName,
                 BlobName: f.BlobName,
-                UploadedOn: f.UploadedOn
+                UploadedOn: f.UploadedOn,
+                UploadedBy: f.UploadedBy ?? "Unknown"
             )).ToList()
         );
 

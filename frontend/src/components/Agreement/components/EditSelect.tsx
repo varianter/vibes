@@ -7,6 +7,7 @@ export function EditSelect({
   options,
   inEdit,
   onChange,
+  onClick,
 }: {
   value?: string;
   name: string;
@@ -14,12 +15,15 @@ export function EditSelect({
   options: { value: string; label: string }[];
   inEdit: boolean;
   onChange: (value: string) => void;
+  onClick?: (e?: any) => any;
 }) {
   return (
     <div className="mb-4 pr-4">
       <label
         htmlFor={name}
-        className="block text-sm font-medium text-gray-700 "
+        className={`block text-sm font-medium ${
+          inEdit ? " p-2" : "px-2"
+        } text-gray-700`}
       >
         {label}
       </label>
@@ -35,7 +39,12 @@ export function EditSelect({
           isClearable
         />
       ) : (
-        <p>{value}</p>
+        <p
+          className="mt-1 bg-primary/5 shadow-sm border border-primary/5 pr-10 p-2 rounded-md w-full "
+          onClick={onClick}
+        >
+          {value ? value : "Ingen"}
+        </p>
       )}
     </div>
   );

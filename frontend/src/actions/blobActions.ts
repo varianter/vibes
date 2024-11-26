@@ -1,4 +1,8 @@
 "use server";
+import {
+  authOptions,
+  getCustomServerSession,
+} from "@/app/api/auth/[...nextauth]/route";
 import { FileReference } from "@/types";
 import {
   BlobSASPermissions,
@@ -23,6 +27,11 @@ export async function uploadFiles(files: File[]) {
     const uploadedFiles = await Promise.all(
       files.map(async (file) => {
         const uploaded = new Date();
+        const session =
+          !process.env.NEXT_PUBLIC_NO_AUTH &&
+          (await getCustomServerSession(authOptions));
+        const user =
+          session && session?.user?.name ? session.user.name : "Unknown";
         const blobName = `${file.name}${uploaded}`;
 
         const arrayBuffer = await file.arrayBuffer();
@@ -37,6 +46,7 @@ export async function uploadFiles(files: File[]) {
           fileName: file.name,
           blobName: blobName,
           uploadedOn: uploaded,
+          uploadedBy: user,
         } as FileReference;
       }),
     );

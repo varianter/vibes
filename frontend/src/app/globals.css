@@ -252,4 +252,21 @@
   .checkBoxWithCustomCheckmark:checked::before {
     transform: scale(1);
   }
+
+  .transitionEase {
+    transition: all 0.3s ease;
+  }
+
+  .border-one_and_a_half {
+    border-width: 1.5px;
+  }
+
+  input.file-upload[type="file"]::file-selector-button,
+  input.file-upload[type="file"]::-webkit-file-upload-button {
+    all: unset;
+    color: white;
+    border-radius: 5px;
+    padding: 0.3rem 0.7rem;
+    background-color: #423d89;
+  }
 }
