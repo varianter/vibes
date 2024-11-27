@@ -96,6 +96,23 @@ export async function saveChanges(
     throw new Error(`Failed to save changes: ${error}`);
   }
 }
+function ensureDatesOnAgreement(agreement: Agreement) {
+  if (typeof agreement.endDate === "string") {
+    agreement.endDate = new Date(agreement.endDate);
+  }
+
+  if (typeof agreement.startDate === "string") {
+    agreement.startDate = new Date(agreement.startDate);
+  }
+
+  if (typeof agreement.nextPriceAdjustmentDate === "string") {
+    agreement.nextPriceAdjustmentDate = new Date(
+      agreement.nextPriceAdjustmentDate,
+    );
+  }
+
+  return agreement;
+}
 
 export async function deleteFile(
   blobName: string,
@@ -121,7 +138,11 @@ export async function getAgreementsForProject(
       `${orgUrlKey}/agreements/get/engagement/${projectId}`,
     );
 
-    return await res;
+    let agreementsWithDateTypes: Agreement[] = [];
+    if (res) {
+      agreementsWithDateTypes = res.map(ensureDatesOnAgreement);
+    }
+    return agreementsWithDateTypes;
   } catch (e) {
     console.error("Error fetching agreement for project", e);
   }
@@ -136,7 +157,11 @@ export async function getAgreementsForCustomer(
       `${orgUrlKey}/agreements/get/customer/${customerId}`,
     );
 
-    return await res;
+    let agreementsWithDateTypes: Agreement[] = [];
+    if (res) {
+      agreementsWithDateTypes = res.map(ensureDatesOnAgreement);
+    }
+    return agreementsWithDateTypes;
   } catch (e) {
     console.error("Error fetching agreement for customer", e);
   }
@@ -149,7 +174,11 @@ export async function updateAgreement(agreement: Agreement, orgUrlKey: string) {
       agreement,
     );
 
-    return await res;
+    let agreementWithDateTypes: Agreement | null = null;
+    if (res) {
+      agreementWithDateTypes = ensureDatesOnAgreement(res);
+    }
+    return agreementWithDateTypes;
   } catch (e) {
     console.error("Error updating agreement", e);
   }
@@ -164,8 +193,11 @@ export async function createAgreement(
       `${orgUrlKey}/agreements/create`,
       agreement,
     );
-
-    return res;
+    let agreementWithDateTypes: Agreement | null = null;
+    if (res) {
+      agreementWithDateTypes = ensureDatesOnAgreement(res);
+    }
+    return agreementWithDateTypes;
   } catch (e) {
     console.error("Error creating agreement", e);
   }

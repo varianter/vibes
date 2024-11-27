@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+
 export function EditDateInput({
   value,
   name,
@@ -28,9 +30,7 @@ export function EditDateInput({
             name={name}
             aria-label={label}
             required={required}
-            defaultValue={
-              value ? new Date(value).toISOString().split("T")[0] : undefined
-            }
+            defaultValue={value ? format(value!, "yyyy-MM-dd") : undefined}
             type="date"
             className="border-one_and_a_half shadow-sm border-primary rounded-md px-2 pt-1 mt-1 block w-full"
           />
@@ -47,7 +47,7 @@ export function EditDateInput({
             onClick={onClick}
             className="mt-1 bg-primary/5 shadow-sm border border-primary/5 pr-10 p-2 rounded-md hover:bg-primary_darker/10"
           >
-            {value ? new Date(value).toLocaleDateString() : ""}
+            {value?.toLocaleDateString("nb-NO")}
           </p>
         </>
       )}

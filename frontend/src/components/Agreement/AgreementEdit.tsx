@@ -320,35 +320,48 @@ export function AgreementEdit({
             </div>
 
             {inEditIndex === i ? (
-              <AgreementButton
-                buttonText="Lagre"
-                type="submit"
-                className="border border-black shadow-md bg-primary text-white font-semibold py-2 px-4 rounded-md  w-fit"
-              />
-            ) : (
               <div className="flex flex-row justify-between">
-                <AgreementButton
-                  type="button"
-                  buttonText="Rediger"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setInEditIndex(i);
-                  }}
-                />
-
+                <div className="flex gap-3">
+                  <AgreementButton
+                    buttonText="Lagre"
+                    type="submit"
+                    className="border-2 border-black shadow-md bg-primary text-white font-semibold py-2 px-4 rounded-md  w-fit"
+                  />
+                  <AgreementButton
+                    type="button"
+                    className="border-2 border-primary shadow-md text-primary font-semibold "
+                    buttonText="Avbryt"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setInEditIndex(null);
+                    }}
+                  />
+                </div>
                 <AgreementButton
                   type="button"
                   buttonText="Slett"
                   onClick={async (e) => {
-                    e.preventDefault();
-                    let agreementsCopy = [...agreements];
-                    agreementsCopy.splice(i, 1);
-                    setAgreements(agreementsCopy);
-                    await deleteAgreementWithFiles(agreement, organisation);
+                    var result = confirm("Er du sikker på at du vil slette?");
+                    if (result) {
+                      e.preventDefault();
+                      let agreementsCopy = [...agreements];
+                      agreementsCopy.splice(i, 1);
+                      setAgreements(agreementsCopy);
+                      await deleteAgreementWithFiles(agreement, organisation);
+                    }
                   }}
-                  className="border-primary bg-holiday_darker text-white "
+                  className="border-holiday_darker border-2 bg-white f text-holiday_darker shadow-md "
                 />
               </div>
+            ) : (
+              <AgreementButton
+                type="button"
+                buttonText="Rediger"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setInEditIndex(i);
+                }}
+              />
             )}
           </form>
         ))}
