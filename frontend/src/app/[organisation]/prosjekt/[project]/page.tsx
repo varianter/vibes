@@ -9,6 +9,7 @@ import { ConsultantFilterProvider } from "@/hooks/ConsultantFilterProvider";
 import { parseYearWeekFromUrlString } from "@/data/urlUtils";
 import { fetchWorkHoursPerWeek } from "@/hooks/fetchWorkHoursPerDay";
 import EditEngagementName from "@/components/EditEngagementName";
+import { AgreementEdit } from "@/components/Agreement/AgreementEdit";
 
 export default async function Project({
   params,
@@ -66,6 +67,8 @@ export default async function Project({
           </div>
 
           <EditEngagementHour project={project} numWorkHours={numWorkHours} />
+
+          {project ? <AgreementEdit project={project} /> : null}
         </div>
       </ConsultantFilterProvider>
     );

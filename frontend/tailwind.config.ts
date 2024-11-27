@@ -37,6 +37,7 @@ export default {
     },
     screens,
     boxShadow: {
+      sm: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
       md: "0 4px 4px 0 rgba(66, 61, 137, 0.10)",
       xl: "0px 4px 20px 0px rgba(0, 0, 0, 0.30)",
     },

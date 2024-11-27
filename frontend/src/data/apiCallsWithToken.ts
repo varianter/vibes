@@ -65,13 +65,22 @@ export async function callApi<T, Body>(
 
   try {
     const response = await callApiNoParse(path, method, bodyInit);
-    if (!response || response.status == 204) {
+    if (!response || response.status == 204 || !response.ok) {
+      const responseText = await response?.text();
+      console.error(`Failed from ${path}. Response text: ${responseText}`);
       return;
     }
-    const json = await response.json();
-    return json as T;
+    const contentType = response.headers.get("Content-Type");
+    let result: T;
+
+    if (contentType && contentType.includes("application/json")) {
+      result = await response.json();
+    } else {
+      result = (await response.text()) as unknown as T;
+    }
+
+    return result as T;
   } catch (e) {
-    console.error(e);
     throw new Error(`${method} ${path} failed`);
   }
 }

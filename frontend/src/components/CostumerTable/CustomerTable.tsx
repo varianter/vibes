@@ -8,6 +8,7 @@ import { useDepartmentFilter } from "@/hooks/staffing/useDepartmentFilter";
 import WeekSelector from "../WeekSelector";
 import { useWeekSelectors } from "@/hooks/useWeekSelectors";
 import { WeekSpanTableHead } from "../Staffing/WeekTableHead";
+import { AgreementEdit } from "../Agreement/AgreementEdit";
 
 export default function CustomerTable({
   customer,
@@ -95,6 +96,7 @@ export default function CustomerTable({
           <EngagementsRows engagements={customer.inactiveEngagements} />
         </tbody>
       </table>
+      <AgreementEdit customer={customer} />
     </div>
   );
 

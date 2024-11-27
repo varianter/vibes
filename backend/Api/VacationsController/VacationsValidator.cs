@@ -1,13 +1,12 @@
-using Api.Common;
+using Core.Consultants;
 
 namespace Api.VacationsController;
 
 public static class VacationsValidator
 {
-    public static bool ValidateVacation(int consultantId, StorageService storageService,
+    public static bool ValidateVacation(Consultant consultant,
         string orgUrlKey)
     {
-        return storageService.GetBaseConsultantById(consultantId)?.Department.Organization.UrlKey ==
-               orgUrlKey;
+        return consultant.Department.Organization.UrlKey == orgUrlKey;
     }
 }
