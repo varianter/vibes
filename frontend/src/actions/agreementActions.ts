@@ -98,16 +98,16 @@ export async function saveChanges(
 }
 function ensureDatesOnAgreement(agreement: Agreement) {
   if (typeof agreement.endDate === "string") {
-    agreement.endDate = new Date(agreement.endDate );
+    agreement.endDate = new Date(agreement.endDate);
   }
 
   if (typeof agreement.startDate === "string") {
-    agreement.startDate = new Date(agreement.startDate );
+    agreement.startDate = new Date(agreement.startDate);
   }
 
   if (typeof agreement.nextPriceAdjustmentDate === "string") {
     agreement.nextPriceAdjustmentDate = new Date(
-      agreement.nextPriceAdjustmentDate ,
+      agreement.nextPriceAdjustmentDate,
     );
   }
 
