@@ -41,7 +41,7 @@ export function EditTextarea({
           </label>
 
           {value ? (
-            <p>
+            <div>
               {value.split(/\r?\n/).map((line, index) => (
                 <p
                   onClick={onClick}
@@ -51,7 +51,7 @@ export function EditTextarea({
                   {line}
                 </p>
               ))}
-            </p>
+            </div>
           ) : (
             <p
               onClick={onClick}
