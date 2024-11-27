@@ -8,7 +8,6 @@ import {
 } from "@/data/apiCallsWithToken";
 import { Agreement, AgreementWriteModel, FileReference } from "@/types";
 import { deleteFiles, uploadFiles } from "./blobActions";
-import { addHours } from "date-fns";
 
 export async function saveChanges(
   formData: FormData,
@@ -40,8 +39,12 @@ export async function saveChanges(
       priceAdjustmentProcess: formData.get("priceAdjustmentProcess") as string,
       files: oldFiles,
     };
-    console.log("date", typeof agreementData.nextPriceAdjustmentDate);
-    console.log("date date", formData.get("nextPriceAdjustmentDate") as string);
+    console.log(
+      "date",
+      typeof agreementData.startDate,
+      typeof agreementData.endDate,
+      typeof agreementData.nextPriceAdjustmentDate,
+    );
     const files = formData.getAll("files") as File[];
     const validFiles = files.filter(
       (file) => file.size > 0 && file.name !== "undefined",
@@ -57,6 +60,7 @@ export async function saveChanges(
         { ...agreementData, agreementId: Number(agreementId) },
         org,
       );
+      console.log("res", typeof res?.nextPriceAdjustmentDate);
 
       if (res) {
         return res;
@@ -98,6 +102,25 @@ export async function saveChanges(
     throw new Error(`Failed to save changes: ${error}`);
   }
 }
+function ensureDatesOnAgreement(agreement: Agreement) {
+  if (typeof agreement.endDate === "string") {
+    console.log("before", agreement.endDate);
+    agreement.endDate = new Date(agreement.endDate);
+    console.log("end date", agreement.endDate);
+  }
+
+  if (typeof agreement.startDate === "string") {
+    agreement.startDate = new Date(agreement.startDate);
+  }
+
+  if (typeof agreement.nextPriceAdjustmentDate === "string") {
+    agreement.nextPriceAdjustmentDate = new Date(
+      agreement.nextPriceAdjustmentDate,
+    );
+  }
+
+  return agreement;
+}
 
 export async function deleteFile(
   blobName: string,
@@ -122,8 +145,11 @@ export async function getAgreementsForProject(
     const res = await fetchWithToken<Agreement[]>(
       `${orgUrlKey}/agreements/get/engagement/${projectId}`,
     );
-
-    return await res;
+    let agreementsWithDateTypes: Agreement[] = [];
+    if (res) {
+      agreementsWithDateTypes = res.map(ensureDatesOnAgreement);
+    }
+    return agreementsWithDateTypes;
   } catch (e) {
     console.error("Error fetching agreement for project", e);
   }
@@ -137,8 +163,11 @@ export async function getAgreementsForCustomer(
     const res = await fetchWithToken<Agreement[]>(
       `${orgUrlKey}/agreements/get/customer/${customerId}`,
     );
-
-    return await res;
+    let agreementsWithDateTypes: Agreement[] = [];
+    if (res) {
+      agreementsWithDateTypes = res.map(ensureDatesOnAgreement);
+    }
+    return agreementsWithDateTypes;
   } catch (e) {
     console.error("Error fetching agreement for customer", e);
   }
@@ -150,8 +179,14 @@ export async function updateAgreement(agreement: Agreement, orgUrlKey: string) {
       `${orgUrlKey}/agreements/update/${agreement.agreementId}`,
       agreement,
     );
+    console.log("agreement", agreement.endDate);
+    console.log("res", res?.endDate);
 
-    return await res;
+    let agreementWithDateTypes: Agreement | null = null;
+    if (res) {
+      agreementWithDateTypes = ensureDatesOnAgreement(res);
+    }
+    return agreementWithDateTypes;
   } catch (e) {
     console.error("Error updating agreement", e);
   }
@@ -166,8 +201,11 @@ export async function createAgreement(
       `${orgUrlKey}/agreements/create`,
       agreement,
     );
-
-    return res;
+    let agreementWithDateTypes: Agreement | null = null;
+    if (res) {
+      agreementWithDateTypes = ensureDatesOnAgreement(res);
+    }
+    return agreementWithDateTypes;
   } catch (e) {
     console.error("Error creating agreement", e);
   }

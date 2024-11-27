@@ -21,7 +21,8 @@ export function AgreementFileTable({
     <table className="table-auto m-2 w-full text-sm text-left rounded text-gray-500">
       <thead className="text-xs text-gray-700 bg-primary_darker/20 font-semibold rounded w-full ">
         <tr>
-          <th className="pl-6 py-1 text-left font-semibold">Filnavn</th>
+          {inEditIndex === i && <th className="px-2 text-transparent">f</th>}
+          <th className="pl-2 py-1 text-left font-semibold">Filnavn</th>
           <th className="pl-2 py-1 text-left font-semibold">Opplastet</th>
           <th className="pl-2 py-1 text-left font-semibold">Opplastet av</th>
         </tr>
@@ -29,30 +30,38 @@ export function AgreementFileTable({
       <tbody>
         {agreement.files?.map((file, ind) => (
           <Fragment key={file.blobName + ind}>
-            {inEditIndex === i && (
-              <div className="flex justify-start pt-2 relative top-2">
-                <button
-                  type="button"
-                  onClick={(e) => onDelete(e, file)}
-                  className="absolute cursor-pointer h-5 pr-2  flex justify-center items-center"
-                >
-                  <InfoPill
-                    variant="wide"
-                    text=""
-                    colors={"text-primary hover:bg-primary_darker/20"}
-                    icon={<X size="16" />}
-                  />
-                </button>
-              </div>
-            )}
             <tr
-              className=" hover:bg-primary_darker/10 cursor-pointer"
+              className={`border-b${
+                inEditIndex === i
+                  ? ""
+                  : " hover:bg-primary_darker/10 cursor-pointer"
+              }`}
               onClick={(e) => {
                 e.preventDefault();
                 download(file.blobName, file.fileName);
               }}
             >
-              <td className="py-1 pl-6 border-b  items-center">
+              {inEditIndex === i && (
+                <td className="flex justify-start px-2 pt-2 relative">
+                  <button
+                    type="button"
+                    onClick={(e) => onDelete(e, file)}
+                    className="absolute cursor-pointer h-5 pr-2  flex justify-center items-center"
+                  >
+                    <InfoPill
+                      variant="wide"
+                      text=""
+                      colors={"text-primary hover:bg-primary_darker/20"}
+                      icon={<X size="16" />}
+                    />
+                  </button>
+                </td>
+              )}
+              <td
+                className={`py-1 pl-2 border-b  items-center ${
+                  inEditIndex === i ? "hover:bg-primary_darker/10" : ""
+                }`}
+              >
                 {file.fileName}
               </td>
               <td className="py-1 px-2 border-b items-center">

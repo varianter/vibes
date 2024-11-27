@@ -37,34 +37,14 @@ export function AgreementEdit({
     { value: string; label: string }[]
   >([]);
 
-  function ensureDatesOnAgreement(agreement: Agreement) {
-    if (typeof agreement.endDate === "string") {
-      agreement.endDate = new Date(agreement.endDate);
-    }
-
-    if (typeof agreement.startDate === "string") {
-      agreement.startDate = new Date(agreement.startDate);
-    }
-
-    if (typeof agreement.nextPriceAdjustmentDate === "string") {
-      agreement.nextPriceAdjustmentDate = new Date(
-        agreement.nextPriceAdjustmentDate,
-      );
-    }
-
-    return agreement;
-  }
-
   useEffect(() => {
     async function getAgreements() {
       if (organisation) {
         if (project) {
-          let agree = await getAgreementsForProject(
+          const agree = await getAgreementsForProject(
             project.projectId,
             organisation,
           );
-
-          agree = agree?.map(ensureDatesOnAgreement);
 
           await getPriceIndexes();
 
@@ -116,6 +96,7 @@ export function AgreementEdit({
         agreements ? agreements[index]?.files ?? [] : [],
         organisation,
       );
+      console.table(formData);
 
       if (res) {
         let agreementsCopy = [...(agreements ? agreements : [])];
@@ -126,6 +107,7 @@ export function AgreementEdit({
               new Date(b.endDate).getTime() - new Date(a.endDate).getTime(),
           ),
         );
+        console.log("Saved agreement", typeof res.nextPriceAdjustmentDate);
         setInEditIndex(null);
         await getPriceIndexes();
       } else {

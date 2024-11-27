@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+
 export function EditDateInput({
   value,
   name,
@@ -13,15 +15,7 @@ export function EditDateInput({
   required?: boolean;
   onClick?: (e?: any) => any;
 }) {
-  console.log(typeof value);
-  console.log(value);
-  console.log(
-    "toLocaleDateString",
-    value
-      ? new Date(value).toLocaleDateString("no-NO", { timeZone: "CET" })
-      : "",
-  );
-  console.log("toIso", value ? new Date(value).toISOString() : "");
+  console.log("value", value);
   return (
     <div className="mb-4 pr-4">
       {inEdit ? (
@@ -37,9 +31,7 @@ export function EditDateInput({
             name={name}
             aria-label={label}
             required={required}
-            defaultValue={
-              value ? new Date(value).toISOString().split("T")[0] : undefined
-            }
+            defaultValue={value ? format(value!, "yyyy-MM-dd") : undefined}
             type="date"
             className="border-one_and_a_half shadow-sm border-primary rounded-md px-2 pt-1 mt-1 block w-full"
           />
@@ -56,9 +48,7 @@ export function EditDateInput({
             onClick={onClick}
             className="mt-1 bg-primary/5 shadow-sm border border-primary/5 pr-10 p-2 rounded-md hover:bg-primary_darker/10"
           >
-            {value
-              ? new Date(new Date(value).toISOString()).toLocaleDateString()
-              : ""}
+            {new Date(value).toLocaleDateString("nb-NO")}
           </p>
         </>
       )}
