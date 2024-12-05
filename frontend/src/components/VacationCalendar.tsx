@@ -139,6 +139,7 @@ export default function VacationCalendar({
     const dateCopy = new DateObject(date);
     dateCopy.add(1, "h");
 
+    /*
     if (dateIsVacationDayInThePast(date, dateCopy))
       return {
         disabled: true,
@@ -148,7 +149,8 @@ export default function VacationCalendar({
           backgroundColor: "#C8EEFB",
         },
       };
-    else if (dateIsPublicHoliday(date))
+     */
+    if (dateIsPublicHoliday(date))
       return {
         disabled: true,
         style: { color: "#B91456", opacity: 0.5 },
