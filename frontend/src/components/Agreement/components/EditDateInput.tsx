@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { useRef } from "react";
 
 export function EditDateInput({
   value,
@@ -15,6 +16,8 @@ export function EditDateInput({
   required?: boolean;
   onClick?: (e?: any) => any;
 }) {
+  console.log("dateEdit", value);
+  const inputRef = useRef<HTMLInputElement | null>(null); // Reference to the input field
   return (
     <div className="mb-4 pr-4">
       {inEdit ? (
@@ -26,6 +29,7 @@ export function EditDateInput({
             {label}
           </label>
           <input
+            ref={inputRef}
             id={name + label}
             name={name}
             aria-label={label}
@@ -44,7 +48,10 @@ export function EditDateInput({
             {label}
           </label>
           <p
-            onClick={onClick}
+            onClick={() => {
+              onClick ? onClick() : null;
+              inputRef && inputRef.current && inputRef.current.focus();
+            }}
             className="mt-1 bg-primary/5 shadow-sm border border-primary/5 pr-10 p-2 rounded-md hover:bg-primary_darker/10"
           >
             {value?.toLocaleDateString("nb-NO")}

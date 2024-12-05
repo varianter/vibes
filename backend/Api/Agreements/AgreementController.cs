@@ -166,9 +166,9 @@ public class AgreementController(
             Customer = customer,
             EngagementId = body.EngagementId,
             Engagement = engagement,
-            StartDate = body.StartDate,
-            EndDate = body.EndDate,
-            NextPriceAdjustmentDate = body.NextPriceAdjustmentDate,
+            StartDate = body.StartDate.HasValue ? DateOnly.FromDateTime(body.StartDate.Value.Date) : null,
+            EndDate = DateOnly.FromDateTime(body.EndDate.Date),
+            NextPriceAdjustmentDate = body.NextPriceAdjustmentDate.HasValue ? DateOnly.FromDateTime(body.NextPriceAdjustmentDate.Value.Date) : null,
             PriceAdjustmentIndex = body.PriceAdjustmentIndex,
             Notes = body.Notes,
             Options = body.Options,
@@ -265,9 +265,9 @@ public class AgreementController(
         }
 
         agreement.Name = body.Name;
-        agreement.StartDate = body.StartDate;
-        agreement.EndDate = body.EndDate;
-        agreement.NextPriceAdjustmentDate = body.NextPriceAdjustmentDate;
+        agreement.StartDate = body.StartDate.HasValue ? DateOnly.FromDateTime(body.StartDate.Value.Date) : null;
+        agreement.EndDate = DateOnly.FromDateTime(body.EndDate.Date);
+        agreement.NextPriceAdjustmentDate = body.NextPriceAdjustmentDate.HasValue ? DateOnly.FromDateTime(body.NextPriceAdjustmentDate.Value.Date) : null; ;
         agreement.PriceAdjustmentIndex = body.PriceAdjustmentIndex;
         agreement.Notes = body.Notes;
         agreement.Options = body.Options;

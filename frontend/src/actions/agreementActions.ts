@@ -98,6 +98,7 @@ export async function saveChanges(
 }
 function ensureDatesOnAgreement(agreement: Agreement) {
   if (typeof agreement.endDate === "string") {
+    console.log("heei", agreement.endDate);
     agreement.endDate = new Date(agreement.endDate);
   }
 

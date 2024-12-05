@@ -17,10 +17,10 @@ namespace Core.Agreements
 
         public ICollection<FileReference> Files { get; set; } = new List<FileReference>();
 
-        public DateTime? StartDate { get; set; }
-        public required DateTime EndDate { get; set; }
+        public DateOnly? StartDate { get; set; }
+        public required DateOnly EndDate { get; set; }
 
-        public DateTime? NextPriceAdjustmentDate { get; set; }
+        public DateOnly? NextPriceAdjustmentDate { get; set; }
 
         public string? PriceAdjustmentIndex { get; set; }
         public string? Notes { get; set; } = string.Empty;

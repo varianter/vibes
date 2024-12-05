@@ -204,7 +204,6 @@ export function AgreementEdit({
               />
               <EditDateInput
                 onClick={(e) => {
-                  e.preventDefault();
                   setInEditIndex(i);
                 }}
                 value={agreement.endDate}

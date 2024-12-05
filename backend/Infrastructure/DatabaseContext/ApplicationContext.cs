@@ -185,6 +185,10 @@ public class ApplicationContext : DbContext
             });
         });
 
+        modelBuilder.Entity<Agreement>().Property(a=>a.StartDate).HasConversion<DateOnlyConverter>();
+        modelBuilder.Entity<Agreement>().Property(a=>a.EndDate).HasConversion<DateOnlyConverter>();
+        modelBuilder.Entity<Agreement>().Property(a=>a.NextPriceAdjustmentDate).HasConversion<DateOnlyConverter>();
+
         modelBuilder.Entity<Organization>()
             .HasData(new
             {

@@ -102,7 +102,7 @@ public class ReadModelFactory
                 new BookingDetails(grouping.First().Engagement.Name, BookingType.Booking,
                     grouping.First().Engagement.Customer.Name,
                     grouping.Key, false, grouping.First().Engagement.IsBillable, 
-                    grouping.First().Engagement.Agreements.Select(a => (DateTime?)a.EndDate).DefaultIfEmpty(null).Max()),
+                    grouping.First().Engagement.Agreements.Select(a => (DateTime?)(a.EndDate.ToDateTime(TimeOnly.MinValue))).DefaultIfEmpty(null).Max()),
                 weekSet.Select(week =>
                     new WeeklyHours(
                         week.ToSortableInt(), grouping
@@ -119,7 +119,7 @@ public class ReadModelFactory
                 new BookingDetails(grouping.First().Engagement.Name, BookingType.Offer,
                     grouping.First().Engagement.Customer.Name,
                     grouping.Key, false, grouping.First().Engagement.IsBillable,
-                    grouping.First().Engagement.Agreements.Select(a => (DateTime?)a.EndDate).DefaultIfEmpty(null).Max()),
+                    grouping.First().Engagement.Agreements.Select(a => (DateTime?)(a.EndDate).ToDateTime(TimeOnly.MinValue)).DefaultIfEmpty(null).Max()),
                 weekSet.Select(week =>
                     new WeeklyHours(
                         week.ToSortableInt(),
