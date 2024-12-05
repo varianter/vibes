@@ -161,7 +161,7 @@ export default function ConsultantRows({
       .map((e) => e.bookingDetails.endDateAgreement);
 
     if (dates.some((e) => e === null)) {
-      return <AlertCircle color="red" size={20} className="w-2/12" />;
+      return <AlertCircle color="red" size={20} className="w-1/12" />;
     } else if (dates.length > 0) {
       const newestDate = dates.reduce((a, b) => {
         return new Date(a as string) < new Date(b as string) ? a : b;
@@ -170,12 +170,12 @@ export default function ConsultantRows({
       const now = DateTime.now();
       const endDate = DateTime.fromISO(newestDate as string);
       if (endDate < now) {
-        return <AlertCircle color="orange" size={20} />;
+        return <AlertCircle color="orange" size={20} className="w-1/12" />;
       } else {
-        return <CheckCircle color="transparent" size={20} />;
+        return <CheckCircle color="transparent" size={20} className="w-1/12" />;
       }
     } else {
-      return <CheckCircle color="transparent" size={20} />;
+      return <CheckCircle color="transparent" size={20} className="w-1/12" />;
     }
   }
 
