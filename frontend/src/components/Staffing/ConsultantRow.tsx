@@ -1,7 +1,7 @@
 "use client";
 import { ConsultantReadModel, ProjectWithCustomerModel } from "@/api-types";
 import React, { useContext, useEffect, useState } from "react";
-import { AlertCircle, ChevronDown, Plus } from "react-feather";
+import { AlertCircle, CheckCircle, ChevronDown, Plus } from "react-feather";
 import { DetailedBookingRows } from "@/components/Staffing/DetailedBookingRows";
 import { WeekCell } from "@/components/Staffing/WeekCell";
 import { useModal } from "@/hooks/useModal";
@@ -161,7 +161,7 @@ export default function ConsultantRows({
       .map((e) => e.bookingDetails.endDateAgreement);
 
     if (dates.some((e) => e === null)) {
-      return <AlertCircle color="red" size={20} />;
+      return <AlertCircle color="red" size={20} className="w-2/12" />;
     } else if (dates.length > 0) {
       const newestDate = dates.reduce((a, b) => {
         return new Date(a as string) < new Date(b as string) ? a : b;
@@ -172,8 +172,10 @@ export default function ConsultantRows({
       if (endDate < now) {
         return <AlertCircle color="orange" size={20} />;
       } else {
-        return null;
+        return <CheckCircle color="transparent" size={20} />;
       }
+    } else {
+      return <CheckCircle color="transparent" size={20} />;
     }
   }
 
@@ -203,14 +205,13 @@ export default function ConsultantRows({
           </button>
         </td>
         <td>
-          <div className="flex gap-1 items-center">
-            {getAlert()}
-            <div className="flex flex-row align-center self-center gap-2">
+          <div className="flex justify-start gap-1 items-center">
+            <div className="flex flex-row justify-center self-center gap-2 w-3/12">
               {consultant.imageThumbUrl ? (
                 <Image
                   src={consultant.imageThumbUrl}
                   alt={consultant.name}
-                  className="w-8 h-8 rounded-full self-center object-contain"
+                  className="w-10 h-10 rounded-full self-center object-contain"
                   width={32}
                   height={32}
                 />
@@ -218,7 +219,7 @@ export default function ConsultantRows({
                 <div className="w-8 h-8 rounded-full bg-primary"></div>
               )}
             </div>
-            <div className="flex flex-col gap-1 ">
+            <div className="flex flex-col gap-1 w-7/12 ">
               <p
                 className={`text-black text-start ${
                   isListElementVisible ? "normal-medium" : "normal"
@@ -230,6 +231,7 @@ export default function ConsultantRows({
                 {`${currentConsultant.yearsOfExperience} års erfaring`}
               </p>
             </div>
+            {getAlert()}
             {isListElementVisible && (
               <EditEngagementHourModal
                 modalRef={changeEngagementModalRef}
