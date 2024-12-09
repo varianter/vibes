@@ -29,7 +29,7 @@ export function EditDateInput({
 
   function onInputClick(e: any) {
     setClicked(true);
-    onClick && onClick(e);
+    if (onClick) onClick(e);
   }
 
   useLayoutEffect(() => {
