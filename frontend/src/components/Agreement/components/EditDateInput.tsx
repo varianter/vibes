@@ -69,9 +69,9 @@ export function EditDateInput({
           </label>
           <p
             onClick={(e) => onInputClick(e)}
-            className="mt-1 bg-primary/5 shadow-sm border border-primary/5 pr-10 p-2 rounded-md hover:bg-primary_darker/10"
+            className="mt-1 bg-primary/5 shadow-sm border border-primary/5 pr-10 p-2 rounded-md hover:bg-primary_darker/10 "
           >
-            {value?.toLocaleDateString("nb-NO")}
+            {value?.toLocaleDateString("nb-NO") ?? "Ikke satt"}
           </p>
         </>
       )}
