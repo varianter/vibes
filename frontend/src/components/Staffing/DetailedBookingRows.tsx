@@ -71,6 +71,7 @@ export function DetailedBookingRows(props: {
     { color: "green", text: "Avtale aktiv", icon: CheckCircle },
     { color: "red", text: "Ingen avtaler funnet", icon: AlertCircle },
     { color: "orange", text: "Avtale utgått", icon: AlertCircle },
+    { color: "transparent", text: "", icon: AlertCircle },
   ];
   const { setConsultants } = useContext(FilteredContext);
 
@@ -112,19 +113,22 @@ export function DetailedBookingRows(props: {
   }, []);
 
   async function getColorIcon() {
+    const bookingType = detailedBooking.bookingDetails.type;
     const endDateString = detailedBooking.bookingDetails.endDateAgreement;
     if (endDateString && endDateString !== null) {
       const endDate = new Date(endDateString).getTime();
 
       const today = new Date().getTime();
-      if (today > endDate) {
+      if (today > endDate && bookingType == "Offer") {
         return setAlertColor(colors.find((c) => c.color == "orange"));
       } else {
         return setAlertColor(colors.find((c) => c.color == "green"));
       }
     } else {
-      if (endDateString === null) {
+      if (endDateString === null && bookingType == "Offer") {
         return setAlertColor(colors.find((c) => c.color == "red"));
+      } else {
+        return setAlertColor(colors.find((c) => c.color == "transparent"));
       }
     }
   }

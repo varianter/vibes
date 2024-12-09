@@ -1,3 +1,5 @@
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+
 export function EditTextarea({
   value,
   name,
@@ -11,6 +13,25 @@ export function EditTextarea({
   inEdit: boolean;
   onClick?: (e?: any) => any;
 }) {
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
+  const [clicked, setClicked] = useState(false);
+
+  useEffect(() => {
+    if (!inEdit) {
+      setClicked(false);
+    }
+  }, [inEdit]);
+
+  function onInputClick(e: any) {
+    setClicked(true);
+    if (onClick) onClick(e);
+  }
+
+  useLayoutEffect(() => {
+    if (inEdit && inputRef.current && clicked) {
+      inputRef.current.focus();
+    }
+  }, [inEdit, clicked]);
   return (
     <div className="mb-7 pr-4">
       {inEdit ? (
@@ -23,6 +44,7 @@ export function EditTextarea({
           </label>
           <textarea
             id={name + label}
+            ref={inputRef}
             rows={5}
             cols={50}
             name={name}
@@ -44,7 +66,7 @@ export function EditTextarea({
             <div>
               {value.split(/\r?\n/).map((line, index) => (
                 <p
-                  onClick={onClick}
+                  onClick={(e) => onInputClick(e)}
                   className="mt-1 px-2 hover:cursor-pointer"
                   key={index}
                 >
@@ -54,7 +76,7 @@ export function EditTextarea({
             </div>
           ) : (
             <p
-              onClick={onClick}
+              onClick={(e) => onInputClick(e)}
               className="mt-1 px-2 italic text-text_light_black/50"
             >
               {"Legg til tekst her"}

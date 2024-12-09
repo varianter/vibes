@@ -157,7 +157,10 @@ export default function ConsultantRows({
 
   function getAlert() {
     const dates = consultant.detailedBooking
-      .filter((e) => e.bookingDetails.projectId > 0)
+      .filter(
+        (e) =>
+          e.bookingDetails.projectId > 0 && e.bookingDetails.type == "Offer",
+      )
       .map((e) => e.bookingDetails.endDateAgreement);
 
     if (dates.some((e) => e === null)) {
