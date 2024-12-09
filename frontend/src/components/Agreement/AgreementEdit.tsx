@@ -157,7 +157,7 @@ export function AgreementEdit({
           <form
             action={(form) => save(form, i)}
             key={agreement.agreementId}
-            className="border-primary/5 bg-primary/5 shadow-md rounded-md p-4 mr-32 mt-2"
+            className="border-primary/5 bg-primary/5 shadow-md rounded-md p-4 mr-32 mt-2 overflow-hidden"
           >
             <div className="w-full">
               <EditInput
@@ -348,6 +348,7 @@ export function AgreementEdit({
                       agreementsCopy.splice(i, 1);
                       setAgreements(agreementsCopy);
                       await deleteAgreementWithFiles(agreement, organisation);
+                      setInEditIndex(null);
                     }
                   }}
                   className="border-holiday_darker border-2 bg-white f text-holiday_darker shadow-md "
