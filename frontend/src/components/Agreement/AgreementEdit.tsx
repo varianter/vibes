@@ -172,7 +172,7 @@ export function AgreementEdit({
               />
             </div>
 
-            <div className="flex flex-row flex-wrap justify-start items-start gap-16">
+            <div className="flex flex-row flex-wrap justify-start items-start gap-8">
               {agreement.agreementId !== -1 && (
                 <input
                   type="hidden"
@@ -348,6 +348,7 @@ export function AgreementEdit({
                       agreementsCopy.splice(i, 1);
                       setAgreements(agreementsCopy);
                       await deleteAgreementWithFiles(agreement, organisation);
+                      setInEditIndex(null);
                     }
                   }}
                   className="border-holiday_darker border-2 bg-white f text-holiday_darker shadow-md "
