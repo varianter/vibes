@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 export function EditTextarea({
   value,
@@ -16,7 +16,7 @@ export function EditTextarea({
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const [clicked, setClicked] = useState(false);
 
-  useMemo(() => {
+  useEffect(() => {
     if (!inEdit) {
       setClicked(false);
     }

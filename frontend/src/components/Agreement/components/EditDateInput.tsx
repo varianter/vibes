@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { on } from "events";
 import { set } from "lodash";
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 export function EditDateInput({
   value,
@@ -21,7 +21,7 @@ export function EditDateInput({
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [clicked, setClicked] = useState(false);
 
-  useMemo(() => {
+  useEffect(() => {
     if (!inEdit) {
       setClicked(false);
     }
