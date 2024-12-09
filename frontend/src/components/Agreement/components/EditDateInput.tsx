@@ -1,4 +1,7 @@
 import { format } from "date-fns";
+import { on } from "events";
+import { set } from "lodash";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 
 export function EditDateInput({
   value,
@@ -15,6 +18,26 @@ export function EditDateInput({
   required?: boolean;
   onClick?: (e?: any) => any;
 }) {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const [clicked, setClicked] = useState(false);
+
+  useMemo(() => {
+    if (!inEdit) {
+      setClicked(false);
+    }
+  }, [inEdit]);
+
+  const onInputClick = (e: any) => {
+    setClicked(true);
+    onClick && onClick(e);
+  };
+
+  useLayoutEffect(() => {
+    if (inEdit && inputRef.current && clicked) {
+      inputRef.current.focus();
+    }
+  }, [inEdit, clicked]);
+
   return (
     <div className="mb-4 pr-4">
       {inEdit ? (
@@ -27,6 +50,7 @@ export function EditDateInput({
           </label>
           <input
             id={name + label}
+            ref={inputRef}
             name={name}
             aria-label={label}
             required={required}
@@ -44,7 +68,7 @@ export function EditDateInput({
             {label}
           </label>
           <p
-            onClick={onClick}
+            onClick={(e) => onInputClick(e)}
             className="mt-1 bg-primary/5 shadow-sm border border-primary/5 pr-10 p-2 rounded-md hover:bg-primary_darker/10"
           >
             {value?.toLocaleDateString("nb-NO")}

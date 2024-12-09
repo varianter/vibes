@@ -157,10 +157,18 @@ export default function ConsultantRows({
 
   function getAlert() {
     const dates = consultant.detailedBooking
-      .filter((e) => e.bookingDetails.projectId > 0)
+      .filter(
+        (e) =>
+          e.bookingDetails.projectId > 0 && e.bookingDetails.type == "Offer",
+      )
       .map((e) => e.bookingDetails.endDateAgreement);
+    if (dates.some((e) => e === null)) {
+      console.log("dates", dates);
+      console.log(consultant.detailedBooking);
+    }
 
     if (dates.some((e) => e === null)) {
+      console.log("this true", consultant);
       return <AlertCircle color="red" size={20} className="w-1/12" />;
     } else if (dates.length > 0) {
       const newestDate = dates.reduce((a, b) => {
