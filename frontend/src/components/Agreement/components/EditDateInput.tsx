@@ -27,10 +27,10 @@ export function EditDateInput({
     }
   }, [inEdit]);
 
-  const onInputClick = (e: any) => {
+  function onInputClick(e: any) {
     setClicked(true);
     onClick && onClick(e);
-  };
+  }
 
   useLayoutEffect(() => {
     if (inEdit && inputRef.current && clicked) {
