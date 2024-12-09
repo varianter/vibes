@@ -172,7 +172,7 @@ export function AgreementEdit({
               />
             </div>
 
-            <div className="flex flex-row flex-wrap justify-start items-start gap-16">
+            <div className="flex flex-row flex-wrap justify-start items-start gap-8">
               {agreement.agreementId !== -1 && (
                 <input
                   type="hidden"

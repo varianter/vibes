@@ -15,7 +15,7 @@ export function EditInput({
   onClick?: (e?: any) => any;
 }) {
   return (
-    <div className="mb-5 pr-4 mt-2">
+    <div className="mb-3 pr-4 mt-2 h-16">
       {inEdit ? (
         <>
           <label
@@ -36,7 +36,7 @@ export function EditInput({
       ) : (
         <>
           <h2
-            className="block text-sm font-bold pl-2 text-gray-700 hover:cursor-pointer"
+            className="mr-10 pr-10 p-2 mt-1 block text-sm font-bold pl-2 text-gray-700 hover:cursor-pointer"
             onClick={onClick}
           >
             {value}
