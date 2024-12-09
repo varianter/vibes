@@ -157,7 +157,7 @@ export function AgreementEdit({
           <form
             action={(form) => save(form, i)}
             key={agreement.agreementId}
-            className="border-primary/5 bg-primary/5 shadow-md rounded-md p-4 mr-32 mt-2 overflow-hidden"
+            className="border-primary/5 bg-primary/5 shadow-md rounded-md p-4 mr-32 mt-2"
           >
             <div className="w-full">
               <EditInput
