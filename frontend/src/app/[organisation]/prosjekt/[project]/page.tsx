@@ -10,6 +10,7 @@ import { parseYearWeekFromUrlString } from "@/data/urlUtils";
 import { fetchWorkHoursPerWeek } from "@/hooks/fetchWorkHoursPerDay";
 import EditEngagementName from "@/components/EditEngagementName";
 import { AgreementEdit } from "@/components/Agreement/AgreementEdit";
+import { INTERNAL_CUSTOMER_NAME } from "@/components/Staffing/helpers/utils";
 
 export default async function Project({
   params,
@@ -40,7 +41,7 @@ export default async function Project({
       }${weekSpan ? `${selectedWeek ? "&" : "?"}WeekSpan=${weekSpan}` : ""}`,
     )) ?? [];
 
-  const isInternalProject = project?.customerName === "Variant";
+  const isInternalProject = project?.customerName === INTERNAL_CUSTOMER_NAME;
 
   if (project) {
     return (

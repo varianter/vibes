@@ -170,3 +170,5 @@ export function updateProjects(
 
   return [...old];
 }
+
+export const INTERNAL_CUSTOMER_NAME = "Variant";

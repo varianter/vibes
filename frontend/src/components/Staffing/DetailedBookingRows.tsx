@@ -9,6 +9,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   getColorByStaffingType,
   getIconByBookingType,
+  INTERNAL_CUSTOMER_NAME,
   updateProjects,
   upsertConsultantBooking,
 } from "@/components/Staffing/helpers/utils";
@@ -115,18 +116,20 @@ export function DetailedBookingRows(props: {
   async function getColorIcon() {
     const bookingType = detailedBooking.bookingDetails.type;
     const endDateString = detailedBooking.bookingDetails.endDateAgreement;
+    const isInternal =
+      detailedBooking.bookingDetails.customerName == INTERNAL_CUSTOMER_NAME;
     if (endDateString && endDateString !== null) {
       const endDate = new Date(endDateString).getTime();
 
       const today = new Date().getTime();
 
-      if (today > endDate && bookingType == "Booking") {
+      if (today > endDate && bookingType == "Booking" && !isInternal) {
         return setAlertColor(colors.find((c) => c.color == "orange"));
       } else {
         return setAlertColor(colors.find((c) => c.color == "green"));
       }
     } else {
-      if (endDateString === null && bookingType == "Booking") {
+      if (endDateString === null && bookingType == "Booking" && !isInternal) {
         return setAlertColor(colors.find((c) => c.color == "red"));
       } else {
         return setAlertColor(colors.find((c) => c.color == "transparent"));
