@@ -159,7 +159,7 @@ export default function ConsultantRows({
     const dates = consultant.detailedBooking
       .filter(
         (e) =>
-          e.bookingDetails.projectId > 0 && e.bookingDetails.type == "Offer",
+          e.bookingDetails.projectId > 0 && e.bookingDetails.type == "Booking",
       )
       .map((e) => e.bookingDetails.endDateAgreement);
 

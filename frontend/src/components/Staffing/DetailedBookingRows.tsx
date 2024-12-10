@@ -119,13 +119,14 @@ export function DetailedBookingRows(props: {
       const endDate = new Date(endDateString).getTime();
 
       const today = new Date().getTime();
-      if (today > endDate && bookingType == "Offer") {
+
+      if (today > endDate && bookingType == "Booking") {
         return setAlertColor(colors.find((c) => c.color == "orange"));
       } else {
         return setAlertColor(colors.find((c) => c.color == "green"));
       }
     } else {
-      if (endDateString === null && bookingType == "Offer") {
+      if (endDateString === null && bookingType == "Booking") {
         return setAlertColor(colors.find((c) => c.color == "red"));
       } else {
         return setAlertColor(colors.find((c) => c.color == "transparent"));
