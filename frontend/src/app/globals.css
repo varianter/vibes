@@ -22,6 +22,14 @@
   src: url(../../public/fonts/Graphik-Bold-Web.woff2) format("truetype");
 }
 
+@font-face {
+  font-family: "BrittiSans";
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url(../../public/fonts/britti-sans-variable.woff2) format("woff2");
+}
+
 @layer base {
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {
@@ -46,62 +54,72 @@
   }
 
   h1 {
-    font-size: 1.625rem;
-    font-family: "Graphik-Regular", sans-serif;
+    font-size: 2rem;
+    font-family: "BrittiSans", sans-serif;
+    font-variation-settings: "wght" 500;
     line-height: 2.5rem;
   }
 
   h2 {
-    font-size: 1.25rem;
-    font-family: "Graphik-Regular", sans-serif;
+    font-size: 1.5rem;
+    font-family: "BrittiSans", sans-serif;
+    font-variation-settings: "wght" 400;
     line-height: 1.5rem;
   }
 
   .normal {
     font-size: 0.875rem;
-    font-family: "Graphik-Regular";
+    font-family: "BrittiSans", sans-serif;
+    font-variation-settings: "wght" 400;
     line-height: 1rem;
   }
 
   .normal-medium {
     font-size: 0.875rem;
-    font-family: "Graphik-Medium";
+    font-family: "BrittiSans", sans-serif;
+    font-variation-settings: "wght" 500;
     line-height: 1rem;
   }
 
   .normal-semibold {
     font-size: 0.875rem;
-    font-family: "Graphik-SemiBold";
+    font-family: "BrittiSans", sans-serif;
+    font-variation-settings: "wght" 600;
     line-height: 1rem;
   }
 
   .small {
     font-size: 0.75rem;
-    font-family: "Graphik-Regular";
+    font-family: "BrittiSans", sans-serif;
+    font-variation-settings: "wght" 400;
     line-height: 1rem;
   }
 
   .small-medium {
     font-size: 0.75rem;
-    font-family: "Graphik-Medium";
+    font-family: "BrittiSans", sans-serif;
+    font-variation-settings: "wght" 500;
     line-height: 1rem;
   }
 
   .xsmall {
     font-size: 0.625rem;
-    font-family: "Graphik-Regular";
+    font-family: "BrittiSans", sans-serif;
+    font-variation-settings: "wght" 400;
     line-height: 1rem;
   }
 
   .large {
     font-size: 1rem;
-    font-family: "Graphik-Regular";
+    font-family: "BrittiSans", sans-serif;
+    font-variation-settings: "wght" 400;
     line-height: 1.25rem;
   }
 
   .large-medium {
     font-size: 1rem;
-    font-family: "Graphik-Medium";
+    font-family: "BrittiSans", sans-serif;
+    font-variation-settings: "wght" 500;
     line-height: 1.25rem;
   }
 

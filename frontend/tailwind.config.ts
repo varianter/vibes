@@ -24,7 +24,9 @@ export default {
       absence_darker: "#004C46",
       background_light_purple: "#423D8908",
       background_light_purple_hover: "#423D891A",
+      background_grey: "#F2F2F2",
       text_light_black: "#333333BF",
+
       error: "#B91456",
     },
     fontSize: {

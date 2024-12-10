@@ -20,7 +20,7 @@ export default function StaffingSidebar({
   return (
     <>
       {isSidebarOpen && (
-        <div className="sidebar z-10 bg-primary/5 h-full flex flex-col gap-6 p-4 w-[300px] overflow-y-auto">
+        <div className="sidebar z-10 bg-background_grey h-full flex flex-col gap-6 p-4 w-[300px] overflow-y-auto">
           <div className="flex flex-row justify-between items-center">
             <h1 className="">Filter</h1>
             <button

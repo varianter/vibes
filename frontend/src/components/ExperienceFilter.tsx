@@ -22,7 +22,7 @@ export default function ExperienceFilter() {
         <div className={`flex flex-col gap-2`}>
           <p className="small">Fra</p>
           <div
-            className={`flex flex-row gap-2 border rounded-lg
+            className={`flex bg-white flex-row gap-2 border rounded-lg
             px-3 py-2 hover:bg-primary/10 hover:border-primary ${
               fromSearchIsActive ? "border-primary" : "border-primary/50"
             } `}
@@ -42,7 +42,7 @@ export default function ExperienceFilter() {
         <div className={`flex flex-col gap-2`}>
           <p className="small">Til</p>
           <div
-            className={`flex flex-row gap-2 border rounded-lg
+            className={`flex flex-row bg-white gap-2 border rounded-lg
             px-3 py-2 hover:bg-primary/10 hover:border-primary ${
               toSearchIsActive ? "border-primary" : "border-primary/50"
             } `}
