@@ -17,6 +17,7 @@ import { setDetailedBookingHours } from "./NewDetailedBookingRow";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { DateTime } from "luxon";
 import Image from "next/image";
+import { INTERNAL_CUSTOMER_NAME } from "./helpers/utils";
 
 export default function ConsultantRows({
   consultant,
@@ -159,7 +160,9 @@ export default function ConsultantRows({
     const dates = consultant.detailedBooking
       .filter(
         (e) =>
-          e.bookingDetails.projectId > 0 && e.bookingDetails.type == "Booking",
+          e.bookingDetails.projectId > 0 &&
+          e.bookingDetails.type == "Booking" &&
+          e.bookingDetails.customerName != INTERNAL_CUSTOMER_NAME,
       )
       .map((e) => e.bookingDetails.endDateAgreement);
 

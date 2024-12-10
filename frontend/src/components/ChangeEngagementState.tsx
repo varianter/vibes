@@ -8,6 +8,7 @@ import {
 import { useState } from "react";
 import FilterButton from "./Buttons/FilterButton";
 import { usePathname, useRouter } from "next/navigation";
+import { INTERNAL_CUSTOMER_NAME } from "./Staffing/helpers/utils";
 
 export default function ChangeEngagementState({
   project,
@@ -22,7 +23,7 @@ export default function ChangeEngagementState({
     project.bookingType,
   );
 
-  const isInternalProject = project.customerName === "Variant";
+  const isInternalProject = project.customerName === INTERNAL_CUSTOMER_NAME;
 
   async function handleChange(newState: EngagementState) {
     setEngagementState(newState);
