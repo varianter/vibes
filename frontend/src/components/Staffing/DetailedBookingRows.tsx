@@ -116,7 +116,8 @@ export function DetailedBookingRows(props: {
   async function getColorIcon() {
     const bookingType = detailedBooking.bookingDetails.type;
     const endDateString = detailedBooking.bookingDetails.endDateAgreement;
-    const isInternal = detailedBooking.bookingDetails.customerName == INTERNAL_CUSTOMER_NAME;
+    const isInternal =
+      detailedBooking.bookingDetails.customerName == INTERNAL_CUSTOMER_NAME;
     if (endDateString && endDateString !== null) {
       const endDate = new Date(endDateString).getTime();
 
