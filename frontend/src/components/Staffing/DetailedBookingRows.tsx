@@ -110,7 +110,6 @@ export function DetailedBookingRows(props: {
 
   useEffect(() => {
     getColorIcon();
-    console.log(openEngagementAndSetID);
   }, []);
 
   async function getColorIcon() {
