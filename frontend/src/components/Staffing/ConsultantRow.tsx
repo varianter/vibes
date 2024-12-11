@@ -217,12 +217,12 @@ export default function ConsultantRows({
                 <Image
                   src={consultant.imageThumbUrl}
                   alt={consultant.name}
-                  className="w-10 h-10 rounded-full self-center object-contain"
+                  className="w-10 h-10 rounded-md self-center object-contain"
                   width={32}
                   height={32}
                 />
               ) : (
-                <div className="w-8 h-8 rounded-full bg-primary"></div>
+                <div className="w-8 h-8 rounded-md bg-primary"></div>
               )}
             </div>
             <div className="flex flex-col gap-1 w-7/12 ">
