@@ -51,7 +51,10 @@ export default function ActiveFilters() {
   return (
     <div className="h-4">
       {filterSummaryText != "" && (
-        <p className="small-medium"> {filterSummaryText} </p>
+        <p className="small-medium text-lighterPrimary">
+          {" "}
+          {filterSummaryText}{" "}
+        </p>
       )}
     </div>
   );

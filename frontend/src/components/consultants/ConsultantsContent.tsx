@@ -10,6 +10,7 @@ import AddNewConsultantModal from "./AddNewConsultantModal";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { ConsultantReadModel } from "@/api-types";
 import { useSimpleConsultantsFilter } from "@/hooks/staffing/useConsultantsFilter";
+import ActionButton from "../Buttons/ActionButton";
 
 export default function ConsultantContent() {
   const [isSideBarOpen, setIsSidebarOpen] = useState<boolean>(false);
@@ -30,15 +31,16 @@ export default function ConsultantContent() {
         <div className="w-full flex flex-row justify-between">
           <h1>Konsulenter</h1>
 
-          <button
-            className="py-2 px-3 bg-primary text-white rounded-md flex flex-row items-center gap-2"
+          <ActionButton
+            variant="primary"
+            className="py-2 px-3  rounded-md flex flex-row items-center gap-2"
             onClick={() => {
               setIsDisabledHotkeys(true);
               setToggleAddConsultant(true);
             }}
           >
             <Plus size="20" /> Legg til konsulent
-          </button>
+          </ActionButton>
         </div>
 
         <div className="flex flex-row justify-between items-center pt-[12px]">

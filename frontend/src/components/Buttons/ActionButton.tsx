@@ -31,13 +31,13 @@ export default function ActionButton({
 }: ActionButtonProps) {
   const variantClass =
     {
-      primary: `bg-primary text-white ${
+      primary: `bg-primaryActionButton text-white ${
         !disabled && "hover:bg-primary_darker"
       }`,
-      secondary: `bg-white text-primary border border-primary/50 ${
+      secondary: `bg-white text-lighterPrimary border border-primary/50 ${
         !disabled && "hover:border-primary"
       }`,
-      terniary: `bg-white text-primary ${
+      terniary: `bg-white text-lighterPrimary ${
         !disabled && "hover:bg-primary/10 hover:bg-primary/10"
       }`,
     }[variant] ?? "Default";
