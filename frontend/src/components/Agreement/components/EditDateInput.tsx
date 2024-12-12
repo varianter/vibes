@@ -35,6 +35,7 @@ export function EditDateInput({
   useLayoutEffect(() => {
     if (inEdit && inputRef.current && clicked) {
       inputRef.current.focus();
+      inputRef.current.showPicker();
     }
   }, [inEdit, clicked]);
 
