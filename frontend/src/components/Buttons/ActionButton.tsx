@@ -34,10 +34,10 @@ export default function ActionButton({
       primary: `bg-primaryActionButton text-white ${
         !disabled && "hover:bg-primary_darker"
       }`,
-      secondary: `bg-white text-lighterPrimary border border-primary/50 ${
+      secondary: `bg-white text-primary border border-primary/50 ${
         !disabled && "hover:border-primary"
       }`,
-      terniary: `bg-white text-lighterPrimary ${
+      terniary: `bg-white text-primary ${
         !disabled && "hover:bg-primary/10 hover:bg-primary/10"
       }`,
     }[variant] ?? "Default";

@@ -33,7 +33,7 @@ export default function ConsultantContent() {
 
           <ActionButton
             variant="primary"
-            className="py-2 px-3  rounded-md flex flex-row items-center gap-2"
+            className="py-2 px-3 rounded-md flex flex-row items-center gap-2"
             onClick={() => {
               setIsDisabledHotkeys(true);
               setToggleAddConsultant(true);

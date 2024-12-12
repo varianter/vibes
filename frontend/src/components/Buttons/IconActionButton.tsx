@@ -21,9 +21,9 @@ export default function IconActionButton({
 }: IconActionButtonProps) {
   const variantClass =
     {
-      primary: "bg-lighterPrimary text-white hover:bg-primary_darker",
+      primary: "bg-primary text-white hover:bg-primary_darker",
       secondary:
-        "bg-white text-lighterPrimary border border-primary/50 hover:bg-primary/10 hover:border-primary",
+        "bg-white text-primary border border-primary/50 hover:bg-primary/10 hover:border-primary",
       terniary: "bg-white text-primary hover:bg-primary/10 ",
     }[variant] ?? "Default";
   const disabledClass = disabled ? "bg-opacity-50" : "";

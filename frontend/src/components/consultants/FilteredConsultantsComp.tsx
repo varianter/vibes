@@ -330,8 +330,8 @@ export default function FilteredConsultantsComp({
                     <Edit3
                       className={` ${
                         hoveredRowIndex === index
-                          ? "text-lighterPrimary"
-                          : "text-lighterPrimary/50"
+                          ? "text-primary"
+                          : "text-primary/50"
                       }`}
                       size="24"
                     />
@@ -347,7 +347,7 @@ export default function FilteredConsultantsComp({
           <td className="py-4 font-bold text-">
             <div className="flex flex-row gap-1 items-center">
               <p className="normal-medium ">Inaktive konsulenter</p>
-              <p className="text-primary small-medium rounded-full bg-primary/5 px-2 py-1">
+              <p className="text-primary small-medium rounded-full bg-secondary/30 px-2 py-1">
                 {editableConsultants.filter((e) => e.endDate)?.length}
               </p>
             </div>
@@ -419,8 +419,8 @@ export default function FilteredConsultantsComp({
                       )}
                     </div>
                     {selectedEditConsultant?.id === consultant.id ? null : (
-                      <p className="text-xs text-text_light_black">
-                        Erfaring {consultant.yearsOfExperience} år
+                      <p className="xsmall text-text_light_black">
+                        {consultant.yearsOfExperience} års erfaring
                       </p>
                     )}
                   </div>

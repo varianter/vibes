@@ -264,7 +264,7 @@
   }
 
   .checkBoxWithCustomCheckmark:checked {
-    background-color: #1a1554;
+    background-color: #242424;
   }
 
   .checkBoxWithCustomCheckmark:checked::before {
@@ -285,6 +285,6 @@
     color: white;
     border-radius: 5px;
     padding: 0.3rem 0.7rem;
-    background-color: #423d89;
+    background-color: #242424;
   }
 }
