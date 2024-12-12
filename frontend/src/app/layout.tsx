@@ -5,6 +5,7 @@ import NextTopLoader from "nextjs-toploader";
 import "./globals.css";
 import NavBar from "@/components/NavBar/NavBar";
 import { Metadata } from "next";
+import { url } from "inspector";
 
 export const metadata: Metadata = {
   icons: {
