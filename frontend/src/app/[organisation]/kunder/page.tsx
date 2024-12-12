@@ -76,7 +76,7 @@ export default async function Kunder({
             <th colSpan={2}>
               <div className="flex flex-row gap-3 pb-4 items-center">
                 <p className="normal-medium ">{title}</p>
-                <p className="text-primary small-medium rounded-full bg-primary/5 px-2 py-1">
+                <p className="text-primary small-medium rounded-full bg-secondary/30 px-2 py-1">
                   {customers?.length}
                 </p>
               </div>

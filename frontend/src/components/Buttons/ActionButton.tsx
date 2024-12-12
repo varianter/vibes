@@ -31,7 +31,7 @@ export default function ActionButton({
 }: ActionButtonProps) {
   const variantClass =
     {
-      primary: `bg-primary text-white ${
+      primary: `bg-primaryActionButton text-white ${
         !disabled && "hover:bg-primary_darker"
       }`,
       secondary: `bg-white text-primary border border-primary/50 ${

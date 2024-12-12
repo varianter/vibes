@@ -29,7 +29,12 @@ export default function RootLayout({
       </Head>
       <body className="layout-grid">
         <NavBar />
-        <NextTopLoader color="#F076A6" height={3} initialPosition={0.2} />
+        <NextTopLoader
+          showSpinner={false}
+          color="#FF87B7"
+          height={3}
+          initialPosition={0.2}
+        />
         {children}
       </body>
     </html>

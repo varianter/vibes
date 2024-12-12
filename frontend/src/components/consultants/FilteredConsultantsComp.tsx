@@ -32,6 +32,7 @@ export default function FilteredConsultantsComp({
 
   const [selectedEditConsultant, setSelectedEditConsultant] =
     useState<ConsultantReadModel | null>(null);
+  const [hoveredRowIndex, setHoveredRowIndex] = useState<number | null>(null);
 
   const listRef = useRef<HTMLTableSectionElement>(null);
   const { setIsDisabledHotkeys } = useContext(FilteredContext);
@@ -99,7 +100,7 @@ export default function FilteredConsultantsComp({
           <th className="px-2 py-1 pt-3 bg-white w-1/6">
             <div className="flex flex-row gap-1 items-center">
               <p className="normal-medium ">Konsulenter</p>
-              <p className="text-primary small-medium rounded-full bg-primary/5 px-2 py-1">
+              <p className="text-primary small-medium rounded-full bg-secondary/30 px-2 py-1">
                 {editableConsultants.filter((e) => !e.endDate)?.length}
               </p>
             </div>
@@ -152,7 +153,7 @@ export default function FilteredConsultantsComp({
         </tr>
       </thead>
 
-      <tbody ref={listRef}>
+      <tbody ref={listRef} onMouseLeave={() => setHoveredRowIndex(null)}>
         {editableConsultants
           .filter(
             (e) =>
@@ -161,10 +162,10 @@ export default function FilteredConsultantsComp({
                 new Date().setHours(0, 0, 0, 0),
           )
           .sort((a, b) => a.name.localeCompare(b.name))
-          .map((consultant) => (
+          .map((consultant, index) => (
             <tr
               key={consultant.id}
-              className="h-[52px] bg-background_light_purple hover:bg-background_light_purple_hover transition-all cursor-pointer rounded-md"
+              className="h-[52px] bg-background_light_purple outline-1 outline outline-transparent hover:outline-hoverBorder transition-all cursor-pointer rounded-md"
               onDoubleClick={() => {
                 setSelectedEditConsultant(consultant);
                 setIsDisabledHotkeys(true);
@@ -179,8 +180,15 @@ export default function FilteredConsultantsComp({
                   setIsDisabledHotkeys(false);
                 }
               }}
+              onMouseEnter={() => setHoveredRowIndex(index)}
             >
-              <td className="px-2 py-1 rounded-l-md">
+              <td
+                className={`px-2 py-1 rounded-l-md border-l-2 ${
+                  hoveredRowIndex === index
+                    ? "hover:border-l-primary"
+                    : " border-l-primary/5"
+                }`}
+              >
                 <div className="flex flex-row align-center self-center gap-2">
                   {consultant.imageThumbUrl ? (
                     <Image
@@ -319,7 +327,14 @@ export default function FilteredConsultantsComp({
                   {selectedEditConsultant?.id === consultant.id ? (
                     <Check className="text-primary" size="24" />
                   ) : (
-                    <Edit3 className="text-primary" size="24" />
+                    <Edit3
+                      className={` ${
+                        hoveredRowIndex === index
+                          ? "text-primary"
+                          : "text-primary/50"
+                      }`}
+                      size="24"
+                    />
                   )}
                 </button>
               </td>
@@ -332,7 +347,7 @@ export default function FilteredConsultantsComp({
           <td className="py-4 font-bold text-">
             <div className="flex flex-row gap-1 items-center">
               <p className="normal-medium ">Inaktive konsulenter</p>
-              <p className="text-primary small-medium rounded-full bg-primary/5 px-2 py-1">
+              <p className="text-primary small-medium rounded-full bg-secondary/30 px-2 py-1">
                 {editableConsultants.filter((e) => e.endDate)?.length}
               </p>
             </div>
@@ -350,7 +365,7 @@ export default function FilteredConsultantsComp({
           .map((consultant) => (
             <tr
               key={consultant.id}
-              className="h-[52px] bg-background_light_purple hover:bg-background_light_purple_hover transition-all cursor-pointer rounded-md"
+              className="h-[52px] bg-background_light_purple hover:border-hoverBorder hover:border transition-all cursor-pointer rounded-md"
               onDoubleClick={() => {
                 setSelectedEditConsultant(consultant);
                 setIsDisabledHotkeys(true);
@@ -404,8 +419,8 @@ export default function FilteredConsultantsComp({
                       )}
                     </div>
                     {selectedEditConsultant?.id === consultant.id ? null : (
-                      <p className="text-xs text-text_light_black">
-                        Erfaring {consultant.yearsOfExperience} år
+                      <p className="xsmall text-text_light_black">
+                        {consultant.yearsOfExperience} års erfaring
                       </p>
                     )}
                   </div>
