@@ -1,15 +1,17 @@
 "use client";
-import { useContext, useEffect, useRef, useState } from "react";
+import { Context, useContext, useEffect, useRef, useState } from "react";
 import { Search } from "react-feather";
 import { useNameSearch } from "@/hooks/staffing/useNameSearch";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
 export default function SearchBarComponent({
   hidden = false,
+  context,
 }: {
   hidden?: boolean;
+  context: Context<any>;
 }) {
-  const { setNameSearch, activeNameSearch } = useNameSearch();
+  const { setNameSearch, activeNameSearch } = useNameSearch(context);
   const inputRef = useRef<HTMLInputElement>(null);
   const [searchIsActive, setIsSearchActive] = useState(false);
   const { isDisabledHotkeys } = useContext(FilteredContext);

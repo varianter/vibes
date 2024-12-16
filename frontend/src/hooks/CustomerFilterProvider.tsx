@@ -17,6 +17,7 @@ interface UpdateFilterParams {
   bookingType?: EngagementState;
 }
 export type UpdateFilters = (updateParams: UpdateFilterParams) => void;
+
 const defaultFilters: CustomerFilters = {
   searchFilter: "",
   engagementIsBillableFilter: "",
@@ -68,7 +69,6 @@ export function CustomerFilterProvider(props: {
 }
 
 function useUrlRouteFilter(): [CustomerFilters, UpdateFilters] {
-  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
