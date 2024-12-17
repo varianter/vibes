@@ -2,7 +2,6 @@
 
 import { EngagementPerCustomerReadModel, EngagementState } from "@/api-types";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useRouter } from "next/router";
 import { createContext, ReactNode, useEffect, useState } from "react";
 
 export type CustomerFilters = {

@@ -1,12 +1,8 @@
 "use client";
 import { EngagementPerCustomerReadModel } from "@/api-types";
-import IconActionButton from "@/components/Buttons/IconActionButton";
-import ActiveCustomerFilters from "@/components/CostumerTable/ActiveCustomerFilters";
 import CustomerSidebarWithFilters from "@/components/CostumerTable/CustomerSidebarWithFilters";
 import CustomerRow from "@/components/CostumerTable/CustomerRow";
 import { FilteredCustomerTable } from "@/components/CostumerTable/FilteredCustomersTable";
-import { useState } from "react";
-import { Filter } from "react-feather";
 
 export function CustomerContent({
   customers,

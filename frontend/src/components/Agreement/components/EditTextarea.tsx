@@ -50,7 +50,7 @@ export function EditTextarea({
             name={name}
             defaultValue={value}
             aria-label={label}
-            className="border-one_and_a_half border-primary/80 rounded-md p-2 mt-1 block w-full focus:outline-none focus:bg-primary/10 transitionEase"
+            className="border-one_and_a_half border-primary/80 rounded-md p-2 mt-1 block w-full focus:outline-none focus:outline-primary"
           />
         </>
       ) : (

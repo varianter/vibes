@@ -1,5 +1,4 @@
 import { FilteredCustomerContext } from "@/hooks/CustomerFilterProvider";
-import { ArrowLeft } from "react-feather";
 import SearchBarComponent from "../SearchBarComponent";
 
 export default function CustomerSidebarWithFilters() {

@@ -1,8 +1,5 @@
 "use client";
-import {
-  EngagementPerCustomerReadModel,
-  EngagementReadModel,
-} from "@/api-types";
+import { EngagementPerCustomerReadModel } from "@/api-types";
 import CustomerRow from "@/components/CostumerTable/CustomerRow";
 import { useCustomerFilter } from "@/hooks/staffing/useCustomerFilter";
 
