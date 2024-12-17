@@ -25,6 +25,7 @@ export default async function NavBar() {
     { text: "Kunder", path: "kunder" },
     { text: "Konsulenter", path: "konsulenter" },
     { text: "Rapporter", path: "rapport" },
+    { text: "Ferie", path: "ferie" },
   ];
 
   return (
