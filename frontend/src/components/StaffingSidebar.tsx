@@ -6,6 +6,7 @@ import { ArrowLeft } from "react-feather";
 import RawYearsFilter from "./RawYearsFilter";
 import CompetenceFilter from "./CompetenceFilter";
 import ExperienceFilter from "./ExperienceFilter";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
 // @ts-ignore
 export default function StaffingSidebar({
@@ -30,7 +31,7 @@ export default function StaffingSidebar({
               <ArrowLeft className="text-primary" size="24" />
             </button>
           </div>
-          <SearchBarComponent />
+          <SearchBarComponent context={FilteredContext} />
           {isStaffing ? <AvailabilityFilter /> : null}
           <DepartmentFilter />
           <RawYearsFilter />
@@ -40,7 +41,10 @@ export default function StaffingSidebar({
       )}
       {!isSidebarOpen && (
         <div className="sidebar z-10">
-          <SearchBarComponent hidden={!isSidebarOpen} />
+          <SearchBarComponent
+            context={FilteredContext}
+            hidden={!isSidebarOpen}
+          />
         </div>
       )}
     </>

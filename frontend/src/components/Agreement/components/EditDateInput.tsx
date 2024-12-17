@@ -35,6 +35,7 @@ export function EditDateInput({
   useLayoutEffect(() => {
     if (inEdit && inputRef.current && clicked) {
       inputRef.current.focus();
+      inputRef.current.showPicker();
     }
   }, [inEdit, clicked]);
 
@@ -56,7 +57,7 @@ export function EditDateInput({
             required={required}
             defaultValue={value ? format(value!, "yyyy-MM-dd") : undefined}
             type="date"
-            className="border-one_and_a_half shadow-sm border-primary rounded-md px-2 pt-1 mt-1 block w-full"
+            className="border-one_and_a_half shadow-sm border-primary rounded-md px-2 pt-1 mt-1 block w-full "
           />
         </>
       ) : (

@@ -1,8 +1,7 @@
-import { useState, useEffect, useContext } from "react";
-import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
+import { useState, useEffect, useContext, Context } from "react";
 
-export function useNameSearch() {
-  const { updateFilters, activeFilters } = useContext(FilteredContext);
+export function useNameSearch(context: Context<any>) {
+  const { updateFilters, activeFilters } = useContext(context);
   const searchFilter = activeFilters.searchFilter;
 
   function setNameSearch(newSearch: string) {
