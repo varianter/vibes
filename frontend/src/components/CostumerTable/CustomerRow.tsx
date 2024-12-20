@@ -1,7 +1,7 @@
 "use client";
 
 import { EngagementPerCustomerReadModel } from "@/api-types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight, ChevronDown } from "react-feather";
 import {
   getColorByStaffingType,
@@ -9,6 +9,8 @@ import {
 } from "../Staffing/helpers/utils";
 import { getBookingTypeFromProjectState } from "../Staffing/EditEngagementHourModal/utils";
 import Link from "next/link";
+import ActionButton from "../Buttons/ActionButton";
+import { useParams } from "next/navigation";
 
 export default function CostumerRow({
   customer,
@@ -17,11 +19,34 @@ export default function CostumerRow({
 }) {
   const [isListElementVisible, setIsListElementVisible] = useState(false);
   const [isRowHovered, setIsRowHovered] = useState(false);
+  const [isActive, setIsActive] = useState<boolean>(customer.isActive);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { organisation } = useParams();
 
   function toggleListElementVisibility() {
     setIsListElementVisible((old) => !old);
   }
 
+  async function onActivate(customerId: number, active: boolean) {
+    if (isLoading) return;
+    setIsLoading(true);
+    setIsActive(active);
+    try {
+      const response = await fetch(
+        `/${organisation}/kunder/api?customerId=${customerId}&activate=${active}`,
+        {
+          method: "PUT",
+        },
+      );
+      if (response.status !== 200) {
+        setIsActive(!active);
+      }
+    } catch {
+      setIsActive(!active);
+    } finally {
+      setIsLoading(false);
+    }
+  }
   return (
     <>
       <tr
@@ -73,6 +98,14 @@ export default function CostumerRow({
             ></div>
           </td>
         ))}
+        <td>
+          <ActionButton
+            onClick={() => onActivate(customer.customerId, !customer.isActive)}
+            variant="secondary"
+          >
+            {isActive ? "Deaktiver" : "Aktiver"}
+          </ActionButton>
+        </td>
       </tr>
       {isListElementVisible &&
         customer.engagements &&

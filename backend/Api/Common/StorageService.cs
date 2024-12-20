@@ -195,7 +195,20 @@ public class StorageService
         return consultant;
     }
 
-    public Customer UpdateOrCreateCustomer(Organization org, string customerName, string orgUrlKey)
+    public Customer DeactivateOrActivateCustomer(int customerId, Organization org, bool active, string orgUrlKey)
+    {
+        var customer = GetCustomerFromId(orgUrlKey, customerId);
+        if (customer is null) return null;
+
+        customer.IsActive = active;
+        _dbContext.Customer.Update(customer);
+        _dbContext.SaveChanges();
+        ClearConsultantCache(orgUrlKey);
+
+        return customer;
+    }
+
+    public Customer FindOrCreateCustomer(Organization org, string customerName, string orgUrlKey)
     {
         var customer = _dbContext.Customer.Where(c => c.OrganizationId == org.Id)
             .SingleOrDefault(c => c.Name == customerName);
@@ -206,14 +219,15 @@ public class StorageService
             {
                 Name = customerName,
                 Organization = org,
-                Projects = []
+                Projects = [],
+                IsActive = true
             };
 
             _dbContext.Customer.Add(customer);
+            _dbContext.SaveChanges();
+            ClearConsultantCache(orgUrlKey);
         }
 
-        _dbContext.SaveChanges();
-        ClearConsultantCache(orgUrlKey);
 
         return customer;
     }

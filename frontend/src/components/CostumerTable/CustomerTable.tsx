@@ -9,6 +9,7 @@ import WeekSelector from "../WeekSelector";
 import { useWeekSelectors } from "@/hooks/useWeekSelectors";
 import { WeekSpanTableHead } from "../Staffing/WeekTableHead";
 import { AgreementEdit } from "../Agreement/AgreementEdit";
+import ActionButton from "../Buttons/ActionButton";
 
 export default function CustomerTable({
   customer,
@@ -34,7 +35,10 @@ export default function CustomerTable({
 
   return (
     <div className="main p-4 pt-5 w-full flex flex-col gap-8">
-      <h1>{customer?.customerName}</h1>
+      <div className="flex flex-row justify-between">
+        <h1>{customer?.customerName}</h1>
+        <ActionButton variant="secondary">Deaktiver</ActionButton>
+      </div>
 
       <div className="flex flex-row justify-between">
         <div className="h-4">

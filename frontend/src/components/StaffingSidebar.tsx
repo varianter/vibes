@@ -31,7 +31,10 @@ export default function StaffingSidebar({
               <ArrowLeft className="text-primary" size="24" />
             </button>
           </div>
-          <SearchBarComponent context={FilteredContext} />
+          <SearchBarComponent
+            context={FilteredContext}
+            placeholder="Søk etter konsulent"
+          />
           {isStaffing ? <AvailabilityFilter /> : null}
           <DepartmentFilter />
           <RawYearsFilter />
@@ -42,6 +45,7 @@ export default function StaffingSidebar({
       {!isSidebarOpen && (
         <div className="sidebar z-10">
           <SearchBarComponent
+            placeholder="Søk etter konsulent"
             context={FilteredContext}
             hidden={!isSidebarOpen}
           />

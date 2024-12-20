@@ -8,7 +8,10 @@ export default function CustomerSidebarWithFilters() {
         <div className="flex flex-row justify-between items-center">
           <h1 className="">Filter</h1>
         </div>
-        <SearchBarComponent context={FilteredCustomerContext} />
+        <SearchBarComponent
+          context={FilteredCustomerContext}
+          placeholder="Søk etter kunde"
+        />
       </div>
     </>
   );

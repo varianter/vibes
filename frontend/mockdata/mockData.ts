@@ -63,6 +63,7 @@ export const MockEngagements: EngagementPerCustomerReadModel[] = [
     customerId: 1,
     customerName: "TestCustomer",
     engagements: [],
+    isActive: false,
   },
 ];
 

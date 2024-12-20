@@ -1,12 +1,14 @@
 using Api.Common;
 using Api.StaffingController;
 using Core.Consultants;
+using Core.Customers;
 using Core.DomainModels;
 using Core.Engagements;
 using Core.Organizations;
 using Core.Staffings;
 using Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -47,7 +49,7 @@ public class ProjectController(
         var selectedOrgId = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
         if (selectedOrgId is null) return BadRequest();
 
-        var absenceReadModels = new EngagementPerCustomerReadModel(-1, AbsenceCustomerName,
+        var absenceReadModels = new EngagementPerCustomerReadModel(-1, AbsenceCustomerName, true,
             context.Absence.Where(a => a.Organization.UrlKey == orgUrlKey).Select(absence =>
                 new EngagementReadModel(absence.Id, absence.Name, EngagementState.Absence, false)).ToList());
 
@@ -58,6 +60,7 @@ public class ProjectController(
                 new EngagementPerCustomerReadModel(
                     a.Key.Id,
                     a.Key.Name,
+                    a.Key.IsActive,
                     a.Select(e =>
                         new EngagementReadModel(e.Id, e.Name, e.State, e.IsBillable)).ToList()))
             .ToList();
@@ -94,6 +97,7 @@ public class ProjectController(
         return new CustomersWithProjectsReadModel(
             customer.Id,
             customer.Name,
+            customer.IsActive,
             customer.Projects.Where(p =>
                 p.Staffings.Any(s => s.Week.CompareTo(thisWeek) >= 0) && p.State != EngagementState.Closed).Select(e =>
                 new EngagementReadModel(e.Id, e.Name, e.State, e.IsBillable)).ToList(),
@@ -244,6 +248,19 @@ public class ProjectController(
             .Single(p => p.Id == engagementToKeep.Id);
     }
 
+    [HttpPut]
+    [Route("customer/{customerId}/activate")]
+    public async Task<Results<Ok, NotFound<string>>> Put([FromRoute] int customerId, [FromQuery] bool activate, string orgUrlKey, CancellationToken ct)
+    {
+
+        var service = new StorageService(cache, context);
+        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
+        if (selectedOrg is null) return TypedResults.NotFound("Selected org not found");
+        var customer = service.DeactivateOrActivateCustomer(customerId, selectedOrg, activate, orgUrlKey);
+        if (customer is null) return TypedResults.NotFound("Selected customer not found");
+        return TypedResults.Ok();
+    }
+
 
     [HttpPut]
     public async Task<ActionResult<ProjectWithCustomerModel>> Put([FromRoute] string orgUrlKey,
@@ -257,7 +274,7 @@ public class ProjectController(
         if (body.CustomerName == AbsenceCustomerName)
             return Ok(HandleAbsenceChange(body, orgUrlKey));
 
-        var customer = service.UpdateOrCreateCustomer(selectedOrg, body.CustomerName, orgUrlKey);
+        var customer = service.FindOrCreateCustomer(selectedOrg, body.CustomerName, orgUrlKey);
 
         var project = context.Project
             .Include(p => p.Customer)
@@ -301,7 +318,7 @@ public class ProjectController(
     {
         var vacation = new EngagementReadModel(-1, "Ferie", EngagementState.Absence, false);
 
-        var readModel = new CustomersWithProjectsReadModel(-1, AbsenceCustomerName + " og Ferie",
+        var readModel = new CustomersWithProjectsReadModel(-1, AbsenceCustomerName + " og Ferie", true,
             context.Absence.Where(a => a.Organization.UrlKey == orgUrlKey).Select(absence =>
                 new EngagementReadModel(absence.Id, absence.Name, EngagementState.Absence, false)).ToList(),
             new List<EngagementReadModel>());

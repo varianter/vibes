@@ -129,6 +129,7 @@ export interface EngagementPerCustomerReadModel {
   /** @minLength 1 */
   customerName: string;
   engagements: EngagementReadModel[];
+  isActive: boolean;
 }
 
 export interface EngagementReadModel {
@@ -291,6 +292,7 @@ export interface WeeklyHours {
 export interface CustomersWithProjectsReadModel {
   customerId: number;
   customerName: string;
+  isActive: boolean;
   activeEngagements: EngagementReadModel[];
   inactiveEngagements: EngagementReadModel[];
 }

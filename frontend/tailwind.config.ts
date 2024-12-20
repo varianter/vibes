@@ -28,6 +28,7 @@ export default {
       text_light_black: "#333333BF",
       primaryActionButton: "#242424",
       hoverBorder: "#636363",
+      overbooked: "#E43D47",
 
       error: "#B91456",
     },
