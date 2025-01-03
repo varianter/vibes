@@ -6,7 +6,6 @@ import { useIsCustomerActive } from "@/hooks/CustomerFilter/useIsCustomerActive"
 
 export default function CustomerSidebarWithFilters() {
   const { isCustomerActive, toggleActive } = useIsCustomerActive();
-  console.log("customer activa", isCustomerActive);
   return (
     <>
       <div className="sidebar z-10 bg-background_grey h-full flex flex-col gap-6 p-4 w-[300px] overflow-y-auto">
