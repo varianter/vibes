@@ -67,10 +67,9 @@ export function filterCustomers({
     );
   }
 
-  if (isCustomerActive.toString()==="true" ) {
+  if (isCustomerActive.toString() === "true") {
     newFilteredCustomers = newFilteredCustomers?.filter(
-      (customer: EngagementPerCustomerReadModel) =>
-        customer.isActive,
+      (customer: EngagementPerCustomerReadModel) => customer.isActive,
     );
   }
   return newFilteredCustomers;
