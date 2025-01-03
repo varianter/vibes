@@ -1,7 +1,7 @@
 "use client";
 import { EngagementPerCustomerReadModel } from "@/api-types";
-import CustomerRow from "@/components/CostumerTable/CustomerRow";
-import { useCustomerFilter } from "@/hooks/staffing/useCustomerFilter";
+import CustomerRow from "@/components/CustomerTable/CustomerRow";
+import { useCustomerFilter } from "@/hooks/CustomerFilter/useCustomerFilter";
 
 function FilteredCustomerTable() {
   const filteredCustomers = useCustomerFilter();

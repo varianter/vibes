@@ -47,13 +47,15 @@ export function AddEngagementForm({
 
   useEffect(() => {
     setCustomerOptions(
-      customers.map(
-        (c) =>
-          ({
-            value: `${c.customerId}`,
-            label: `${c.customerName}`,
-          }) as SelectOption,
-      ),
+      customers
+        .filter((customer) => customer.isActive)
+        .map(
+          (c) =>
+            ({
+              value: `${c.customerId}`,
+              label: `${c.customerName}`,
+            }) as SelectOption,
+        ),
     );
   }, [customers]);
 

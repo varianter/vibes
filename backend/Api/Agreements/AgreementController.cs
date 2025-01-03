@@ -98,7 +98,7 @@ public class AgreementController(
 
         var agreements = await agreementsRepository.GetAgreementsByCustomerId(customerId, ct);
 
-        if (agreements is null || !agreements.Any()) return NotFound();
+        if (agreements is null) return NotFound();
 
         var responseModels = agreements.Select(agreement => new AgreementReadModel(
             AgreementId: agreement.Id,

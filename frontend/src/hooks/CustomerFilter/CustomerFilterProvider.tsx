@@ -8,18 +8,21 @@ export type CustomerFilters = {
   searchFilter: string;
   engagementIsBillableFilter: boolean | string;
   bookingTypeFilter: EngagementState | string;
+  isCustomerActiveFilter: boolean | string;
 };
 
 interface UpdateFilterParams {
   search?: string;
   engagementIsBillable?: boolean;
   bookingType?: EngagementState;
+  isCustomerActive: boolean;
 }
 export type UpdateFilters = (updateParams: UpdateFilterParams) => void;
 const defaultFilters: CustomerFilters = {
   searchFilter: "",
   engagementIsBillableFilter: "",
   bookingTypeFilter: "",
+  isCustomerActiveFilter: false,
 };
 
 type CustomerFilterContextType = {
@@ -79,18 +82,23 @@ function useUrlRouteFilter(): [CustomerFilters, UpdateFilters] {
   const [bookingTypeFilter, setBookingTypeFilter] = useState(
     searchParams.get("bookingType") || "",
   );
+  const [isCustomerActiveFilter, setisCustomerActiveFilter] = useState<
+    boolean | string
+  >(searchParams.get("isCustomerActive") || "");
 
   function updateRoute(updateParams: UpdateFilterParams) {
     // If not defined, defaults to current value:
     const { search = searchFilter } = updateParams;
     const { engagementIsBillable = engagementIsBillableFilter } = updateParams;
     const { bookingType = bookingTypeFilter } = updateParams;
+    const { isCustomerActive = isCustomerActiveFilter } = updateParams;
 
-    const url = `${pathname}?search=${search}&engagementIsBillable=${engagementIsBillable}&bookingType=${bookingType}}`;
+    const url = `${pathname}?search=${search}&engagementIsBillable=${engagementIsBillable}&bookingType=${bookingType}}&isCustomerActive=${isCustomerActive}`;
 
     setSearchFilter(search);
     setEngagementIsBillableFilter(engagementIsBillable);
     setBookingTypeFilter(bookingType);
+    setisCustomerActiveFilter(isCustomerActive);
 
     window.history.pushState({}, "", url);
   }
@@ -100,6 +108,7 @@ function useUrlRouteFilter(): [CustomerFilters, UpdateFilters] {
       searchFilter,
       engagementIsBillableFilter,
       bookingTypeFilter,
+      isCustomerActiveFilter,
     },
     updateRoute,
   ];

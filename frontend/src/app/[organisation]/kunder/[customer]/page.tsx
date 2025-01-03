@@ -2,8 +2,8 @@ import {
   CustomersWithProjectsReadModel,
   DepartmentReadModel,
 } from "@/api-types";
-import CustomerSidebar from "@/components/CostumerTable/CustomerSidebar";
-import CustomerTable from "@/components/CostumerTable/CustomerTable";
+import CustomerSidebar from "@/components/CustomerTable/CustomerSidebar";
+import CustomerTable from "@/components/CustomerTable/CustomerTable";
 import { fetchWithToken } from "@/data/apiCallsWithToken";
 import { ConsultantFilterProvider } from "@/hooks/ConsultantFilterProvider";
 import { fetchWorkHoursPerWeek } from "@/hooks/fetchWorkHoursPerDay";

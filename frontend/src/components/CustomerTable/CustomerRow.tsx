@@ -1,7 +1,7 @@
 "use client";
 
 import { EngagementPerCustomerReadModel } from "@/api-types";
-import { useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { ArrowRight, ChevronDown } from "react-feather";
 import {
   getColorByStaffingType,
@@ -9,14 +9,16 @@ import {
 } from "../Staffing/helpers/utils";
 import { getBookingTypeFromProjectState } from "../Staffing/EditEngagementHourModal/utils";
 import Link from "next/link";
-import ActionButton from "../Buttons/ActionButton";
 import { useParams } from "next/navigation";
+import ActivateButton from "../Buttons/ActivateButton";
+import { FilteredCustomerContext } from "@/hooks/CustomerFilter/CustomerFilterProvider";
 
-export default function CostumerRow({
+export default function CustomerRow({
   customer,
 }: {
   customer: EngagementPerCustomerReadModel;
 }) {
+  const { setCustomers } = useContext(FilteredCustomerContext);
   const [isListElementVisible, setIsListElementVisible] = useState(false);
   const [isRowHovered, setIsRowHovered] = useState(false);
   const [isActive, setIsActive] = useState<boolean>(customer.isActive);
@@ -31,6 +33,7 @@ export default function CostumerRow({
     if (isLoading) return;
     setIsLoading(true);
     setIsActive(active);
+
     try {
       const response = await fetch(
         `/${organisation}/kunder/api?customerId=${customerId}&activate=${active}`,
@@ -40,7 +43,15 @@ export default function CostumerRow({
       );
       if (response.status !== 200) {
         setIsActive(!active);
+        return;
       }
+      setCustomers((prevCustomers) =>
+        prevCustomers.map((oldCustomer) =>
+          oldCustomer.customerId === customerId
+            ? { ...oldCustomer, isActive: active }
+            : oldCustomer,
+        ),
+      );
     } catch {
       setIsActive(!active);
     } finally {
@@ -99,12 +110,12 @@ export default function CostumerRow({
           </td>
         ))}
         <td>
-          <ActionButton
-            onClick={() => onActivate(customer.customerId, !customer.isActive)}
-            variant="secondary"
+          <ActivateButton
+            onClick={() => onActivate(customer.customerId, !isActive)}
+            mode={isActive ? "deactivate" : "activate"}
           >
             {isActive ? "Deaktiver" : "Aktiver"}
-          </ActionButton>
+          </ActivateButton>
         </td>
       </tr>
       {isListElementVisible &&
