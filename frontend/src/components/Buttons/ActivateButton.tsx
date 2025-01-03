@@ -1,5 +1,4 @@
 import BaseButton from "./BaseButton";
-import { IconBox } from "./IconBox";
 
 export default function ActivateButton({
   mode,

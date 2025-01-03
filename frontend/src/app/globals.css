@@ -274,9 +274,7 @@
   .transitionEase {
     transition: all 0.3s ease;
   }
-  .transformEase {
-    transition: "transform 0.3s ease";
-  }
+
   .border-one_and_a_half {
     border-width: 1.5px;
   }

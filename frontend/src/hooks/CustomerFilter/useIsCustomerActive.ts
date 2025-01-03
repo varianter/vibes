@@ -1,6 +1,5 @@
-import { Context, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FilteredCustomerContext } from "./CustomerFilterProvider";
-import { parse } from "next/dist/build/swc";
 
 function parseBooleanOrString(value: string | boolean) {
   if (typeof value === "string") {
