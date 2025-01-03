@@ -15,14 +15,14 @@ interface UpdateFilterParams {
   search?: string;
   engagementIsBillable?: boolean;
   bookingType?: EngagementState;
-  isCustomerActive: boolean;
+  isCustomerActive: boolean | string;
 }
 export type UpdateFilters = (updateParams: UpdateFilterParams) => void;
 const defaultFilters: CustomerFilters = {
   searchFilter: "",
   engagementIsBillableFilter: "",
   bookingTypeFilter: "",
-  isCustomerActiveFilter: false,
+  isCustomerActiveFilter: "",
 };
 
 type CustomerFilterContextType = {
@@ -93,7 +93,7 @@ function useUrlRouteFilter(): [CustomerFilters, UpdateFilters] {
     const { bookingType = bookingTypeFilter } = updateParams;
     const { isCustomerActive = isCustomerActiveFilter } = updateParams;
 
-    const url = `${pathname}?search=${search}&engagementIsBillable=${engagementIsBillable}&bookingType=${bookingType}}&isCustomerActive=${isCustomerActive}`;
+    const url = `${pathname}?search=${search}&isCustomerActive=${isCustomerActive}`;
 
     setSearchFilter(search);
     setEngagementIsBillableFilter(engagementIsBillable);

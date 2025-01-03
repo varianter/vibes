@@ -12,7 +12,7 @@ export function ToggleSwitch({
   value,
   onChange,
 }: {
-  value: boolean;
+  value: boolean | string;
   onChange: () => any;
 }) {
   return (

@@ -5,13 +5,8 @@ import { ToggleSwitch } from "./SwitchToggle";
 import { useIsCustomerActive } from "@/hooks/CustomerFilter/useIsCustomerActive";
 
 export default function CustomerSidebarWithFilters() {
-  const [checked, setChecked] = useState(false);
-  function handleChange(nextChecked: boolean) {
-    setChecked(nextChecked);
-  }
-  const { isCustomerActive, toggleActive } = useIsCustomerActive(
-    FilteredCustomerContext,
-  );
+  const { isCustomerActive, toggleActive } = useIsCustomerActive();
+  console.log("customer activa", isCustomerActive);
   return (
     <>
       <div className="sidebar z-10 bg-background_grey h-full flex flex-col gap-6 p-4 w-[300px] overflow-y-auto">

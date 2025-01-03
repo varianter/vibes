@@ -1,11 +1,27 @@
 import { Context, useContext, useEffect, useState } from "react";
+import { FilteredCustomerContext } from "./CustomerFilterProvider";
+import { parse } from "next/dist/build/swc";
 
-export function useIsCustomerActive(context: Context<any>) {
-  const { updateFilters, activeFilters } = useContext(context);
+function parseBooleanOrString(value: string | boolean) {
+  if (typeof value === "string") {
+    if (value === "true") {
+      return true;
+    } else if (value === "false") {
+      return false;
+    } else {
+      return ""; //
+    }
+  } else {
+    return value;
+  }
+}
+export function useIsCustomerActive() {
+  const { updateFilters, activeFilters } = useContext(FilteredCustomerContext);
   const isCustomerActiveFilter = activeFilters.isCustomerActiveFilter;
-
-  const [isCustomerActive, setIsCustomerActive] = useState<boolean>(
-    isCustomerActiveFilter,
+  const parsedActive = parseBooleanOrString(isCustomerActiveFilter);
+  const valueForToggle = parsedActive === "" ? true : parsedActive;
+  const [isCustomerActive, setIsCustomerActive] = useState<boolean | string>(
+    valueForToggle,
   );
   function toggleActive() {
     setIsCustomerActive(!isCustomerActive);
