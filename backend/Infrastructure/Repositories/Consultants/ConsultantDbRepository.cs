@@ -7,16 +7,17 @@ namespace Infrastructure.Repositories.Consultants;
 
 public class ConsultantDbRepository(ApplicationContext context) : IConsultantRepository
 {
-    public Task<Consultant?> GetConsultantById(int id, CancellationToken ct)
+    public Task<Consultant?> GetConsultantById(int id, CancellationToken cancellationToken)
     {
         return BaseConsultantQuery()
-            .SingleOrDefaultAsync(c => c.Id == id, ct);
+            .SingleOrDefaultAsync(c => c.Id == id, cancellationToken);
     }
 
-    public async Task<Consultant?> GetConsultantByEmail(string orgUrlKey, string email, CancellationToken ct)
+    public async Task<Consultant?> GetConsultantByEmail(string orgUrlKey, string email,
+        CancellationToken cancellationToken)
     {
         var consultant = await BaseConsultantQuery()
-            .SingleOrDefaultAsync(c => c.Email == email, ct);
+            .SingleOrDefaultAsync(c => c.Email == email, cancellationToken);
 
         if (consultant is null || consultant.Department.Organization.UrlKey != orgUrlKey) return null;
 
@@ -24,11 +25,11 @@ public class ConsultantDbRepository(ApplicationContext context) : IConsultantRep
     }
 
     public Task<List<Consultant>> GetConsultantsInOrganizationByUrlKey(string urlKey,
-        CancellationToken ct)
+        CancellationToken cancellationToken)
     {
         return BaseConsultantQuery()
             .Where(c => c.Department.Organization.UrlKey == urlKey)
-            .ToListAsync(ct);
+            .ToListAsync(cancellationToken);
     }
 
 

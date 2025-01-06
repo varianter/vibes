@@ -4,25 +4,26 @@ using Core.Customers;
 using Core.DomainModels;
 using PublicHoliday;
 
+// ReSharper disable EntityFramework.ModelValidation.UnlimitedStringLength
+// ReSharper disable CollectionNeverUpdated.Global
+
 namespace Core.Organizations;
 
 public class Organization
 {
-    public required string Id { get; set; } // guid ? Decide What to set here first => 
-    public required string Name { get; set; }
-    public required string UrlKey { get; set; } // "variant-as", "variant-sverige"
-    public required string Country { get; set; }
-    public required int NumberOfVacationDaysInYear { get; set; }
-    public required bool HasVacationInChristmas { get; set; }
-    public required double HoursPerWorkday { get; set; }
+    public required string Id { get; init; } // guid ? Decide What to set here first => 
+    public required string Name { get; init; }
+    public required string UrlKey { get; init; } // "variant-as", "variant-sverige"
+    public required string Country { get; init; }
+    public required int NumberOfVacationDaysInYear { get; init; }
+    public required bool HasVacationInChristmas { get; init; }
+    public required double HoursPerWorkday { get; init; }
 
-    [JsonIgnore] public List<Department> Departments { get; set; }
+    [JsonIgnore] public List<Department> Departments { get; init; } = [];
+    public required List<Customer> Customers { get; init; }
+    public required List<Absence> AbsenceTypes { get; init; }
 
-    public required List<Customer> Customers { get; set; }
-
-    public List<Absence> AbsenceTypes { get; set; }
-
-    public int GetTotalHolidaysOfWeek(Week week)
+    private int GetTotalHolidaysOfWeek(Week week)
     {
         var datesOfThisWeek = week.GetDatesInWorkWeek();
         return datesOfThisWeek.Count(IsHoliday);
@@ -72,16 +73,22 @@ public class Organization
     {
         var publicHoliday = GetPublicHoliday();
         var publicHolidays = publicHoliday.PublicHolidays(year).Select(DateOnly.FromDateTime).ToList();
-        if (HasVacationInChristmas)
-        {
-            var startDate = new DateTime(year, 12, 24);
-            var endDate = new DateTime(year, 12, 31);
-            var list = Enumerable.Range(0, 1 + endDate.Subtract(startDate).Days)
-                .Select(offset => DateOnly.FromDateTime(startDate.AddDays(offset)))
-                .ToList();
-            publicHolidays = publicHolidays.Concat(list).Distinct().ToList();
-        }
+        if (!HasVacationInChristmas) return publicHolidays;
+
+        publicHolidays = publicHolidays
+            .Concat(GetChristmasHolidays(year))
+            .Distinct()
+            .ToList();
 
         return publicHolidays;
+    }
+
+    private static List<DateOnly> GetChristmasHolidays(int year)
+    {
+        var startDate = new DateOnly(year, 12, 24).ToDateTime(TimeOnly.MinValue);
+        var endDate = new DateOnly(year, 12, 31).ToDateTime(TimeOnly.MinValue);
+        return Enumerable.Range(0, 1 + endDate.Subtract(startDate).Days)
+            .Select(offset => DateOnly.FromDateTime(startDate.AddDays(offset)))
+            .ToList();
     }
 }

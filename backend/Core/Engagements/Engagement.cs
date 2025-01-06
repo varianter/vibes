@@ -46,7 +46,6 @@ public class Engagement
                     Week = s.Week,
                     Hours = s.Hours
                 });
-            ;
         });
     }
 }

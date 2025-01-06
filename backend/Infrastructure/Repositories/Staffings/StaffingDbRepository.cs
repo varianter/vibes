@@ -7,7 +7,7 @@ namespace Infrastructure.Repositories.Staffings;
 public class StaffingDbRepository(ApplicationContext context) : IStaffingRepository
 {
     public async Task<Dictionary<int, List<Staffing>>> GetStaffingForConsultants(List<int> consultantIds,
-        CancellationToken ct)
+        CancellationToken cancellationToken)
     {
         var ids = consultantIds.ToArray();
 
@@ -19,25 +19,25 @@ public class StaffingDbRepository(ApplicationContext context) : IStaffingReposit
             .Include(staffing => staffing.Engagement)
             .ThenInclude(project => project.Agreements)
             .GroupBy(staffing => staffing.Consultant.Id)
-            .ToDictionaryAsync(group => group.Key, grouping => grouping.ToList(), ct);
+            .ToDictionaryAsync(group => group.Key, grouping => grouping.ToList(), cancellationToken);
     }
 
-    public async Task<List<Staffing>> GetStaffingForConsultant(int consultantId, CancellationToken ct)
+    public async Task<List<Staffing>> GetStaffingForConsultant(int consultantId, CancellationToken cancellationToken)
     {
         return await context.Staffing
             .Where(staffing => staffing.ConsultantId == consultantId)
             .Include(s => s.Engagement)
             .ThenInclude(p => p.Customer)
-            .ToListAsync(ct);
+            .ToListAsync(cancellationToken);
     }
 
 
-    public async Task UpsertMultipleStaffings(List<Staffing> staffings, CancellationToken ct)
+    public async Task UpsertMultipleStaffings(List<Staffing> staffings, CancellationToken cancellationToken)
     {
-        foreach (var staffing in staffings) await UpsertStaffing(staffing, ct);
+        foreach (var staffing in staffings) await UpsertStaffing(staffing, cancellationToken);
     }
 
-    public async Task UpsertStaffing(Staffing staffing, CancellationToken ct)
+    public async Task UpsertStaffing(Staffing staffing, CancellationToken cancellationToken)
     {
         var existingStaffing = context.Staffing
             .FirstOrDefault(s => s.EngagementId.Equals(staffing.EngagementId)
@@ -45,10 +45,10 @@ public class StaffingDbRepository(ApplicationContext context) : IStaffingReposit
                                  && s.Week.Equals(staffing.Week));
 
         if (existingStaffing is null)
-            await context.Staffing.AddAsync(staffing, ct);
+            await context.Staffing.AddAsync(staffing, cancellationToken);
         else
             existingStaffing.Hours = staffing.Hours;
 
-        await context.SaveChangesAsync(ct);
+        await context.SaveChangesAsync(cancellationToken);
     }
 }

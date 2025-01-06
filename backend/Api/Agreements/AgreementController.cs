@@ -25,12 +25,12 @@ public class AgreementController(
     [HttpGet]
     [Route("{agreementId:int}")]
     public async Task<ActionResult<AgreementReadModel>> GetAgreement([FromRoute] string orgUrlKey,
-        [FromRoute] int agreementId, CancellationToken ct)
+        [FromRoute] int agreementId, CancellationToken cancellationToken)
     {
-        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
+        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, cancellationToken);
         if (selectedOrg is null) return NotFound(SelectedOrganizationNotFound);
 
-        var agreement = await agreementsRepository.GetAgreementById(agreementId, ct);
+        var agreement = await agreementsRepository.GetAgreementById(agreementId, cancellationToken);
 
         if (agreement is null) return NotFound();
 
@@ -54,12 +54,12 @@ public class AgreementController(
     [HttpGet]
     [Route("engagement/{engagementId:int}")]
     public async Task<ActionResult<List<AgreementReadModel>>> GetAgreementsByEngagement([FromRoute] string orgUrlKey,
-        [FromRoute] int engagementId, CancellationToken ct)
+        [FromRoute] int engagementId, CancellationToken cancellationToken)
     {
-        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
+        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, cancellationToken);
         if (selectedOrg is null) return NotFound(SelectedOrganizationNotFound);
 
-        var agreements = await agreementsRepository.GetAgreementsByEngagementId(engagementId, ct);
+        var agreements = await agreementsRepository.GetAgreementsByEngagementId(engagementId, cancellationToken);
 
         var responseModels = agreements.Select(agreement => new AgreementReadModel(
             AgreementId: agreement.Id,
@@ -82,12 +82,12 @@ public class AgreementController(
     [HttpGet]
     [Route("customer/{customerId:int}")]
     public async Task<ActionResult<List<AgreementReadModel>>> GetAgreementsByCustomer([FromRoute] string orgUrlKey,
-        [FromRoute] int customerId, CancellationToken ct)
+        [FromRoute] int customerId, CancellationToken cancellationToken)
     {
-        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
+        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, cancellationToken);
         if (selectedOrg is null) return NotFound(SelectedOrganizationNotFound);
 
-        var agreements = await agreementsRepository.GetAgreementsByCustomerId(customerId, ct);
+        var agreements = await agreementsRepository.GetAgreementsByCustomerId(customerId, cancellationToken);
 
         var responseModels = agreements.Select(agreement => new AgreementReadModel(
             AgreementId: agreement.Id,
@@ -283,15 +283,15 @@ public class AgreementController(
 
     [HttpDelete]
     [Route("{agreementId:int}")]
-    public async Task<ActionResult> Delete([FromRoute] string orgUrlKey, [FromRoute] int agreementId, CancellationToken ct)
+    public async Task<ActionResult> Delete([FromRoute] string orgUrlKey, [FromRoute] int agreementId, CancellationToken cancellationToken)
     {
-        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
+        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, cancellationToken);
         if (selectedOrg is null) return NotFound(SelectedOrganizationNotFound);
 
-        var agreement = await agreementsRepository.GetAgreementById(agreementId, ct);
+        var agreement = await agreementsRepository.GetAgreementById(agreementId, cancellationToken);
         if (agreement is null) return NotFound();
 
-        await agreementsRepository.DeleteAgreementAsync(agreementId, ct);
+        await agreementsRepository.DeleteAgreementAsync(agreementId, cancellationToken);
         cache.Remove($"consultantCacheKey/{orgUrlKey}");
 
         return Ok("Deleted");
@@ -299,12 +299,12 @@ public class AgreementController(
 
     [HttpGet]
     [Route("priceAdjustmentIndexes")]
-    public async Task<ActionResult<List<string>>> GetPriceAdjustmentIndexes([FromRoute] string orgUrlKey, CancellationToken ct)
+    public async Task<ActionResult<List<string>>> GetPriceAdjustmentIndexes([FromRoute] string orgUrlKey, CancellationToken cancellationToken)
     {
-        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
+        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, cancellationToken);
         if (selectedOrg is null) return NotFound(SelectedOrganizationNotFound);
 
-        var priceAdjustmentIndexes = await agreementsRepository.GetPriceAdjustmentIndexesAsync(ct);
+        var priceAdjustmentIndexes = await agreementsRepository.GetPriceAdjustmentIndexesAsync(cancellationToken);
 
         return Ok(priceAdjustmentIndexes);
     }

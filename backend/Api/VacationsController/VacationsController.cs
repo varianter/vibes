@@ -22,9 +22,9 @@ public class VacationsController(
     [HttpGet]
     [Route("publicHolidays")]
     public async Task<ActionResult<List<DateOnly>>> GetPublicHolidays([FromRoute] string orgUrlKey,
-        CancellationToken ct)
+        CancellationToken cancellationToken)
     {
-        var organization = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
+        var organization = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, cancellationToken);
         if (organization is null) return BadRequest();
 
         var year = DateOnly.FromDateTime(DateTime.Now).Year;
@@ -40,15 +40,15 @@ public class VacationsController(
     [HttpGet]
     [Route("{consultantId}/get")]
     public async Task<ActionResult<VacationReadModel>> GetVacations([FromRoute] string orgUrlKey,
-        [FromRoute] int consultantId, CancellationToken ct)
+        [FromRoute] int consultantId, CancellationToken cancellationToken)
     {
-        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
+        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, cancellationToken);
         if (selectedOrg is null) return BadRequest();
 
         var service = new StorageService(cache, context);
 
         var vacationDays = service.LoadConsultantVacation(consultantId);
-        var consultant = await consultantRepository.GetConsultantById(consultantId, ct);
+        var consultant = await consultantRepository.GetConsultantById(consultantId, cancellationToken);
 
         if (consultant is null || !VacationsValidator.ValidateVacation(consultant, orgUrlKey))
             return NotFound();
@@ -62,15 +62,15 @@ public class VacationsController(
     public async Task<ActionResult<VacationReadModel>> DeleteVacation([FromRoute] string orgUrlKey,
         [FromRoute] int consultantId,
         [FromRoute] string date,
-        CancellationToken ct)
+        CancellationToken cancellationToken)
     {
-        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
+        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, cancellationToken);
         if (selectedOrg is null) return BadRequest();
 
         var service = new StorageService(cache, context);
 
         var vacationDays = service.LoadConsultantVacation(consultantId);
-        var consultant = await consultantRepository.GetConsultantById(consultantId, ct);
+        var consultant = await consultantRepository.GetConsultantById(consultantId, cancellationToken);
 
         if (consultant is null || !VacationsValidator.ValidateVacation(consultant, orgUrlKey))
             return NotFound();
@@ -95,15 +95,15 @@ public class VacationsController(
     public async Task<ActionResult<VacationReadModel>> UpdateVacation([FromRoute] string orgUrlKey,
         [FromRoute] int consultantId,
         [FromRoute] string date,
-        CancellationToken ct)
+        CancellationToken cancellationToken)
     {
-        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
+        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, cancellationToken);
         if (selectedOrg is null) return BadRequest();
 
         var service = new StorageService(cache, context);
 
         var vacationDays = service.LoadConsultantVacation(consultantId);
-        var consultant = await consultantRepository.GetConsultantById(consultantId, ct);
+        var consultant = await consultantRepository.GetConsultantById(consultantId, cancellationToken);
 
         if (consultant is null || !VacationsValidator.ValidateVacation(consultant, orgUrlKey))
             return NotFound();

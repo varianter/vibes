@@ -3,16 +3,20 @@ using Core.Agreements;
 using Core.Engagements;
 using Core.Organizations;
 
+// ReSharper disable EntityFramework.ModelValidation.UnlimitedStringLength
+// ReSharper disable CollectionNeverUpdated.Global
+
 namespace Core.Customers;
 
 public class Customer
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; set; }
-
-    public string? OrganizationId { get; set; }
-    public ICollection<Agreement> Agreements { get; set; } = new List<Agreement>();
+    public int Id { get; init; }
     public required string Name { get; set; }
-    public required Organization Organization { get; set; }
-    public required List<Engagement> Projects { get; set; }
+
+    public ICollection<Agreement> Agreements { get; init; } = new List<Agreement>();
+    public required List<Engagement> Projects { get; init; }
+
+    public string? OrganizationId { get; init; }
+    public Organization? Organization { get; init; }
 }

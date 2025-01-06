@@ -27,7 +27,6 @@ public static class RepositoryExtensions
         builder.Services.Decorate<IPlannedAbsenceRepository, PlannedAbsenceCacheRepository>();
 
         builder.Services.AddScoped<IStaffingRepository, StaffingDbRepository>();
-        //builder.Services.Decorate<IStaffingRepository, StaffingCacheRepository>();
 
         builder.Services.AddScoped<IConsultantRepository, ConsultantDbRepository>();
         builder.Services.AddScoped<IAgreementsRepository, AgreementDbRepository>();

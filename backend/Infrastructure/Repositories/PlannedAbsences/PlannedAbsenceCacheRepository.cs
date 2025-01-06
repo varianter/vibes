@@ -3,9 +3,11 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Infrastructure.Repositories.PlannedAbsences;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public class PlannedAbsenceCacheRepository(IPlannedAbsenceRepository sourceRepository, IMemoryCache cache) : IPlannedAbsenceRepository
 {
-    public async Task<Dictionary<int, List<PlannedAbsence>>> GetPlannedAbsenceForConsultants(List<int> consultantIds, CancellationToken ct)
+    public async Task<Dictionary<int, List<PlannedAbsence>>> GetPlannedAbsenceForConsultants(List<int> consultantIds,
+        CancellationToken cancellationToken)
     {
         var nonCachedIds = new List<int>();
         var result = new Dictionary<int, List<PlannedAbsence>>();
@@ -19,7 +21,8 @@ public class PlannedAbsenceCacheRepository(IPlannedAbsenceRepository sourceRepos
                 result.Add(consultantId, plannedAbsenceList);
         }
 
-        var queriedPlannedAbsenceLists = await sourceRepository.GetPlannedAbsenceForConsultants(nonCachedIds, ct);
+        var queriedPlannedAbsenceLists =
+            await sourceRepository.GetPlannedAbsenceForConsultants(nonCachedIds, cancellationToken);
         foreach (var (cId, plannedAbsences) in queriedPlannedAbsenceLists)
         {
             result.Add(cId, plannedAbsences);
@@ -29,25 +32,27 @@ public class PlannedAbsenceCacheRepository(IPlannedAbsenceRepository sourceRepos
         return result;
     }
 
-    public async Task<List<PlannedAbsence>> GetPlannedAbsenceForConsultant(int consultantId, CancellationToken ct)
+    public async Task<List<PlannedAbsence>> GetPlannedAbsenceForConsultant(int consultantId,
+        CancellationToken cancellationToken)
     {
         var plannedAbsenceList = GetPlannedAbsencesFromCache(consultantId);
         if (plannedAbsenceList is not null) return plannedAbsenceList;
 
-        plannedAbsenceList = await sourceRepository.GetPlannedAbsenceForConsultant(consultantId, ct);
+        plannedAbsenceList = await sourceRepository.GetPlannedAbsenceForConsultant(consultantId, cancellationToken);
         cache.Set(PlannedAbsenceCacheKey(consultantId), plannedAbsenceList);
         return plannedAbsenceList;
     }
 
-    public async Task UpsertPlannedAbsence(PlannedAbsence plannedAbsence, CancellationToken ct)
+    public async Task UpsertPlannedAbsence(PlannedAbsence plannedAbsence, CancellationToken cancellationToken)
     {
-        await sourceRepository.UpsertPlannedAbsence(plannedAbsence, ct);
+        await sourceRepository.UpsertPlannedAbsence(plannedAbsence, cancellationToken);
         ClearPlannedAbsenceCache(plannedAbsence.ConsultantId);
     }
 
-    public async Task UpsertMultiplePlannedAbsences(List<PlannedAbsence> plannedAbsences, CancellationToken ct)
+    public async Task UpsertMultiplePlannedAbsences(List<PlannedAbsence> plannedAbsences,
+        CancellationToken cancellationToken)
     {
-        await sourceRepository.UpsertMultiplePlannedAbsences(plannedAbsences, ct);
+        await sourceRepository.UpsertMultiplePlannedAbsences(plannedAbsences, cancellationToken);
         
         var consultantIds = plannedAbsences.Select(pa => pa.ConsultantId).Distinct();
         foreach (var consultantId in consultantIds) ClearPlannedAbsenceCache(consultantId);
@@ -56,9 +61,8 @@ public class PlannedAbsenceCacheRepository(IPlannedAbsenceRepository sourceRepos
     
     private List<PlannedAbsence>? GetPlannedAbsencesFromCache(int consultantId)
     {
-        if (cache.TryGetValue<List<PlannedAbsence>>(PlannedAbsenceCacheKey(consultantId), out var plannedAbsenceList))
-            if (plannedAbsenceList is not null)
-                return plannedAbsenceList;
+        if (cache.TryGetValue<List<PlannedAbsence>>(PlannedAbsenceCacheKey(consultantId), out var plannedAbsenceList) &&
+            plannedAbsenceList is not null) return plannedAbsenceList;
 
         return null;
     }

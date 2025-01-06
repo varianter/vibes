@@ -9,7 +9,8 @@ public class DepartmentDbRepository(ApplicationContext context) : IDepartmentRep
     public async Task<List<Department>> GetDepartmentsInOrganizationByUrlKey(string orgUrlKey,
         CancellationToken cancellationToken)
     {
-        var organizationId = context.Organization.FirstOrDefault(o => o.UrlKey == orgUrlKey)?.Id;
+        var organizationId =
+            (await context.Organization.FirstOrDefaultAsync(o => o.UrlKey == orgUrlKey, cancellationToken))?.Id;
         if (organizationId is null) return [];
 
         return await context.Department.Where(d => d.Organization.Id == organizationId).ToListAsync(cancellationToken);
