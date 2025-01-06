@@ -63,7 +63,7 @@ export function WeekCell(props: {
       <div
         className={`flex flex-col gap-1 p-2 justify-end rounded w-full h-full relative border border-transparent hover:border-primary/30 hover:cursor-pointer ${
           bookedHoursPerWeek.bookingModel.totalOverbooking > 0
-            ? `bg-black text-white`
+            ? `bg-overbooked text-white`
             : bookedHoursPerWeek.bookingModel.totalSellableTime > 0
             ? `bg-available/50`
             : `bg-primary/[3%]`

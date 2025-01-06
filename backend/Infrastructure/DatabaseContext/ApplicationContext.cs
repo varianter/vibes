@@ -56,7 +56,7 @@ public class ApplicationContext(DbContextOptions options) : DbContext(options)
             .HasForeignKey(customer => customer.OrganizationId);
 
         modelBuilder.Entity<Customer>()
-            .HasIndex(customer => new { customer.OrganizationId, customer.Name })
+            .HasIndex(customer => new { customer.OrganizationId, customer.Name, customer.IsActive })
             .IsUnique();
 
         modelBuilder.Entity<Customer>()
@@ -202,7 +202,7 @@ public class ApplicationContext(DbContextOptions options) : DbContext(options)
             GraduationYear = 2019
         });
 
-        
+
 
         base.OnModelCreating(modelBuilder);
     }

@@ -20,7 +20,7 @@ public class AgreementController(
     IAgreementsRepository agreementsRepository) : ControllerBase
 {
     private const string SelectedOrganizationNotFound = "Selected organization not found";
-    
+
 
     [HttpGet]
     [Route("{agreementId:int}")]
