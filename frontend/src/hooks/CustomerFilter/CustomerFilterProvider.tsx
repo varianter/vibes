@@ -82,7 +82,7 @@ function useUrlRouteFilter(): [CustomerFilters, UpdateFilters] {
   const [bookingTypeFilter, setBookingTypeFilter] = useState(
     searchParams.get("bookingType") || "",
   );
-  const [isCustomerActiveFilter, setisCustomerActiveFilter] = useState<
+  const [isCustomerActiveFilter, setIsCustomerActiveFilter] = useState<
     boolean | string
   >(searchParams.get("isCustomerActive") || "");
 
@@ -98,7 +98,7 @@ function useUrlRouteFilter(): [CustomerFilters, UpdateFilters] {
     setSearchFilter(search);
     setEngagementIsBillableFilter(engagementIsBillable);
     setBookingTypeFilter(bookingType);
-    setisCustomerActiveFilter(isCustomerActive);
+    setIsCustomerActiveFilter(isCustomerActive);
 
     window.history.pushState({}, "", url);
   }
