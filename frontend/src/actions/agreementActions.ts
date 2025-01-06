@@ -135,7 +135,7 @@ export async function getAgreementsForProject(
 ) {
   try {
     const res = await fetchWithToken<Agreement[]>(
-      `${orgUrlKey}/agreements/get/engagement/${projectId}`,
+      `${orgUrlKey}/agreements/engagement/${projectId}`,
     );
 
     let agreementsWithDateTypes: Agreement[] = [];
@@ -154,7 +154,7 @@ export async function getAgreementsForCustomer(
 ) {
   try {
     const res = await fetchWithToken<Agreement[]>(
-      `${orgUrlKey}/agreements/get/customer/${customerId}`,
+      `${orgUrlKey}/agreements/customer/${customerId}`,
     );
 
     let agreementsWithDateTypes: Agreement[] = [];
@@ -170,7 +170,7 @@ export async function getAgreementsForCustomer(
 export async function updateAgreement(agreement: Agreement, orgUrlKey: string) {
   try {
     const res = await putWithToken<Agreement, Agreement>(
-      `${orgUrlKey}/agreements/update/${agreement.agreementId}`,
+      `${orgUrlKey}/agreements/${agreement.agreementId}`,
       agreement,
     );
 
@@ -190,7 +190,7 @@ export async function createAgreement(
 ) {
   try {
     const res = await postWithToken<Agreement, AgreementWriteModel>(
-      `${orgUrlKey}/agreements/create`,
+      `${orgUrlKey}/agreements`,
       agreement,
     );
     let agreementWithDateTypes: Agreement | null = null;
@@ -206,7 +206,7 @@ export async function createAgreement(
 export async function deleteAgreement(agreementId: number, orgUrlKey: string) {
   try {
     const res = await deleteWithToken<Agreement, Agreement>(
-      `${orgUrlKey}/agreements/delete/${agreementId}`,
+      `${orgUrlKey}/agreements/${agreementId}`,
     );
 
     return res;

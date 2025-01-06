@@ -13,25 +13,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.DatabaseContext;
 
-public class ApplicationContext : DbContext
+public class ApplicationContext(DbContextOptions options) : DbContext(options)
 {
-    public ApplicationContext(DbContextOptions options) : base(options)
-    {
-    }
-
-    public DbSet<Consultant?> Consultant { get; set; } = null!;
-    public DbSet<Competence> Competence { get; set; } = null!;
-    public DbSet<CompetenceConsultant> CompetenceConsultant { get; set; } = null!;
-    public DbSet<Department> Department { get; set; } = null!;
-    public DbSet<Organization> Organization { get; set; } = null!;
-    public DbSet<Absence> Absence { get; set; } = null!;
-
-    public DbSet<PlannedAbsence> PlannedAbsence { get; set; } = null!;
-    public DbSet<Vacation> Vacation { get; set; } = null!;
-    public DbSet<Customer> Customer { get; set; } = null!;
-    public DbSet<Engagement> Project { get; set; } = null!;
-    public DbSet<Staffing> Staffing { get; set; } = null!;
-    public DbSet<Agreement> Agreements { get; set; } = null!;
+    public DbSet<Consultant> Consultant { get; init; } = null!;
+    public DbSet<Competence> Competence { get; init; } = null!;
+    public DbSet<CompetenceConsultant> CompetenceConsultant { get; init; } = null!;
+    public DbSet<Department> Department { get; init; } = null!;
+    public DbSet<Organization> Organization { get; init; } = null!;
+    public DbSet<Absence> Absence { get; init; } = null!;
+    public DbSet<PlannedAbsence> PlannedAbsence { get; init; } = null!;
+    public DbSet<Vacation> Vacation { get; init; } = null!;
+    public DbSet<Customer> Customer { get; init; } = null!;
+    public DbSet<Engagement> Project { get; init; } = null!;
+    public DbSet<Staffing> Staffing { get; init; } = null!;
+    public DbSet<Agreement> Agreements { get; init; } = null!;
 
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -134,10 +129,6 @@ public class ApplicationContext : DbContext
         modelBuilder.Entity<Consultant>()
             .Property(v => v.EndDate)
             .HasConversion<DateOnlyConverter>();
-
-        /*modelBuilder.Entity<Consultant>()
-            .HasMany(v => v.CompetenceConsultant)
-            .WithMany();*/
 
         modelBuilder.Entity<Consultant>()
             .Property(c => c.TransferredVacationDays)

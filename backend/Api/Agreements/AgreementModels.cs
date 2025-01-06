@@ -1,6 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Core.Agreements;
+// ReSharper disable NotAccessedPositionalProperty.Global
+
+namespace Api.Agreements;
 
 public record AgreementReadModel(
     int AgreementId,
@@ -16,12 +18,19 @@ public record AgreementReadModel(
     string? PriceAdjustmentProcess,
     List<FileReferenceReadModel> Files
 );
+
 public record FileReferenceReadModel(
     string FileName,
     string BlobName,
     DateTime UploadedOn,
     string? UploadedBy
-);
+)
+{
+    public FileReferenceReadModel(FileReference fileReference) : this(fileReference.FileName, fileReference.BlobName,
+        fileReference.UploadedOn, fileReference.UploadedBy ?? "Unknown")
+    {
+    }
+}
 
 public record AgreementWriteModel(
     string? Name,
@@ -49,6 +58,7 @@ public record AgreementWriteModel(
 }
 
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public record FileReferenceWriteModel(
     string FileName,
     string BlobName,

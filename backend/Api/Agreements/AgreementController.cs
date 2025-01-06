@@ -5,9 +5,10 @@ using Core.Organizations;
 using Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Api.Projects;
+namespace Api.Agreements;
 
 [Authorize]
 [Route("/v0/{orgUrlKey}/agreements")]
@@ -18,14 +19,16 @@ public class AgreementController(
     IOrganisationRepository organisationRepository,
     IAgreementsRepository agreementsRepository) : ControllerBase
 {
+    private const string SelectedOrganizationNotFound = "Selected organization not found";
+
 
     [HttpGet]
-    [Route("get/{agreementId}")]
+    [Route("{agreementId:int}")]
     public async Task<ActionResult<AgreementReadModel>> GetAgreement([FromRoute] string orgUrlKey,
         [FromRoute] int agreementId, CancellationToken ct)
     {
         var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
-        if (selectedOrg is null) return BadRequest("Selected org not found");
+        if (selectedOrg is null) return NotFound(SelectedOrganizationNotFound);
 
         var agreement = await agreementsRepository.GetAgreementById(agreementId, ct);
 
@@ -43,27 +46,20 @@ public class AgreementController(
             Notes: agreement.Notes,
             Options: agreement.Options,
             PriceAdjustmentProcess: agreement.PriceAdjustmentProcess,
-            Files: agreement.Files.Select(f => new FileReferenceReadModel(
-                FileName: f.FileName,
-                BlobName: f.BlobName,
-                UploadedOn: f.UploadedOn,
-                UploadedBy: f.UploadedBy ?? "Unknown"
-            )).ToList()
+            Files: agreement.Files.Select(f => new FileReferenceReadModel(f)).ToList()
         );
         return Ok(responseModel);
     }
 
     [HttpGet]
-    [Route("get/engagement/{engagementId}")]
+    [Route("engagement/{engagementId:int}")]
     public async Task<ActionResult<List<AgreementReadModel>>> GetAgreementsByEngagement([FromRoute] string orgUrlKey,
         [FromRoute] int engagementId, CancellationToken ct)
     {
         var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
-        if (selectedOrg is null) return BadRequest("Selected org not found");
+        if (selectedOrg is null) return NotFound(SelectedOrganizationNotFound);
 
         var agreements = await agreementsRepository.GetAgreementsByEngagementId(engagementId, ct);
-
-        if (agreements is null || !agreements.Any()) return NotFound();
 
         var responseModels = agreements.Select(agreement => new AgreementReadModel(
             AgreementId: agreement.Id,
@@ -77,28 +73,21 @@ public class AgreementController(
             Notes: agreement.Notes,
             Options: agreement.Options,
             PriceAdjustmentProcess: agreement.PriceAdjustmentProcess,
-            Files: agreement.Files.Select(f => new FileReferenceReadModel(
-                FileName: f.FileName,
-                BlobName: f.BlobName,
-                UploadedOn: f.UploadedOn,
-                UploadedBy: f.UploadedBy ?? "Unknown"
-            )).ToList()
+            Files: agreement.Files.Select(f => new FileReferenceReadModel(f)).ToList()
         )).ToList();
 
         return Ok(responseModels);
     }
 
     [HttpGet]
-    [Route("get/customer/{customerId}")]
+    [Route("customer/{customerId:int}")]
     public async Task<ActionResult<List<AgreementReadModel>>> GetAgreementsByCustomer([FromRoute] string orgUrlKey,
         [FromRoute] int customerId, CancellationToken ct)
     {
         var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
-        if (selectedOrg is null) return BadRequest("Selected org not found");
+        if (selectedOrg is null) return NotFound(SelectedOrganizationNotFound);
 
         var agreements = await agreementsRepository.GetAgreementsByCustomerId(customerId, ct);
-
-        if (agreements is null) return NotFound();
 
         var responseModels = agreements.Select(agreement => new AgreementReadModel(
             AgreementId: agreement.Id,
@@ -112,21 +101,15 @@ public class AgreementController(
             Notes: agreement.Notes,
             Options: agreement.Options,
             PriceAdjustmentProcess: agreement.PriceAdjustmentProcess,
-            Files: agreement.Files.Select(f => new FileReferenceReadModel(
-                FileName: f.FileName,
-                BlobName: f.BlobName,
-                UploadedOn: f.UploadedOn,
-                UploadedBy: f.UploadedBy ?? "Unknown"
-            )).ToList()
+            Files: agreement.Files.Select(f => new FileReferenceReadModel(f)).ToList()
         )).ToList();
 
         return Ok(responseModels);
     }
 
     [HttpPost]
-    [Route("create")]
     public async Task<ActionResult<AgreementReadModel>> Post([FromRoute] string orgUrlKey,
-        [FromBody] AgreementWriteModel body, CancellationToken ct)
+        [FromBody] AgreementWriteModel body, CancellationToken cancellationToken)
     {
         if (!ModelState.IsValid)
         {
@@ -139,24 +122,26 @@ public class AgreementController(
             return BadRequest(ModelState);
         }
 
-        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
+        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, cancellationToken);
         if (selectedOrg is null)
-            return BadRequest("Selected organization not found");
+            return NotFound(SelectedOrganizationNotFound);
 
         Customer? customer = null;
         if (body.CustomerId != null)
         {
-            customer = await context.Customer.FindAsync(body.CustomerId.Value);
+            customer = await context.Customer.FirstOrDefaultAsync(c => c.Id == body.CustomerId.Value,
+                cancellationToken);
             if (customer == null)
-                return BadRequest("Customer not found");
+                return NotFound("Customer not found");
         }
 
         Engagement? engagement = null;
         if (body.EngagementId != null)
         {
-            engagement = await context.Project.FindAsync(body.EngagementId.Value);
+            engagement =
+                await context.Project.FirstOrDefaultAsync(e => e.Id == body.EngagementId.Value, cancellationToken);
             if (engagement is null)
-                return BadRequest("Engagement not found");
+                return NotFound("Engagement not found");
         }
 
         var agreement = new Agreement
@@ -182,7 +167,7 @@ public class AgreementController(
             }).ToList()
         };
 
-        await agreementsRepository.AddAgreementAsync(agreement, ct);
+        await agreementsRepository.AddAgreementAsync(agreement, cancellationToken);
 
         var responseModel = new AgreementReadModel(
             Name: agreement.Name,
@@ -196,12 +181,7 @@ public class AgreementController(
             Notes: agreement.Notes,
             Options: agreement.Options,
             PriceAdjustmentProcess: agreement.PriceAdjustmentProcess,
-            Files: agreement.Files.Select(f => new FileReferenceReadModel(
-                FileName: f.FileName,
-                BlobName: f.BlobName,
-                UploadedOn: f.UploadedOn,
-                UploadedBy: f.UploadedBy ?? "Unknown"
-            )).ToList()
+            Files: agreement.Files.Select(f => new FileReferenceReadModel(f)).ToList()
         );
         cache.Remove($"consultantCacheKey/{orgUrlKey}");
 
@@ -209,9 +189,9 @@ public class AgreementController(
     }
 
     [HttpPut]
-    [Route("update/{agreementId}")]
+    [Route("{agreementId:int}")]
     public async Task<ActionResult<AgreementReadModel>> Put([FromRoute] string orgUrlKey,
-        [FromRoute] int agreementId, [FromBody] AgreementWriteModel body, CancellationToken ct)
+        [FromRoute] int agreementId, [FromBody] AgreementWriteModel body, CancellationToken cancellationToken)
     {
         if (!ModelState.IsValid)
         {
@@ -224,20 +204,19 @@ public class AgreementController(
             return BadRequest(ModelState);
         }
 
-        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
+        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, cancellationToken);
         if (selectedOrg is null)
-            return BadRequest("Selected organization not found");
+            return NotFound("Selected organization not found");
 
-        var agreement = await agreementsRepository.GetAgreementById(agreementId, ct);
+        var agreement = await agreementsRepository.GetAgreementById(agreementId, cancellationToken);
         if (agreement is null)
             return NotFound("Agreement not found");
 
-        Customer? customer = null;
         if (body.CustomerId is not null)
         {
-            customer = await context.Customer.FindAsync(body.CustomerId);
+            var customer = await context.Customer.FirstOrDefaultAsync(c => c.Id == body.CustomerId, cancellationToken);
             if (customer is null)
-                return BadRequest("Customer not found");
+                return NotFound("Customer not found");
 
             agreement.CustomerId = body.CustomerId;
             agreement.Customer = customer;
@@ -248,12 +227,12 @@ public class AgreementController(
             agreement.Customer = null;
         }
 
-        Engagement? engagement = null;
         if (body.EngagementId is not null)
         {
-            engagement = await context.Project.FindAsync(body.EngagementId);
+            var engagement =
+                await context.Project.FirstOrDefaultAsync(e => e.Id == body.EngagementId, cancellationToken);
             if (engagement is null)
-                return BadRequest("Engagement not found");
+                return NotFound("Engagement not found");
 
             agreement.EngagementId = body.EngagementId;
             agreement.Engagement = engagement;
@@ -280,7 +259,7 @@ public class AgreementController(
             UploadedBy = f.UploadedBy ?? "Unknown"
         }).ToList();
 
-        await agreementsRepository.UpdateAgreementAsync(agreement, ct);
+        await agreementsRepository.UpdateAgreementAsync(agreement, cancellationToken);
 
         var responseModel = new AgreementReadModel(
             AgreementId: agreement.Id,
@@ -294,12 +273,7 @@ public class AgreementController(
             Notes: agreement.Notes,
             Options: agreement.Options,
             PriceAdjustmentProcess: agreement.PriceAdjustmentProcess,
-            Files: agreement.Files.Select(f => new FileReferenceReadModel(
-                FileName: f.FileName,
-                BlobName: f.BlobName,
-                UploadedOn: f.UploadedOn,
-                UploadedBy: f.UploadedBy ?? "Unknown"
-            )).ToList()
+            agreement.Files.Select(f => new FileReferenceReadModel(f)).ToList()
         );
 
         cache.Remove($"consultantCacheKey/{orgUrlKey}");
@@ -308,11 +282,11 @@ public class AgreementController(
     }
 
     [HttpDelete]
-    [Route("delete/{agreementId}")]
+    [Route("{agreementId:int}")]
     public async Task<ActionResult> Delete([FromRoute] string orgUrlKey, [FromRoute] int agreementId, CancellationToken ct)
     {
         var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
-        if (selectedOrg is null) return BadRequest("Selected org not found");
+        if (selectedOrg is null) return NotFound(SelectedOrganizationNotFound);
 
         var agreement = await agreementsRepository.GetAgreementById(agreementId, ct);
         if (agreement is null) return NotFound();
@@ -328,7 +302,7 @@ public class AgreementController(
     public async Task<ActionResult<List<string>>> GetPriceAdjustmentIndexes([FromRoute] string orgUrlKey, CancellationToken ct)
     {
         var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
-        if (selectedOrg is null) return BadRequest("Selected org not found");
+        if (selectedOrg is null) return NotFound(SelectedOrganizationNotFound);
 
         var priceAdjustmentIndexes = await agreementsRepository.GetPriceAdjustmentIndexesAsync(ct);
 
