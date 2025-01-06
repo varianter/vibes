@@ -17,7 +17,7 @@ docker compose up -d database
 # Update Database to latest schema and create tables: 
 cd backend/
 dotnet tool install --global dotnet-ef # To install EF Core globally
-dotnet ef database update --startup-project Api/ --project Infrastructure/
+dotnet ef database update -s Api -p Infrastructure
 
 # Start the web-server by either using the IDE launcher (launchSettings.json): Api:http
 # ...or manually by terminal 
@@ -30,10 +30,12 @@ dotnet run
 To create new migrations or revert the current:
 ```shell
 # Create a new
-dotnet ef migrations add WhatIHaveChangedToTheModelHere --startup-project Api/ --project Infrastructure/ 
+dotnet ef migrations add <WhatChangesHaveIMadeToTheModel> -s Api -p Infrastructure
+
+# For example: dotnet ef migrations add AddedIsActiveFieldToCustomer
 
 # Remove the current
-dotnet ef migrations remove --startup-project Api/ --project Infrastructure/ 
+dotnet ef migrations remove -s Api -p Infrastructure 
 
 ```
 
