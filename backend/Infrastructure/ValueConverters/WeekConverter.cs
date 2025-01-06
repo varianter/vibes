@@ -1,4 +1,4 @@
-using Core.DomainModels;
+using Core.Weeks;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Infrastructure.ValueConverters;
@@ -7,7 +7,7 @@ public class WeekConverter : ValueConverter<Week, int>
 {
     public WeekConverter() : base(
         week => week.ToSortableInt(),
-        weekAsInt => new Week(weekAsInt))
+        weekAsInt => Week.FromInt(weekAsInt))
     {
     }
 }

@@ -1,8 +1,8 @@
 using Api.Common;
 using Core.Consultants;
-using Core.DomainModels;
 using Core.PlannedAbsences;
 using Core.Staffings;
+using Core.Weeks;
 using Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +23,7 @@ public class StaffingController(
     [HttpGet]
     public async Task<ActionResult> Get(
         [FromRoute] string orgUrlKey,
-        CancellationToken ct,
+        CancellationToken cancellationToken,
         [FromQuery(Name = "Year")] int? selectedYearParam = null,
         [FromQuery(Name = "Week")] int? selectedWeekParam = null,
         [FromQuery(Name = "WeekSpan")] int numberOfWeeks = 8,
@@ -37,10 +37,9 @@ public class StaffingController(
 
         var service = new StorageService(cache, context);
         var consultants = service.LoadConsultants(orgUrlKey);
-        consultants = await AddRelationalDataToConsultant(consultants, ct);
+        consultants = await AddRelationalDataToConsultant(consultants, cancellationToken);
 
-        var readModels = new ReadModelFactory(service)
-            .GetConsultantReadModelsForWeeks(consultants, weekSet);
+        var readModels = ReadModelFactory.GetConsultantReadModelsForWeeks(consultants, weekSet);
 
         return Ok(readModels);
     }
@@ -95,7 +94,7 @@ public class StaffingController(
     public async Task<ActionResult<StaffingReadModel>> Put(
         [FromRoute] string orgUrlKey,
         [FromBody] StaffingWriteModel staffingWriteModel,
-        CancellationToken ct
+        CancellationToken cancellationToken
     )
     {
         var service = new StorageService(cache, context);
@@ -113,7 +112,7 @@ public class StaffingController(
                         new StaffingKey(staffingWriteModel.EngagementId,
                             staffingWriteModel.ConsultantId, selectedWeek), staffingWriteModel.Hours);
 
-                    await staffingRepository.UpsertStaffing(updatedStaffing, ct);
+                    await staffingRepository.UpsertStaffing(updatedStaffing, cancellationToken);
 
                     //TODO: Remove this once repositories for planned absence and vacations are done too
                     service.ClearConsultantCache(orgUrlKey);
@@ -123,7 +122,7 @@ public class StaffingController(
                         staffingWriteModel.ConsultantId,
                         selectedWeek), staffingWriteModel.Hours);
 
-                    await plannedAbsenceRepository.UpsertPlannedAbsence(updatedAbsence, ct);
+                    await plannedAbsenceRepository.UpsertPlannedAbsence(updatedAbsence, cancellationToken);
 
                     //TODO: Remove this once repositories for planned absence and vacations are done too
                     service.ClearConsultantCache(orgUrlKey);
@@ -131,7 +130,7 @@ public class StaffingController(
                 case BookingType.Vacation:
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(staffingWriteModel.Type), staffingWriteModel.Type,
+                    throw new ArgumentOutOfRangeException(nameof(staffingWriteModel), staffingWriteModel.Type,
                         "Invalid bookingType");
             }
         }
@@ -150,7 +149,7 @@ public class StaffingController(
     public async Task<ActionResult<StaffingReadModel>> Put(
         [FromRoute] string orgUrlKey,
         [FromBody] SeveralStaffingWriteModel severalStaffingWriteModel,
-        CancellationToken ct
+        CancellationToken cancellationToken
     )
     {
         var service = new StorageService(cache, context);
@@ -173,7 +172,7 @@ public class StaffingController(
                     var updatedStaffings = GenerateUpdatedStaffings(severalStaffingWriteModel.ConsultantId,
                         severalStaffingWriteModel.EngagementId, weekSet, severalStaffingWriteModel.Hours, orgUrlKey);
 
-                    await staffingRepository.UpsertMultipleStaffings(updatedStaffings, ct);
+                    await staffingRepository.UpsertMultipleStaffings(updatedStaffings, cancellationToken);
 
                     //TODO: Remove this once repositories for planned absence and vacations are done too
                     service.ClearConsultantCache(orgUrlKey);
@@ -182,7 +181,7 @@ public class StaffingController(
                     var updatedAbsences = GenerateUpdatedAbsences(severalStaffingWriteModel.ConsultantId,
                         severalStaffingWriteModel.EngagementId, weekSet, severalStaffingWriteModel.Hours, orgUrlKey);
 
-                    await plannedAbsenceRepository.UpsertMultiplePlannedAbsences(updatedAbsences, ct);
+                    await plannedAbsenceRepository.UpsertMultiplePlannedAbsences(updatedAbsences, cancellationToken);
 
                     //TODO: Remove this once repositories for planned absence and vacations are done too
                     service.ClearConsultantCache(orgUrlKey);
@@ -190,7 +189,7 @@ public class StaffingController(
                 case BookingType.Vacation:
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(severalStaffingWriteModel.Type),
+                    throw new ArgumentOutOfRangeException(nameof(severalStaffingWriteModel),
                         severalStaffingWriteModel.Type, "Invalid bookingType");
             }
         }
@@ -206,13 +205,14 @@ public class StaffingController(
 
     // TODO: Move this to a future application layer. This is to consolidate data from various repositories such as Staffing or PlannedAbsence
     private async Task<List<Consultant>> AddRelationalDataToConsultant(List<Consultant> consultants,
-        CancellationToken ct)
+        CancellationToken cancellationToken)
     {
         var consultantIds = consultants.Select(c => c.Id).Distinct().ToList();
 
         var consultantStaffings =
-            await staffingRepository.GetStaffingForConsultants(consultantIds, ct);
-        var consultantAbsences = await plannedAbsenceRepository.GetPlannedAbsenceForConsultants(consultantIds, ct);
+            await staffingRepository.GetStaffingForConsultants(consultantIds, cancellationToken);
+        var consultantAbsences =
+            await plannedAbsenceRepository.GetPlannedAbsenceForConsultants(consultantIds, cancellationToken);
 
         return consultants.Select(c =>
         {

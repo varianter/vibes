@@ -2,12 +2,12 @@ using Core.Absences;
 using Core.Agreements;
 using Core.Consultants;
 using Core.Customers;
-using Core.DomainModels;
 using Core.Engagements;
 using Core.Organizations;
 using Core.PlannedAbsences;
 using Core.Staffings;
 using Core.Vacations;
+using Core.Weeks;
 using Infrastructure.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 
@@ -201,8 +201,6 @@ public class ApplicationContext(DbContextOptions options) : DbContext(options)
             Degree = Degree.Master,
             GraduationYear = 2019
         });
-
-
 
         base.OnModelCreating(modelBuilder);
     }

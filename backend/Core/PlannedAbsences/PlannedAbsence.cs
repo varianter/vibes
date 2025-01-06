@@ -1,6 +1,6 @@
 using Core.Absences;
 using Core.Consultants;
-using Core.DomainModels;
+using Core.Weeks;
 
 namespace Core.PlannedAbsences;
 

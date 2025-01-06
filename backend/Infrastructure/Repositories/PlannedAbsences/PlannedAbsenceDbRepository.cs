@@ -7,43 +7,45 @@ namespace Infrastructure.Repositories.PlannedAbsences;
 public class PlannedAbsenceDbRepository(ApplicationContext context) : IPlannedAbsenceRepository
 {
     public async Task<Dictionary<int, List<PlannedAbsence>>> GetPlannedAbsenceForConsultants(List<int> consultantIds,
-        CancellationToken ct)
+        CancellationToken cancellationToken)
     {
         var ids = consultantIds.ToArray();
         return await context.PlannedAbsence
-            .Where(pa => ids.Contains(pa.ConsultantId))
+            .Where(pa => ids.Contains(pa.ConsultantId) && pa.Consultant != null)
             .Include(absence => absence.Absence)
             .Include(absence => absence.Consultant)
-            .GroupBy(absence => absence.Consultant.Id)
-            .ToDictionaryAsync(grouping => grouping.Key, grouping => grouping.ToList(), ct);
+            .GroupBy(absence => absence.Consultant!.Id)
+            .ToDictionaryAsync(grouping => grouping.Key, grouping => grouping.ToList(), cancellationToken);
     }
 
-    public async Task<List<PlannedAbsence>> GetPlannedAbsenceForConsultant(int consultantId, CancellationToken ct)
+    public async Task<List<PlannedAbsence>> GetPlannedAbsenceForConsultant(int consultantId,
+        CancellationToken cancellationToken)
     {
         return await context.PlannedAbsence
             .Where(pa => pa.ConsultantId == consultantId)
             .Include(absence => absence.Absence)
             .Include(absence => absence.Consultant)
-            .ToListAsync(ct);
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task UpsertPlannedAbsence(PlannedAbsence plannedAbsence, CancellationToken ct)
+    public async Task UpsertPlannedAbsence(PlannedAbsence plannedAbsence, CancellationToken cancellationToken)
     {
-        var existingPlannedAbsence = context.PlannedAbsence
-            .FirstOrDefault(pa => pa.AbsenceId.Equals(plannedAbsence.AbsenceId)
-                                  && pa.ConsultantId.Equals(plannedAbsence.ConsultantId)
-                                  && pa.Week.Equals(plannedAbsence.Week));
+        var existingPlannedAbsence = await context.PlannedAbsence
+            .FirstOrDefaultAsync(pa => pa.AbsenceId.Equals(plannedAbsence.AbsenceId)
+                                       && pa.ConsultantId.Equals(plannedAbsence.ConsultantId)
+                                       && pa.Week.Equals(plannedAbsence.Week), cancellationToken);
 
         if (existingPlannedAbsence is null)
-            await context.PlannedAbsence.AddAsync(plannedAbsence, ct);
+            await context.PlannedAbsence.AddAsync(plannedAbsence, cancellationToken);
         else
             existingPlannedAbsence.Hours = plannedAbsence.Hours;
 
-        await context.SaveChangesAsync(ct);
+        await context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UpsertMultiplePlannedAbsences(List<PlannedAbsence> plannedAbsences, CancellationToken ct)
+    public async Task UpsertMultiplePlannedAbsences(List<PlannedAbsence> plannedAbsences,
+        CancellationToken cancellationToken)
     {
-        foreach (var absence in plannedAbsences) await UpsertPlannedAbsence(absence, ct);
+        foreach (var absence in plannedAbsences) await UpsertPlannedAbsence(absence, cancellationToken);
     }
 }

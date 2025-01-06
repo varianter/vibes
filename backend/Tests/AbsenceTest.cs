@@ -2,12 +2,12 @@ using Api.StaffingController;
 using Core.Absences;
 using Core.Consultants;
 using Core.Customers;
-using Core.DomainModels;
 using Core.Engagements;
 using Core.Organizations;
 using Core.PlannedAbsences;
 using Core.Staffings;
 using Core.Vacations;
+using Core.Weeks;
 using NSubstitute;
 
 namespace Tests;
@@ -42,9 +42,10 @@ public class Tests
             Country = "norway",
             NumberOfVacationDaysInYear = 25,
             HoursPerWorkday = 7.5,
-            Departments = new List<Department>(),
+            Departments = [],
             HasVacationInChristmas = true,
-            Customers = new List<Customer>()
+            Customers = [],
+            AbsenceTypes = []
         };
 
         var department = new Department
@@ -71,7 +72,7 @@ public class Tests
             0 => new DateOnly(2023, 9, 4), // Week 36, 4th Sept 2023, (no public holidays)
             1 => new DateOnly(2023, 4, 10), // Week 15, 10-14th May 2023 (2.påskedag)
             2 => new DateOnly(2023, 4, 3), // Week 14, 3-7th April 2023 (Skjærtorsdag + Langfredag)
-            5 => new DateOnly(2022, 12, 26), // Week 52, 26th-30th Descember (Variant Juleferie)
+            5 => new DateOnly(2022, 12, 26), // Week 52, 26th-30th December (Variant Juleferie)
             _ => throw new Exception("Number of holidays can only be set to 0,1,2 or 5")
         };
 
@@ -84,7 +85,6 @@ public class Tests
         project.IsBillable = true;
 
 
-        // TODO: Change this to update consultant data
         for (var i = 0; i < vacationDays; i++)
             consultant.Vacations.Add(new Vacation
             {
@@ -116,7 +116,7 @@ public class Tests
                 ConsultantId = consultant.Id
             });
 
-        var bookingModel = ReadModelFactory.MapToReadModelList(consultant, new List<Week> { week }).Bookings.First()
+        var bookingModel = ReadModelFactory.MapToReadModelList(consultant, [week]).Bookings[0]
             .BookingModel;
 
         Assert.Multiple(() =>
@@ -140,7 +140,8 @@ public class Tests
             NumberOfVacationDaysInYear = 25,
             HoursPerWorkday = 7.5,
             HasVacationInChristmas = false,
-            Customers = new List<Customer>()
+            Customers = [],
+            AbsenceTypes = []
         };
 
         var department = new Department
@@ -187,7 +188,7 @@ public class Tests
             ConsultantId = consultant.Id
         });
 
-        var bookedHours = ReadModelFactory.MapToReadModelList(consultant, new List<Week> { week }).Bookings.First()
+        var bookedHours = ReadModelFactory.MapToReadModelList(consultant, [week]).Bookings[0]
             .BookingModel;
 
         Assert.That(bookedHours.TotalPlannedAbsences, Is.EqualTo(30));

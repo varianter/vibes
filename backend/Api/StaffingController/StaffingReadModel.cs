@@ -1,22 +1,21 @@
-using System.ComponentModel.DataAnnotations;
 using Core.Consultants;
-using Core.DomainModels;
+using Core.Weeks;
 
 // ReSharper disable NotAccessedPositionalProperty.Global
 
 namespace Api.StaffingController;
 
 public record StaffingReadModel(
-    [property: Required] int Id,
-    [property: Required] string Name,
-    [property: Required] string Email,
-    [property: Required] List<CompetenceReadModel> Competences,
-    [property: Required] UpdateDepartmentReadModel Department,
-    [property: Required] int YearsOfExperience,
-    [property: Required] Degree Degree,
-    [property: Required] List<BookedHoursPerWeek> Bookings,
-    [property: Required] List<DetailedBooking> DetailedBooking,
-    [property: Required] bool IsOccupied)
+    int Id,
+    string Name,
+    string Email,
+    List<CompetenceReadModel> Competences,
+    UpdateDepartmentReadModel Department,
+    int YearsOfExperience,
+    Degree Degree,
+    List<BookedHoursPerWeek> Bookings,
+    List<DetailedBooking> DetailedBooking,
+    bool IsOccupied)
 {
     public StaffingReadModel(Consultant consultant, List<BookedHoursPerWeek> bookings,
         List<DetailedBooking> detailedBookings, bool IsOccupied)
@@ -42,8 +41,8 @@ public record UpdateDepartmentReadModel(
     string Name);
 
 public record CompetenceReadModel(
-    [property: Required] string Id,
-    [property: Required] string Name)
+    string Id,
+    string Name)
 {
     public CompetenceReadModel(Competence competence)
         : this(
@@ -55,19 +54,17 @@ public record CompetenceReadModel(
 }
 
 public record BookedHoursPerWeek(
-    [property: Required] int Year,
-    [property: Required] int WeekNumber,
-    [property: Required] int SortableWeek,
-    [property: Required] string DateString,
-    [property: Required] WeeklyBookingReadModel BookingModel);
+    Week Week,
+    string DateString,
+    WeeklyBookingReadModel BookingModel);
 
 public record DetailedBooking(
-    [property: Required] BookingDetails BookingDetails,
-    [property: Required] List<WeeklyHours> Hours)
+    BookingDetails BookingDetails,
+    List<WeeklyHours> Hours)
 {
     public double TotalHoursForWeek(Week week)
     {
-        return Hours.Where(weeklySum => weeklySum.Week == week.ToSortableInt()).Sum(weeklyHours => weeklyHours.Hours);
+        return Hours.Where(weeklySum => weeklySum.Week == week).Sum(weeklyHours => weeklyHours.Hours);
     }
 
     internal static double GetTotalHoursPrBookingTypeAndWeek(IEnumerable<DetailedBooking> list, BookingType type,
@@ -82,26 +79,26 @@ public record DetailedBooking(
 }
 
 public record WeeklyBookingReadModel(
-    [property: Required] double TotalBillable,
-    [property: Required] double TotalOffered,
-    [property: Required] double TotalPlannedAbsences,
-    [property: Required] double TotalExludableAbsence,
-    [property: Required] double TotalSellableTime,
-    [property: Required] double TotalHolidayHours,
-    [property: Required] double TotalVacationHours,
-    [property: Required] double TotalOverbooking,
-    [property: Required] double TotalNotStartedOrQuit);
+    double TotalBillable,
+    double TotalOffered,
+    double TotalPlannedAbsences,
+    double TotalExcludableAbsence,
+    double TotalSellableTime,
+    double TotalHolidayHours,
+    double TotalVacationHours,
+    double TotalOverbooking,
+    double TotalNotStartedOrQuit);
 
 public record BookingDetails(
-    [property: Required] string ProjectName,
-    [property: Required] BookingType Type,
-    [property: Required] string CustomerName,
-    [property: Required] int ProjectId,
-    [property: Required] bool ExcludeFromBilling = false,
-    [property: Required] bool IsBillable = false,
+    string ProjectName,
+    BookingType Type,
+    string CustomerName,
+    int ProjectId,
+    bool ExcludeFromBilling = false,
+    bool IsBillable = false,
     DateTime? EndDateAgreement = null);
 
-public record WeeklyHours([property: Required] int Week, [property: Required] double Hours);
+public record WeeklyHours(Week Week, double Hours);
 
 public enum BookingType
 {
