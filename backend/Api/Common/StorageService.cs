@@ -199,39 +199,40 @@ public class StorageService(IMemoryCache cache, ApplicationContext context)
         return consultant;
     }
 
-    public Customer DeactivateOrActivateCustomer(int customerId, Organization org, bool active, string orgUrlKey)
+    public Customer? DeactivateOrActivateCustomer(int customerId, Organization org, bool active, string orgUrlKey)
     {
         var customer = GetCustomerFromId(orgUrlKey, customerId);
         if (customer is null) return null;
 
         customer.IsActive = active;
-        _dbContext.Customer.Update(customer);
-        _dbContext.SaveChanges();
+        context.Customer.Update(customer);
+        context.SaveChanges();
         ClearConsultantCache(orgUrlKey);
 
         return customer;
     }
 
-    public Customer FindOrCreateCustomer(Organization org, string customerName, string orgUrlKey)
+    public async Task<Customer> FindOrCreateCustomer(Organization org, string customerName, string orgUrlKey,
+        CancellationToken cancellationToken)
     {
-        var customer = context.Customer.Where(c => c.OrganizationId == org.Id)
-            .SingleOrDefault(c => c.Name == customerName);
+        var customer = await context.Customer.Where(c => c.OrganizationId == org.Id)
+            .FirstOrDefaultAsync(c => c.Name == customerName, cancellationToken);
 
-        if (customer is null)
+        if (customer is not null) return customer;
+
+        customer = new Customer
         {
-            customer = new Customer
-            {
-                Name = customerName,
-                Organization = org,
-                OrganizationId = org.Id,
-                Projects = [],
-                IsActive = true
-            };
+            Name = customerName,
+            Organization = org,
+            OrganizationId = org.Id,
+            Projects = [],
+            Agreements = [],
+            IsActive = true
+        };
 
-            _dbContext.Customer.Add(customer);
-            _dbContext.SaveChanges();
-            ClearConsultantCache(orgUrlKey);
-        }
+        context.Customer.Add(customer);
+        await context.SaveChangesAsync(cancellationToken);
+        ClearConsultantCache(orgUrlKey);
 
 
         return customer;

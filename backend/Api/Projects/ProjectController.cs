@@ -1,8 +1,5 @@
 using Api.Common;
 using Api.StaffingController;
-using Core.Consultants;
-using Core.Customers;
-using Core.DomainModels;
 using Core.Engagements;
 using Core.Organizations;
 using Core.Weeks;
@@ -50,12 +47,13 @@ public class ProjectController(
         if (selectedOrgId is null) return BadRequest();
 
         var absenceReadModels = new EngagementPerCustomerReadModel(-1, AbsenceCustomerName, true,
-            context.Absence.Where(a => a.Organization.UrlKey == orgUrlKey).Select(absence =>
-                new EngagementReadModel(absence.Id, absence.Name, EngagementState.Absence, false)).ToList());
+            await context.Absence.Where(a => a.Organization.UrlKey == orgUrlKey).Select(absence =>
+                    new EngagementReadModel(absence.Id, absence.Name, EngagementState.Absence, false))
+                .ToListAsync(cancellationToken));
 
         var projectReadModels = await context.Project.Include(project => project.Customer)
             .Where(project =>
-                project.Customer.Organization != null && project.Customer.Organization.UrlKey == orgUrlKey)
+                project.Customer.Organization.UrlKey == orgUrlKey)
             .GroupBy(project => project.Customer)
             .Select(a =>
                 new EngagementPerCustomerReadModel(
@@ -207,6 +205,20 @@ public class ProjectController(
         }
     }
 
+
+    [HttpPut]
+    [Route("customer/{customerId}/activate")]
+    public async Task<Results<Ok, NotFound<string>>> Put([FromRoute] int customerId, [FromQuery] bool activate,
+        string orgUrlKey, CancellationToken ct)
+    {
+        var service = new StorageService(cache, context);
+        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
+        if (selectedOrg is null) return TypedResults.NotFound("Selected org not found");
+        var customer = service.DeactivateOrActivateCustomer(customerId, selectedOrg, activate, orgUrlKey);
+        if (customer is null) return TypedResults.NotFound("Selected customer not found");
+        return TypedResults.Ok();
+    }
+
     [HttpPut]
     public async Task<ActionResult<ProjectWithCustomerModel>> Put([FromRoute] string orgUrlKey,
         [FromBody] EngagementWriteModel body, CancellationToken cancellationToken)
@@ -219,11 +231,13 @@ public class ProjectController(
         if (body.CustomerName == AbsenceCustomerName)
             return Ok(HandleAbsenceChange(body, orgUrlKey));
 
-        var customer = service.UpdateOrCreateCustomer(selectedOrg, body.CustomerName, orgUrlKey);
+        var customer = await service.FindOrCreateCustomer(selectedOrg, body.CustomerName, orgUrlKey, cancellationToken);
 
         var project = await context.Project
             .Include(p => p.Customer)
-            .FirstOrDefaultAsync(p => p.Customer.Id == customer.Id && p.Name == body.ProjectName, cancellationToken);
+            .FirstOrDefaultAsync(p => p.Customer.Id == customer.Id
+                                      && p.Name == body.ProjectName, cancellationToken
+            );
 
         if (project is null)
         {
@@ -289,64 +303,6 @@ public class ProjectController(
             .Include(p => p.Consultants)
             .Include(p => p.Staffings)
             .Single(p => p.Id == engagementToKeep.Id);
-    }
-
-    [HttpPut]
-    [Route("customer/{customerId}/activate")]
-    public async Task<Results<Ok, NotFound<string>>> Put([FromRoute] int customerId, [FromQuery] bool activate, string orgUrlKey, CancellationToken ct)
-    {
-
-        var service = new StorageService(cache, context);
-        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
-        if (selectedOrg is null) return TypedResults.NotFound("Selected org not found");
-        var customer = service.DeactivateOrActivateCustomer(customerId, selectedOrg, activate, orgUrlKey);
-        if (customer is null) return TypedResults.NotFound("Selected customer not found");
-        return TypedResults.Ok();
-    }
-
-
-    [HttpPut]
-    public async Task<ActionResult<ProjectWithCustomerModel>> Put([FromRoute] string orgUrlKey,
-        [FromBody] EngagementWriteModel body, CancellationToken ct)
-    {
-        var service = new StorageService(cache, context);
-
-        var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
-        if (selectedOrg is null) return BadRequest("Selected org not found");
-
-        if (body.CustomerName == AbsenceCustomerName)
-            return Ok(HandleAbsenceChange(body, orgUrlKey));
-
-        var customer = service.FindOrCreateCustomer(selectedOrg, body.CustomerName, orgUrlKey);
-
-        var project = context.Project
-            .Include(p => p.Customer)
-            .SingleOrDefault(p => p.Customer.Id == customer.Id
-                                  && p.Name == body.ProjectName
-            );
-
-        if (project is null)
-        {
-            project = new Engagement
-            {
-                Customer = customer,
-                State = body.BookingType,
-                Staffings = new List<Staffing>(),
-                Consultants = new List<Consultant>(),
-                Name = body.ProjectName,
-                IsBillable = body.IsBillable
-            };
-
-            context.Project.Add(project);
-        }
-
-        await context.SaveChangesAsync(ct);
-        service.ClearConsultantCache(orgUrlKey);
-
-        var responseModel =
-            new ProjectWithCustomerModel(project.Name, customer.Name, project.State, project.IsBillable, project.Id);
-
-        return Ok(responseModel);
     }
 
 
