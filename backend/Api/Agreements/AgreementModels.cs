@@ -1,5 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using Core.Agreements;
+// ReSharper disable NotAccessedPositionalProperty.Global
+
+namespace Api.Agreements;
 
 public record AgreementReadModel(
     int AgreementId,
@@ -55,6 +58,7 @@ public record AgreementWriteModel(
 }
 
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public record FileReferenceWriteModel(
     string FileName,
     string BlobName,
