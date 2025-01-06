@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using Core.Absences;
 using Core.Customers;
-using Core.DomainModels;
+using Core.Weeks;
 using PublicHoliday;
 
 // ReSharper disable EntityFramework.ModelValidation.UnlimitedStringLength

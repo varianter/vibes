@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 
+// ReSharper disable NotAccessedPositionalProperty.Global
+
 namespace Api.VacationsController;
 
 [Authorize]

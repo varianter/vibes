@@ -1,10 +1,10 @@
 using Api.Consultants;
 using Core.Consultants;
 using Core.Customers;
-using Core.DomainModels;
 using Core.Engagements;
 using Core.Organizations;
 using Core.Vacations;
+using Core.Weeks;
 using Infrastructure.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -210,6 +210,7 @@ public class StorageService(IMemoryCache cache, ApplicationContext context)
             {
                 Name = customerName,
                 Organization = org,
+                OrganizationId = org.Id,
                 Projects = []
             };
 

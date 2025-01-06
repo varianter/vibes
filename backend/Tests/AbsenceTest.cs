@@ -2,12 +2,12 @@ using Api.StaffingController;
 using Core.Absences;
 using Core.Consultants;
 using Core.Customers;
-using Core.DomainModels;
 using Core.Engagements;
 using Core.Organizations;
 using Core.PlannedAbsences;
 using Core.Staffings;
 using Core.Vacations;
+using Core.Weeks;
 using NSubstitute;
 
 namespace Tests;

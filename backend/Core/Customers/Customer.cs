@@ -17,6 +17,6 @@ public class Customer
     public ICollection<Agreement> Agreements { get; init; } = new List<Agreement>();
     public required List<Engagement> Projects { get; init; }
 
-    public string? OrganizationId { get; init; }
-    public Organization? Organization { get; init; }
+    public required string OrganizationId { get; init; }
+    public required Organization Organization { get; init; }
 }

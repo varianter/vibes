@@ -1,25 +1,23 @@
 using System.Globalization;
 
-namespace Core.DomainModels;
+namespace Core.Weeks;
 
-public class Week : IComparable<Week>, IEquatable<Week>
+public sealed class Week(int year, int weekNumber) : IComparable<Week>, IEquatable<Week>
 {
-    public readonly int WeekNumber;
+    public readonly int Year = year;
+    public readonly int WeekNumber = weekNumber;
 
-    public readonly int Year;
-
-    public Week(int year, int weekNumber)
+    public static Week FromInt(int weekAsInt)
     {
-        Year = year;
-        WeekNumber = weekNumber;
+        var year = weekAsInt / 100;
+        var weekNumber = weekAsInt % 100;
+        return new Week(year, weekNumber);
     }
 
-    public Week(int weekAsInt)
+    public int ToSortableInt()
     {
-        Year = weekAsInt / 100;
-        WeekNumber = weekAsInt % 100;
+        return Year * 100 + WeekNumber;
     }
-
 
     public int CompareTo(Week? other)
     {
@@ -39,6 +37,15 @@ public class Week : IComparable<Week>, IEquatable<Week>
         return Year == other.Year && WeekNumber == other.WeekNumber;
     }
 
+    public override bool Equals(object? obj)
+    {
+        return typeof(object) == typeof(Week) && Equals(obj as Week);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Year, WeekNumber);
+    }
 
     public static Week FromDateTime(DateTime dateTime)
     {
@@ -51,30 +58,29 @@ public class Week : IComparable<Week>, IEquatable<Week>
     }
 
     /// <summary>
-    ///     Returns a string in the format yyyyww where y is year and w is week
-    ///     Example: 202352 or 202401
+    ///     Returns a string in the format Year-WeekNumber.
+    ///     WeekNumber will be padded with a leading zero if needed.
+    ///     <example>
+    ///         For example:
+    ///         <code>
+    ///         Week w = new Week(2025, 1);
+    ///         w.ToString()
+    ///         </code>
+    ///         returns <c>"2025-01"</c>
+    ///     </example>
     /// </summary>
     public override string ToString()
     {
-        return $"{ToSortableInt()}";
-    }
-
-    /// <summary>
-    ///     Returns an int in the format yyyyww where y is year and w is week
-    ///     Example: 202352 or 202401
-    /// </summary>
-    public int ToSortableInt()
-    {
-        return Year * 100 + WeekNumber;
+        return $"{Year}-{WeekNumber:D2}";
     }
 
     private static int GetWeekNumber(DateTime time)
     {
-        // If its Monday, Tuesday or Wednesday, then it'll 
+        // If it's Monday, Tuesday or Wednesday, then it'll 
         // be the same week# as whatever Thursday, Friday or Saturday are,
         // and we always get those right
         var day = CultureInfo.InvariantCulture.Calendar.GetDayOfWeek(time);
-        if (day >= DayOfWeek.Monday && day <= DayOfWeek.Wednesday) time = time.AddDays(3);
+        if (day is >= DayOfWeek.Monday and <= DayOfWeek.Wednesday) time = time.AddDays(3);
 
         // Return the week of our adjusted day
         return CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(time, CalendarWeekRule.FirstFourDayWeek,
@@ -83,24 +89,24 @@ public class Week : IComparable<Week>, IEquatable<Week>
 
     public List<Week> GetNextWeeks(int weeksAhead)
     {
-        /*Calculate weeks and years based on thursday, as this is the day that is used to figure out weeknumbers
+        /*Calculate weeks and years based on thursday, as this is the day that is used to figure out week numbers
          at year´s end*/
         var firstThursday = FirstWorkDayOfWeek().AddDays(3);
 
         return Enumerable.Range(0, weeksAhead)
             .Select(offset =>
             {
-                var year = firstThursday.AddDays(7 * offset).Year;
+                var y = firstThursday.AddDays(7 * offset).Year;
                 var week = GetWeekNumber(firstThursday.AddDays(7 * offset));
-                return new Week(year, week);
+                return new Week(y, week);
             }).ToList();
     }
-    
+
     public List<Week> GetNextWeeks(Week otherWeek)
     {
         var numberOfWeeks = (otherWeek.FirstDayOfWorkWeek().DayNumber - FirstDayOfWorkWeek().DayNumber) / 7;
 
-        return GetNextWeeks(numberOfWeeks+1);
+        return GetNextWeeks(numberOfWeeks + 1);
     }
 
     public List<DateOnly> GetDatesInWorkWeek()
@@ -120,7 +126,7 @@ public class Week : IComparable<Week>, IEquatable<Week>
     private DateTime FirstWorkDayOfWeek()
     {
         // Source: https://stackoverflow.com/a/9064954
-        var jan1 = new DateTime(Year, 1, 1);
+        var jan1 = new DateOnly(Year, 1, 1).ToDateTime(TimeOnly.MinValue);
         var daysOffset = DayOfWeek.Thursday - jan1.DayOfWeek;
 
         // Use first Thursday in January to get first week of the year as
@@ -161,5 +167,43 @@ public class Week : IComparable<Week>, IEquatable<Week>
     private bool DateIsInWeek(DateOnly day)
     {
         return FromDateOnly(day).Equals(this);
+    }
+
+    public static bool operator ==(Week left, Week right)
+    {
+        return left.Year == right.Year && left.WeekNumber == right.WeekNumber;
+    }
+
+    public static bool operator !=(Week left, Week right)
+    {
+        return !(left == right);
+    }
+
+    public static bool operator <(Week left, Week right)
+    {
+        if (left.Year < right.Year) return true;
+        if (left.Year > right.Year) return false;
+        return left.WeekNumber < right.WeekNumber;
+    }
+
+    public static bool operator >(Week left, Week right)
+    {
+        if (left.Year > right.Year) return true;
+        if (left.Year < right.Year) return false;
+        return left.WeekNumber > right.WeekNumber;
+    }
+
+    public static bool operator <=(Week left, Week right)
+    {
+        if (left.Year < right.Year) return true;
+        if (left.Year > right.Year) return false;
+        return left.WeekNumber <= right.WeekNumber;
+    }
+
+    public static bool operator >=(Week left, Week right)
+    {
+        if (left.Year > right.Year) return true;
+        if (left.Year < right.Year) return false;
+        return left.WeekNumber >= right.WeekNumber;
     }
 }

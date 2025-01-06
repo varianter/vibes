@@ -1,8 +1,8 @@
 using Api.Common;
 using Core.Consultants;
-using Core.DomainModels;
 using Core.PlannedAbsences;
 using Core.Staffings;
+using Core.Weeks;
 using Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,8 +39,7 @@ public class StaffingController(
         var consultants = service.LoadConsultants(orgUrlKey);
         consultants = await AddRelationalDataToConsultant(consultants, cancellationToken);
 
-        var readModels = new ReadModelFactory(service)
-            .GetConsultantReadModelsForWeeks(consultants, weekSet);
+        var readModels = ReadModelFactory.GetConsultantReadModelsForWeeks(consultants, weekSet);
 
         return Ok(readModels);
     }

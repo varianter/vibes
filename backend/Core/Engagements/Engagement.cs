@@ -15,13 +15,13 @@ public class Engagement
 
     public required Customer Customer { get; set; }
 
-    public ICollection<Agreement> Agreements { get; set; } = new List<Agreement>();
+    public required List<Agreement> Agreements { get; set; } = [];
 
     public required EngagementState State { get; set; }
 
-    public List<Consultant> Consultants { get; set; } = new();
+    public required List<Consultant> Consultants { get; set; } = [];
 
-    public required List<Staffing> Staffings { get; set; } = new();
+    public required List<Staffing> Staffings { get; set; } = [];
 
     public required string Name { get; set; }
 

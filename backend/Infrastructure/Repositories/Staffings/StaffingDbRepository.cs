@@ -18,7 +18,7 @@ public class StaffingDbRepository(ApplicationContext context) : IStaffingReposit
             .ThenInclude(project => project.Customer)
             .Include(staffing => staffing.Engagement)
             .ThenInclude(project => project.Agreements)
-            .GroupBy(staffing => staffing.Consultant.Id)
+            .GroupBy(staffing => staffing.Consultant!.Id)
             .ToDictionaryAsync(group => group.Key, grouping => grouping.ToList(), cancellationToken);
     }
 
@@ -39,10 +39,10 @@ public class StaffingDbRepository(ApplicationContext context) : IStaffingReposit
 
     public async Task UpsertStaffing(Staffing staffing, CancellationToken cancellationToken)
     {
-        var existingStaffing = context.Staffing
-            .FirstOrDefault(s => s.EngagementId.Equals(staffing.EngagementId)
-                                 && s.ConsultantId.Equals(staffing.ConsultantId)
-                                 && s.Week.Equals(staffing.Week));
+        var existingStaffing = await context.Staffing
+            .FirstOrDefaultAsync(s => s.EngagementId.Equals(staffing.EngagementId)
+                                      && s.ConsultantId.Equals(staffing.ConsultantId)
+                                      && s.Week.Equals(staffing.Week), cancellationToken);
 
         if (existingStaffing is null)
             await context.Staffing.AddAsync(staffing, cancellationToken);

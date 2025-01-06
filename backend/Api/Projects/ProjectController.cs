@@ -1,10 +1,8 @@
 using Api.Common;
 using Api.StaffingController;
-using Core.Consultants;
-using Core.DomainModels;
 using Core.Engagements;
 using Core.Organizations;
-using Core.Staffings;
+using Core.Weeks;
 using Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -228,8 +226,9 @@ public class ProjectController(
             {
                 Customer = customer,
                 State = body.BookingType,
-                Staffings = new List<Staffing>(),
-                Consultants = new List<Consultant>(),
+                Staffings = [],
+                Consultants = [],
+                Agreements = [],
                 Name = body.ProjectName,
                 IsBillable = body.IsBillable
             };
