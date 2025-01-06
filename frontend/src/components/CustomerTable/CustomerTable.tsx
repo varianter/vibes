@@ -9,6 +9,9 @@ import WeekSelector from "../WeekSelector";
 import { useWeekSelectors } from "@/hooks/useWeekSelectors";
 import { WeekSpanTableHead } from "../Staffing/WeekTableHead";
 import { AgreementEdit } from "../Agreement/AgreementEdit";
+import { useParams } from "next/navigation";
+import { useState } from "react";
+import ActivateButton from "../Buttons/ActivateButton";
 
 export default function CustomerTable({
   customer,
@@ -31,10 +34,41 @@ export default function CustomerTable({
   } = useWeekSelectors();
 
   const { filteredDepartments } = useDepartmentFilter();
+  const [isActive, setIsActive] = useState<boolean>(customer.isActive);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { organisation } = useParams();
 
+  async function onActivate(customerId: number, active: boolean) {
+    if (isLoading) return;
+    setIsLoading(true);
+    setIsActive(active);
+    try {
+      const response = await fetch(
+        `/${organisation}/kunder/api?customerId=${customerId}&activate=${active}`,
+        {
+          method: "PUT",
+        },
+      );
+      if (response.status !== 200) {
+        setIsActive(!active);
+      }
+    } catch {
+      setIsActive(!active);
+    } finally {
+      setIsLoading(false);
+    }
+  }
   return (
     <div className="main p-4 pt-5 w-full flex flex-col gap-8">
-      <h1>{customer?.customerName}</h1>
+      <div className="flex flex-row justify-between">
+        <h1>{customer?.customerName}</h1>
+        <ActivateButton
+          onClick={() => onActivate(customer.customerId, !customer.isActive)}
+          mode={isActive ? "deactivate" : "activate"}
+        >
+          {isActive ? "Deaktiver" : "Aktiver"}
+        </ActivateButton>
+      </div>
 
       <div className="flex flex-row justify-between">
         <div className="h-4">

@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using Core.Agreements;
 using Core.Engagements;
@@ -13,10 +14,9 @@ public class Customer
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; init; }
     public required string Name { get; set; }
+    public required Organization Organization { get; set; }
+    public required List<Engagement> Projects { get; set; }
 
-    public ICollection<Agreement> Agreements { get; init; } = new List<Agreement>();
-    public required List<Engagement> Projects { get; init; }
+    public bool IsActive { get; set; } = true;
 
-    public required string OrganizationId { get; init; }
-    public required Organization Organization { get; init; }
 }

@@ -1,6 +1,6 @@
 import { EngagementPerCustomerReadModel, EngagementState } from "@/api-types";
 import { fetchWithToken } from "@/data/apiCallsWithToken";
-import { CustomerFilterProvider } from "@/hooks/CustomerFilterProvider";
+import { CustomerFilterProvider } from "@/hooks/CustomerFilter/CustomerFilterProvider";
 import { CustomerContent } from "@/pagecontent/CustomerContent";
 import { Metadata } from "next";
 
@@ -28,7 +28,7 @@ export default async function Kunder({
 
   return (
     <CustomerFilterProvider customers={customers}>
-      <CustomerContent customers={customers} absence={absence} />
+      <CustomerContent absence={absence} />
     </CustomerFilterProvider>
   );
 }

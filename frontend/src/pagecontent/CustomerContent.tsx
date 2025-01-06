@@ -1,14 +1,12 @@
 "use client";
 import { EngagementPerCustomerReadModel } from "@/api-types";
-import CustomerSidebarWithFilters from "@/components/CostumerTable/CustomerSidebarWithFilters";
-import CustomerRow from "@/components/CostumerTable/CustomerRow";
-import { FilteredCustomerTable } from "@/components/CostumerTable/FilteredCustomersTable";
+import CustomerSidebarWithFilters from "@/components/CustomerTable/CustomerSidebarWithFilters";
+import CustomerRow from "@/components/CustomerTable/CustomerRow";
+import { FilteredCustomerTable } from "@/components/CustomerTable/FilteredCustomersTable";
 
 export function CustomerContent({
-  customers,
   absence,
 }: {
-  customers: EngagementPerCustomerReadModel[];
   absence: EngagementPerCustomerReadModel[];
 }) {
   return (

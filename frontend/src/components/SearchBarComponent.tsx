@@ -7,9 +7,11 @@ import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 export default function SearchBarComponent({
   hidden = false,
   context,
+  placeholder,
 }: {
   hidden?: boolean;
   context: Context<any>;
+  placeholder: string;
 }) {
   const { setNameSearch, activeNameSearch } = useNameSearch(context);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -60,7 +62,7 @@ export default function SearchBarComponent({
             <Search className="text-primary h-6 w-6" />
 
             <input
-              placeholder="Søk etter konsulent"
+              placeholder={placeholder}
               id="consultantSearch"
               className="input w-[131px] bg-white focus:outline-none small"
               onChange={(e) => setNameSearch(e.target.value)}

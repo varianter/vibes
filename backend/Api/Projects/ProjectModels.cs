@@ -1,18 +1,23 @@
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.InteropServices;
+using Core.Customers;
 using Core.Engagements;
 
 namespace Api.Projects;
 
 public record EngagementPerCustomerReadModel(
-    [property: Required] int CustomerId,
-    [property: Required] string CustomerName,
-    [property: Required] List<EngagementReadModel> Engagements);
+    int CustomerId,
+    string CustomerName,
+    bool IsActive,
+    List<EngagementReadModel> Engagements);
+
+
 
 public record EngagementReadModel(
-    [property: Required] int EngagementId,
-    [property: Required] string EngagementName,
-    [property: Required] EngagementState BookingType,
-    [property: Required] bool IsBillable);
+    int EngagementId,
+    string EngagementName,
+    EngagementState BookingType,
+    bool IsBillable);
 
 public record EngagementWriteModel(
     EngagementState BookingType,
@@ -43,7 +48,8 @@ public record UpdateProjectWriteModel(
 public record UpdateEngagementNameWriteModel(int EngagementId, string EngagementName);
 
 public record CustomersWithProjectsReadModel(
-    [property: Required] int CustomerId,
-    [property: Required] string CustomerName,
-    [property: Required] List<EngagementReadModel> ActiveEngagements,
-    [property: Required] List<EngagementReadModel> InactiveEngagements);
+    int CustomerId,
+    string CustomerName,
+    bool IsActive,
+    List<EngagementReadModel> ActiveEngagements,
+    List<EngagementReadModel> InactiveEngagements);
