@@ -23,7 +23,7 @@ public class AgreementController(
     
 
     [HttpGet]
-    [Route("get/{agreementId:int}")]
+    [Route("{agreementId:int}")]
     public async Task<ActionResult<AgreementReadModel>> GetAgreement([FromRoute] string orgUrlKey,
         [FromRoute] int agreementId, CancellationToken ct)
     {
@@ -52,7 +52,7 @@ public class AgreementController(
     }
 
     [HttpGet]
-    [Route("get/engagement/{engagementId:int}")]
+    [Route("engagement/{engagementId:int}")]
     public async Task<ActionResult<List<AgreementReadModel>>> GetAgreementsByEngagement([FromRoute] string orgUrlKey,
         [FromRoute] int engagementId, CancellationToken ct)
     {
@@ -80,7 +80,7 @@ public class AgreementController(
     }
 
     [HttpGet]
-    [Route("get/customer/{customerId:int}")]
+    [Route("customer/{customerId:int}")]
     public async Task<ActionResult<List<AgreementReadModel>>> GetAgreementsByCustomer([FromRoute] string orgUrlKey,
         [FromRoute] int customerId, CancellationToken ct)
     {
@@ -108,7 +108,6 @@ public class AgreementController(
     }
 
     [HttpPost]
-    [Route("create")]
     public async Task<ActionResult<AgreementReadModel>> Post([FromRoute] string orgUrlKey,
         [FromBody] AgreementWriteModel body, CancellationToken cancellationToken)
     {
@@ -190,7 +189,7 @@ public class AgreementController(
     }
 
     [HttpPut]
-    [Route("update/{agreementId:int}")]
+    [Route("{agreementId:int}")]
     public async Task<ActionResult<AgreementReadModel>> Put([FromRoute] string orgUrlKey,
         [FromRoute] int agreementId, [FromBody] AgreementWriteModel body, CancellationToken cancellationToken)
     {
@@ -283,7 +282,7 @@ public class AgreementController(
     }
 
     [HttpDelete]
-    [Route("delete/{agreementId:int}")]
+    [Route("{agreementId:int}")]
     public async Task<ActionResult> Delete([FromRoute] string orgUrlKey, [FromRoute] int agreementId, CancellationToken ct)
     {
         var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
