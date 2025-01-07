@@ -277,7 +277,7 @@ export interface WeeklyBookingReadModel {
   /** @format double */
   totalOverbooking: number;
   /** @format double */
-  totalExludableAbsence: number;
+  totalExcludableAbsence: number;
   /** @format double */
   totalNotStartedOrQuit: number;
 }
