@@ -3,6 +3,7 @@ import { fetchWithToken } from "@/data/apiCallsWithToken";
 import { CustomerFilterProvider } from "@/hooks/CustomerFilter/CustomerFilterProvider";
 import { CustomerContent } from "@/pagecontent/CustomerContent";
 import { Metadata } from "next";
+import WeekToMonth from "./weekToMonthConverter";
 
 export const metadata: Metadata = {
   title: "Kunder | VIBES",
@@ -25,6 +26,7 @@ export default async function Kunder({
   const absence = customersWAbsence.filter(
     (c) => c.engagements.at(0)?.bookingType == EngagementState.Absence,
   );
+  WeekToMonth();
 
   return (
     <CustomerFilterProvider customers={customers}>
