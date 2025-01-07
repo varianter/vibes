@@ -103,7 +103,7 @@ public class ReadModelFactory(StorageService storageService)
                     grouping.First().Engagement.Agreements.Select(a => (DateTime?)a.EndDate).DefaultIfEmpty(null).Max()),
                 weekSet.Select(week =>
                     new WeeklyHours(
-                        week, grouping
+                        week.ToSortableInt(), grouping
                             .Where(staffing => staffing.Week.Equals(week))
                             .Sum(staffing => staffing.Hours))
                 ).ToList()
@@ -120,7 +120,7 @@ public class ReadModelFactory(StorageService storageService)
                     grouping.First().Engagement.Agreements.Select(a => (DateTime?)a.EndDate).DefaultIfEmpty(null).Max()),
                 weekSet.Select(week =>
                     new WeeklyHours(
-                        week,
+                        week.ToSortableInt(),
                         grouping
                             .Where(staffing =>
                                 staffing.Week.Equals(week))
@@ -137,7 +137,7 @@ public class ReadModelFactory(StorageService storageService)
                     grouping.First().Absence.ExcludeFromBillRate),
                 weekSet.Select(week =>
                     new WeeklyHours(
-                        week,
+                        week.ToSortableInt(),
                         grouping
                             .Where(absence =>
                                 absence.Week.Equals(week))
@@ -155,7 +155,7 @@ public class ReadModelFactory(StorageService storageService)
         if (vacationsInSet.Count > 0)
         {
             var vacationsPrWeek = weekSet.Select(week => new WeeklyHours(
-                week,
+                week.ToSortableInt(),
                 vacationsInSet.Count(vacation => week.ContainsDate(vacation.Date)) *
                 consultant.Department.Organization.HoursPerWorkday
             )).ToList();
@@ -206,7 +206,7 @@ public class ReadModelFactory(StorageService storageService)
                     : GetNonEmployedHoursForWeekWhenStarting(date, week, isTargetWeek, consultant);
 
                 return new WeeklyHours(
-                    week, Math.Min(hoursOutsideEmployment, maxWorkHoursForWeek)
+                    week.ToSortableInt(), Math.Min(hoursOutsideEmployment, maxWorkHoursForWeek)
                 );
             })
             .ToList();
@@ -297,7 +297,9 @@ public class ReadModelFactory(StorageService storageService)
             Math.Max(bookedTime - hoursPrWorkDay * 5, 0);
 
         return new BookedHoursPerWeek(
-            week,
+            week.Year,
+            week.WeekNumber,
+            week.ToSortableInt(),
             GetDatesForWeek(week),
             new WeeklyBookingReadModel(totalBillable, totalOffered, totalAbsence, totalExcludableAbsence,
                 totalSellableTime,

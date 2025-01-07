@@ -1,14 +1,49 @@
 "use client";
-import ConsultantRows from "./Staffing/ConsultantRow";
+
 import { isCurrentWeek } from "@/hooks/staffing/dateTools";
 import { useConsultantsFilter } from "@/hooks/staffing/useConsultantsFilter";
-import InfoPill from "./Staffing/InfoPill";
+import InfoPill from "../Staffing/InfoPill";
 import { Calendar } from "react-feather";
-import StaffingSums from "./StaffingSums";
 import React, { useContext } from "react";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
+import ForecastRows from "./ForecastRows";
+import { MockConsultants } from "../../../mockdata/mockData";
 
-export default function StaffingTable() {
+const months = [
+  "Januar",
+  "Februar",
+  "Mars",
+  "April",
+  "Mai",
+  "Juni",
+  "Juli",
+  "August",
+  "September",
+  "Oktober",
+  "November",
+  "Desember",
+];
+const monthsShort = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "Mai",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Okt",
+  "Nov",
+  "Des",
+];
+function mapMonthToNumber(month: string) {
+  return monthsShort.indexOf(month);
+}
+function isCurrentMonth(month: number) {
+  return month === 0;
+}
+export default function ForecastTable() {
   const {
     numWorkHours,
     filteredConsultants,
@@ -20,15 +55,7 @@ export default function StaffingTable() {
   const { weekSpan } = useContext(FilteredContext).activeFilters;
 
   return (
-    <table
-      className={`w-full ${
-        weekSpan > 23
-          ? "min-w-[1400px]"
-          : weekSpan > 11
-          ? "min-w-[850px]"
-          : "min-w-[700px]"
-      } table-fixed`}
-    >
+    <table className={`w-full table-fixed`}>
       <colgroup>
         <col span={1} className="w-14" />
         <col span={1} className="w-[190px]" />
@@ -46,12 +73,12 @@ export default function StaffingTable() {
               </p>
             </div>
           </th>
-          {filteredConsultants.at(0)?.bookings?.map((booking) => (
-            <th key={booking.weekNumber} className=" px-2 py-1 pt-3 ">
+          {monthsShort.map((month) => (
+            <th key={month} className=" px-2 py-1 pt-3 ">
               <div className="flex flex-col gap-1">
-                {isCurrentWeek(booking.weekNumber, booking.year) ? (
+                {isCurrentMonth(mapMonthToNumber(month)) ? (
                   <div className="flex flex-row gap-2 items-center justify-end">
-                    {booking.bookingModel.totalHolidayHours > 0 && (
+                    {/* {booking.bookingModel.totalHolidayHours > 0 && (
                       <InfoPill
                         text={booking.bookingModel.totalHolidayHours.toLocaleString(
                           "nb-No",
@@ -64,12 +91,10 @@ export default function StaffingTable() {
                         colors={"bg-holiday text-holiday_darker w-fit"}
                         variant={weekSpan < 24 ? "wide" : "medium"}
                       />
-                    )}
+                    )} */}
                     <div className="h-2 w-2 rounded-full bg-primary" />
 
-                    <p className="normal-medium text-right">
-                      {booking.weekNumber}
-                    </p>
+                    <p className="normal-medium text-right">{month}</p>
                   </div>
                 ) : (
                   <div
@@ -79,7 +104,7 @@ export default function StaffingTable() {
                         : "flex-row gap-2"
                     }`}
                   >
-                    {booking.bookingModel.totalHolidayHours > 0 && (
+                    {/*  {booking.bookingModel.totalHolidayHours > 0 && (
                       <InfoPill
                         text={booking.bookingModel.totalHolidayHours.toLocaleString(
                           "nb-No",
@@ -92,37 +117,24 @@ export default function StaffingTable() {
                         colors={"bg-holiday text-holiday_darker w-fit"}
                         variant={weekSpan < 24 ? "wide" : "medium"}
                       />
-                    )}
-                    <p className="normal text-right">{booking.weekNumber}</p>
+                    )} */}
+                    <p className="normal text-right">{month}</p>
                   </div>
                 )}
-
-                <p
-                  className={`xsmall text-black/75 text-right ${
-                    weekSpan >= 26 && "hidden"
-                  }`}
-                >
-                  {booking.dateString}
-                </p>
               </div>
             </th>
           ))}
         </tr>
       </thead>
       <tbody>
-        {filteredConsultants.map((consultant) => (
-          <ConsultantRows
+        {MockConsultants.map((consultant) => (
+          <ForecastRows
             key={consultant.id}
             consultant={consultant}
             numWorkHours={numWorkHours}
           />
         ))}
       </tbody>
-      <StaffingSums
-        weeklyTotalBillable={weeklyTotalBillable}
-        weeklyTotalBillableAndOffered={weeklyTotalBillableAndOffered}
-        weeklyInvoiceRates={weeklyInvoiceRates}
-      />
     </table>
   );
 }

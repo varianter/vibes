@@ -63,6 +63,16 @@ export interface ConsultantReadModel {
   isOccupied: boolean;
   imageUrl?: string;
   imageThumbUrl?: string;
+  forecasts?: Forecast[];
+}
+
+export interface Forecast {
+  id: number;
+  month: number;
+  year: number;
+  forecastValue: number;
+  hasBeenChanged: boolean;
+  valueAddedManually: number;
 }
 
 export interface ConsultantWriteModel {
@@ -277,7 +287,7 @@ export interface WeeklyBookingReadModel {
   /** @format double */
   totalOverbooking: number;
   /** @format double */
-  totalExludableAbsence: number;
+  totalExcludableAbsence: number;
   /** @format double */
   totalNotStartedOrQuit: number;
 }
