@@ -18,7 +18,6 @@ export default function StaffingTable() {
   } = useConsultantsFilter();
 
   const { weekSpan } = useContext(FilteredContext).activeFilters;
-  console.log(filteredConsultants);
 
   return (
     <table
