@@ -8,6 +8,7 @@ import IconActionButton from "@/components/Buttons/IconActionButton";
 import { Filter } from "react-feather";
 import ActiveFilters from "@/components/ActiveFilters";
 import WeekSelection from "@/components/WeekSelection";
+import ForecastTable from "@/components/Forecast/ForecastTable";
 
 export function ForecastContent() {
   const [isSideBarOpen, setIsSidebarOpen] = useState<boolean>(false);
@@ -34,6 +35,7 @@ export function ForecastContent() {
 
           <WeekSelection />
         </div>
+        <ForecastTable />
         <InfoPillDescriptions />
       </div>
     </>
