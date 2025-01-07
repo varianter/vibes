@@ -63,6 +63,16 @@ export interface ConsultantReadModel {
   isOccupied: boolean;
   imageUrl?: string;
   imageThumbUrl?: string;
+  forecasts?: Forecast[];
+}
+
+export interface Forecast {
+  id: number;
+  month: number;
+  year: number;
+  forecastValue: number;
+  hasBeenChanged: boolean;
+  valueAddedManually: number;
 }
 
 export interface ConsultantWriteModel {
