@@ -54,7 +54,9 @@ public record CompetenceReadModel(
 }
 
 public record BookedHoursPerWeek(
-    Week Week,
+    int Year,
+    int WeekNumber,
+    int SortableWeek,
     string DateString,
     WeeklyBookingReadModel BookingModel);
 
@@ -64,7 +66,7 @@ public record DetailedBooking(
 {
     public double TotalHoursForWeek(Week week)
     {
-        return Hours.Where(weeklySum => weeklySum.Week == week).Sum(weeklyHours => weeklyHours.Hours);
+        return Hours.Where(weeklySum => weeklySum.Week == week.ToSortableInt()).Sum(weeklyHours => weeklyHours.Hours);
     }
 
     internal static double GetTotalHoursPrBookingTypeAndWeek(IEnumerable<DetailedBooking> list, BookingType type,
@@ -98,7 +100,7 @@ public record BookingDetails(
     bool IsBillable = false,
     DateTime? EndDateAgreement = null);
 
-public record WeeklyHours(Week Week, double Hours);
+public record WeeklyHours(int Week, double Hours);
 
 public enum BookingType
 {

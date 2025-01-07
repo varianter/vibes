@@ -283,7 +283,7 @@ function setWeeklyInvoiceRate(
           let consultantAvailableWeekHours =
             numWorkHours -
             booking.bookingModel.totalHolidayHours -
-            booking.bookingModel.totalExludableAbsence -
+            booking.bookingModel.totalExcludableAbsence -
             booking.bookingModel.totalNotStartedOrQuit -
             booking.bookingModel.totalVacationHours;
 
