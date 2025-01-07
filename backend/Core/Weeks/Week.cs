@@ -8,10 +8,11 @@ public sealed class Week(int year, int weekNumber) : IComparable<Week>, IEquatab
     public readonly int WeekNumber = weekNumber;
     public struct MonthsOfWeek
     {
-        public int month { get; init; }
-        public int? secondMonth { get; init; }
-        public int distribution { get; init; }
+        public int Month { get; init; }
+        public int? SecondMonth { get; init; }
+        public int Distribution { get; init; }
     }
+
 
     public static Week FromInt(int weekAsInt)
     {
@@ -175,18 +176,19 @@ public sealed class Week(int year, int weekNumber) : IComparable<Week>, IEquatab
         return FromDateOnly(day).Equals(this);
     }
 
-    public static getMonthOfWeek(Week week)
+    public static MonthsOfWeek GetMonthOfWeek(Week week)
     {
-        int daysFromStartOfYear = 1 + (WeekNumber - 1) * 7;
-        var dayOfWeek = new DateOnly(Year, 0, 1).AddDays(daysFromStartOfYear - 1)
-        var monday = GetPreviousOrCurrentMonday(dayOfWeek)
-        int month = monday.Month
+        int daysFromStartOfYear = 1 + (week.WeekNumber - 1) * 7;
+        var dayOfWeek = new DateOnly(week.Year, 1, 1).AddDays(daysFromStartOfYear - 1); // Adjust start of year to the calculated day
+        var monday = GetPreviousOrCurrentMonday(dayOfWeek);
+        int month = monday.Month;
 
-        int distribution: int = 100;
+        double distribution = 100;
         int? secondMonth = null;
+
         for (int i = 1; i < 7; i++)
         {
-            const addedDayDate = monday.AddDays(i);
+            var addedDayDate = monday.AddDays(i);
             if (addedDayDate.Month != month)
             {
                 distribution = (distribution / 7) * i;
@@ -194,7 +196,13 @@ public sealed class Week(int year, int weekNumber) : IComparable<Week>, IEquatab
                 break;
             }
         }
-        return new MonthsOfWeek(month, secondMonth, distribution)
+
+        return new MonthsOfWeek
+        {
+            Month = month,
+            SecondMonth = secondMonth,
+            Distribution = (int)distribution
+        };
     }
     static DateOnly GetPreviousOrCurrentMonday(DateOnly date)
     {
