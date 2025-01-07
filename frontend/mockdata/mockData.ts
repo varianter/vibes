@@ -16,7 +16,7 @@ const MockWeeklyBookingReadModel: WeeklyBookingReadModel = {
   totalBillable: 0,
   totalOffered: 0,
   totalVacationHours: 0,
-  totalExludableAbsence: 0,
+  totalExcludableAbsence: 0,
   totalNotStartedOrQuit: 0,
 };
 

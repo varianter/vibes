@@ -171,6 +171,9 @@ public sealed class Week(int year, int weekNumber) : IComparable<Week>, IEquatab
 
     public static bool operator ==(Week left, Week right)
     {
+        if (ReferenceEquals(left, right)) return true;
+        if (ReferenceEquals(left, null)) return false;
+        if (ReferenceEquals(right, null)) return false;
         return left.Year == right.Year && left.WeekNumber == right.WeekNumber;
     }
 
