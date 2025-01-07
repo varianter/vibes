@@ -6,6 +6,12 @@ public sealed class Week(int year, int weekNumber) : IComparable<Week>, IEquatab
 {
     public readonly int Year = year;
     public readonly int WeekNumber = weekNumber;
+    public struct MonthsOfWeek
+    {
+        public int month { get; init; }
+        public int? secondMonth { get; init; }
+        public int distribution { get; init; }
+    }
 
     public static Week FromInt(int weekAsInt)
     {
@@ -167,6 +173,37 @@ public sealed class Week(int year, int weekNumber) : IComparable<Week>, IEquatab
     private bool DateIsInWeek(DateOnly day)
     {
         return FromDateOnly(day).Equals(this);
+    }
+
+    public static getMonthOfWeek(Week week)
+    {
+        int daysFromStartOfYear = 1 + (WeekNumber - 1) * 7;
+        var dayOfWeek = new DateOnly(Year, 0, 1).AddDays(daysFromStartOfYear - 1)
+        var monday = GetPreviousOrCurrentMonday(dayOfWeek)
+        int month = monday.Month
+
+        int distribution: int = 100;
+        int? secondMonth = null;
+        for (int i = 1; i < 7; i++)
+        {
+            const addedDayDate = monday.AddDays(i);
+            if (addedDayDate.Month != month)
+            {
+                distribution = (distribution / 7) * i;
+                secondMonth = addedDayDate.Month;
+                break;
+            }
+        }
+        return new MonthsOfWeek(month, secondMonth, distribution)
+    }
+    static DateOnly GetPreviousOrCurrentMonday(DateOnly date)
+    {
+        if (date.DayOfWeek == DayOfWeek.Monday)
+        {
+            return date;
+        }
+        int daysToSubtract = (date.DayOfWeek - DayOfWeek.Monday + 7) % 7;
+        return date.AddDays(-daysToSubtract);
     }
 
     public static bool operator ==(Week left, Week right)
