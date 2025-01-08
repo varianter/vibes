@@ -53,12 +53,4 @@ export default async function WeekToMonth() {
 
     return weekToMonthInstance;
   }
-
-  const test1 = 202522;
-  const test2 = 202505;
-  const test3 = 202509;
-  const test4 = 202514;
-  const tests = [test1, test2, test3, test4];
-  const res = tests.map((test) => getMonthOfWeek(weekToWeekType(test)));
-  console.log("results are: ", res);
 }
