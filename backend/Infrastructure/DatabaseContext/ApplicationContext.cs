@@ -10,10 +10,11 @@ using Core.Vacations;
 using Core.Weeks;
 using Infrastructure.ValueConverters;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Infrastructure.DatabaseContext;
 
-public class ApplicationContext(DbContextOptions options) : DbContext(options)
+public class ApplicationContext(IOptions<InfrastructureConfig> config) : DbContext
 {
     public DbSet<Consultant> Consultant { get; init; } = null!;
     public DbSet<Competence> Competence { get; init; } = null!;
@@ -28,6 +29,12 @@ public class ApplicationContext(DbContextOptions options) : DbContext(options)
     public DbSet<Staffing> Staffing { get; init; } = null!;
     public DbSet<Agreement> Agreements { get; init; } = null!;
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlServer(config.Value.ConnectionString)
+            .EnableSensitiveDataLogging(config.Value
+                .EnableSensitiveDataLogging);
+    }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
