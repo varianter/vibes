@@ -3,6 +3,7 @@ using Core.Agreements;
 using Core.Consultants;
 using Core.Customers;
 using Core.Engagements;
+using Core.Forecasts;
 using Core.Organizations;
 using Core.PlannedAbsences;
 using Core.Staffings;
@@ -27,6 +28,7 @@ public class ApplicationContext(DbContextOptions options) : DbContext(options)
     public DbSet<Engagement> Project { get; init; } = null!;
     public DbSet<Staffing> Staffing { get; init; } = null!;
     public DbSet<Agreement> Agreements { get; init; } = null!;
+    public DbSet<Forecast> Forecasts { get; init; } = null!;
 
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -201,6 +203,11 @@ public class ApplicationContext(DbContextOptions options) : DbContext(options)
             Degree = Degree.Master,
             GraduationYear = 2019
         });
+
+        modelBuilder.Entity<Forecast>()
+            .HasOne<Consultant>(f => f.Consultant)
+            .WithMany(c => c.Forecasts)
+            .HasForeignKey(f => f.ConsultantId);
 
         base.OnModelCreating(modelBuilder);
     }
