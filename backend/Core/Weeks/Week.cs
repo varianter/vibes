@@ -176,10 +176,10 @@ public sealed class Week(int year, int weekNumber) : IComparable<Week>, IEquatab
         return FromDateOnly(day).Equals(this);
     }
 
-    public static MonthsOfWeek GetMonthOfWeek(Week week)
+    public MonthsOfWeek GetMonthOfWeek()
     {
-        int daysFromStartOfYear = 1 + (week.WeekNumber - 1) * 7;
-        var dayOfWeek = new DateOnly(week.Year, 1, 1).AddDays(daysFromStartOfYear - 1); // Adjust start of year to the calculated day
+        int daysFromStartOfYear = 1 + (WeekNumber - 1) * 7;
+        var dayOfWeek = new DateOnly(Year, 1, 1).AddDays(daysFromStartOfYear - 1); // Adjust start of year to the calculated day
         var monday = GetPreviousOrCurrentMonday(dayOfWeek);
         int month = monday.Month;
 
