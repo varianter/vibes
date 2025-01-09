@@ -121,6 +121,10 @@ public class ApplicationContext(DbContextOptions options) : DbContext(options)
             .WithOne(absence => absence.Consultant);
 
         modelBuilder.Entity<Consultant>()
+            .HasMany(c => c.Forecasts)
+            .WithOne(f => f.Consultant);
+
+        modelBuilder.Entity<Consultant>()
             .Property(v => v.Degree)
             .HasConversion<string>();
 
@@ -203,11 +207,6 @@ public class ApplicationContext(DbContextOptions options) : DbContext(options)
             Degree = Degree.Master,
             GraduationYear = 2019
         });
-
-        modelBuilder.Entity<Forecast>()
-            .HasOne<Consultant>(f => f.Consultant)
-            .WithMany(c => c.Forecasts)
-            .HasForeignKey(f => f.ConsultantId);
 
         base.OnModelCreating(modelBuilder);
     }

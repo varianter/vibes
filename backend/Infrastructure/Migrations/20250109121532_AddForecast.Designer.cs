@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20250108122732_AddForecast")]
+    [Migration("20250109121532_AddForecast")]
     partial class AddForecast
     {
         /// <inheritdoc />
@@ -283,9 +283,6 @@ namespace Infrastructure.Migrations
 
                     b.Property<DateTime>("MonthYear")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("OriginalValue")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
