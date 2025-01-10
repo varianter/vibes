@@ -42,13 +42,14 @@ export function HoveredMonth(props: {
   const detailedBookings = transformDetailedBookingToMonthlyData(
     consultant.detailedBooking,
   );
-
   const nonZeroHoursDetailedBookings = detailedBookings.filter(
     (d) => !isMonthBookingZeroHours(d, hoveredRowMonth),
   );
 
   const freeTime = bookings.find((b) => b.month == hoveredRowMonth)
     ?.bookingModel.totalSellableTime;
+  console.log("freeTime", freeTime);
+  console.log(consultant.bookings);
   if (freeTime && freeTime > 0) {
     nonZeroHoursDetailedBookings.push({
       bookingDetails: {
@@ -62,8 +63,8 @@ export function HoveredMonth(props: {
         {
           month: hoveredRowMonth,
           hours:
-            consultant.bookings.find((b) => b.weekNumber == hoveredRowMonth)
-              ?.bookingModel.totalSellableTime || 0,
+            bookings.find((b) => b.month == hoveredRowMonth)?.bookingModel
+              .totalSellableTime || 0,
         },
       ],
     });

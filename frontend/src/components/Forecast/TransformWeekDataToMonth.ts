@@ -8,10 +8,9 @@ import {
   WeeklyBookingReadModel,
 } from "@/api-types";
 import { getMonthOfWeek, weekToWeekType } from "./WeekToMonthConverter";
-import { add } from "lodash";
 
 function round2Decimals(num: number) {
-  return Math.round(num * 100) / 100;
+  return Math.round(num * 2) / 2;
 }
 function transformToMonthlyData(weeklyData: BookedHoursPerWeek[]) {
   const monthlyData: { [key: string]: BookedHoursPerMonth } = {};
@@ -118,7 +117,7 @@ function transformDetailedBookingToMonthlyData(
           hours: 0,
         };
       }
-      monthlyHours[monthLabel].hours += hours * distribution;
+      monthlyHours[monthLabel].hours += round2Decimals(hours * distribution);
     }
     hours.forEach((weekhour) => {
       const { week, hours } = weekhour;
@@ -137,12 +136,11 @@ function transformDetailedBookingToMonthlyData(
               monthDistribution.secondMonth
             }`
           : null;
-      const primaryDistribution = round2Decimals(
-        monthDistribution.distribution / 100,
-      );
+      const primaryDistribution = monthDistribution.distribution / 100;
       const secondaryDistribution = secondaryMonthKey
-        ? round2Decimals((100 - monthDistribution.distribution) / 100)
+        ? (100 - monthDistribution.distribution) / 100
         : 0;
+
       addToMonthlyHours(primaryMonthKey, hours, primaryDistribution);
       if (secondaryMonthKey) {
         addToMonthlyHours(secondaryMonthKey, hours, secondaryDistribution);
