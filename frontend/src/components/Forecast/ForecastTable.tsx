@@ -7,7 +7,7 @@ import { Calendar } from "react-feather";
 import React, { useContext } from "react";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import ForecastRows from "./ForecastRows";
-import { MockConsultants } from "../../../mockdata/mockData";
+import { MockConsultantsForForecast } from "../../../mockdata/mockData";
 
 const months = [
   "Januar",
@@ -127,7 +127,7 @@ export default function ForecastTable() {
         </tr>
       </thead>
       <tbody>
-        {MockConsultants.map((consultant) => (
+        {MockConsultantsForForecast.map((consultant) => (
           <ForecastRows
             key={consultant.id}
             consultant={consultant}
