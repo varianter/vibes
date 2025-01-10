@@ -46,8 +46,6 @@ export function HoveredMonth(props: {
 
   const freeTime = bookings.find((b) => b.month == hoveredRowMonth)
     ?.bookingModel.totalSellableTime;
-  console.log("freeTime", freeTime);
-  console.log(consultant.bookings);
   if (freeTime && freeTime > 0) {
     nonZeroHoursDetailedBookings.push({
       bookingDetails: {

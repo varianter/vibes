@@ -26,10 +26,6 @@ export default function ConsultantRows({
   consultant: ConsultantReadModel;
   numWorkHours: number;
 }) {
-  if (consultant.bookings.length > 0 && consultant.name.startsWith("Adrian")) {
-    console.log("detailedBooking", consultant.detailedBooking);
-    console.log("bookings", consultant.bookings);
-  }
   const [currentConsultant, setCurrentConsultant] =
     useState<ConsultantReadModel>(consultant);
   const [isListElementVisible, setIsListElementVisible] = useState(false);
