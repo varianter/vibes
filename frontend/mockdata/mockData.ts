@@ -100,6 +100,38 @@ export const MockConsultants: ConsultantReadModel[] = [
       mockForecast6,
     ],
   },
+];
+
+export const MockConsultantsForForecast: ConsultantReadModel[] = [
+  {
+    id: 1,
+    name: "Test Consultant",
+    email: "test@company.io",
+    competences: [{ id: "development", name: "Utvikling" }],
+    department: { id: "mydepartment", name: "My Department" },
+    bookings: [
+      {
+        year: 2023,
+        weekNumber: 10,
+        dateString: "",
+        bookingModel: MockWeeklyBookingReadModel,
+        sortableWeek: 202310,
+      },
+    ],
+    yearsOfExperience: 23,
+    detailedBooking: [],
+    isOccupied: true,
+    graduationYear: 2010,
+    degree: Degree.Bachelor,
+    forecasts: [
+      mockForecast1,
+      mockForecast2,
+      mockForecast3,
+      mockForecast4,
+      mockForecast5,
+      mockForecast6,
+    ],
+  },
   {
     id: 2,
     name: "2test Consultant",

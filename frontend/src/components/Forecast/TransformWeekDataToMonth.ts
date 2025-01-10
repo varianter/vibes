@@ -76,7 +76,6 @@ function transformToMonthlyData(weeklyData: BookedHoursPerWeek[]) {
       addToMonthlyData(secondaryMonthKey, secondaryBookingModel!);
     }
   });
-  console.log("monthlyData", Object.values(monthlyData));
   return Object.values(monthlyData);
 }
 
