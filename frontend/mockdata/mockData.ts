@@ -17,7 +17,7 @@ const MockWeeklyBookingReadModel: WeeklyBookingReadModel = {
   totalSellableTime: 0,
   totalBillable: 0,
   totalOffered: 0,
-  totalVacationHours: 10,
+  totalVacationHours: 0,
   totalExcludableAbsence: 0,
   totalNotStartedOrQuit: 0,
 };
@@ -79,11 +79,11 @@ export const MockConsultants: ConsultantReadModel[] = [
     department: { id: "mydepartment", name: "My Department" },
     bookings: [
       {
-        year: 2025,
-        weekNumber: 14,
+        year: 2023,
+        weekNumber: 10,
         dateString: "",
         bookingModel: MockWeeklyBookingReadModel,
-        sortableWeek: 202514,
+        sortableWeek: 202310,
       },
     ],
     yearsOfExperience: 23,

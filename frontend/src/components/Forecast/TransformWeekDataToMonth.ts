@@ -17,12 +17,12 @@ function transformToMonthlyData(weeklyData: BookedHoursPerWeek[]) {
     const { year, weekNumber, bookingModel } = week;
     const monthDistribution = getMonthOfWeek({ week: weekNumber, year: year });
     const primaryMonthKey = `${monthDistribution.year}-${String(
-      monthDistribution.month + 1,
+      monthDistribution.month,
     ).padStart(2, "0")}`;
     const secondaryMonthKey =
       monthDistribution.secondMonth !== undefined
         ? `${monthDistribution.year}-${String(
-            monthDistribution.secondMonth + 1,
+            monthDistribution.secondMonth,
           ).padStart(2, "0")}`
         : null;
 
@@ -76,6 +76,7 @@ function transformToMonthlyData(weeklyData: BookedHoursPerWeek[]) {
       addToMonthlyData(secondaryMonthKey, secondaryBookingModel!);
     }
   });
+  console.log("monthlyData", Object.values(monthlyData));
   return Object.values(monthlyData);
 }
 
