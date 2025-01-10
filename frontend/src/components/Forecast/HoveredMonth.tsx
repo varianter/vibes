@@ -2,32 +2,50 @@ import { BookingType, ConsultantReadModel } from "@/api-types";
 import {
   getColorByStaffingType,
   getIconByBookingType,
-  isWeekBookingZeroHours,
 } from "@/components/Staffing/helpers/utils";
+import React from "react";
+import {
+  transformDetailedBookingToMonthlyData,
+  transformToMonthlyData,
+} from "./TransformWeekDataToMonth";
+import { MonthlyDetailedBooking, MonthlyHours } from "@/types";
 
-export function HoveredWeek(props: {
-  hoveredRowWeek: number;
+function isMonthBookingZeroHours(
+  detailedBooking: MonthlyDetailedBooking,
+  hoveredRowMonth: number,
+): boolean {
+  return (
+    detailedBooking.hours.filter(
+      (monthHours) =>
+        monthHours.month % 100 == hoveredRowMonth && monthHours.hours != 0,
+    ).length == 0
+  );
+}
+export function HoveredMonth(props: {
+  hoveredRowMonth: number;
   consultant: ConsultantReadModel;
   isLastCol: boolean;
   isSecondLastCol: boolean;
   columnCount: number;
 }) {
   const {
-    hoveredRowWeek,
+    hoveredRowMonth: hoveredRowMonth,
     consultant,
     isLastCol,
     isSecondLastCol,
     columnCount,
   } = props;
 
-  const nonZeroHoursDetailedBookings = consultant.detailedBooking.filter(
-    (d) => !isWeekBookingZeroHours(d, hoveredRowWeek),
+  const bookings = transformToMonthlyData(consultant.bookings);
+  const detailedBookings = transformDetailedBookingToMonthlyData(
+    consultant.detailedBooking,
+  );
+  const nonZeroHoursDetailedBookings = detailedBookings.filter(
+    (d) => !isMonthBookingZeroHours(d, hoveredRowMonth),
   );
 
-  const freeTime = consultant.bookings.find(
-    (b) => b.weekNumber == hoveredRowWeek,
-  )?.bookingModel.totalSellableTime;
-
+  const freeTime = bookings.find((b) => b.month == hoveredRowMonth)
+    ?.bookingModel.totalSellableTime;
   if (freeTime && freeTime > 0) {
     nonZeroHoursDetailedBookings.push({
       bookingDetails: {
@@ -39,10 +57,10 @@ export function HoveredWeek(props: {
       },
       hours: [
         {
-          week: hoveredRowWeek,
+          month: hoveredRowMonth,
           hours:
-            consultant.bookings.find((b) => b.weekNumber == hoveredRowWeek)
-              ?.bookingModel.totalSellableTime || 0,
+            bookings.find((b) => b.month == hoveredRowMonth)?.bookingModel
+              .totalSellableTime || 0,
         },
       ],
     });
@@ -94,7 +112,7 @@ export function HoveredWeek(props: {
             <p className="small text-black/75">
               {
                 detailedBooking.hours.find(
-                  (hour) => hour.week % 100 == hoveredRowWeek,
+                  (hour: MonthlyHours) => hour.month % 100 == hoveredRowMonth,
                 )?.hours
               }
             </p>
