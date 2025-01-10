@@ -1,4 +1,4 @@
-import { BookedHoursPerWeek, ConsultantReadModel } from "@/api-types";
+import { BookedHoursPerMonth, ConsultantReadModel } from "@/api-types";
 import { HoveredWeek } from "@/components/Staffing/HoveredWeek";
 import InfoPill from "@/components/Staffing/InfoPill";
 import {
@@ -12,8 +12,10 @@ import {
 import { getInfopillVariantByColumnCount } from "@/components/Staffing/helpers/utils";
 import React from "react";
 import { has } from "lodash";
+import { HoveredMonth } from "./HoveredMonth";
 
 export function MonthCell(props: {
+  bookedHoursPerMonth?: BookedHoursPerMonth;
   forecastValue: number;
   hasBeenEdited: boolean;
   consultant: ConsultantReadModel;
@@ -26,6 +28,7 @@ export function MonthCell(props: {
   numWorkHours: number;
 }) {
   const {
+    bookedHoursPerMonth: bookedHoursPerMonth,
     forecastValue,
     consultant,
     hasBeenEdited,
@@ -37,24 +40,25 @@ export function MonthCell(props: {
     isSecondLastCol,
     numWorkHours,
   } = props;
+  let pillNumber = 0;
 
-  /* let pillNumber = 0;
-
-  if (bookedHoursPerWeek.bookingModel.totalOffered > 0) {
-    pillNumber++;
+  if (bookedHoursPerMonth) {
+    if (bookedHoursPerMonth.bookingModel.totalOffered > 0) {
+      pillNumber++;
+    }
+    if (bookedHoursPerMonth.bookingModel.totalOverbooking > 0) {
+      pillNumber++;
+    }
+    if (bookedHoursPerMonth.bookingModel.totalPlannedAbsences > 0) {
+      pillNumber++;
+    }
+    if (bookedHoursPerMonth.bookingModel.totalVacationHours > 0) {
+      pillNumber++;
+    }
+    if (bookedHoursPerMonth.bookingModel.totalSellableTime > 0) {
+      pillNumber++;
+    }
   }
-  if (bookedHoursPerWeek.bookingModel.totalOverbooking > 0) {
-    pillNumber++;
-  }
-  if (bookedHoursPerWeek.bookingModel.totalPlannedAbsences > 0) {
-    pillNumber++;
-  }
-  if (bookedHoursPerWeek.bookingModel.totalVacationHours > 0) {
-    pillNumber++;
-  }
-  if (bookedHoursPerWeek.bookingModel.totalSellableTime > 0) {
-    pillNumber++;
-  } */
   const uneditable = forecastValue === 100;
   return (
     <td
@@ -67,110 +71,112 @@ export function MonthCell(props: {
         onMouseLeave={() => setHoveredRowWeek(-1)}
       >
         {hoveredRowWeek != -1 && hoveredRowWeek == month && (
-          <HoveredWeek
-            hoveredRowWeek={hoveredRowWeek}
+          <HoveredMonth
+            hoveredRowMonth={hoveredRowWeek}
             consultant={consultant}
             isLastCol={isLastCol}
             isSecondLastCol={isSecondLastCol}
             columnCount={columnCount}
           />
         )}
-        <div className="flex flex-row justify-end gap-1">
-          {/* {bookedHoursPerWeek.bookingModel.totalOffered > 0 && (
-            <InfoPill
-              text={bookedHoursPerWeek.bookingModel.totalOffered.toLocaleString(
-                "nb-No",
-                {
-                  maximumFractionDigits: 1,
-                  minimumFractionDigits: 0,
-                },
-              )}
-              colors="bg-offer text-primary_darker border-primary_darker"
-              icon={<FileText size="12" />}
-              variant={getInfopillVariantByColumnCount(columnCount)}
-            />
-          )}
-          {bookedHoursPerWeek.bookingModel.totalSellableTime > 0 &&
-            getInfopillVariantByColumnCount(columnCount) !== "narrow" && (
+        {bookedHoursPerMonth && (
+          <div className="flex flex-row justify-end gap-1">
+            {bookedHoursPerMonth.bookingModel.totalOffered > 0 && (
               <InfoPill
-                text={bookedHoursPerWeek.bookingModel.totalSellableTime.toLocaleString(
+                text={bookedHoursPerMonth.bookingModel.totalOffered.toLocaleString(
                   "nb-No",
                   {
                     maximumFractionDigits: 1,
                     minimumFractionDigits: 0,
                   },
                 )}
-                colors="bg-available text-available_darker border-available_darker"
-                icon={<Coffee size="12" />}
+                colors="bg-offer text-primary_darker border-primary_darker"
+                icon={<FileText size="12" />}
                 variant={getInfopillVariantByColumnCount(columnCount)}
               />
             )}
-          {bookedHoursPerWeek.bookingModel.totalVacationHours > 0 && (
-            <InfoPill
-              text={bookedHoursPerWeek.bookingModel.totalVacationHours.toLocaleString(
-                "nb-No",
-                {
-                  maximumFractionDigits: 1,
-                  minimumFractionDigits: 0,
-                },
+            {bookedHoursPerMonth.bookingModel.totalSellableTime > 0 &&
+              getInfopillVariantByColumnCount(columnCount) !== "narrow" && (
+                <InfoPill
+                  text={bookedHoursPerMonth.bookingModel.totalSellableTime.toLocaleString(
+                    "nb-No",
+                    {
+                      maximumFractionDigits: 1,
+                      minimumFractionDigits: 0,
+                    },
+                  )}
+                  colors="bg-available text-available_darker border-available_darker"
+                  icon={<Coffee size="12" />}
+                  variant={getInfopillVariantByColumnCount(columnCount)}
+                />
               )}
-              colors="bg-vacation text-vacation_darker border-vacation_darker"
-              icon={<Sun size="12" />}
-              variant={getInfopillVariantByColumnCount(columnCount)}
-            />
-          )}
-          {bookedHoursPerWeek.bookingModel.totalPlannedAbsences > 0 &&
-            getInfopillVariantByColumnCount(columnCount) !== "narrow" && (
+            {bookedHoursPerMonth.bookingModel.totalVacationHours > 0 && (
               <InfoPill
-                text={bookedHoursPerWeek.bookingModel.totalPlannedAbsences.toLocaleString(
+                text={bookedHoursPerMonth.bookingModel.totalVacationHours.toLocaleString(
                   "nb-No",
                   {
                     maximumFractionDigits: 1,
                     minimumFractionDigits: 0,
                   },
                 )}
-                colors="bg-absence text-absence_darker border-absence_darker"
-                icon={<Moon size="12" />}
+                colors="bg-vacation text-vacation_darker border-vacation_darker"
+                icon={<Sun size="12" />}
                 variant={getInfopillVariantByColumnCount(columnCount)}
               />
             )}
-          {bookedHoursPerWeek.bookingModel.totalOverbooking > 0 && (
-            <InfoPill
-              text={bookedHoursPerWeek.bookingModel.totalOverbooking.toLocaleString(
-                "nb-No",
-                {
-                  maximumFractionDigits: 1,
-                  minimumFractionDigits: 0,
-                },
+            {bookedHoursPerMonth.bookingModel.totalPlannedAbsences > 0 &&
+              getInfopillVariantByColumnCount(columnCount) !== "narrow" && (
+                <InfoPill
+                  text={bookedHoursPerMonth.bookingModel.totalPlannedAbsences.toLocaleString(
+                    "nb-No",
+                    {
+                      maximumFractionDigits: 1,
+                      minimumFractionDigits: 0,
+                    },
+                  )}
+                  colors="bg-absence text-absence_darker border-absence_darker"
+                  icon={<Moon size="12" />}
+                  variant={getInfopillVariantByColumnCount(columnCount)}
+                />
               )}
-              colors="bg-overbooked_darker text-white border-white"
-              icon={<AlertTriangle size="12" />}
-              variant={getInfopillVariantByColumnCount(columnCount)}
-            />
-          )}
-          {bookedHoursPerWeek.bookingModel.totalNotStartedOrQuit > 0 && (
-            <InfoPill
-              text={bookedHoursPerWeek.bookingModel.totalNotStartedOrQuit.toLocaleString(
-                "nb-No",
-                {
-                  maximumFractionDigits: 1,
-                  minimumFractionDigits: 0,
-                },
-              )}
-              colors="bg-absence/60 text-absence_darker border-absence_darker"
-              icon={<Calendar size="12" />}
-              variant={getInfopillVariantByColumnCount(columnCount)}
-            />
-          )} */}
-        </div>
+            {bookedHoursPerMonth.bookingModel.totalOverbooking > 0 && (
+              <InfoPill
+                text={bookedHoursPerMonth.bookingModel.totalOverbooking.toLocaleString(
+                  "nb-No",
+                  {
+                    maximumFractionDigits: 1,
+                    minimumFractionDigits: 0,
+                  },
+                )}
+                colors="bg-overbooked_darker text-white border-white"
+                icon={<AlertTriangle size="12" />}
+                variant={getInfopillVariantByColumnCount(columnCount)}
+              />
+            )}
+            {bookedHoursPerMonth.bookingModel.totalNotStartedOrQuit > 0 && (
+              <InfoPill
+                text={bookedHoursPerMonth.bookingModel.totalNotStartedOrQuit.toLocaleString(
+                  "nb-No",
+                  {
+                    maximumFractionDigits: 1,
+                    minimumFractionDigits: 0,
+                  },
+                )}
+                colors="bg-absence/60 text-absence_darker border-absence_darker"
+                icon={<Calendar size="12" />}
+                variant={getInfopillVariantByColumnCount(columnCount)}
+              />
+            )}
+          </div>
+        )}
         <p
           className={`text-right ${
             hasBeenEdited ? "normal-medium" : "normal"
           } ${uneditable ? "text-primary/60" : "text-primary"}`}
         >
-          {/*  {checkIfNotStartedOrQuit(consultant, bookedHoursPerWeek, numWorkHours)
+          {/*  {checkIfNotStartedOrQuit(consultant, bookedHoursPerMonth, numWorkHours)
             ? "-"
-            : bookedHoursPerWeek.bookingModel.totalBillable.toLocaleString(
+            : bookedHoursPerMonth.bookingModel.totalBillable.toLocaleString(
                 "nb-No",
               )} */}
           {`${forecastValue}%`}
@@ -182,14 +188,14 @@ export function MonthCell(props: {
 
 function checkIfNotStartedOrQuit(
   consultant: ConsultantReadModel,
-  bookedHoursPerWeek: BookedHoursPerWeek,
+  bookedHoursPerMonth: BookedHoursPerMonth,
   numWorkHours: number,
 ) {
   const notStartedOrQuitHours =
-    bookedHoursPerWeek.bookingModel.totalNotStartedOrQuit;
+    bookedHoursPerMonth.bookingModel.totalNotStartedOrQuit;
 
   return (
     notStartedOrQuitHours ==
-    numWorkHours - bookedHoursPerWeek.bookingModel.totalHolidayHours
+    numWorkHours - bookedHoursPerMonth.bookingModel.totalHolidayHours
   );
 }

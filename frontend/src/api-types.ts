@@ -20,7 +20,11 @@ export interface BookedHoursPerWeek {
   dateString: string;
   bookingModel: WeeklyBookingReadModel;
 }
-
+export interface BookedHoursPerMonth {
+  month: number;
+  year: number;
+  bookingModel: WeeklyBookingReadModel;
+}
 export interface BookingDetails {
   /** @minLength 1 */
   projectName: string;
@@ -131,6 +135,11 @@ export interface CompetenceReadModel {
 export interface DetailedBooking {
   bookingDetails: BookingDetails;
   hours: WeeklyHours[];
+}
+
+export interface MonthlyDetailedBooking {
+  bookingDetails: BookingDetails;
+  hours: MonthlyHours[];
 }
 
 export interface EngagementPerCustomerReadModel {
@@ -296,6 +305,11 @@ export interface WeeklyHours {
   /** @format int32 */
   week: number;
   /** @format double */
+  hours: number;
+}
+
+export interface MonthlyHours {
+  month: number;
   hours: number;
 }
 

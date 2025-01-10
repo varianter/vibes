@@ -1,5 +1,10 @@
 "use client";
-import { ConsultantReadModel, ProjectWithCustomerModel } from "@/api-types";
+import {
+  BookedHoursPerWeek,
+  ConsultantReadModel,
+  ProjectWithCustomerModel,
+  WeeklyBookingReadModel,
+} from "@/api-types";
 import React, { useContext, useEffect, useState } from "react";
 import { AlertCircle, CheckCircle, ChevronDown, Plus } from "react-feather";
 import { DetailedBookingRows } from "@/components/Staffing/DetailedBookingRows";
@@ -17,6 +22,16 @@ import { DateTime } from "luxon";
 import Image from "next/image";
 import { INTERNAL_CUSTOMER_NAME } from "../Staffing/helpers/utils";
 import { MonthCell } from "./MonthCell";
+import {
+  getMonthOfWeek,
+  MonthDistributionOfWeek,
+  weekToWeekType,
+} from "./WeekToMonthConverter";
+import { Month } from "date-fns";
+import {
+  bookingForMonth,
+  transformToMonthlyData,
+} from "./TransformWeekDataToMonth";
 
 export default function ForecastRows({
   consultant,
@@ -68,6 +83,7 @@ export default function ForecastRows({
   } = useModal({
     closeOnBackdropClick: false,
   });
+  const bookingsPerMonth = transformToMonthlyData(consultant.bookings);
 
   const [selectedProjectId, setSelectedProjectId] = useState<
     number | undefined
@@ -211,6 +227,11 @@ export default function ForecastRows({
         </td>
         {currentConsultant.forecasts?.map((b, index) => (
           <MonthCell
+            bookedHoursPerMonth={bookingForMonth(
+              bookingsPerMonth,
+              b.month,
+              b.year,
+            )}
             key={index}
             hasBeenEdited={b.hasBeenChanged}
             forecastValue={b.forecastValue + b.valueAddedManually}
