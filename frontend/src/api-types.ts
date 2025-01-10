@@ -9,6 +9,8 @@
  * ---------------------------------------------------------------
  */
 
+import { Forecast } from "./types";
+
 export interface BookedHoursPerWeek {
   /** @format int32 */
   year: number;
@@ -18,11 +20,6 @@ export interface BookedHoursPerWeek {
   sortableWeek: number;
   /** @minLength 1 */
   dateString: string;
-  bookingModel: WeeklyBookingReadModel;
-}
-export interface BookedHoursPerMonth {
-  month: number;
-  year: number;
   bookingModel: WeeklyBookingReadModel;
 }
 export interface BookingDetails {
@@ -68,15 +65,6 @@ export interface ConsultantReadModel {
   imageUrl?: string;
   imageThumbUrl?: string;
   forecasts?: Forecast[];
-}
-
-export interface Forecast {
-  id: number;
-  month: number;
-  year: number;
-  forecastValue: number;
-  hasBeenChanged: boolean;
-  valueAddedManually: number;
 }
 
 export interface ConsultantWriteModel {
@@ -135,11 +123,6 @@ export interface CompetenceReadModel {
 export interface DetailedBooking {
   bookingDetails: BookingDetails;
   hours: WeeklyHours[];
-}
-
-export interface MonthlyDetailedBooking {
-  bookingDetails: BookingDetails;
-  hours: MonthlyHours[];
 }
 
 export interface EngagementPerCustomerReadModel {
@@ -305,11 +288,6 @@ export interface WeeklyHours {
   /** @format int32 */
   week: number;
   /** @format double */
-  hours: number;
-}
-
-export interface MonthlyHours {
-  month: number;
   hours: number;
 }
 

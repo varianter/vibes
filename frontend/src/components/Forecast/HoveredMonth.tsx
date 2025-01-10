@@ -1,8 +1,4 @@
-import {
-  BookingType,
-  ConsultantReadModel,
-  MonthlyDetailedBooking,
-} from "@/api-types";
+import { BookingType, ConsultantReadModel } from "@/api-types";
 import {
   getColorByStaffingType,
   getIconByBookingType,
@@ -12,6 +8,8 @@ import {
   transformDetailedBookingToMonthlyData,
   transformToMonthlyData,
 } from "./TransformWeekDataToMonth";
+import { MonthlyDetailedBooking, MonthlyHours } from "@/types";
+
 function isMonthBookingZeroHours(
   detailedBooking: MonthlyDetailedBooking,
   hoveredRowMonth: number,
@@ -116,7 +114,7 @@ export function HoveredMonth(props: {
             <p className="small text-black/75">
               {
                 detailedBooking.hours.find(
-                  (hour) => hour.month % 100 == hoveredRowMonth,
+                  (hour: MonthlyHours) => hour.month % 100 == hoveredRowMonth,
                 )?.hours
               }
             </p>

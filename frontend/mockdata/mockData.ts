@@ -7,10 +7,10 @@ import {
   DepartmentReadModel,
   DetailedBooking,
   EngagementPerCustomerReadModel,
-  Forecast,
   OrganisationReadModel,
   WeeklyBookingReadModel,
 } from "@/api-types";
+import { Forecast } from "@/types";
 
 const MockWeeklyBookingReadModel: WeeklyBookingReadModel = {
   totalHolidayHours: 0,

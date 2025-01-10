@@ -1,13 +1,15 @@
 import {
-  BookedHoursPerMonth,
   BookedHoursPerWeek,
   BookingDetails,
   DetailedBooking,
-  MonthlyDetailedBooking,
-  MonthlyHours,
   WeeklyBookingReadModel,
 } from "@/api-types";
 import { getMonthOfWeek, weekToWeekType } from "./WeekToMonthConverter";
+import {
+  BookedHoursPerMonth,
+  MonthlyDetailedBooking,
+  MonthlyHours,
+} from "@/types";
 
 function round2Decimals(num: number) {
   return Math.round(num * 2) / 2;

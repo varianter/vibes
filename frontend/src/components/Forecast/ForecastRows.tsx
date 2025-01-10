@@ -1,14 +1,8 @@
 "use client";
-import {
-  BookedHoursPerWeek,
-  ConsultantReadModel,
-  ProjectWithCustomerModel,
-  WeeklyBookingReadModel,
-} from "@/api-types";
+import { ConsultantReadModel, ProjectWithCustomerModel } from "@/api-types";
 import React, { useContext, useEffect, useState } from "react";
-import { AlertCircle, CheckCircle, ChevronDown, Plus } from "react-feather";
+import { Plus } from "react-feather";
 import { DetailedBookingRows } from "@/components/Staffing/DetailedBookingRows";
-import { WeekCell } from "@/components/Staffing/WeekCell";
 import { useModal } from "@/hooks/useModal";
 import { usePathname } from "next/navigation";
 import {
@@ -20,14 +14,7 @@ import { setDetailedBookingHours } from "@/components/Staffing/DetailedBookingRo
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { DateTime } from "luxon";
 import Image from "next/image";
-import { INTERNAL_CUSTOMER_NAME } from "../Staffing/helpers/utils";
 import { MonthCell } from "./MonthCell";
-import {
-  getMonthOfWeek,
-  MonthDistributionOfWeek,
-  weekToWeekType,
-} from "./WeekToMonthConverter";
-import { Month } from "date-fns";
 import {
   bookingForMonth,
   transformToMonthlyData,

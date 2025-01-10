@@ -3,7 +3,6 @@ import {
   ConsultantReadModel,
   DetailedBooking,
   EngagementState,
-  MonthlyDetailedBooking,
 } from "@/api-types";
 import React, { ReactElement } from "react";
 import {

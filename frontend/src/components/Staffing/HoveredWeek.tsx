@@ -4,7 +4,6 @@ import {
   getIconByBookingType,
   isWeekBookingZeroHours,
 } from "@/components/Staffing/helpers/utils";
-import React from "react";
 
 export function HoveredWeek(props: {
   hoveredRowWeek: number;

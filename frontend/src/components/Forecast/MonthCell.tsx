@@ -1,5 +1,5 @@
-import { BookedHoursPerMonth, ConsultantReadModel } from "@/api-types";
-import { HoveredWeek } from "@/components/Staffing/HoveredWeek";
+import { ConsultantReadModel } from "@/api-types";
+import { BookedHoursPerMonth } from "@/types";
 import InfoPill from "@/components/Staffing/InfoPill";
 import {
   AlertTriangle,
