@@ -121,8 +121,7 @@ public class ApplicationContext(DbContextOptions options) : DbContext(options)
             .WithOne(absence => absence.Consultant);
 
         modelBuilder.Entity<Consultant>()
-            .HasMany(c => c.Forecasts)
-            .WithOne(f => f.Consultant);
+            .HasMany(c => c.Forecasts);
 
         modelBuilder.Entity<Consultant>()
             .Property(v => v.Degree)

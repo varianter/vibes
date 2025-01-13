@@ -545,13 +545,11 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Core.Forecasts.Forecast", b =>
                 {
-                    b.HasOne("Core.Consultants.Consultant", "Consultant")
+                    b.HasOne("Core.Consultants.Consultant", null)
                         .WithMany("Forecasts")
                         .HasForeignKey("ConsultantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Consultant");
                 });
 
             modelBuilder.Entity("Core.Organizations.Department", b =>

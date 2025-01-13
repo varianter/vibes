@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20250109121532_AddForecast")]
+    [Migration("20250113113825_AddForecast")]
     partial class AddForecast
     {
         /// <inheritdoc />
@@ -548,13 +548,11 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Core.Forecasts.Forecast", b =>
                 {
-                    b.HasOne("Core.Consultants.Consultant", "Consultant")
+                    b.HasOne("Core.Consultants.Consultant", null)
                         .WithMany("Forecasts")
                         .HasForeignKey("ConsultantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Consultant");
                 });
 
             modelBuilder.Entity("Core.Organizations.Department", b =>
