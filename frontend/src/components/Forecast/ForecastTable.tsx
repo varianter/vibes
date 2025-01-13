@@ -4,10 +4,13 @@ import { isCurrentWeek } from "@/hooks/staffing/dateTools";
 import { useConsultantsFilter } from "@/hooks/staffing/useConsultantsFilter";
 import InfoPill from "../Staffing/InfoPill";
 import { Calendar } from "react-feather";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import ForecastRows from "./ForecastRows";
 import { MockConsultantsForForecast } from "../../../mockdata/mockData";
+import { fetchPublicHolidays } from "@/hooks/fetchPublicHolidays";
+import { usePathname } from "next/navigation";
+import { getBusinessHoursPerMonth } from "./BusinessHoursPerMonth";
 
 const months = [
   "Januar",
@@ -37,6 +40,7 @@ const monthsShort = [
   "Nov",
   "Des",
 ];
+
 function mapMonthToNumber(month: string) {
   return monthsShort.indexOf(month);
 }
@@ -51,8 +55,19 @@ export default function ForecastTable() {
     weeklyTotalBillableAndOffered,
     weeklyInvoiceRates,
   } = useConsultantsFilter();
-
+  const [publicHolidays, setPublicHolidays] = useState<string[]>([]);
+  const organisationName = usePathname().split("/")[1];
   const { weekSpan } = useContext(FilteredContext).activeFilters;
+  const year = 2025;
+  useEffect(() => {
+    if (organisationName) {
+      fetchPublicHolidays(organisationName).then((res) => {
+        if (res) {
+          setPublicHolidays(res);
+        }
+      });
+    }
+  }, [organisationName]);
 
   return (
     <table className={`w-full table-fixed`}>
@@ -73,7 +88,7 @@ export default function ForecastTable() {
               </p>
             </div>
           </th>
-          {monthsShort.map((month) => (
+          {monthsShort.map((month, index) => (
             <th key={month} className=" px-2 py-1 pt-3 ">
               <div className="flex flex-col gap-1">
                 {isCurrentMonth(mapMonthToNumber(month)) ? (
@@ -121,6 +136,18 @@ export default function ForecastTable() {
                     <p className="normal text-right">{month}</p>
                   </div>
                 )}
+                <p className="flex justify-end xsmall">
+                  {publicHolidays.length > 0
+                    ? "" +
+                      getBusinessHoursPerMonth(
+                        index,
+                        year,
+                        numWorkHours,
+                        publicHolidays,
+                      ) +
+                      "t"
+                    : null}
+                </p>
               </div>
             </th>
           ))}
