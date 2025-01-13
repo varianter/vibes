@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20250113113825_AddForecast")]
+    [Migration("20250113140509_AddForecast")]
     partial class AddForecast
     {
         /// <inheritdoc />
@@ -269,24 +269,16 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Core.Forecasts.Forecast", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("ConsultantId")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<DateTime>("Month")
+                        .HasColumnType("datetime2");
 
                     b.Property<int?>("AdjustedValue")
                         .HasColumnType("int");
 
-                    b.Property<int>("ConsultantId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("MonthYear")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ConsultantId");
+                    b.HasKey("ConsultantId", "Month");
 
                     b.ToTable("Forecasts");
                 });

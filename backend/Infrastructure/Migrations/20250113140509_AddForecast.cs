@@ -15,15 +15,13 @@ namespace Infrastructure.Migrations
                 name: "Forecasts",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     ConsultantId = table.Column<int>(type: "int", nullable: false),
-                    MonthYear = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Month = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AdjustedValue = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Forecasts", x => x.Id);
+                    table.PrimaryKey("PK_Forecasts", x => new { x.ConsultantId, x.Month });
                     table.ForeignKey(
                         name: "FK_Forecasts_Consultant_ConsultantId",
                         column: x => x.ConsultantId,
@@ -31,11 +29,6 @@ namespace Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Forecasts_ConsultantId",
-                table: "Forecasts",
-                column: "ConsultantId");
         }
 
         /// <inheritdoc />

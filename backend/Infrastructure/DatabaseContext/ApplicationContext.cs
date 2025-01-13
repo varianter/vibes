@@ -121,7 +121,9 @@ public class ApplicationContext(DbContextOptions options) : DbContext(options)
             .WithOne(absence => absence.Consultant);
 
         modelBuilder.Entity<Consultant>()
-            .HasMany(c => c.Forecasts);
+            .HasMany(c => c.Forecasts)
+            .WithOne()
+            .HasForeignKey(f => f.ConsultantId);
 
         modelBuilder.Entity<Consultant>()
             .Property(v => v.Degree)
@@ -151,6 +153,9 @@ public class ApplicationContext(DbContextOptions options) : DbContext(options)
             .HasOne(us => us.Competence)
             .WithMany(s => s.CompetenceConsultant)
             .HasForeignKey(us => us.CompetencesId);
+
+        modelBuilder.Entity<Forecast>()
+            .HasKey(f => new ForecastKey(f.ConsultantId, f.Month));
 
         modelBuilder.Entity<Competence>().HasData(new List<Competence>
         {
