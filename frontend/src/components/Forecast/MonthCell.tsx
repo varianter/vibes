@@ -65,7 +65,7 @@ export function MonthCell(props: {
         )}
         {bookedHoursPerMonth && (
           <RenderInfoPills
-            bookedHoursPerMonth={bookedHoursPerMonth}
+            bookedHours={bookedHoursPerMonth}
             columnCount={columnCount}
           />
         )}

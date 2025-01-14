@@ -9,54 +9,52 @@ import {
   Sun,
 } from "react-feather";
 import { getInfopillVariantByColumnCount } from "./helpers/utils";
+import { BookedHoursPerWeek } from "@/api-types";
 
 export default function RenderInfoPills({
-  bookedHoursPerMonth,
+  bookedHours,
   columnCount,
 }: {
-  bookedHoursPerMonth: BookedHoursPerMonth;
+  bookedHours: BookedHoursPerMonth | BookedHoursPerWeek;
   columnCount: number;
 }) {
   let pillNumber = 0;
 
-  if (bookedHoursPerMonth) {
-    if (bookedHoursPerMonth.bookingModel.totalOffered > 0) {
+  if (bookedHours) {
+    if (bookedHours.bookingModel.totalOffered > 0) {
       pillNumber++;
     }
-    if (bookedHoursPerMonth.bookingModel.totalOverbooking > 0) {
+    if (bookedHours.bookingModel.totalOverbooking > 0) {
       pillNumber++;
     }
-    if (bookedHoursPerMonth.bookingModel.totalPlannedAbsences > 0) {
+    if (bookedHours.bookingModel.totalPlannedAbsences > 0) {
       pillNumber++;
     }
-    if (bookedHoursPerMonth.bookingModel.totalVacationHours > 0) {
+    if (bookedHours.bookingModel.totalVacationHours > 0) {
       pillNumber++;
     }
-    if (bookedHoursPerMonth.bookingModel.totalSellableTime > 0) {
+    if (bookedHours.bookingModel.totalSellableTime > 0) {
       pillNumber++;
     }
   }
 
   return (
     <div className="flex flex-row justify-end gap-1">
-      {bookedHoursPerMonth.bookingModel.totalOffered > 0 && (
+      {bookedHours.bookingModel.totalOffered > 0 && (
         <InfoPill
-          text={bookedHoursPerMonth.bookingModel.totalOffered.toLocaleString(
-            "nb-No",
-            {
-              maximumFractionDigits: 1,
-              minimumFractionDigits: 0,
-            },
-          )}
+          text={bookedHours.bookingModel.totalOffered.toLocaleString("nb-No", {
+            maximumFractionDigits: 1,
+            minimumFractionDigits: 0,
+          })}
           colors="bg-offer text-primary_darker border-primary_darker"
           icon={<FileText size="12" />}
           variant={getInfopillVariantByColumnCount(columnCount)}
         />
       )}
-      {bookedHoursPerMonth.bookingModel.totalSellableTime > 0 &&
+      {bookedHours.bookingModel.totalSellableTime > 0 &&
         getInfopillVariantByColumnCount(columnCount) !== "narrow" && (
           <InfoPill
-            text={bookedHoursPerMonth.bookingModel.totalSellableTime.toLocaleString(
+            text={bookedHours.bookingModel.totalSellableTime.toLocaleString(
               "nb-No",
               {
                 maximumFractionDigits: 1,
@@ -68,9 +66,9 @@ export default function RenderInfoPills({
             variant={getInfopillVariantByColumnCount(columnCount)}
           />
         )}
-      {bookedHoursPerMonth.bookingModel.totalVacationHours > 0 && (
+      {bookedHours.bookingModel.totalVacationHours > 0 && (
         <InfoPill
-          text={bookedHoursPerMonth.bookingModel.totalVacationHours.toLocaleString(
+          text={bookedHours.bookingModel.totalVacationHours.toLocaleString(
             "nb-No",
             {
               maximumFractionDigits: 1,
@@ -82,10 +80,10 @@ export default function RenderInfoPills({
           variant={getInfopillVariantByColumnCount(columnCount)}
         />
       )}
-      {bookedHoursPerMonth.bookingModel.totalPlannedAbsences > 0 &&
+      {bookedHours.bookingModel.totalPlannedAbsences > 0 &&
         getInfopillVariantByColumnCount(columnCount) !== "narrow" && (
           <InfoPill
-            text={bookedHoursPerMonth.bookingModel.totalPlannedAbsences.toLocaleString(
+            text={bookedHours.bookingModel.totalPlannedAbsences.toLocaleString(
               "nb-No",
               {
                 maximumFractionDigits: 1,
@@ -97,9 +95,9 @@ export default function RenderInfoPills({
             variant={getInfopillVariantByColumnCount(columnCount)}
           />
         )}
-      {bookedHoursPerMonth.bookingModel.totalOverbooking > 0 && (
+      {bookedHours.bookingModel.totalOverbooking > 0 && (
         <InfoPill
-          text={bookedHoursPerMonth.bookingModel.totalOverbooking.toLocaleString(
+          text={bookedHours.bookingModel.totalOverbooking.toLocaleString(
             "nb-No",
             {
               maximumFractionDigits: 1,
@@ -111,9 +109,9 @@ export default function RenderInfoPills({
           variant={getInfopillVariantByColumnCount(columnCount)}
         />
       )}
-      {bookedHoursPerMonth.bookingModel.totalNotStartedOrQuit > 0 && (
+      {bookedHours.bookingModel.totalNotStartedOrQuit > 0 && (
         <InfoPill
-          text={bookedHoursPerMonth.bookingModel.totalNotStartedOrQuit.toLocaleString(
+          text={bookedHours.bookingModel.totalNotStartedOrQuit.toLocaleString(
             "nb-No",
             {
               maximumFractionDigits: 1,
