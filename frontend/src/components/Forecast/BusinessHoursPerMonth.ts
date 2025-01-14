@@ -8,15 +8,15 @@ function getBusinessHoursPerMonth(
   const lastDay = new Date(year, month + 1, 0);
   const hoursInDay = numWorkHours / 5;
   var businessDaysCount = 0;
-  var curDate = firstDay;
-  while (curDate <= lastDay) {
-    var dayOfWeek = curDate.getDay();
+  var currentDate = firstDay;
+  while (currentDate <= lastDay) {
+    var dayOfWeek = currentDate.getDay();
     if (!(dayOfWeek == 6 || dayOfWeek == 0)) {
-      if (!isPublicHoliday(curDate, publicHolidayDays)) {
+      if (!isPublicHoliday(currentDate, publicHolidayDays)) {
         businessDaysCount++;
       }
     }
-    curDate.setDate(curDate.getDate() + 1);
+    currentDate.setDate(currentDate.getDate() + 1);
   }
   return businessDaysCount * hoursInDay;
 }

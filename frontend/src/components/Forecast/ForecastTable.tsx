@@ -146,7 +146,7 @@ export default function ForecastTable() {
                         publicHolidays,
                       ) +
                       "t"
-                    : null}
+                    : " "}
                 </p>
               </div>
             </th>
