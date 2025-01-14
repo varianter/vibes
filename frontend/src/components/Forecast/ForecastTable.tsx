@@ -51,9 +51,9 @@ function mapMonthToNumber(month: string) {
 function mapNumberToMonthShortName(month: number) {
   return monthsShort[month];
 }
-function isCurrentMonth(month: number) {
+function isCurrentMonth(month: number, year: number) {
   const today = new Date();
-  return today.getMonth() === month;
+  return today.getMonth() === month && today.getFullYear() === year;
 }
 export default function ForecastTable() {
   const {
@@ -102,7 +102,7 @@ export default function ForecastTable() {
               className=" px-2 py-1 pt-3 "
             >
               <div className="flex flex-col gap-1">
-                {isCurrentMonth(month.month) ? (
+                {isCurrentMonth(month.month, month.year) ? (
                   <div className="flex flex-row gap-2 items-center justify-end">
                     {/* {booking.bookingModel.totalHolidayHours > 0 && (
                       <InfoPill
@@ -161,7 +161,7 @@ export default function ForecastTable() {
                         publicHolidays,
                       ) +
                       "t"
-                    : "-"}
+                    : "\u00A0"}
                 </p>
               </div>
             </th>
