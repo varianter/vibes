@@ -24,9 +24,15 @@ export default function ForecastCell({
         onBlur={() => {
           setIsInputFocused(false);
         }}
-        className={`small-medium rounded w-full bg-transparent focus:outline-none min-w-[24px] text-right`}
+        className={`${
+          forecastValue == forecast ? "small" : "small-medium"
+        } rounded w-full bg-transparent focus:outline-none min-w-[24px] text-right`}
       />
-      <span>%</span>
+      <span
+        className={`${forecastValue == forecast ? "small" : "small-medium"}`}
+      >
+        %
+      </span>
     </>
   );
 }

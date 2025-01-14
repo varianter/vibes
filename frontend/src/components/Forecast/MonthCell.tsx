@@ -71,8 +71,8 @@ export function MonthCell(props: {
         )}
         <p
           className={`text-right flex justify-end gap-[0.05rem] ${
-            hasBeenEdited ? "normal-medium" : "normal"
-          } ${uneditable ? "text-primary/60" : "text-primary"}`}
+            uneditable ? "text-primary/60" : "text-primary"
+          }`}
         >
           {/*  {checkIfNotStartedOrQuit(consultant, bookedHoursPerMonth, numWorkHours)
             ? "-"
