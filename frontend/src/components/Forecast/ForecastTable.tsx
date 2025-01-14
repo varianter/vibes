@@ -11,6 +11,7 @@ import { MockConsultantsForForecast } from "../../../mockdata/mockData";
 import { fetchPublicHolidays } from "@/hooks/fetchPublicHolidays";
 import { usePathname } from "next/navigation";
 import { getBusinessHoursPerMonth } from "./BusinessHoursPerMonth";
+import getNextMonthNamesWithYear from "./NextMonths";
 
 const months = [
   "Januar",
@@ -41,11 +42,18 @@ const monthsShort = [
   "Des",
 ];
 
+const monthsWithYears = getNextMonthNamesWithYear(12);
+
 function mapMonthToNumber(month: string) {
   return monthsShort.indexOf(month);
 }
+
+function mapNumberToMonthShortName(month: number) {
+  return monthsShort[month];
+}
 function isCurrentMonth(month: number) {
-  return month === 0;
+  const today = new Date();
+  return today.getMonth() === month;
 }
 export default function ForecastTable() {
   const {
@@ -88,10 +96,13 @@ export default function ForecastTable() {
               </p>
             </div>
           </th>
-          {monthsShort.map((month, index) => (
-            <th key={month} className=" px-2 py-1 pt-3 ">
+          {monthsWithYears.map((month) => (
+            <th
+              key={"" + month.month + month.year}
+              className=" px-2 py-1 pt-3 "
+            >
               <div className="flex flex-col gap-1">
-                {isCurrentMonth(mapMonthToNumber(month)) ? (
+                {isCurrentMonth(month.month) ? (
                   <div className="flex flex-row gap-2 items-center justify-end">
                     {/* {booking.bookingModel.totalHolidayHours > 0 && (
                       <InfoPill
@@ -109,7 +120,9 @@ export default function ForecastTable() {
                     )} */}
                     <div className="h-2 w-2 rounded-full bg-primary" />
 
-                    <p className="normal-medium text-right">{month}</p>
+                    <p className="normal-medium text-right">
+                      {mapNumberToMonthShortName(month.month)}
+                    </p>
                   </div>
                 ) : (
                   <div
@@ -133,20 +146,22 @@ export default function ForecastTable() {
                         variant={weekSpan < 24 ? "wide" : "medium"}
                       />
                     )} */}
-                    <p className="normal text-right">{month}</p>
+                    <p className="normal text-right">
+                      {mapNumberToMonthShortName(month.month)}
+                    </p>
                   </div>
                 )}
                 <p className="flex justify-end xsmall">
                   {publicHolidays.length > 0
                     ? "" +
                       getBusinessHoursPerMonth(
-                        index,
-                        year,
+                        month.month,
+                        month.year,
                         numWorkHours,
                         publicHolidays,
                       ) +
                       "t"
-                    : " "}
+                    : "-"}
                 </p>
               </div>
             </th>
