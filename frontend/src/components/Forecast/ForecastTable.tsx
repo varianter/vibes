@@ -66,7 +66,7 @@ export default function ForecastTable() {
   const [publicHolidays, setPublicHolidays] = useState<string[]>([]);
   const organisationName = usePathname().split("/")[1];
   const { weekSpan } = useContext(FilteredContext).activeFilters;
-  const year = 2025;
+
   useEffect(() => {
     if (organisationName) {
       fetchPublicHolidays(organisationName).then((res) => {
