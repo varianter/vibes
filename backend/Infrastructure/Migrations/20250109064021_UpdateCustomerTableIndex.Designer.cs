@@ -4,6 +4,7 @@ using Infrastructure.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20250109064021_UpdateCustomerTableIndex")]
+    partial class UpdateCustomerTableIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -262,22 +265,6 @@ namespace Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Project");
-                });
-
-            modelBuilder.Entity("Core.Forecasts.Forecast", b =>
-                {
-                    b.Property<int>("ConsultantId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Month")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("AdjustedValue")
-                        .HasColumnType("int");
-
-                    b.HasKey("ConsultantId", "Month");
-
-                    b.ToTable("Forecasts");
                 });
 
             modelBuilder.Entity("Core.Organizations.Department", b =>
@@ -535,15 +522,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("Core.Forecasts.Forecast", b =>
-                {
-                    b.HasOne("Core.Consultants.Consultant", null)
-                        .WithMany("Forecasts")
-                        .HasForeignKey("ConsultantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Core.Organizations.Department", b =>
                 {
                     b.HasOne("Core.Organizations.Organization", "Organization")
@@ -612,8 +590,6 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Core.Consultants.Consultant", b =>
                 {
                     b.Navigation("CompetenceConsultant");
-
-                    b.Navigation("Forecasts");
 
                     b.Navigation("PlannedAbsences");
 
