@@ -32,9 +32,6 @@ function isPublicHoliday(day: Date, publicHolidayDays: string[]) {
   }`;
 
   const isHoliday = publicHolidayDays.includes(dayString);
-
-  console.log("dayString", dayString, day);
-
   return isHoliday;
 }
 

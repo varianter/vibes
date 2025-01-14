@@ -45,7 +45,7 @@ export function WeekSpanTableHead({
     }
 
     var publicHolidayHours = 0;
-    console.log("\n \n \n \n, public holidays \n \n \n", publicHolidays);
+
     daySpan.forEach((day) => {
       if (
         publicHolidays.length > 0 &&
