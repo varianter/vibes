@@ -8,7 +8,6 @@ using Core.PlannedAbsences;
 using Core.Staffings;
 using Core.Vacations;
 using Core.Weeks;
-using FluentAssertions;
 using NSubstitute;
 
 namespace Tests.Core.Tests;
@@ -121,10 +120,10 @@ public class AbsenceTests
             .BookingModel;
 
 
-        bookingModel.TotalBillable.Should().Be(staffedHours);
-        bookingModel.TotalPlannedAbsences.Should().Be(plannedAbsenceHours);
-        bookingModel.TotalHolidayHours.Should().Be(numberOfHolidays * 7.5);
-        bookingModel.TotalSellableTime.Should().Be(expectedSellableHours);
+        Assert.Equal(staffedHours, bookingModel.TotalBillable);
+        Assert.Equal(plannedAbsenceHours, bookingModel.TotalPlannedAbsences);
+        Assert.Equal(numberOfHolidays * 7.5, bookingModel.TotalHolidayHours);
+        Assert.Equal(expectedSellableHours, bookingModel.TotalSellableTime);
     }
 
     [Fact]
@@ -190,6 +189,6 @@ public class AbsenceTests
         var bookedHours = ReadModelFactory.MapToReadModelList(consultant, [week]).Bookings[0]
             .BookingModel;
 
-        bookedHours.TotalPlannedAbsences.Should().Be(30);
+        Assert.Equal(30, bookedHours.TotalPlannedAbsences);
     }
 }

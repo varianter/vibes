@@ -1,8 +1,5 @@
 using Bogus;
-using Bogus.DataSets;
-using Core.Customers;
 using Core.Organizations;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Tests.Api.E2E.Shared;
 
@@ -11,16 +8,11 @@ namespace Tests.Api.E2E;
 [Collection(ApiTestCollection.CollectionName)]
 public class ExampleTests(ApiFactory apiFactory) : TestsBase(apiFactory)
 {
-
-    private static Faker<Organization> CompanyFaker = new();
-    
     [Fact]
     public async Task Can_Make_Database_Calls()
     {
         var faker = new Faker();
         var orgName = faker.Company.CompanyName();
-
-        var org = CompanyFaker.Generate();
         
         var organization = new Organization
         {
@@ -45,7 +37,7 @@ public class ExampleTests(ApiFactory apiFactory) : TestsBase(apiFactory)
             .Include(x => x.Customers)
             .Include(x => x.AbsenceTypes)
             .FirstOrDefaultAsync();
-        
-        fetchedOrganization.Should().BeEquivalentTo(organization);
+
+        Assert.Equivalent(organization, fetchedOrganization);
     }
 }
