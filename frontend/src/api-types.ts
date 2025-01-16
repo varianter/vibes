@@ -9,6 +9,8 @@
  * ---------------------------------------------------------------
  */
 
+import { Forecast } from "./types";
+
 export interface BookedHoursPerWeek {
   /** @format int32 */
   year: number;
@@ -20,7 +22,6 @@ export interface BookedHoursPerWeek {
   dateString: string;
   bookingModel: WeeklyBookingReadModel;
 }
-
 export interface BookingDetails {
   /** @minLength 1 */
   projectName: string;
@@ -64,15 +65,6 @@ export interface ConsultantReadModel {
   imageUrl?: string;
   imageThumbUrl?: string;
   forecasts?: Forecast[];
-}
-
-export interface Forecast {
-  id: number;
-  month: number;
-  year: number;
-  forecastValue: number;
-  hasBeenChanged: boolean;
-  valueAddedManually: number;
 }
 
 export interface ConsultantWriteModel {

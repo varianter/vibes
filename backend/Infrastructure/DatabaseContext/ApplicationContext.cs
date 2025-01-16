@@ -3,6 +3,7 @@ using Core.Agreements;
 using Core.Consultants;
 using Core.Customers;
 using Core.Engagements;
+using Core.Forecasts;
 using Core.Organizations;
 using Core.PlannedAbsences;
 using Core.Staffings;
@@ -28,6 +29,7 @@ public class ApplicationContext(IOptions<InfrastructureConfig> config) : DbConte
     public DbSet<Engagement> Project { get; init; } = null!;
     public DbSet<Staffing> Staffing { get; init; } = null!;
     public DbSet<Agreement> Agreements { get; init; } = null!;
+    public DbSet<Forecast> Forecasts { get; init; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -126,6 +128,11 @@ public class ApplicationContext(IOptions<InfrastructureConfig> config) : DbConte
             .WithOne(absence => absence.Consultant);
 
         modelBuilder.Entity<Consultant>()
+            .HasMany(c => c.Forecasts)
+            .WithOne()
+            .HasForeignKey(f => f.ConsultantId);
+
+        modelBuilder.Entity<Consultant>()
             .Property(v => v.Degree)
             .HasConversion<string>();
 
@@ -153,6 +160,9 @@ public class ApplicationContext(IOptions<InfrastructureConfig> config) : DbConte
             .HasOne(us => us.Competence)
             .WithMany(s => s.CompetenceConsultant)
             .HasForeignKey(us => us.CompetencesId);
+
+        modelBuilder.Entity<Forecast>()
+            .HasKey(f => new ForecastKey(f.ConsultantId, f.Month));
 
         modelBuilder.Entity<Competence>().HasData(new List<Competence>
         {
