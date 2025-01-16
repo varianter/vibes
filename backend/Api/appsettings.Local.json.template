@@ -8,5 +8,13 @@
   },
   "ConnectionStrings": {
       "VibesDb": "<use-same-as-in-Development.json>"
-    }
+    },
+  "InfrastructureConfig": {
+    "EnableSensitiveDataLogging": true
+  },
+  "TestContainersConfig": {
+    "Enabled": true,
+    "RunMigrations": true,
+    "SeedDatabase": false
+  }
 }
