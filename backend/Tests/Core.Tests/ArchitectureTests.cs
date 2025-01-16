@@ -26,7 +26,7 @@ public class ArchitectureTests
             .ResideInAssembly("Core")
             .As("Core Layer");
 
-    private readonly IObjectProvider<IType> _databaseLayer =
+    private readonly IObjectProvider<IType> _infrastructureLayer =
         Types()
             .That()
             .ResideInNamespace("Infrastructure")
@@ -46,24 +46,24 @@ public class ArchitectureTests
     }
 
     [Fact]
-    public void CoreLayer_Should_Not_Access_DatabaseLayer()
+    public void CoreLayer_Should_Not_Access_InfrastructureLayer()
     {
         Types()
             .That()
             .Are(_coreLayer)
             .Should()
-            .NotDependOnAny(_databaseLayer)
+            .NotDependOnAny(_infrastructureLayer)
             .Because("The Core project should not depend on the Infrastructure project.")
             .WithoutRequiringPositiveResults()
             .Check(Architecture);
     }
 
     [Fact]
-    public void DatabaseLayer_Should_Not_Access_ApiLayer()
+    public void InfrastructureLayer_Should_Not_Access_ApiLayer()
     {
         Types()
             .That()
-            .Are(_databaseLayer)
+            .Are(_infrastructureLayer)
             .Should()
             .NotDependOnAny(_apiLayer)
             .Because("The Infrastructure project should not depend on the Api project.")
