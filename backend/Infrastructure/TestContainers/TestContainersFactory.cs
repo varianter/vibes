@@ -8,6 +8,7 @@ namespace Infrastructure.TestContainers;
 
 public class TestContainersFactory(TestContainersConfig config, ILogger<TestContainersFactory> logger)
 {
+    private const string DbContainerName = "testcontainers-api-db";
     private const string DbPassword = "test123!";
     private const int DbHostPort = 14333;
 
@@ -25,7 +26,7 @@ public class TestContainersFactory(TestContainersConfig config, ILogger<TestCont
             if (!config.Enabled) return;
 
             var dbHostPort = overrides?.DbHostPortOverride ?? DbHostPort;
-            var dbContainerName = overrides?.DbContainerNameOverride ?? "testcontainers-api-db";
+            var dbContainerName = overrides?.DbContainerNameOverride ?? DbContainerName;
 
             logger.LogInformation("Starting TestContainers");
 

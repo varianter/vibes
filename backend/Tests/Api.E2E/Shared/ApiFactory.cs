@@ -27,6 +27,9 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime, IColle
     private DbConnection _dbConnection = default!;
     private Respawner _respawner = default!;
 
+    private const string DbContainerName = "testcontainers-api-e2e-db";
+    private const int DbHostPort = 14433;
+
     public async Task InitializeAsync()
     {
         var testContainersConfig = new TestContainersConfig
@@ -38,12 +41,7 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime, IColle
         TestContainersFactory =
             new TestContainersFactory(testContainersConfig, NullLogger<TestContainersFactory>.Instance);
 
-        await TestContainersFactory.Start(
-            overrides: new
-                TestContainersFactory.Overrides(
-                    "testcontainers-api-e2e-db",
-                    14433
-                ));
+        await TestContainersFactory.Start(overrides: new TestContainersFactory.Overrides(DbContainerName, DbHostPort));
 
         DbContext = new ApplicationContext(Options.Create(new InfrastructureConfig
         {
