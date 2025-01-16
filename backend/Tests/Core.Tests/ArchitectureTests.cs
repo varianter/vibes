@@ -23,8 +23,8 @@ public class ArchitectureTests
     private readonly IObjectProvider<IType> _coreLayer =
         Types()
             .That()
-            .ResideInAssembly("ApplicationCore")
-            .As("Application Core Layer");
+            .ResideInAssembly("Core")
+            .As("Core Layer");
 
     private readonly IObjectProvider<IType> _databaseLayer =
         Types()
@@ -40,7 +40,7 @@ public class ArchitectureTests
             .Are(_coreLayer)
             .Should()
             .NotDependOnAny(_apiLayer)
-            .Because("The ApplicationCore project should not depend on the Api project.")
+            .Because("The Core project should not depend on the Api project.")
             .WithoutRequiringPositiveResults()
             .Check(Architecture);
     }
@@ -53,7 +53,7 @@ public class ArchitectureTests
             .Are(_coreLayer)
             .Should()
             .NotDependOnAny(_databaseLayer)
-            .Because("The ApplicationCore project should not depend on the Api project.")
+            .Because("The Core project should not depend on the Api project.")
             .WithoutRequiringPositiveResults()
             .Check(Architecture);
     }
