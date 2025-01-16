@@ -53,7 +53,7 @@ public class ArchitectureTests
             .Are(_coreLayer)
             .Should()
             .NotDependOnAny(_databaseLayer)
-            .Because("The Core project should not depend on the Api project.")
+            .Because("The Core project should not depend on the Infrastructure project.")
             .WithoutRequiringPositiveResults()
             .Check(Architecture);
     }
