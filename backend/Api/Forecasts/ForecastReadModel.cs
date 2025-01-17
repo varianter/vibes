@@ -38,7 +38,7 @@ public record ForecastReadModel(
 	}
 }
 
-public record BookedHoursInMonth(DateOnly Month, MonthlyBookingReadModel WeeklyBookingModel);
+public record BookedHoursInMonth(DateOnly Month, MonthlyBookingReadModel BookingModel);
 
 public record MonthlyBookingReadModel(
 	double TotalBillable,
@@ -76,4 +76,4 @@ public record DetailedBookingForMonth(BookingDetails BookingDetails, List<Monthl
 
 public record struct MonthlyHours(DateOnly Month, double Hours);
 
-public record ForecastForMonth(DateOnly Month, int ForecastPercentage);
+public record ForecastForMonth(DateOnly Month, double? CalculatedPercentage, int? DisplayedPercentage);

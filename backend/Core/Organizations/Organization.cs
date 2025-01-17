@@ -35,6 +35,12 @@ public class Organization
         return holidayDays * HoursPerWorkday;
     }
 
+    public int GetTotalHolidaysOfMonth(DateOnly month)
+    {
+        return GetPublicHolidays(month.Year)
+            .Count(holiday => holiday.Month.Equals(month.Month));
+    }
+
     private bool IsHoliday(DateOnly day)
     {
         return IsPublicHoliday(day) || IsChristmasHoliday(day);
