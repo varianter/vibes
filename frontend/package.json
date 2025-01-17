@@ -39,7 +39,7 @@
     "typescript": "5.2.2"
   },
   "devDependencies": {
-    "@playwright/test": "^1.38.1",
+    "@playwright/test": "^1.49.1",
     "@types/lodash": "^4.14.202",
     "@types/luxon": "^3.3.3",
     "eslint-config-prettier": "^9.0.0",
