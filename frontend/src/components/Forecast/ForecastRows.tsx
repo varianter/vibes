@@ -34,28 +34,8 @@ export default function ForecastRows({
   const [hoveredRowWeek, setHoveredRowWeek] = useState(-1);
   const [isAddStaffingHovered, setIsAddStaffingHovered] = useState(false);
   const [addNewRow, setAddNewRow] = useState(false);
-  const { weekList, setSelectedWeekSpan } = useWeekSelectors();
   const { setIsDisabledHotkeys } = useContext(FilteredContext);
-  const { selectedWeekFilter, weekSpan } =
-    useContext(FilteredContext).activeFilters;
-
-  const [newWeekList, setNewWeekList] = useState<DateTime[]>(weekList);
-
-  useEffect(() => {
-    setSelectedWeekSpan(consultant.bookings.length);
-    setCurrentConsultant(consultant);
-    if (selectedWeekFilter) {
-      setNewWeekList([]);
-      Array.from({ length: weekSpan }).map((_, index) => {
-        setNewWeekList((old) => [
-          ...old,
-          DateTime.fromISO(
-            `${selectedWeekFilter?.year}-W${selectedWeekFilter?.weekNumber}`,
-          ).plus({ weeks: index }),
-        ]);
-      });
-    }
-  }, [consultant.bookings.length, consultant]);
+  const { selectedWeekFilter } = useContext(FilteredContext).activeFilters;
 
   const columnCount = currentConsultant.bookings.length ?? 0;
 
@@ -110,52 +90,6 @@ export default function ForecastRows({
   function handleNewEngagementCancelled() {
     setAddNewRow(false);
     setIsDisabledHotkeys(false);
-  }
-
-  async function handleNewEngagement(project: ProjectWithCustomerModel) {
-    setAddNewRow(false);
-    setIsDisabledHotkeys(false);
-    setSelectedProject(project);
-
-    if (
-      project !== undefined &&
-      !currentConsultant.detailedBooking.some(
-        (e) =>
-          e.bookingDetails.projectId === project.projectId &&
-          e.bookingDetails.type ===
-            getBookingTypeFromProjectState(project?.bookingType),
-      )
-    ) {
-      try {
-        const body = {
-          hours: 0,
-          bookingType: getBookingTypeFromProjectState(project?.bookingType),
-          organisationUrl: organisationUrl,
-          consultantId: currentConsultant.id,
-          bookingId: `${project?.projectId}`,
-          startWeek: dayToWeek(newWeekList[0]),
-        };
-        const res = await setDetailedBookingHours(body);
-
-        if (res) {
-          const tempCurrentConsultant = { ...currentConsultant };
-
-          const newDetailedBooking = res.detailedBooking.find(
-            (e) => e.bookingDetails.projectId === project.projectId,
-          );
-
-          if (newDetailedBooking) {
-            newDetailedBooking.hours = newWeekList.map((e) => {
-              return { week: dayToWeek(e), hours: 0 };
-            });
-            tempCurrentConsultant.detailedBooking.push(newDetailedBooking);
-            setCurrentConsultant(tempCurrentConsultant);
-          }
-        }
-      } catch (e) {
-        console.error("Error updating staffing", e);
-      }
-    }
   }
 
   return (

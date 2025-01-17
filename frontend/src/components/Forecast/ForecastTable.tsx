@@ -1,11 +1,7 @@
 "use client";
 
-import { isCurrentWeek } from "@/hooks/staffing/dateTools";
 import { useConsultantsFilter } from "@/hooks/staffing/useConsultantsFilter";
-import InfoPill from "../Staffing/InfoPill";
-import { Calendar } from "react-feather";
-import React, { useContext, useEffect, useState } from "react";
-import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
+import React, { useEffect, useState } from "react";
 import ForecastRows from "./ForecastRows";
 import { MockConsultantsForForecast } from "../../../mockdata/mockData";
 import { fetchPublicHolidays } from "@/hooks/fetchPublicHolidays";
@@ -65,7 +61,6 @@ export default function ForecastTable() {
   } = useConsultantsFilter();
   const [publicHolidays, setPublicHolidays] = useState<string[]>([]);
   const organisationName = usePathname().split("/")[1];
-  const { weekSpan } = useContext(FilteredContext).activeFilters;
 
   useEffect(() => {
     if (organisationName) {
@@ -78,7 +73,7 @@ export default function ForecastTable() {
   }, [organisationName]);
 
   return (
-    <table className={`w-full table-fixed`}>
+    <table className={`table-fixed`}>
       <colgroup>
         <col span={1} className="w-14" />
         <col span={1} className="w-[190px]" />
@@ -126,11 +121,9 @@ export default function ForecastTable() {
                   </div>
                 ) : (
                   <div
-                    className={`flex justify-end ${
-                      weekSpan >= 26
-                        ? "min-h-[30px] flex-col mb-2 gap-[1px] items-end"
-                        : "flex-row gap-2"
-                    }`}
+                    className={`flex justify-end 
+                         flex-row gap-2
+                    `}
                   >
                     {/*  {booking.bookingModel.totalHolidayHours > 0 && (
                       <InfoPill

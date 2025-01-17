@@ -32,8 +32,6 @@ export function ForecastContent() {
             />
             <ActiveFilters />
           </div>
-
-          <WeekSelection />
         </div>
         <ForecastTable />
         <InfoPillDescriptions />
