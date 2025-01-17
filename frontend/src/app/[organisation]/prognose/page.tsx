@@ -13,6 +13,7 @@ import {
 } from "@/data/apiCallsWithToken";
 import { Metadata } from "next";
 import { ForecastContent } from "@/pagecontent/ForecastContent";
+import { getWeek } from "date-fns";
 export const metadata: Metadata = {
   title: "Prognose | VIBES",
 };
@@ -24,18 +25,24 @@ export default async function Prognose({
   params: { organisation: string };
   searchParams: { selectedWeek?: string; weekSpan?: string };
 }) {
+  const today = new Date();
+  const firstWeekOfCurrentMonth = getWeek(
+    new Date(today.getFullYear(), today.getMonth(), 1),
+  );
+  const now = {
+    year: today.getFullYear(),
+    weekNumber: firstWeekOfCurrentMonth,
+  };
   const selectedWeek = parseYearWeekFromUrlString(
     searchParams.selectedWeek || undefined,
   );
-  const weekSpan = searchParams.weekSpan || undefined;
+  const weekSpan = "52";
 
   const consultants =
     (await fetchEmployeesWithImageAndToken(
       `${params.organisation}/staffings${
-        selectedWeek
-          ? `?Year=${selectedWeek.year}&Week=${selectedWeek.weekNumber}`
-          : ""
-      }${weekSpan ? `${selectedWeek ? "&" : "?"}WeekSpan=${weekSpan}` : ""}`,
+        now ? `?Year=${now.year}&Week=${now.weekNumber}` : ""
+      }${weekSpan ? `${now ? "&" : "?"}WeekSpan=${weekSpan}` : ""}`,
     )) ?? [];
 
   const departments =

@@ -27,6 +27,10 @@ export interface updateBookingHoursBody {
   endWeek?: number;
 }
 
+export interface Month {
+  month: number;
+  year: number;
+}
 export interface BookedHoursPerMonth {
   month: number;
   year: number;

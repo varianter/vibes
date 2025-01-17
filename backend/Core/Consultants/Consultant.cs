@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Core.Engagements;
+using Core.Forecasts;
 using Core.Organizations;
 using Core.PlannedAbsences;
 using Core.Staffings;
@@ -33,6 +34,8 @@ public class Consultant
     public List<Engagement> Projects { get; set; } = new();
 
     public List<Staffing> Staffings { get; set; } = new();
+
+    public List<Forecast> Forecasts { get; set; } = new();
 
 
     public int YearsOfExperience
