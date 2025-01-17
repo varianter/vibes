@@ -6,10 +6,8 @@
     "TenantId": "azure_tenant_id_for_organization",
     "ApiScope": "Azure Ad -> App Registrations -> [app] -> Expose an Api"
   },
-  "ConnectionStrings": {
-      "VibesDb": "<use-same-as-in-Development.json>"
-    },
   "InfrastructureConfig": {
+    "ConnectionString": "<use-same-as-in-Development.json>"
     "EnableSensitiveDataLogging": true
   },
   "TestContainersConfig": {
