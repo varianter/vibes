@@ -67,7 +67,6 @@ export default function ForecastTable() {
       fetchPublicHolidays(organisationName).then((res) => {
         if (res) {
           setPublicHolidays(res);
-          console.log("publicHolidays", res);
         }
       });
     }
