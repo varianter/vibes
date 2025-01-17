@@ -10,23 +10,23 @@ using Core.Vacations;
 using Core.Weeks;
 using NSubstitute;
 
-namespace Tests;
+namespace Tests.Core.Tests;
 
-public class Tests
+public class AbsenceTests
 {
-    [TestCase(2, 15, 0, 0, 7.5)]
-    [TestCase(0, 7.5, 0, 0, 30)]
-    [TestCase(5, 37.5, 0, 0, 0)]
-    [TestCase(0, 0, 0, 0, 37.5)]
-    [TestCase(5, 30, 0, 0, 0)]
-    [TestCase(5, 0, 0, 0, 0)]
-    [TestCase(5, 37.5, 0, 0, 0)]
-    [TestCase(0, 0, 1, 0, 30)]
-    [TestCase(0, 0, 2, 0, 22.5)]
-    [TestCase(0, 0, 5, 0, 0)]
-    [TestCase(0, 0, 0, 37.5, 0)]
-    [TestCase(0, 0, 0, 30, 7.5)]
-    [TestCase(0, 7.5, 0, 22.5, 7.5)]
+    [Theory]
+    [InlineData(2, 15, 0, 0, 7.5)]
+    [InlineData(0, 7.5, 0, 0, 30)]
+    [InlineData(5, 37.5, 0, 0, 0)]
+    [InlineData(0, 0, 0, 0, 37.5)]
+    [InlineData(5, 30, 0, 0, 0)]
+    [InlineData(5, 0, 0, 0, 0)]
+    [InlineData(0, 0, 1, 0, 30)]
+    [InlineData(0, 0, 2, 0, 22.5)]
+    [InlineData(0, 0, 5, 0, 0)]
+    [InlineData(0, 0, 0, 37.5, 0)]
+    [InlineData(0, 0, 0, 30, 7.5)]
+    [InlineData(0, 7.5, 0, 22.5, 7.5)]
     public void AvailabilityCalculation(
         int vacationDays,
         double plannedAbsenceHours,
@@ -119,16 +119,14 @@ public class Tests
         var bookingModel = ReadModelFactory.MapToReadModelList(consultant, [week]).Bookings[0]
             .BookingModel;
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(bookingModel.TotalBillable, Is.EqualTo(staffedHours));
-            Assert.That(bookingModel.TotalPlannedAbsences, Is.EqualTo(plannedAbsenceHours));
-            Assert.That(bookingModel.TotalHolidayHours, Is.EqualTo(numberOfHolidays * 7.5));
-            Assert.That(bookingModel.TotalSellableTime, Is.EqualTo(expectedSellableHours));
-        });
+
+        Assert.Equal(staffedHours, bookingModel.TotalBillable);
+        Assert.Equal(plannedAbsenceHours, bookingModel.TotalPlannedAbsences);
+        Assert.Equal(numberOfHolidays * 7.5, bookingModel.TotalHolidayHours);
+        Assert.Equal(expectedSellableHours, bookingModel.TotalSellableTime);
     }
 
-    [Test]
+    [Fact]
     public void MultiplePlannedAbsences()
     {
         var org = new Organization
@@ -191,6 +189,6 @@ public class Tests
         var bookedHours = ReadModelFactory.MapToReadModelList(consultant, [week]).Bookings[0]
             .BookingModel;
 
-        Assert.That(bookedHours.TotalPlannedAbsences, Is.EqualTo(30));
+        Assert.Equal(30, bookedHours.TotalPlannedAbsences);
     }
 }

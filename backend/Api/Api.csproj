@@ -38,5 +38,9 @@
         <_ContentIncludedByDefault Remove="Routes\obj\project.packagespec.json"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <None Include="appsettings.Test.json"/>
+    </ItemGroup>
+
 
 </Project>
