@@ -169,6 +169,7 @@ public sealed class Week(int year, int weekNumber) : IComparable<Week>, IEquatab
         return FromDateOnly(day).Equals(this);
     }
 
+
     public static bool operator ==(Week left, Week right)
     {
         if (ReferenceEquals(left, right)) return true;
