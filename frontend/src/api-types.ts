@@ -298,3 +298,73 @@ export interface CustomersWithProjectsReadModel {
   activeEngagements: EngagementReadModel[];
   inactiveEngagements: EngagementReadModel[];
 }
+
+export interface ForecastReadModel {
+  /** @format int32 */
+  id?: number;
+  name?: string;
+  /** @format date */
+  startDate?: string | null;
+  /** @format date */
+  endDate?: string | null;
+  competences?: CompetenceReadModel[];
+  department?: DepartmentReadModel;
+  /** @format int32 */
+  yearsOfExperience?: number;
+  /** @format int32 */
+  graduationYear?: number;
+  degree?: Degree;
+  bookings?: BookedHoursInMonth[];
+  detailedBookings?: DetailedBookingForMonth[];
+  forecasts?: ForecastForMonth[];
+  isOccupied?: boolean;
+  imageThumbUrl?: string;
+}
+
+export interface BookedHoursInMonth {
+  /** @format date */
+  month?: string;
+  bookingModel?: MonthlyBookingReadModel;
+}
+
+export interface MonthlyBookingReadModel {
+  /** @format double */
+  totalBillable?: number;
+  /** @format double */
+  totalOffered?: number;
+  /** @format double */
+  totalPlannedAbsences?: number;
+  /** @format double */
+  totalExcludableAbsence?: number;
+  /** @format double */
+  totalSellableTime?: number;
+  /** @format double */
+  totalHolidayHours?: number;
+  /** @format double */
+  totalVacationHours?: number;
+  /** @format double */
+  totalOverbooking?: number;
+  /** @format double */
+  totalNotStartedOrQuit?: number;
+}
+
+export interface DetailedBookingForMonth {
+  bookingDetails?: BookingDetails;
+  hours?: MonthlyHours[];
+}
+
+export interface MonthlyHours {
+  /** @format date */
+  month?: string;
+  /** @format double */
+  hours?: number;
+}
+
+export interface ForecastForMonth {
+  /** @format date */
+  month?: string;
+  /** @format double */
+  calculatedPercentage?: number | null;
+  /** @format int32 */
+  displayedPercentage?: number | null;
+}
