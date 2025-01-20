@@ -1,5 +1,6 @@
 using Api.Helpers;
 using Core.Consultants;
+using Core.Extensions;
 using Core.Weeks;
 
 namespace Api.Forecasts;
@@ -70,7 +71,7 @@ public static class ReadModelFactory
 	{
 		var organization = consultant.Department.Organization;
 
-		var workdaysInMonth = month.GetTotalWeekdaysInMonth() - organization.GetTotalHolidaysOfMonth(month);
+		var workdaysInMonth = month.GetTotalWeekdaysInMonth() - organization.GetTotalWeekdayHolidaysInMonth(month);
 
 		// TODO Is this the correct calculation?
 		var hoursInMonth = organization.HoursPerWorkday * workdaysInMonth;

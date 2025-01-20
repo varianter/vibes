@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Core.Absences;
 using Core.Customers;
+using Core.Extensions;
 using Core.Weeks;
 using PublicHoliday;
 
@@ -35,10 +36,11 @@ public class Organization
         return holidayDays * HoursPerWorkday;
     }
 
-    public int GetTotalHolidaysOfMonth(DateOnly month)
+    public int GetTotalWeekdayHolidaysInMonth(DateOnly month)
     {
         return GetPublicHolidays(month.Year)
-            .Count(holiday => holiday.Month.Equals(month.Month));
+            .Where(holiday => holiday.EqualsMonth(month))
+            .Count(DateOnlyExtensions.IsWeekday);
     }
 
     private bool IsHoliday(DateOnly day)

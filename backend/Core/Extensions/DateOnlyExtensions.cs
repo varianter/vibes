@@ -1,8 +1,8 @@
 using Core.Weeks;
 
-namespace Api.Helpers;
+namespace Core.Extensions;
 
-public static class DateOnlyHelper
+public static class DateOnlyExtensions
 {
 	public static bool EqualsMonth(this DateOnly month, DateOnly other)
 	{
@@ -17,11 +17,16 @@ public static class DateOnlyHelper
 
 		for (var date = firstDayInMonth; date.EqualsMonth(month); date.AddDays(1))
 		{
-			weekdayCount++;
+			if (date.IsWeekday())
+			{
+				weekdayCount++;
+			}
 		}
 
 		return weekdayCount;
 	}
+
+	public static bool IsWeekday(this DateOnly date) => date.DayOfWeek is >= DayOfWeek.Monday and <= DayOfWeek.Friday;
 
 	public static IEnumerable<DateOnly> GetMonthsUntil(this DateOnly fromMonth, DateOnly firstExcludedMonth)
 	{
