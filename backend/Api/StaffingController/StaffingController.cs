@@ -1,4 +1,6 @@
 using Api.Common;
+using Api.Common.Types;
+using Api.Helpers;
 using Core.Consultants;
 using Core.PlannedAbsences;
 using Core.Staffings;
@@ -216,21 +218,12 @@ public class StaffingController(
 
         return consultants.Select(c =>
         {
-            c.Staffings = GetFromDictOrDefault(c.Id, consultantStaffings);
-            c.PlannedAbsences = GetFromDictOrDefault(c.Id, consultantAbsences);
+            c.Staffings = DictionaryHelper.GetFromDictOrDefault(c.Id, consultantStaffings);
+            c.PlannedAbsences = DictionaryHelper.GetFromDictOrDefault(c.Id, consultantAbsences);
 
             return c;
         }).ToList();
     }
-
-    private static List<T> GetFromDictOrDefault<T>(int key, Dictionary<int, List<T>> dict)
-    {
-        var hasValue = dict.TryGetValue(key, out var value);
-        if (hasValue && value is not null) return value;
-
-        return [];
-    }
-
 
     //TODO: Divide this more neatly into various functions for readability. 
     // This is skipped for now to avoid massive scope-creep. Comments are added for a temporary readability-buff
