@@ -305,36 +305,36 @@ export interface CustomersWithProjectsReadModel {
 }
 
 export interface ForecastReadModel {
-  consultant?: SingleConsultantReadModel;
-  bookings?: BookedHoursInMonth[];
-  detailedBookings?: DetailedBookingForMonth[];
-  forecasts?: ForecastForMonth[];
-  consultantIsOccupied?: boolean;
+  consultant: SingleConsultantReadModel;
+  bookings: BookedHoursInMonth[];
+  detailedBookings: DetailedBookingForMonth[];
+  forecasts: ForecastForMonth[];
+  consultantIsOccupied: boolean;
 }
 
 export interface BookedHoursInMonth {
   /** @format date */
-  month?: string;
-  bookingModel?: BookingReadModel;
+  month: string;
+  bookingModel: BookingReadModel;
 }
 
 export interface DetailedBookingForMonth {
-  bookingDetails?: BookingDetails;
-  hours?: MonthlyHours[];
+  bookingDetails: BookingDetails;
+  hours: MonthlyHours[];
 }
 
 export interface MonthlyHours {
   /** @format date */
-  month?: string;
+  month: string;
   /** @format double */
-  hours?: number;
+  hours: number;
 }
 
 export interface ForecastForMonth {
   /** @format date */
-  month?: string;
+  month: string;
   /** @format double */
-  calculatedPercentage?: number | null;
+  calculatedPercentage: number;
   /** @format int32 */
-  displayedPercentage?: number | null;
+  displayedPercentage: number;
 }
