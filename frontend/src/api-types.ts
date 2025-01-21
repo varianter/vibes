@@ -324,28 +324,7 @@ export interface ForecastReadModel {
 export interface BookedHoursInMonth {
   /** @format date */
   month?: string;
-  bookingModel?: MonthlyBookingReadModel;
-}
-
-export interface MonthlyBookingReadModel {
-  /** @format double */
-  totalBillable?: number;
-  /** @format double */
-  totalOffered?: number;
-  /** @format double */
-  totalPlannedAbsences?: number;
-  /** @format double */
-  totalExcludableAbsence?: number;
-  /** @format double */
-  totalSellableTime?: number;
-  /** @format double */
-  totalHolidayHours?: number;
-  /** @format double */
-  totalVacationHours?: number;
-  /** @format double */
-  totalOverbooking?: number;
-  /** @format double */
-  totalNotStartedOrQuit?: number;
+  bookingModel?: BookingReadModel;
 }
 
 export interface DetailedBookingForMonth {
