@@ -1,7 +1,10 @@
 import {
   BookingDetails,
   BookingType,
+  Competence,
   ConsultantReadModel,
+  Degree,
+  DepartmentReadModel,
   EngagementState,
   WeeklyBookingReadModel,
 } from "@/api-types";
@@ -17,6 +20,20 @@ export type Week = {
   year: number;
   weekNumber: number;
 };
+export interface ConsultantForecastReadModel {
+  id: number;
+  name: string;
+  competences: Competence[];
+  department: DepartmentReadModel;
+  yearsOfExperience: number;
+  graduationYear: number;
+  degree: Degree;
+  bookings: BookedHoursPerMonth[]; // <-- Endret
+  detailedBooking: MonthlyDetailedBooking[]; // <-- Endret
+  forecasts?: Forecast[]; // <-- Lagt til
+  isOccupied: boolean;
+  imageThumbUrl?: string; // populeres i frontend med data fra Chewbacca
+}
 
 export interface updateBookingHoursBody {
   hours: number;
