@@ -54,10 +54,9 @@ function transformToMonthlyData(weeklyData: BookedHoursPerWeek[]) {
       primaryDistribution,
       bookingModel,
     );
-    const secondaryBookingModel: BookingReadModel | null =
-      secondaryMonthKey
-        ? distributeBookingModel(secondaryDistribution, bookingModel)
-        : null;
+    const secondaryBookingModel: BookingReadModel | null = secondaryMonthKey
+      ? distributeBookingModel(secondaryDistribution, bookingModel)
+      : null;
 
     function addToMonthlyData(monthKey: string, model: BookingReadModel) {
       if (!monthlyData[monthKey]) {
@@ -70,9 +69,7 @@ function transformToMonthlyData(weeklyData: BookedHoursPerWeek[]) {
           }, {} as BookingReadModel),
         };
       }
-      for (const key of Object.keys(
-        model,
-      ) as (keyof BookingReadModel)[]) {
+      for (const key of Object.keys(model) as (keyof BookingReadModel)[]) {
         monthlyData[monthKey].bookingModel[key] += model[key];
       }
     }
