@@ -1,22 +1,14 @@
 using Api.Common.Types;
-using Core.Consultants;
+using Api.Consultants;
 
 namespace Api.Forecasts;
 
 public record ForecastReadModel(
-	int Id,
-	string Name,
-	DateOnly? StartDate,
-	DateOnly? EndDate,
-	List<CompetenceReadModel> Competences,
-	UpdateDepartmentReadModel Department,
-	int YearsOfExperience,
-	int GraduationYear,
-	Degree Degree,
+	SingleConsultantReadModel Consultant,
 	List<BookedHoursInMonth> Bookings,
 	List<DetailedBookingForMonth> DetailedBookings,
 	List<ForecastForMonth> Forecasts,
-	bool IsOccupied);
+	bool ConsultantIsOccupied);
 
 public record BookedHoursInMonth(DateOnly Month, BookingReadModel BookingModel);
 

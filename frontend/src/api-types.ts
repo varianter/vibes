@@ -202,9 +202,14 @@ export interface SingleConsultantReadModel {
   name: string;
   /** @minLength 1 */
   email: string;
-  competences: string[];
-  /** @minLength 1 */
-  department: string;
+  /** @format date */
+  startDate: string;
+  /** @format date */
+  endDate: string;
+  competences: CompetenceReadModel[];
+  department: DepartmentReadModel;
+  /** @format int32 */
+  graduationYear: number;
   /** @format int32 */
   yearsOfExperience: number;
   degree: Degree;
@@ -300,25 +305,11 @@ export interface CustomersWithProjectsReadModel {
 }
 
 export interface ForecastReadModel {
-  /** @format int32 */
-  id?: number;
-  name?: string;
-  /** @format date */
-  startDate?: string | null;
-  /** @format date */
-  endDate?: string | null;
-  competences?: CompetenceReadModel[];
-  department?: DepartmentReadModel;
-  /** @format int32 */
-  yearsOfExperience?: number;
-  /** @format int32 */
-  graduationYear?: number;
-  degree?: Degree;
+  consultant?: SingleConsultantReadModel;
   bookings?: BookedHoursInMonth[];
   detailedBookings?: DetailedBookingForMonth[];
   forecasts?: ForecastForMonth[];
-  isOccupied?: boolean;
-  imageThumbUrl?: string;
+  consultantIsOccupied?: boolean;
 }
 
 export interface BookedHoursInMonth {
