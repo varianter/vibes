@@ -18,18 +18,7 @@ public record ForecastReadModel(
 	List<ForecastForMonth> Forecasts,
 	bool IsOccupied);
 
-public record BookedHoursInMonth(DateOnly Month, MonthlyBookingReadModel BookingModel);
-
-public record MonthlyBookingReadModel(
-	double TotalBillable,
-	double TotalOffered,
-	double TotalPlannedAbsences,
-	double TotalExcludableAbsence,
-	double TotalSellableTime,
-	double TotalHolidayHours,
-	double TotalVacationHours,
-	double TotalOverbooking,
-	double TotalNotStartedOrQuit);
+public record BookedHoursInMonth(DateOnly Month, BookingReadModel BookingModel);
 
 public record DetailedBookingForMonth(BookingDetails BookingDetails, List<MonthlyHours> Hours);
 

@@ -20,7 +20,7 @@ export interface BookedHoursPerWeek {
   sortableWeek: number;
   /** @minLength 1 */
   dateString: string;
-  bookingModel: WeeklyBookingReadModel;
+  bookingModel: BookingReadModel;
 }
 export interface BookingDetails {
   /** @minLength 1 */
@@ -263,7 +263,7 @@ export interface VacationReadModel {
   vacationMetaData?: VacationMetaData;
 }
 
-export interface WeeklyBookingReadModel {
+export interface BookingReadModel {
   /** @format double */
   totalBillable: number;
   /** @format double */

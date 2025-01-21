@@ -8,11 +8,11 @@ import {
   DetailedBooking,
   EngagementPerCustomerReadModel,
   OrganisationReadModel,
-  WeeklyBookingReadModel,
+  BookingReadModel,
 } from "@/api-types";
 import { Forecast } from "@/types";
 
-const MockWeeklyBookingReadModel: WeeklyBookingReadModel = {
+const MockWeeklyBookingReadModel: BookingReadModel = {
   totalHolidayHours: 0,
   totalOverbooking: 0,
   totalPlannedAbsences: 0,
