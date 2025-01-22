@@ -72,13 +72,11 @@ export function MonthCell(props: {
     if (isActive) {
       if (e.key === "ArrowDown") {
         e.preventDefault();
-        setHighlightedIndex((prevIndex) =>
-          prevIndex < options.length - 1 ? prevIndex + 1 : 0,
-        );
+        setHighlightedIndex((prevIndex) => (prevIndex + 1) % options.length);
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
-        setHighlightedIndex((prevIndex) =>
-          prevIndex > 0 ? prevIndex - 1 : options.length - 1,
+        setHighlightedIndex(
+          (prevIndex) => (prevIndex - 1 + options.length) % options.length,
         );
       } else if (e.key === "Enter") {
         e.preventDefault();
