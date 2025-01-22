@@ -11,4 +11,17 @@ public static class NumericsExtensions
 	{
 		return Math.Abs(a - b) < precision;
 	}
+
+	/// <summary>
+	/// Returns true if a &gt; b (with the given precision); otherwise, false
+	/// </summary>
+	public static bool IsGreaterThan(this double a, double b, double precision = Epsilon)
+	{
+		if (a.IsEqualTo(b, precision))
+		{
+			return false;
+		}
+
+		return a > b;
+	}
 }
