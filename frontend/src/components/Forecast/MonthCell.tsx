@@ -50,15 +50,8 @@ export function MonthCell(props: {
   useOnClickOutside(ref, handleClickOutside);
 
   function optionGenerator(forecastValue: number) {
-    let options: number[];
-    if (forecastValue > 50) {
-      options = [80, 100];
-    } else if (forecastValue > 80) {
-      options = [100];
-    } else {
-      options = [50, 80, 100];
-    }
-    return options;
+    const allOptions = [50, 80, 100];
+    return allOptions.filter((option) => option >= forecastValue);
   }
 
   const options = optionGenerator(forecastValue);
