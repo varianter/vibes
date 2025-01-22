@@ -48,4 +48,16 @@ public static class DateOnlyExtensions
 
 		return firstWeek.GetNextWeeks(lastWeek);
 	}
+
+	public static DateOnly FirstWeekdayInMonth(this DateOnly month)
+	{
+		var firstDayInMonth = new DateOnly(month.Year, month.Month, 1);
+
+		return firstDayInMonth.DayOfWeek switch
+		{
+			DayOfWeek.Saturday => firstDayInMonth.AddDays(2),
+			DayOfWeek.Sunday => firstDayInMonth.AddDays(1),
+			_ => firstDayInMonth,
+		};
+	}
 }

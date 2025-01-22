@@ -7,4 +7,11 @@ public record BookingDetails(
 	int ProjectId,
 	bool ExcludeFromBilling = false,
 	bool IsBillable = false,
-	DateTime? EndDateAgreement = null);
+	DateTime? EndDateAgreement = null)
+{
+	public static BookingDetails ForVacation()
+	{
+		// 0 as ProjectId as vacation is weird
+		return new BookingDetails("Ferie", BookingType.Vacation, "Ferie", ProjectId: 0);
+	}
+}

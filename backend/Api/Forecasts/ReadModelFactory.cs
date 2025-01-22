@@ -1,7 +1,9 @@
 using Api.Common.Types;
 using Api.Consultants;
 using Core.Consultants;
+using Core.Engagements;
 using Core.Extensions;
+using Core.Vacations;
 using Core.Weeks;
 
 namespace Api.Forecasts;
@@ -23,7 +25,7 @@ public static class ReadModelFactory
 	{
 		var months = fromMonth.GetMonthsUntil(firstExcludedMonth).ToList();
 
-		var detailedBookings = GetDetailedBookings(consultant, months);
+		var detailedBookings = GetDetailedBookings(consultant, months, fromMonth, firstExcludedMonth);
 
 		var bookingSummary = months
 			.Select(month => GetBookedHours(consultant, month, detailedBookings))
@@ -31,18 +33,97 @@ public static class ReadModelFactory
 
 		var forecasts = GetForecasts(consultant, months, bookingSummary).ToList();
 
-		// The consultant is available if there are any sellable hours during the whole time span
 		var isAvailable = bookingSummary.Any(bs => bs.BookingModel.TotalSellableTime.IsGreaterThan(0));
 
 		return new ForecastReadModel(new SingleConsultantReadModel(consultant), bookingSummary, detailedBookings, forecasts, isAvailable);
 	}
 
-	private static List<DetailedBookingForMonth> GetDetailedBookings(Consultant consultant, List<DateOnly> months)
+	// Using a similar pattern as in DetailedBookings() in StaffingController/ReadModelFactory
+	private static List<DetailedBookingForMonth> GetDetailedBookings(Consultant consultant, List<DateOnly> months, DateOnly fromMonth, DateOnly firstExcludedMonth)
 	{
-		// TODO Forecast: Similar implementation as StaffingController.ReadModelFactory.DetailedBookings(), but calculate for month
-		throw new NotImplementedException();
+		var weeks = months.First().GetWeeksThrough(months.Last()).ToList();
+		weeks.Sort();
+
+		var billableBookings = GetBookings(consultant, months, weeks, EngagementState.Order, BookingType.Booking);
+		var offeredBookings = GetBookings(consultant, months, weeks, EngagementState.Offer, BookingType.Offer);
+
+		var plannedAbsences = GetPlannedAbsences(consultant, months, weeks);
+
+		var detailedBookings = billableBookings.Concat(offeredBookings).Concat(plannedAbsences);
+
+		if (TryGetVacations(consultant, fromMonth, firstExcludedMonth, out var vacations))
+		{
+			var vacationHoursPerMonth = months
+				.Select(month => new MonthlyHours(
+					month,
+					Hours: consultant.Department.Organization.HoursPerWorkday *
+					       vacations.Count(v => v.Date.EqualsMonth(month))))
+				.ToList();
+
+			detailedBookings = detailedBookings.Append(new DetailedBookingForMonth(
+				BookingDetails.ForVacation(),
+				Hours: vacationHoursPerMonth));
+		}
+
+		var firstWorkDayInScope = fromMonth.FirstWeekdayInMonth();
+		var firstWorkDayOutOfScope = firstExcludedMonth.FirstWeekdayInMonth();
+
+		if (consultant.StartDate > firstWorkDayInScope)
+		{
+			// TODO Forecast
+		}
+
+		if (consultant.EndDate < firstWorkDayOutOfScope)
+		{
+			// TODO Forecast
+		}
+
+		return detailedBookings.ToList();
 	}
 
+	private static bool TryGetVacations(Consultant consultant, DateOnly fromMonth, DateOnly firstExcludedMonth, out List<Vacation> vacations)
+	{
+		vacations = consultant.Vacations
+			.Where(v => v.Date >= fromMonth && v.Date < firstExcludedMonth)
+			.ToList();
+
+		return vacations.Count > 0;
+	}
+
+	private static IEnumerable<DetailedBookingForMonth> GetBookings(Consultant consultant, List<DateOnly> months, List<Week> weeks, EngagementState state, BookingType bookingType)
+	{
+		return consultant.Staffings
+			.Where(staffing => staffing.Engagement.State == state)
+			.Where(staffing => weeks.Contains(staffing.Week))
+			.GroupBy(staffing => staffing.Engagement.Id)
+			.Select(projectGroup => new DetailedBookingForMonth(
+				BookingDetails: new BookingDetails(
+					projectGroup.First().Engagement.Name,
+					bookingType,
+					projectGroup.First().Engagement.Customer.Name,
+					projectGroup.Key,
+					ExcludeFromBilling: false,
+					projectGroup.First().Engagement.IsBillable,
+					projectGroup.First().Engagement.Agreements.Select(a => (DateTime?)a.EndDate).DefaultIfEmpty(null).Max()),
+				Hours: months.Select(month => MonthlyHours.For(month, projectGroup)).ToList()));
+	}
+
+	private static IEnumerable<DetailedBookingForMonth> GetPlannedAbsences(Consultant consultant, List<DateOnly> months, List<Week> weeks)
+	{
+		return consultant.PlannedAbsences
+			.Where(absence => weeks.Contains(absence.Week))
+			.GroupBy(absence => absence.Absence.Name)
+			.Select(absenceGroup => new DetailedBookingForMonth(
+				BookingDetails: new BookingDetails(
+					absenceGroup.Key,
+					BookingType.PlannedAbsence,
+					absenceGroup.Key,
+					absenceGroup.First().Absence.Id,
+					absenceGroup.First().Absence.ExcludeFromBillRate),
+				Hours: months.Select(month => MonthlyHours.For(month, absenceGroup)).ToList()));
+	}
+
+	// Using a similar pattern as in GetBookedHours() in StaffingController/ReadModelFactory
 	private static BookedHoursInMonth GetBookedHours(Consultant consultant, DateOnly month, IEnumerable<DetailedBookingForMonth> detailedBookings)
 	{
         var totalHolidayHours = consultant.Department.Organization.GetTotalHolidayHoursInMonth(month);

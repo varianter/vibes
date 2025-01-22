@@ -1,6 +1,8 @@
 using Api.Common.Types;
 using Api.Consultants;
 using Core.Extensions;
+using Core.PlannedAbsences;
+using Core.Staffings;
 
 namespace Api.Forecasts;
 
@@ -36,6 +38,19 @@ public record DetailedBookingForMonth(BookingDetails BookingDetails, List<Monthl
 	}
 }
 
-public record struct MonthlyHours(DateOnly Month, double Hours);
+public record struct MonthlyHours(DateOnly Month, double Hours)
+{
+	public static MonthlyHours For(DateOnly month, IGrouping<int, Staffing> staffingGroup)
+	{
+		// TODO Forecast
+		throw new NotImplementedException();
+	}
+
+	public static MonthlyHours For(DateOnly month, IGrouping<string, PlannedAbsence> plannedAbsenceGroup)
+	{
+		// TODO Forecast
+		throw new NotImplementedException();
+	}
+}
 
 public record ForecastForMonth(DateOnly Month, double CalculatedPercentage, int DisplayedPercentage);

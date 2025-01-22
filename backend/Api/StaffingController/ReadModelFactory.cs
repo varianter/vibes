@@ -156,9 +156,7 @@ public class ReadModelFactory(StorageService storageService)
                 consultant.Department.Organization.HoursPerWorkday
             )).ToList();
             detailedBookings = detailedBookings.Append(new DetailedBooking(
-                new BookingDetails("Ferie", BookingType.Vacation,
-                    "Ferie",
-                    0), //Empty projectName as vacation does not have a project, 0 as projectId as vacation is weird
+                BookingDetails.ForVacation(),
                 vacationsPrWeek));
         }
 
