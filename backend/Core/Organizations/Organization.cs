@@ -36,11 +36,23 @@ public class Organization
         return holidayDays * HoursPerWorkday;
     }
 
-    public int GetTotalWeekdayHolidaysInMonth(DateOnly month)
+    /// <summary>
+    /// Returns the count of holidays that occur on a weekday (work day) within the given month
+    /// </summary>
+    public int GetTotalHolidaysInMonth(DateOnly month)
     {
         return GetPublicHolidays(month.Year)
             .Where(holiday => holiday.EqualsMonth(month))
             .Count(DateOnlyExtensions.IsWeekday);
+    }
+
+    /// <summary>
+    /// Returns the total amount of hours for the holidays that occur on a weekday (work day) within the given month
+    /// </summary>
+    public double GetTotalHolidayHoursInMonth(DateOnly month)
+    {
+        var holidayDays = GetTotalHolidaysInMonth(month);
+        return holidayDays * HoursPerWorkday;
     }
 
     private bool IsHoliday(DateOnly day)

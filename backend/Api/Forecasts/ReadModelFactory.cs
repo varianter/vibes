@@ -21,12 +21,13 @@ public static class ReadModelFactory
 
 	private static ForecastReadModel CreateModel(Consultant consultant, DateOnly fromMonth, DateOnly firstExcludedMonth)
 	{
-		var weeks = fromMonth.GetWeeksThrough(firstExcludedMonth.AddDays(-1)).ToList();
-
-		var detailedBookings = GetDetailedBookings(consultant, weeks);
-		var bookingSummary = GetBookedHours(consultant, weeks, detailedBookings);
-
 		var months = fromMonth.GetMonthsUntil(firstExcludedMonth).ToList();
+
+		var detailedBookings = GetDetailedBookings(consultant, months);
+
+		var bookingSummary = months
+			.Select(month => GetBookedHours(consultant, month, detailedBookings))
+			.ToList();
 
 		var forecasts = GetForecasts(consultant, months, bookingSummary).ToList();
 
@@ -36,16 +37,62 @@ public static class ReadModelFactory
 		return new ForecastReadModel(new SingleConsultantReadModel(consultant), bookingSummary, detailedBookings, forecasts, isAvailable);
 	}
 
-	private static List<DetailedBookingForMonth> GetDetailedBookings(Consultant consultant, List<Week> weeks)
+	private static List<DetailedBookingForMonth> GetDetailedBookings(Consultant consultant, List<DateOnly> months)
 	{
 		// TODO Forecast: Similar implementation as StaffingController.ReadModelFactory.DetailedBookings(), but calculate for month
 		throw new NotImplementedException();
 	}
 
-	private static List<BookedHoursInMonth> GetBookedHours(Consultant consultant, List<Week> weeks, List<DetailedBookingForMonth> detailedBookings)
+	private static BookedHoursInMonth GetBookedHours(Consultant consultant, DateOnly month, IEnumerable<DetailedBookingForMonth> detailedBookings)
 	{
-		// TODO Forecast: Similar implementation as StaffingController.ReadModelFactory.GetBookedHours(), but calculate for month
-		throw new NotImplementedException();
+        var totalHolidayHours = consultant.Department.Organization.GetTotalHolidayHoursInMonth(month);
+
+        var detailedBookingsArray = detailedBookings as DetailedBookingForMonth[] ?? detailedBookings.ToArray();
+
+        var totalBillable = DetailedBookingForMonth
+	        .GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.Booking, evaluateBillable: true);
+
+        var totalNonBillable = DetailedBookingForMonth
+	        .GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.Booking, evaluateBillable: true, isBillable: false);
+
+        var totalOffered = DetailedBookingForMonth
+	        .GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.Offer);
+
+        var totalAbsence = DetailedBookingForMonth
+	        .GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.PlannedAbsence);
+
+        var totalNotStartedOrQuit = DetailedBookingForMonth
+	        .GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.NotStartedOrQuit);
+
+        var totalExcludableAbsence = detailedBookingsArray
+            .Where(s => s.BookingDetails is { Type: BookingType.PlannedAbsence, ExcludeFromBilling: true })
+            .Select(wh => wh.TotalHoursForMonth(month))
+            .Sum();
+
+        var totalVacations = DetailedBookingForMonth
+	        .GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.Vacation);
+
+        var bookedTime = totalBillable + totalAbsence + totalVacations + totalHolidayHours + totalNonBillable + totalNotStartedOrQuit;
+
+        var workDaysInMonth = month.GetTotalWeekdaysInMonth();
+        var hoursPerWorkDay = consultant.Department.Organization.HoursPerWorkday;
+
+        var totalSellableTime = Math.Max(hoursPerWorkDay * workDaysInMonth - bookedTime, 0);
+        var totalOverbooked = Math.Max(bookedTime - hoursPerWorkDay * workDaysInMonth, 0);
+
+        return new BookedHoursInMonth(
+            month,
+            new BookingReadModel(
+	            totalBillable,
+	            totalOffered,
+	            totalAbsence,
+	            totalExcludableAbsence,
+                totalSellableTime,
+                totalHolidayHours,
+	            totalVacations,
+                totalOverbooked,
+	            totalNotStartedOrQuit)
+        );
 	}
 
 	private static IEnumerable<ForecastForMonth> GetForecasts(Consultant consultant, List<DateOnly> months, List<BookedHoursInMonth> bookingSummary)
@@ -76,7 +123,7 @@ public static class ReadModelFactory
 	{
 		var organization = consultant.Department.Organization;
 
-		var workdaysInMonth = month.GetTotalWeekdaysInMonth() - organization.GetTotalWeekdayHolidaysInMonth(month);
+		var workdaysInMonth = month.GetTotalWeekdaysInMonth() - organization.GetTotalHolidaysInMonth(month);
 
 		// TODO Forecast: Is this the correct calculation?
 		var hoursInMonth = organization.HoursPerWorkday * workdaysInMonth;
