@@ -20,7 +20,7 @@ export interface BookedHoursPerWeek {
   sortableWeek: number;
   /** @minLength 1 */
   dateString: string;
-  bookingModel: WeeklyBookingReadModel;
+  bookingModel: BookingReadModel;
 }
 export interface BookingDetails {
   /** @minLength 1 */
@@ -202,9 +202,14 @@ export interface SingleConsultantReadModel {
   name: string;
   /** @minLength 1 */
   email: string;
-  competences: string[];
-  /** @minLength 1 */
-  department: string;
+  /** @format date */
+  startDate: string;
+  /** @format date */
+  endDate: string;
+  competences: CompetenceReadModel[];
+  department: DepartmentReadModel;
+  /** @format int32 */
+  graduationYear: number;
   /** @format int32 */
   yearsOfExperience: number;
   degree: Degree;
@@ -263,7 +268,7 @@ export interface VacationReadModel {
   vacationMetaData?: VacationMetaData;
 }
 
-export interface WeeklyBookingReadModel {
+export interface BookingReadModel {
   /** @format double */
   totalBillable: number;
   /** @format double */
@@ -297,4 +302,39 @@ export interface CustomersWithProjectsReadModel {
   isActive: boolean;
   activeEngagements: EngagementReadModel[];
   inactiveEngagements: EngagementReadModel[];
+}
+
+export interface ForecastReadModel {
+  consultant: SingleConsultantReadModel;
+  bookings: BookedHoursInMonth[];
+  detailedBookings: DetailedBookingForMonth[];
+  forecasts: ForecastForMonth[];
+  consultantIsAvailable: boolean;
+}
+
+export interface BookedHoursInMonth {
+  /** @format date */
+  month: string;
+  bookingModel: BookingReadModel;
+}
+
+export interface DetailedBookingForMonth {
+  bookingDetails: BookingDetails;
+  hours: MonthlyHours[];
+}
+
+export interface MonthlyHours {
+  /** @format date */
+  month: string;
+  /** @format double */
+  hours: number;
+}
+
+export interface ForecastForMonth {
+  /** @format date */
+  month: string;
+  /** @format double */
+  calculatedPercentage: number;
+  /** @format int32 */
+  displayedPercentage: number;
 }

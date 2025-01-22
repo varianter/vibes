@@ -42,7 +42,7 @@ public record BookedHoursPerWeek(
     int WeekNumber,
     int SortableWeek,
     string DateString,
-    WeeklyBookingReadModel BookingModel);
+    BookingReadModel BookingModel);
 
 public record DetailedBooking(
     BookingDetails BookingDetails,
@@ -63,16 +63,5 @@ public record DetailedBooking(
             .Sum();
     }
 }
-
-public record WeeklyBookingReadModel(
-    double TotalBillable,
-    double TotalOffered,
-    double TotalPlannedAbsences,
-    double TotalExcludableAbsence,
-    double TotalSellableTime,
-    double TotalHolidayHours,
-    double TotalVacationHours,
-    double TotalOverbooking,
-    double TotalNotStartedOrQuit);
 
 public record WeeklyHours(int Week, double Hours);
