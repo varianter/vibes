@@ -62,12 +62,11 @@ export function MonthCell(props: {
   }
 
   function validateInput() {
-    if (inputValue < forecastValue || inputValue > 100) {
-      const errorMessage =
-        inputValue < forecastValue
-          ? "Du kan ikke legge inn en prognose som er lavere enn bemanningen"
-          : "Du kan ikke legge inn en prognose som er høyere enn 100%";
-      alert(errorMessage);
+    if (inputValue < forecastValue) {
+      alert("Du kan ikke legge inn en prognose som er lavere enn bemanningen");
+      setInputValue(forecastValue);
+    } else if (inputValue > 100) {
+      alert("Du kan ikke legge inn en prognose som er høyere enn 100%");
       setInputValue(forecastValue);
     }
   }
