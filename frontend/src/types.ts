@@ -3,7 +3,7 @@ import {
   BookingType,
   ConsultantReadModel,
   EngagementState,
-  WeeklyBookingReadModel,
+  BookingReadModel,
 } from "@/api-types";
 
 export type YearRange = {
@@ -34,7 +34,7 @@ export interface Month {
 export interface BookedHoursPerMonth {
   month: number;
   year: number;
-  bookingModel: WeeklyBookingReadModel;
+  bookingModel: BookingReadModel;
 }
 
 export interface Forecast {
