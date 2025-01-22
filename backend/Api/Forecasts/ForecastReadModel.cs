@@ -1,5 +1,6 @@
 using Api.Common.Types;
 using Api.Consultants;
+using Core.Extensions;
 
 namespace Api.Forecasts;
 
@@ -16,8 +17,9 @@ public record DetailedBookingForMonth(BookingDetails BookingDetails, List<Monthl
 {
 	public double TotalHoursForMonth(DateOnly month)
 	{
-		// TODO Forecast
-		throw new NotImplementedException();
+		return Hours
+			.Where(hoursPerMonth => hoursPerMonth.Month.EqualsMonth(month))
+			.Sum(hoursInMonth => hoursInMonth.Hours);
 	}
 
 	public static double GetTotalHoursForBookingTypeAndMonth(
