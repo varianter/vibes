@@ -65,7 +65,7 @@ export function MonthCell(props: {
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     setInputValue(parseInt(e.target.value));
-    setHighlightedIndex(-1); // Reset highlighted index
+    setHighlightedIndex(-1);
   }
 
   function validateInput() {
@@ -93,11 +93,6 @@ export function MonthCell(props: {
           setInputValue(options[highlightedIndex]);
         }
         setIsActive(false);
-        /* if (onSave) {
-          onSave(
-            highlightedIndex >= 0 ? options[highlightedIndex] : inputValue,
-          );
-        } */
       } else if (e.key === "Escape") {
         setIsActive(false);
       }
@@ -107,9 +102,6 @@ export function MonthCell(props: {
   function handleOptionClick(option: number) {
     setInputValue(option);
     setIsActive(false);
-    /* if (onSave) {
-      onSave(option);
-    } */
   }
 
   return (
@@ -179,7 +171,7 @@ export function MonthCell(props: {
         </div>
       </div>
       {isActive && (
-        <ul className="flex flex-col border border-primary/30 rounded mt-0.5 absolute w-[96.5%] items-end bg-white opacity-100 z-50">
+        <ul className="flex flex-col border border-primary/30 rounded mt-0.5 absolute w-[99%] items-end bg-white opacity-100 z-50">
           {options.map((opt, index) => (
             <li
               key={opt.toString()}
