@@ -170,7 +170,9 @@ export function MonthCell(props: {
               key={opt.toString()}
               onClick={() => handleOptionClick(opt)}
               className={`overflow-hidden whitespace-nowrap small p-1 w-full hover:bg-primary/[5%] text-right border-b-[1px] last:border-b-0 border-b-primary/[5%] ${
-                index === highlightedIndex ? "bg-black" : "bg-transparent"
+                index === highlightedIndex
+                  ? "bg-primary/[5%]"
+                  : "bg-transparent"
               }`}
             >
               {opt.toString()} <span>%</span>
