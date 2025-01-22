@@ -38,11 +38,13 @@ public static class ReadModelFactory
 
 	private static List<DetailedBookingForMonth> GetDetailedBookings(Consultant consultant, List<Week> weeks)
 	{
+		// TODO Forecast: Similar implementation as StaffingController.ReadModelFactory.DetailedBookings(), but calculate for month
 		throw new NotImplementedException();
 	}
 
 	private static List<BookedHoursInMonth> GetBookedHours(Consultant consultant, List<Week> weeks, List<DetailedBookingForMonth> detailedBookings)
 	{
+		// TODO Forecast: Similar implementation as StaffingController.ReadModelFactory.GetBookedHours(), but calculate for month
 		throw new NotImplementedException();
 	}
 
@@ -76,7 +78,7 @@ public static class ReadModelFactory
 
 		var workdaysInMonth = month.GetTotalWeekdaysInMonth() - organization.GetTotalWeekdayHolidaysInMonth(month);
 
-		// TODO Is this the correct calculation?
+		// TODO Forecast: Is this the correct calculation?
 		var hoursInMonth = organization.HoursPerWorkday * workdaysInMonth;
 
 		var billableAndOfferedHours = booking.TotalBillable + booking.TotalOffered;

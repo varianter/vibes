@@ -20,7 +20,7 @@ public class ForecastDbRepository(ApplicationContext context) : IForecastReposit
 	{
 		var firstDayOfMonth = new DateOnly(month.Year, month.Month, 1);
 
-		// TODO Does this logic support both (A) creating/adding a non-existing object and (B) updating an existing object (found by the composite key)?
+		// TODO Forecast: Does this logic support both (A) creating/adding a non-existing object and (B) updating an existing object (found by the composite key)?
 		var forecast = new Forecast
 		{
 			ConsultantId = consultantId,

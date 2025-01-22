@@ -34,7 +34,7 @@ public class ForecastController(
 		var consultants = service.LoadConsultants(orgUrlKey);
 		consultants = await AddRelationalDataToConsultant(consultants, cancellationToken);
 
-		// TODO Does frontend set the "start of quarter" before making the API call?
+		// TODO Forecast: Does frontend set the "start of quarter" before making the API call?
 		var month = selectedDate ?? DateOnly.FromDateTime(DateTime.Today);
 
 		var forecasts = ReadModelFactory.GetForecastReadModels(consultants, month, monthCount);
