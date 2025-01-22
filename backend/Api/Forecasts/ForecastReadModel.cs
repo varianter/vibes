@@ -8,7 +8,7 @@ public record ForecastReadModel(
 	List<BookedHoursInMonth> Bookings,
 	List<DetailedBookingForMonth> DetailedBookings,
 	List<ForecastForMonth> Forecasts,
-	bool ConsultantIsOccupied);
+	bool ConsultantIsAvailable);
 
 public record BookedHoursInMonth(DateOnly Month, BookingReadModel BookingModel);
 

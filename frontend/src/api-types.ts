@@ -309,7 +309,7 @@ export interface ForecastReadModel {
   bookings: BookedHoursInMonth[];
   detailedBookings: DetailedBookingForMonth[];
   forecasts: ForecastForMonth[];
-  consultantIsOccupied: boolean;
+  consultantIsAvailable: boolean;
 }
 
 export interface BookedHoursInMonth {
