@@ -1,11 +1,13 @@
 using Core.Agreements;
 using Core.Consultants;
 using Core.Engagements;
+using Core.Forecasts;
 using Core.Organizations;
 using Core.PlannedAbsences;
 using Core.Staffings;
 using Infrastructure.Repositories.Consultants;
 using Infrastructure.Repositories.Engagement;
+using Infrastructure.Repositories.Forecasts;
 using Infrastructure.Repositories.Organization;
 using Infrastructure.Repositories.PlannedAbsences;
 using Infrastructure.Repositories.Staffings;
@@ -30,5 +32,7 @@ public static class RepositoryExtensions
 
         builder.Services.AddScoped<IConsultantRepository, ConsultantDbRepository>();
         builder.Services.AddScoped<IAgreementsRepository, AgreementDbRepository>();
+
+        builder.Services.AddScoped<IForecastRepository, ForecastDbRepository>();
     }
 }
