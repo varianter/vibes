@@ -105,7 +105,7 @@ public static class ReadModelFactory
 					ExcludeFromBilling: false,
 					projectGroup.First().Engagement.IsBillable,
 					projectGroup.First().Engagement.Agreements.Select(a => (DateTime?)a.EndDate).DefaultIfEmpty(null).Max()),
-				Hours: months.Select(month => MonthlyHours.For(month, projectGroup)).ToList()));
+				Hours: months.Select(month => MonthlyHours.For(month, projectGroup.ToList(), consultant.Department.Organization)).ToList()));
 	}
 
 	private static IEnumerable<DetailedBookingForMonth> GetPlannedAbsences(Consultant consultant, List<DateOnly> months, List<Week> weeks)
@@ -120,7 +120,7 @@ public static class ReadModelFactory
 					absenceGroup.Key,
 					absenceGroup.First().Absence.Id,
 					absenceGroup.First().Absence.ExcludeFromBillRate),
-				Hours: months.Select(month => MonthlyHours.For(month, absenceGroup)).ToList()));
+				Hours: months.Select(month => MonthlyHours.For(month, absenceGroup.ToList(), consultant.Department.Organization)).ToList()));
 	}
 
 	// Using a similar pattern as in GetBookedHours() in StaffingController/ReadModelFactory

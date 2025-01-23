@@ -41,6 +41,14 @@ public static class DateOnlyExtensions
 		}
 	}
 
+	public static IEnumerable<Week> GetWeeksInMonth(this DateOnly month)
+	{
+		var firstDayOfMonth = new DateOnly(month.Year, month.Month, 1);
+		var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+		return firstDayOfMonth.GetWeeksThrough(lastDayOfMonth);
+	}
+
 	public static IEnumerable<Week> GetWeeksThrough(this DateOnly fromDate, DateOnly lastIncludedDate)
 	{
 		var firstWeek = Week.FromDateOnly(fromDate);

@@ -1,6 +1,8 @@
 using Api.Common.Types;
 using Api.Consultants;
+using Api.Helpers;
 using Core.Extensions;
+using Core.Organizations;
 using Core.PlannedAbsences;
 using Core.Staffings;
 
@@ -40,16 +42,20 @@ public record DetailedBookingForMonth(BookingDetails BookingDetails, List<Monthl
 
 public record struct MonthlyHours(DateOnly Month, double Hours)
 {
-	public static MonthlyHours For(DateOnly month, IGrouping<int, Staffing> staffingGroup)
+	public static MonthlyHours For(DateOnly month, List<Staffing> staffings, Organization organization)
 	{
-		// TODO Forecast
-		throw new NotImplementedException();
+		var staffedHoursInMonth = month.GetWeeksInMonth()
+			.Sum(week => MonthlyHoursHelper.GetStaffedHoursForMonthInWeek(month, week, staffings, organization));
+
+		return new MonthlyHours(month, staffedHoursInMonth);
 	}
 
-	public static MonthlyHours For(DateOnly month, IGrouping<string, PlannedAbsence> plannedAbsenceGroup)
+	public static MonthlyHours For(DateOnly month, List<PlannedAbsence> plannedAbsences, Organization organization)
 	{
-		// TODO Forecast
-		throw new NotImplementedException();
+		var absenceHoursInMonth = month.GetWeeksInMonth()
+			.Sum(week => MonthlyHoursHelper.GetPlannedAbsenceHoursForMonthInWeek(month, week, plannedAbsences, organization));
+
+		return new MonthlyHours(month, absenceHoursInMonth);
 	}
 }
 

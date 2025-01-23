@@ -24,10 +24,15 @@ public class Organization
     public required List<Customer> Customers { get; init; }
     public required List<Absence> AbsenceTypes { get; init; }
 
+    public IEnumerable<DateOnly> GetHolidaysInWeek(Week week)
+    {
+        var datesOfWorkWeek = week.GetDatesInWorkWeek();
+        return datesOfWorkWeek.Where(IsHoliday);
+    }
+
     private int GetTotalHolidaysOfWeek(Week week)
     {
-        var datesOfThisWeek = week.GetDatesInWorkWeek();
-        return datesOfThisWeek.Count(IsHoliday);
+        return GetHolidaysInWeek(week).Count();
     }
 
     public double GetTotalHolidayHoursOfWeek(Week week)
@@ -89,6 +94,9 @@ public class Organization
         return date >= startDate && date <= endDate;
     }
 
+    /// <summary>
+    /// Returns a list of dates for all the public holidays and organization-provided holidays for the given year
+    /// </summary>
     public List<DateOnly> GetPublicHolidays(int year)
     {
         var publicHoliday = GetPublicHoliday();
