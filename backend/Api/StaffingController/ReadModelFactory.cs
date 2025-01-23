@@ -237,12 +237,7 @@ public class ReadModelFactory(StorageService storageService)
 
     private static DetailedBooking CreateNotStartedOrQuitDetailedBooking(List<WeeklyHours> weeks)
     {
-        return new DetailedBooking(
-            new BookingDetails("Ikke startet eller sluttet", BookingType.NotStartedOrQuit,
-                "Ikke startet eller sluttet",
-                0, true), //Empty projectName as NotStartedOrQuit does not have a project, 0 as projectId as NotStartedOrQuit since it's just used to mark not started or quit
-            weeks
-        );
+        return new DetailedBooking(BookingDetails.ForNotStartedOrQuit(), weeks);
     }
 
     private static BookedHoursPerWeek GetBookedHours(Week week, IEnumerable<DetailedBooking> detailedBookings,

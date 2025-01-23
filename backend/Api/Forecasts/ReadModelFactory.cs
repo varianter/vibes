@@ -1,5 +1,6 @@
 using Api.Common.Types;
 using Api.Consultants;
+using Api.Helpers;
 using Core.Consultants;
 using Core.Engagements;
 using Core.Extensions;
@@ -70,12 +71,18 @@ public static class ReadModelFactory
 
 		if (consultant.StartDate > firstWorkDayInScope)
 		{
-			// TODO Forecast
+			var monthlyWorkHoursBeforeStartDate =
+				MonthlyHoursHelper.CalculateMonthlyWorkHoursBefore(consultant.StartDate.Value, months, consultant);
+
+			detailedBookings = detailedBookings.Append(DetailedBookingForMonth.NotStartedOrQuit(monthlyWorkHoursBeforeStartDate));
 		}
 
 		if (consultant.EndDate < firstWorkDayOutOfScope)
 		{
-			// TODO Forecast
+			var monthlyWorkHoursAfterEndDate =
+				MonthlyHoursHelper.CalculateMonthlyWorkHoursAfter(consultant.EndDate.Value, months, consultant);
+
+			detailedBookings = detailedBookings.Append(DetailedBookingForMonth.NotStartedOrQuit(monthlyWorkHoursAfterEndDate));
 		}
 
 		return detailedBookings.ToList();

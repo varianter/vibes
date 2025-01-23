@@ -38,6 +38,11 @@ public record DetailedBookingForMonth(BookingDetails BookingDetails, List<Monthl
 			.Where(b => !evaluateBillable || b.BookingDetails.IsBillable == isBillable)
 			.Sum(b => b.TotalHoursForMonth(month));
 	}
+
+	public static DetailedBookingForMonth NotStartedOrQuit(List<MonthlyHours> hoursPerMonth)
+	{
+		return new DetailedBookingForMonth(BookingDetails.ForNotStartedOrQuit(), hoursPerMonth);
+	}
 }
 
 public record struct MonthlyHours(DateOnly Month, double Hours)

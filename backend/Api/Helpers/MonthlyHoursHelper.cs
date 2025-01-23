@@ -1,3 +1,5 @@
+using Api.Forecasts;
+using Core.Consultants;
 using Core.Extensions;
 using Core.Organizations;
 using Core.PlannedAbsences;
@@ -8,6 +10,18 @@ namespace Api.Helpers;
 
 public static class MonthlyHoursHelper
 {
+	public static List<MonthlyHours> CalculateMonthlyWorkHoursBefore(DateOnly date, List<DateOnly> months, Consultant consultant)
+	{
+		// TODO Forecast
+		throw new NotImplementedException();
+	}
+
+	public static List<MonthlyHours> CalculateMonthlyWorkHoursAfter(DateOnly date, List<DateOnly> months, Consultant consultant)
+	{
+		// TODO Forecast
+		throw new NotImplementedException();
+	}
+
 	public static double GetStaffedHoursForMonthInWeek(DateOnly month, Week week, List<Staffing> staffings, Organization organization)
 	{
 		var staffedHoursInWeek = staffings
