@@ -77,11 +77,7 @@ export default function ForecastTable() {
       <colgroup>
         <col span={1} className="w-[190px]" />
         {monthsWithYears.map((_, index) => (
-          <col
-            key={index}
-            span={1}
-            className={`w-[calc((1%/${monthsWithYears.length + 3})*100)]`}
-          />
+          <col key={index} span={1} className={`w-[calc((1%/15)*100)]`} />
         ))}
       </colgroup>
       <thead>
