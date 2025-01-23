@@ -156,7 +156,7 @@ public class ReadModelFactory(StorageService storageService)
                 consultant.Department.Organization.HoursPerWorkday
             )).ToList();
             detailedBookings = detailedBookings.Append(new DetailedBooking(
-                BookingDetails.ForVacation(),
+                BookingDetails.Vacation(),
                 vacationsPrWeek));
         }
 
@@ -237,7 +237,7 @@ public class ReadModelFactory(StorageService storageService)
 
     private static DetailedBooking CreateNotStartedOrQuitDetailedBooking(List<WeeklyHours> weeks)
     {
-        return new DetailedBooking(BookingDetails.ForNotStartedOrQuit(), weeks);
+        return new DetailedBooking(BookingDetails.NotStartedOrQuit(), weeks);
     }
 
     private static BookedHoursPerWeek GetBookedHours(Week week, IEnumerable<DetailedBooking> detailedBookings,

@@ -64,7 +64,7 @@ public static class ReadModelFactory
 				.ToList();
 
 			detailedBookings = detailedBookings.Append(new DetailedBookingForMonth(
-				BookingDetails.ForVacation(),
+				BookingDetails.Vacation(),
 				Hours: vacationHoursPerMonth));
 		}
 
@@ -164,7 +164,7 @@ public static class ReadModelFactory
 
         var bookedTime = totalBillable + totalAbsence + totalVacations + totalHolidayHours + totalNonBillable + totalNotStartedOrQuit;
 
-        var workDaysInMonth = month.GetTotalWeekdaysInMonth();
+        var workDaysInMonth = month.CountWeekdaysInMonth();
         var hoursPerWorkDay = consultant.Department.Organization.HoursPerWorkday;
 
         var totalSellableTime = Math.Max(hoursPerWorkDay * workDaysInMonth - bookedTime, 0);
@@ -213,7 +213,7 @@ public static class ReadModelFactory
 	{
 		var organization = consultant.Department.Organization;
 
-		var workdaysInMonth = month.GetTotalWeekdaysInMonth() - organization.GetTotalHolidaysInMonth(month);
+		var workdaysInMonth = month.CountWeekdaysInMonth() - organization.GetTotalHolidaysInMonth(month);
 
 		// TODO Forecast: Is this the correct calculation?
 		var hoursInMonth = organization.HoursPerWorkday * workdaysInMonth;

@@ -9,7 +9,7 @@ public record BookingDetails(
 	bool IsBillable = false,
 	DateTime? EndDateAgreement = null)
 {
-	public static BookingDetails ForVacation()
+	public static BookingDetails Vacation()
 	{
 		// 0 as ProjectId as vacation is weird
 		return new BookingDetails(
@@ -19,7 +19,7 @@ public record BookingDetails(
 			ProjectId: 0);
 	}
 
-	public static BookingDetails ForNotStartedOrQuit()
+	public static BookingDetails NotStartedOrQuit()
 	{
 		// 0 as ProjectId since it's just used to mark not started or quit
 		return new BookingDetails(

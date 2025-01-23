@@ -41,7 +41,7 @@ public record DetailedBookingForMonth(BookingDetails BookingDetails, List<Monthl
 
 	public static DetailedBookingForMonth NotStartedOrQuit(List<MonthlyHours> hoursPerMonth)
 	{
-		return new DetailedBookingForMonth(BookingDetails.ForNotStartedOrQuit(), hoursPerMonth);
+		return new DetailedBookingForMonth(BookingDetails.NotStartedOrQuit(), hoursPerMonth);
 	}
 }
 

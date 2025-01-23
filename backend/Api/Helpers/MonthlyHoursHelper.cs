@@ -30,7 +30,7 @@ public static class MonthlyHoursHelper
 			.Where(staffing => staffing.Week.Equals(week))
 			.Sum(staffing => staffing.Hours);
 
-		return GetHoursForMonthInWeek(month, week, staffedHoursInWeek, organization);
+		return GetHoursInWeekWithinMonth(month, week, staffedHoursInWeek, organization);
 	}
 
 	public static double GetPlannedAbsenceHoursForMonthInWeek(DateOnly month, Week week, List<PlannedAbsence> plannedAbsences, Organization organization)
@@ -39,7 +39,7 @@ public static class MonthlyHoursHelper
 			.Where(absence => absence.Week.Equals(week))
 			.Sum(absence => absence.Hours);
 
-		return GetHoursForMonthInWeek(month, week, absenceHoursInWeek, organization);
+		return GetHoursInWeekWithinMonth(month, week, absenceHoursInWeek, organization);
 	}
 
 	private static List<MonthlyHours> CalculateMonthlyWorkHours(DateOnly fromDate, DateOnly toDateExclusive, Organization organization)
@@ -54,30 +54,30 @@ public static class MonthlyHoursHelper
 		var toDateInclusive = toDateExclusive.AddDays(-1);
 
 		return months
-			.Select(month => GetWorkHoursForMonthInTimeSpan(month, fromDate, toDateInclusive, organization))
+			.Select(month => CalculateWorkHoursForMonthInTimeSpan(month, fromDate, toDateInclusive, organization))
 			.ToList();
 	}
 
-	private static MonthlyHours GetWorkHoursForMonthInTimeSpan(DateOnly month, DateOnly firstDayInTimeSpan, DateOnly lastDayInTimeSpan, Organization organization)
+	private static MonthlyHours CalculateWorkHoursForMonthInTimeSpan(DateOnly month, DateOnly firstDayInTimeSpan, DateOnly lastDayInTimeSpan, Organization organization)
 	{
 		var workdays = month.WholeMonthIsIncludedInTimeSpan(firstDayInTimeSpan, lastDayInTimeSpan)
-			? GetWorkdaysInMonth(month, organization)
-			: GetWorkdaysInMonthWithinTimeSpan(month, firstDayInTimeSpan, lastDayInTimeSpan, organization);
+			? CalculateWorkdaysInMonth(month, organization)
+			: CalculateWorkdaysInMonthWithinTimeSpan(month, firstDayInTimeSpan, lastDayInTimeSpan, organization);
 
 		var workHours = organization.HoursPerWorkday * workdays;
 
 		return new MonthlyHours(month, workHours);
 	}
 
-	private static double GetWorkdaysInMonth(DateOnly month, Organization organization)
+	private static double CalculateWorkdaysInMonth(DateOnly month, Organization organization)
 	{
 		var weekdayHolidaysInMonth = organization.GetHolidaysInMonth(month)
 			.Count(DateOnlyExtensions.IsWeekday);
 
-		return month.GetTotalWeekdaysInMonth() - weekdayHolidaysInMonth;
+		return month.CountWeekdaysInMonth() - weekdayHolidaysInMonth;
 	}
 
-	private static int GetWorkdaysInMonthWithinTimeSpan(DateOnly month, DateOnly firstDayInTimeSpan, DateOnly lastDayInTimeSpan, Organization organization)
+	private static int CalculateWorkdaysInMonthWithinTimeSpan(DateOnly month, DateOnly firstDayInTimeSpan, DateOnly lastDayInTimeSpan, Organization organization)
 	{
 		var fromDate = DateOnlyExtensions.Max(month.FirstDayInMonth(), firstDayInTimeSpan);
 		var toDateInclusive = DateOnlyExtensions.Min(month.LastDayInMonth(), lastDayInTimeSpan);
@@ -92,7 +92,7 @@ public static class MonthlyHoursHelper
 		return weekdays - weekdayHolidays;
 	}
 
-	private static double GetHoursForMonthInWeek(DateOnly month, Week week, double hoursInWeek, Organization organization)
+	private static double GetHoursInWeekWithinMonth(DateOnly month, Week week, double hoursInWeek, Organization organization)
 	{
 		if (hoursInWeek.IsEqualTo(0))
 		{
@@ -107,13 +107,13 @@ public static class MonthlyHoursHelper
 		var availableWorkHours = GetAvailableWorkHours(month, week, organization);
 
 		if (hoursInWeek.IsEqualTo(availableWorkHours.InWeek) ||
-		    hoursInWeek.IsEqualTo(availableWorkHours.InWeekAndMonth))
+		    hoursInWeek.IsEqualTo(availableWorkHours.InWeekWithinMonth))
 		{
-			return availableWorkHours.InWeekAndMonth;
+			return availableWorkHours.InWeekWithinMonth;
 		}
 
 		// We are done trying to be smart: Making the assumption that the work hours are evenly distributed between each work day of the week
-		return hoursInWeek * (availableWorkHours.InWeekAndMonth / availableWorkHours.InWeek);
+		return hoursInWeek * (availableWorkHours.InWeekWithinMonth / availableWorkHours.InWeek);
 	}
 
 	private static bool WholeWorkWeekIsInMonth(DateOnly month, Week week)
@@ -122,7 +122,7 @@ public static class MonthlyHoursHelper
 		       week.LastWorkDayOfWeek().EqualsMonth(month);
 	}
 
-	private static (double InWeek, double InWeekAndMonth) GetAvailableWorkHours(DateOnly month, Week week, Organization organization)
+	private static (double InWeek, double InWeekWithinMonth) GetAvailableWorkHours(DateOnly month, Week week, Organization organization)
 	{
 		var holidaysInWeek = organization.GetHolidaysInWeek(week);
 
@@ -130,12 +130,12 @@ public static class MonthlyHoursHelper
 			.Where(date => !holidaysInWeek.Contains(date))
 			.ToList();
 
-		var workdaysInWeekAndMonth = workdaysInWeek
+		var workdaysInWeekWithinMonth = workdaysInWeek
 			.Count(workday => workday.EqualsMonth(month));
 
-		var availableWorkHoursInWeekAndMonth = organization.HoursPerWorkday * workdaysInWeekAndMonth;
-		var availableWorkHoursInWeek = organization.HoursPerWorkday * workdaysInWeek.Count;
+		var workHoursInWeek = organization.HoursPerWorkday * workdaysInWeek.Count;
+		var workHoursInWeekWithinMonth = organization.HoursPerWorkday * workdaysInWeekWithinMonth;
 
-		return (availableWorkHoursInWeek, availableWorkHoursInWeekAndMonth);
+		return (workHoursInWeek, workHoursInWeekWithinMonth);
 	}
 }
