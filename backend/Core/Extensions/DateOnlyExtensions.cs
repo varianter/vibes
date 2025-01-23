@@ -11,22 +11,41 @@ public static class DateOnlyExtensions
 
 	public static int GetTotalWeekdaysInMonth(this DateOnly month)
 	{
-		var firstDayInMonth = new DateOnly(month.Year, month.Month, 1);
+		return GetWeekdaysInMonth(month).Count();
+	}
 
-		var weekdayCount = 0;
-
-		for (var date = firstDayInMonth; date.EqualsMonth(month); date.AddDays(1))
+	public static IEnumerable<DateOnly> GetWeekdaysInMonth(this DateOnly month)
+	{
+		for (var date = month.FirstDayInMonth(); date.EqualsMonth(month); date.AddDays(1))
 		{
 			if (date.IsWeekday())
 			{
-				weekdayCount++;
+				yield return date;
 			}
 		}
+	}
 
-		return weekdayCount;
+	public static bool WholeMonthIsIncludedInTimeSpan(this DateOnly month, DateOnly firstDayInTimeSpan, DateOnly lastDayInTimeSpan)
+	{
+		if (month.FirstDayInMonth() < firstDayInTimeSpan)
+		{
+			return false;
+		}
+
+		if (lastDayInTimeSpan < month.LastDayInMonth())
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	public static bool IsWeekday(this DateOnly date) => date.DayOfWeek is >= DayOfWeek.Monday and <= DayOfWeek.Friday;
+
+	public static int CountDaysInTimeSpan(this IEnumerable<DateOnly> days, DateOnly fromDate, DateOnly toDateInclusive)
+	{
+		return days.Count(day => day >= fromDate && day <= toDateInclusive);
+	}
 
 	public static IEnumerable<DateOnly> GetMonthsUntil(this DateOnly fromMonth, DateOnly firstExcludedMonth)
 	{
@@ -43,10 +62,7 @@ public static class DateOnlyExtensions
 
 	public static IEnumerable<Week> GetWeeksInMonth(this DateOnly month)
 	{
-		var firstDayOfMonth = new DateOnly(month.Year, month.Month, 1);
-		var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
-
-		return firstDayOfMonth.GetWeeksThrough(lastDayOfMonth);
+		return month.FirstDayInMonth().GetWeeksThrough(month.LastDayInMonth());
 	}
 
 	public static IEnumerable<Week> GetWeeksThrough(this DateOnly fromDate, DateOnly lastIncludedDate)
@@ -59,7 +75,7 @@ public static class DateOnlyExtensions
 
 	public static DateOnly FirstWeekdayInMonth(this DateOnly month)
 	{
-		var firstDayInMonth = new DateOnly(month.Year, month.Month, 1);
+		var firstDayInMonth = month.FirstDayInMonth();
 
 		return firstDayInMonth.DayOfWeek switch
 		{
@@ -67,5 +83,30 @@ public static class DateOnlyExtensions
 			DayOfWeek.Sunday => firstDayInMonth.AddDays(1),
 			_ => firstDayInMonth,
 		};
+	}
+
+	public static DateOnly Max(DateOnly date, DateOnly other)
+	{
+		return date > other ? date : other;
+	}
+
+	public static DateOnly Min(DateOnly date, DateOnly other)
+	{
+		return date < other ? date : other;
+	}
+
+	public static DateOnly FirstDayInMonth(this DateOnly month)
+	{
+		if (month.Day == 1)
+		{
+			return month;
+		}
+
+		return new DateOnly(month.Year, month.Month, 1);
+	}
+
+	public static DateOnly LastDayInMonth(this DateOnly month)
+	{
+		return month.FirstDayInMonth().AddMonths(1).AddDays(-1);
 	}
 }

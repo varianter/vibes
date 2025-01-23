@@ -52,12 +52,14 @@ public static class ReadModelFactory
 
 		var detailedBookings = billableBookings.Concat(offeredBookings).Concat(plannedAbsences);
 
+		var organization = consultant.Department.Organization;
+
 		if (TryGetVacations(consultant, fromMonth, firstExcludedMonth, out var vacations))
 		{
 			var vacationHoursPerMonth = months
 				.Select(month => new MonthlyHours(
 					month,
-					Hours: consultant.Department.Organization.HoursPerWorkday *
+					Hours: organization.HoursPerWorkday *
 					       vacations.Count(v => v.Date.EqualsMonth(month))))
 				.ToList();
 
@@ -72,7 +74,7 @@ public static class ReadModelFactory
 		if (consultant.StartDate > firstWorkDayInScope)
 		{
 			var monthlyWorkHoursBeforeStartDate =
-				MonthlyHoursHelper.CalculateMonthlyWorkHoursBefore(consultant.StartDate.Value, months, consultant);
+				MonthlyHoursHelper.CalculateMonthlyWorkHoursBefore(consultant.StartDate.Value, months, organization);
 
 			detailedBookings = detailedBookings.Append(DetailedBookingForMonth.NotStartedOrQuit(monthlyWorkHoursBeforeStartDate));
 		}
@@ -80,7 +82,7 @@ public static class ReadModelFactory
 		if (consultant.EndDate < firstWorkDayOutOfScope)
 		{
 			var monthlyWorkHoursAfterEndDate =
-				MonthlyHoursHelper.CalculateMonthlyWorkHoursAfter(consultant.EndDate.Value, months, consultant);
+				MonthlyHoursHelper.CalculateMonthlyWorkHoursAfter(consultant.EndDate.Value, months, organization);
 
 			detailedBookings = detailedBookings.Append(DetailedBookingForMonth.NotStartedOrQuit(monthlyWorkHoursAfterEndDate));
 		}

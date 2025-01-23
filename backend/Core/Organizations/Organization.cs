@@ -46,9 +46,17 @@ public class Organization
     /// </summary>
     public int GetTotalHolidaysInMonth(DateOnly month)
     {
+        return GetHolidaysInMonth(month).Count();
+    }
+
+    /// <summary>
+    /// Returns all holidays that occur on a weekday (work day) within the given month
+    /// </summary>
+    public IEnumerable<DateOnly> GetHolidaysInMonth(DateOnly month)
+    {
         return GetPublicHolidays(month.Year)
             .Where(holiday => holiday.EqualsMonth(month))
-            .Count(DateOnlyExtensions.IsWeekday);
+            .Where(DateOnlyExtensions.IsWeekday);
     }
 
     /// <summary>
