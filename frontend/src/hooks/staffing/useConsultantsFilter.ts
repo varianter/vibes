@@ -75,6 +75,26 @@ export function useConsultantsFilter() {
   const { filteredYears } = useRawYearsFilter();
   const { availabilityFilterOn } = useAvailabilityFilter();
 
+  /*   function call1000() {
+    console.time("100000");
+    for (let i = 0; i < 100000; i++) {
+      filterConsultants2({
+        search: searchFilter,
+        departmentFilter,
+        competenceFilter,
+        yearFilter: filteredYears,
+        consultants,
+        availabilityFilterOn,
+        activeExperienceFrom: experienceFromFilter,
+        activeExperienceTo: experienceToFilter,
+      });
+      if (i === 99999) {
+        console.timeEnd("100000");
+      }
+    }
+  }
+  call1000(); */
+
   const filteredConsultants = filterConsultants({
     search: searchFilter,
     departmentFilter,
@@ -104,7 +124,7 @@ export function useConsultantsFilter() {
   };
 }
 
-export function filterConsultants({
+export function filterConsultants2({
   search,
   departmentFilter,
   competenceFilter,
@@ -160,6 +180,131 @@ export function filterConsultants({
       experienceRange(consultant, activeExperienceFrom, activeExperienceTo),
     );
   }
+  return newFilteredConsultants;
+}
+
+export function filterConsultants({
+  search,
+  departmentFilter,
+  competenceFilter,
+  yearFilter,
+  consultants,
+  availabilityFilterOn,
+  activeExperienceFrom,
+  activeExperienceTo,
+}: {
+  search: string;
+  departmentFilter: string;
+  competenceFilter: string;
+  yearFilter: YearRange[];
+  consultants: ConsultantReadModel[];
+  availabilityFilterOn: Boolean;
+  activeExperienceFrom: string;
+  activeExperienceTo: string;
+}) {
+  const newFilteredConsultants: ConsultantReadModel[] = [];
+  function filterSearch(search: string, consultant: ConsultantReadModel) {
+    return consultant.name.match(
+      new RegExp(`(?<!\\p{L})${search}.*\\b`, "giu"),
+    );
+  }
+  function filterDepartment(
+    departmentFilter: string,
+    consultant: ConsultantReadModel,
+  ) {
+    return departmentFilter.includes(consultant.department.id);
+  }
+
+  function filterCompetence(
+    competenceFilter: string,
+    consultant: ConsultantReadModel,
+  ) {
+    if (!competenceFilter || competenceFilter.length === 0) return true;
+    return competenceFilter
+      .toLowerCase()
+      .split(",")
+      .map((c) => c.trim())
+      .some((c) =>
+        consultant.competences.map((c) => c.id.toLowerCase()).includes(c),
+      );
+  }
+  function inYearRanges(
+    consultant: ConsultantReadModel,
+    yearRanges: YearRange[],
+  ) {
+    for (const range of yearRanges) {
+      if (
+        consultant.yearsOfExperience >= range.start &&
+        (!range.end || consultant.yearsOfExperience <= range.end)
+      )
+        return true;
+    }
+    return false;
+  }
+
+  function filterRawYear(
+    yearFilter: YearRange[],
+    consultant: ConsultantReadModel,
+  ) {
+    if (yearFilter.length === 0) return true;
+    return inYearRanges(consultant, yearFilter);
+  }
+
+  function filterAvailable(consultant: ConsultantReadModel) {
+    return !consultant.isOccupied;
+  }
+
+  function experienceRange(
+    consultant: ConsultantReadModel,
+    experienceFrom: string,
+    experienceTo: string,
+  ) {
+    const experienceRange = {
+      start: parseInt(experienceFrom),
+      end: parseInt(experienceTo),
+    };
+    if (
+      (Number.isNaN(experienceRange.start) ||
+        consultant.yearsOfExperience >= experienceRange.start) &&
+      (Number.isNaN(experienceRange.end) ||
+        consultant.yearsOfExperience <= experienceRange.end)
+    )
+      return true;
+    else {
+      return false;
+    }
+  }
+  function filterExperience(
+    experienceFrom: string,
+    experienceTo: string,
+    consultant: ConsultantReadModel,
+  ) {
+    if (experienceFrom === "" && experienceTo === "") return true;
+    return experienceRange(consultant, experienceFrom, experienceTo);
+  }
+
+  consultants.forEach((consultant) => {
+    if (
+      (availabilityFilterOn && !filterAvailable(consultant)) ||
+      ((activeExperienceFrom != "" || activeExperienceTo != "") &&
+        !filterExperience(
+          activeExperienceFrom,
+          activeExperienceTo,
+          consultant,
+        )) ||
+      (yearFilter.length > 0 && !filterRawYear(yearFilter, consultant)) ||
+      (competenceFilter &&
+        competenceFilter.length > 0 &&
+        !filterCompetence(competenceFilter, consultant)) ||
+      (departmentFilter &&
+        departmentFilter.length > 0 &&
+        !filterDepartment(departmentFilter, consultant)) ||
+      (search && search.length > 0 && !filterSearch(search, consultant))
+    )
+      return;
+
+    newFilteredConsultants.push(consultant);
+  });
   return newFilteredConsultants;
 }
 

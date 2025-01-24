@@ -1,4 +1,4 @@
-import { YearRange } from "@/types";
+import { ConsultantForecastReadModel, YearRange } from "@/types";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { useContext, useEffect, useState } from "react";
 import { useRawYearsFilter } from "../staffing/useRawYearFilter";
@@ -6,6 +6,14 @@ import { useAvailabilityFilter } from "../staffing/useAvailabilityFilter";
 import { usePathname } from "next/navigation";
 import { ConsultantReadModel, ProjectWithCustomerModel } from "@/api-types";
 import { FilteredForecastContext } from "./ForecastFilterProvider";
+import {
+  filterAvailable,
+  filterCompetence,
+  filterDepartment,
+  filterExperience,
+  filterRawYear,
+  filterSearch,
+} from "./FilterPredicates";
 
 async function getNumWorkHours(
   setNumWorkHours: Function,
@@ -58,7 +66,7 @@ export function useSimpleConsultantsFilter() {
 }
 
 export function useConsultantsFilter() {
-  const { consultants } = useContext(FilteredContext);
+  const { consultants } = useContext(FilteredForecastContext);
   const [numWorkHours, setNumWorkHours] = useState<number>(-1);
   const organisationName = usePathname().split("/")[1];
 
@@ -72,7 +80,8 @@ export function useConsultantsFilter() {
     searchFilter,
     experienceFromFilter,
     experienceToFilter,
-  } = useContext(FilteredContext).activeFilters;
+    startDate,
+  } = useContext(FilteredForecastContext).activeFilters;
 
   const { filteredYears } = useRawYearsFilter();
   const { availabilityFilterOn } = useAvailabilityFilter();
@@ -89,9 +98,9 @@ export function useConsultantsFilter() {
   });
 
   const { weeklyTotalBillable, weeklyTotalBillableAndOffered } =
-    setWeeklyTotalBillable(filteredConsultants);
+    setMonthlyTotalBillable(filteredConsultants);
 
-  const weeklyInvoiceRates = setWeeklyInvoiceRate(
+  const weeklyInvoiceRates = setMonthlyInvoiceRate(
     filteredConsultants,
     weeklyTotalBillable,
     numWorkHours,
@@ -115,91 +124,30 @@ export function filterConsultants({
   availabilityFilterOn,
   activeExperienceFrom,
   activeExperienceTo,
-  startDate,
 }: {
   search: string;
   departmentFilter: string;
   competenceFilter: string;
   yearFilter: YearRange[];
-  consultants: ConsultantReadModel[];
+  consultants: ConsultantForecastReadModel[];
   availabilityFilterOn: Boolean;
   activeExperienceFrom: string;
   activeExperienceTo: string;
-  startDate: string;
 }) {
-  let newFilteredConsultants = consultants;
-  if (search && search.length > 0) {
-    newFilteredConsultants = newFilteredConsultants?.filter((consultant) =>
-      consultant.name.match(new RegExp(`(?<!\\p{L})${search}.*\\b`, "giu")),
-    );
-  }
-  if (departmentFilter && departmentFilter.length > 0) {
-    newFilteredConsultants = newFilteredConsultants?.filter((consultant) =>
-      departmentFilter.includes(consultant.department.id),
-    );
-  }
-  if (competenceFilter && competenceFilter.length > 0) {
-    newFilteredConsultants = newFilteredConsultants?.filter((consultant) =>
-      competenceFilter
-        .toLowerCase()
-        .split(",")
-        .map((c) => c.trim())
-        .some((c) =>
-          consultant.competences.map((c) => c.id.toLowerCase()).includes(c),
-        ),
-    );
-  }
-  if (yearFilter.length > 0) {
-    newFilteredConsultants = newFilteredConsultants.filter((consultant) =>
-      inYearRanges(consultant, yearFilter),
-    );
-  }
-  if (availabilityFilterOn) {
-    newFilteredConsultants = newFilteredConsultants.filter(
-      (consultant) => !consultant.isOccupied,
-    );
-  }
-  if (activeExperienceFrom != "" || activeExperienceTo != "") {
-    newFilteredConsultants = newFilteredConsultants.filter((consultant) =>
-      experienceRange(consultant, activeExperienceFrom, activeExperienceTo),
-    );
+  const newFilteredConsultants = [];
+
+  for (const consultant of consultants) {
+    if (availabilityFilterOn && !filterAvailable(consultant)) continue;
+    if (!filterExperience(activeExperienceFrom, activeExperienceTo, consultant))
+      continue;
+    if (!filterRawYear(yearFilter, consultant)) continue;
+    if (!filterCompetence(competenceFilter, consultant)) continue;
+    if (!filterDepartment(departmentFilter, consultant)) continue;
+    if (!filterSearch(search, consultant)) continue;
+
+    newFilteredConsultants.push(consultant);
   }
   return newFilteredConsultants;
-}
-
-function experienceRange(
-  consultant: ConsultantReadModel,
-  experienceFrom: string,
-  experienceTo: string,
-) {
-  const experienceRange = {
-    start: parseInt(experienceFrom),
-    end: parseInt(experienceTo),
-  };
-  if (
-    (Number.isNaN(experienceRange.start) ||
-      consultant.yearsOfExperience >= experienceRange.start) &&
-    (Number.isNaN(experienceRange.end) ||
-      consultant.yearsOfExperience <= experienceRange.end)
-  )
-    return true;
-  else {
-    return false;
-  }
-}
-
-function inYearRanges(
-  consultant: ConsultantReadModel,
-  yearRanges: YearRange[],
-) {
-  for (const range of yearRanges) {
-    if (
-      consultant.yearsOfExperience >= range.start &&
-      (!range.end || consultant.yearsOfExperience <= range.end)
-    )
-      return true;
-  }
-  return false;
 }
 
 interface WeeklyTotal {
@@ -207,33 +155,33 @@ interface WeeklyTotal {
   weeklyTotalBillableAndOffered: Map<number, number>;
 }
 
-export function setWeeklyTotalBillable(
-  filteredConsultants: ConsultantReadModel[],
+export function setMonthlyTotalBillable(
+  filteredConsultants: ConsultantForecastReadModel[],
 ): WeeklyTotal {
-  const weeklyTotalBillable = new Map<number, number>();
-  const weeklyTotalBillableAndOffered = new Map<number, number>();
+  const monthlyTotalBillable = new Map<number, number>();
+  const monthlyTotalBillableAndOffered = new Map<number, number>();
 
   filteredConsultants.forEach((consultant) => {
     consultant.bookings.forEach((booking) => {
-      if (weeklyTotalBillable.has(booking.weekNumber)) {
-        weeklyTotalBillable.set(
-          booking.weekNumber,
-          (weeklyTotalBillable.get(booking.weekNumber) || 0) +
+      if (monthlyTotalBillable.has(booking.month)) {
+        monthlyTotalBillable.set(
+          booking.month,
+          (monthlyTotalBillable.get(booking.month) || 0) +
             booking.bookingModel.totalBillable,
         );
-        weeklyTotalBillableAndOffered.set(
-          booking.weekNumber,
-          (weeklyTotalBillableAndOffered.get(booking.weekNumber) || 0) +
+        monthlyTotalBillableAndOffered.set(
+          booking.month,
+          (monthlyTotalBillableAndOffered.get(booking.month) || 0) +
             booking.bookingModel.totalBillable +
             booking.bookingModel.totalOffered,
         );
       } else {
-        weeklyTotalBillable.set(
-          booking.weekNumber,
+        monthlyTotalBillable.set(
+          booking.month,
           booking.bookingModel.totalBillable,
         );
-        weeklyTotalBillableAndOffered.set(
-          booking.weekNumber,
+        monthlyTotalBillableAndOffered.set(
+          booking.month,
           booking.bookingModel.totalBillable +
             booking.bookingModel.totalOffered,
         );
@@ -242,48 +190,24 @@ export function setWeeklyTotalBillable(
   });
 
   return {
-    weeklyTotalBillable,
-    weeklyTotalBillableAndOffered,
+    weeklyTotalBillable: monthlyTotalBillable,
+    weeklyTotalBillableAndOffered: monthlyTotalBillableAndOffered,
   };
 }
 
-export function setWeeklyTotalBillableForProject(
-  selectedConsultants: ConsultantReadModel[],
-  project: ProjectWithCustomerModel,
-) {
-  const weeklyTotalBillableAndOffered = new Map<number, number>();
-
-  selectedConsultants.map((consultant) => {
-    const bookingDetail = consultant.detailedBooking.find(
-      (booking) => booking.bookingDetails.projectId === project.projectId,
-    );
-
-    if (bookingDetail) {
-      bookingDetail.hours.map((weeklyHours) => {
-        weeklyTotalBillableAndOffered.set(
-          weeklyHours.week,
-          (weeklyTotalBillableAndOffered.get(weeklyHours.week) || 0) +
-            weeklyHours.hours,
-        );
-      });
-    }
-  });
-  return weeklyTotalBillableAndOffered;
-}
-
-function setWeeklyInvoiceRate(
-  filteredConsultants: ConsultantReadModel[],
+function setMonthlyInvoiceRate(
+  filteredConsultants: ConsultantForecastReadModel[],
   weeklyTotalBillable: Map<number, number>,
   numWorkHours: number,
 ) {
   const weeklyInvoiceRate = new Map<number, number>();
 
-  weeklyTotalBillable.forEach((totalBillable, weekNumber) => {
+  weeklyTotalBillable.forEach((totalBillable, month) => {
     let totalAvailableWeekHours = 0;
 
     filteredConsultants.forEach((consultant) => {
       consultant.bookings.forEach((booking) => {
-        if (booking.weekNumber === weekNumber) {
+        if (booking.month === month) {
           let consultantAvailableWeekHours =
             numWorkHours -
             booking.bookingModel.totalHolidayHours -
@@ -300,7 +224,7 @@ function setWeeklyInvoiceRate(
       totalAvailableWeekHours <= 0
         ? 0
         : Math.max(0, Math.min(1, totalBillable / totalAvailableWeekHours));
-    weeklyInvoiceRate.set(weekNumber, invoiceRate);
+    weeklyInvoiceRate.set(month, invoiceRate);
   });
 
   return weeklyInvoiceRate;
