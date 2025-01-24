@@ -2,7 +2,7 @@ import {
   BookedHoursPerWeek,
   BookingDetails,
   DetailedBooking,
-  WeeklyBookingReadModel,
+  BookingReadModel,
 } from "@/api-types";
 import { getMonthOfWeek, weekToWeekType } from "./WeekToMonthConverter";
 import {
@@ -37,12 +37,12 @@ function transformToMonthlyData(weeklyData: BookedHoursPerWeek[]) {
 
     function distributeBookingModel(
       distribution: number,
-      bookingModel: WeeklyBookingReadModel,
-    ): WeeklyBookingReadModel {
-      const distributedModel: WeeklyBookingReadModel = { ...bookingModel };
+      bookingModel: BookingReadModel,
+    ): BookingReadModel {
+      const distributedModel: BookingReadModel = { ...bookingModel };
       for (const key of Object.keys(
         bookingModel,
-      ) as (keyof WeeklyBookingReadModel)[]) {
+      ) as (keyof BookingReadModel)[]) {
         distributedModel[key] = round2Decimals(
           bookingModel[key] * distribution,
         );
@@ -50,29 +50,26 @@ function transformToMonthlyData(weeklyData: BookedHoursPerWeek[]) {
       return distributedModel;
     }
 
-    const primaryBookingModel: WeeklyBookingReadModel = distributeBookingModel(
+    const primaryBookingModel: BookingReadModel = distributeBookingModel(
       primaryDistribution,
       bookingModel,
     );
-    const secondaryBookingModel: WeeklyBookingReadModel | null =
-      secondaryMonthKey
-        ? distributeBookingModel(secondaryDistribution, bookingModel)
-        : null;
+    const secondaryBookingModel: BookingReadModel | null = secondaryMonthKey
+      ? distributeBookingModel(secondaryDistribution, bookingModel)
+      : null;
 
-    function addToMonthlyData(monthKey: string, model: WeeklyBookingReadModel) {
+    function addToMonthlyData(monthKey: string, model: BookingReadModel) {
       if (!monthlyData[monthKey]) {
         monthlyData[monthKey] = {
           year: year,
           month: parseInt(monthKey.split("-")[1]),
           bookingModel: Object.keys(model).reduce((acc, key) => {
-            acc[key as keyof WeeklyBookingReadModel] = 0;
+            acc[key as keyof BookingReadModel] = 0;
             return acc;
-          }, {} as WeeklyBookingReadModel),
+          }, {} as BookingReadModel),
         };
       }
-      for (const key of Object.keys(
-        model,
-      ) as (keyof WeeklyBookingReadModel)[]) {
+      for (const key of Object.keys(model) as (keyof BookingReadModel)[]) {
         monthlyData[monthKey].bookingModel[key] += model[key];
       }
     }

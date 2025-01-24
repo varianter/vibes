@@ -1,4 +1,6 @@
 using Api.Common;
+using Api.Common.Types;
+using Api.Helpers;
 using Core.Consultants;
 using Core.Engagements;
 using Core.Weeks;
@@ -7,12 +9,6 @@ namespace Api.StaffingController;
 
 public class ReadModelFactory(StorageService storageService)
 {
-    private static bool DoubleEquals(double a, double b)
-    {
-        const double epsilon = 0.00001;
-        return Math.Abs(a - b) < epsilon;
-    }
-
     public static List<StaffingReadModel> GetConsultantReadModelsForWeeks(List<Consultant> consultants,
         List<Week> weeks)
     {
@@ -73,7 +69,7 @@ public class ReadModelFactory(StorageService storageService)
         ).ToList();
 
         //checks if the consultant has 0 available hours each week
-        var isOccupied = bookingSummary.All(b => DoubleEquals(b.BookingModel.TotalSellableTime, 0));
+        var isOccupied = bookingSummary.All(b => NumericsHelper.DoubleEquals(b.BookingModel.TotalSellableTime, 0));
 
         return new StaffingReadModel(
             consultant,
@@ -301,7 +297,7 @@ public class ReadModelFactory(StorageService storageService)
             week.WeekNumber,
             week.ToSortableInt(),
             GetDatesForWeek(week),
-            new WeeklyBookingReadModel(totalBillable, totalOffered, totalAbsence, totalExcludableAbsence,
+            new BookingReadModel(totalBillable, totalOffered, totalAbsence, totalExcludableAbsence,
                 totalSellableTime,
                 totalHolidayHours, totalVacations,
                 totalOverbooked, totalNotStartedOrQuit)

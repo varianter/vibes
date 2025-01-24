@@ -1,3 +1,4 @@
+using Api.Common.Types;
 using Core.Consultants;
 using Core.Weeks;
 
@@ -36,29 +37,12 @@ public record StaffingReadModel(
     }
 }
 
-public record UpdateDepartmentReadModel(
-    string Id,
-    string Name);
-
-public record CompetenceReadModel(
-    string Id,
-    string Name)
-{
-    public CompetenceReadModel(Competence competence)
-        : this(
-            competence.Id,
-            competence.Name
-        )
-    {
-    }
-}
-
 public record BookedHoursPerWeek(
     int Year,
     int WeekNumber,
     int SortableWeek,
     string DateString,
-    WeeklyBookingReadModel BookingModel);
+    BookingReadModel BookingModel);
 
 public record DetailedBooking(
     BookingDetails BookingDetails,
@@ -80,34 +64,4 @@ public record DetailedBooking(
     }
 }
 
-public record WeeklyBookingReadModel(
-    double TotalBillable,
-    double TotalOffered,
-    double TotalPlannedAbsences,
-    double TotalExcludableAbsence,
-    double TotalSellableTime,
-    double TotalHolidayHours,
-    double TotalVacationHours,
-    double TotalOverbooking,
-    double TotalNotStartedOrQuit);
-
-public record BookingDetails(
-    string ProjectName,
-    BookingType Type,
-    string CustomerName,
-    int ProjectId,
-    bool ExcludeFromBilling = false,
-    bool IsBillable = false,
-    DateTime? EndDateAgreement = null);
-
 public record WeeklyHours(int Week, double Hours);
-
-public enum BookingType
-{
-    Offer,
-    Booking,
-    PlannedAbsence,
-    Vacation,
-    Available,
-    NotStartedOrQuit
-}
