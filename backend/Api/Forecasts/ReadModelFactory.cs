@@ -162,7 +162,8 @@ public static class ReadModelFactory
         var totalVacations = DetailedBookingForMonth
 	        .GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.Vacation);
 
-        var bookedTime = totalBillable + totalAbsence + totalVacations + totalHolidayHours + totalNonBillable + totalNotStartedOrQuit;
+        // In the forecast context, offered hours are considered booked hours
+        var bookedTime = totalOffered + totalBillable + totalAbsence + totalVacations + totalHolidayHours + totalNonBillable + totalNotStartedOrQuit;
 
         var workDaysInMonth = month.CountWeekdaysInMonth();
         var hoursPerWorkDay = consultant.Department.Organization.HoursPerWorkday;
