@@ -201,25 +201,22 @@ public static class ReadModelFactory
 				continue;
 			}
 
-			var calculatedPercentage = CalculatePercentage(month, consultant, booking);
+			var bookedPercentage = CalculateBookedPercentage(month, consultant, booking);
 
-			var displayedPercentage = Math.Max((int)calculatedPercentage, forecastPercentage);
+			var displayedPercentage = Math.Max((int)bookedPercentage, forecastPercentage);
 
-			yield return new ForecastForMonth(month, calculatedPercentage, displayedPercentage);
+			yield return new ForecastForMonth(month, bookedPercentage, displayedPercentage);
 		}
 	}
 
-	private static double CalculatePercentage(DateOnly month, Consultant consultant, BookingReadModel booking)
+	private static double CalculateBookedPercentage(DateOnly month, Consultant consultant, BookingReadModel booking)
 	{
 		var organization = consultant.Department.Organization;
 
 		var workdaysInMonth = month.CountWeekdaysInMonth() - organization.GetTotalHolidaysInMonth(month);
 
-		// TODO Forecast: Is this the correct calculation?
 		var hoursInMonth = organization.HoursPerWorkday * workdaysInMonth;
 
-		var billableAndOfferedHours = booking.TotalBillable + booking.TotalOffered;
-
-		return billableAndOfferedHours / hoursInMonth;
+		return (booking.TotalBillable + booking.TotalOffered) / hoursInMonth;
 	}
 }
