@@ -106,10 +106,27 @@ public static class MonthlyHoursHelper
 
 		var availableWorkHours = GetAvailableWorkHours(month, week, organization);
 
-		if (hoursInWeek.IsEqualTo(availableWorkHours.InWeek) ||
-		    hoursInWeek.IsEqualTo(availableWorkHours.InWeekWithinMonth))
+		if (hoursInWeek.IsEqualTo(availableWorkHours.InWeek))
 		{
 			return availableWorkHours.InWeekWithinMonth;
+		}
+
+		var availableWorkHoursMatchForBothMonths = availableWorkHours.InWeekWithinMonth.IsEqualTo(availableWorkHours.InWeekWithinOtherMonth);
+
+		if (availableWorkHoursMatchForBothMonths)
+		{
+			// TODO Forecast: Handle edge case where an odd-numbered amount of holidays occur within a week containing a month change, so that each month has an equal amount of work days in that week
+			// Perhaps make a decision based on data from the previous and next week?
+		}
+
+		if (hoursInWeek.IsEqualTo(availableWorkHours.InWeekWithinMonth))
+		{
+			return availableWorkHours.InWeekWithinMonth;
+		}
+
+		if (hoursInWeek.IsEqualTo(availableWorkHours.InWeekWithinOtherMonth))
+		{
+			return 0;
 		}
 
 		// We are done trying to be smart: Making the assumption that the work hours are evenly distributed between each work day of the week
@@ -122,7 +139,7 @@ public static class MonthlyHoursHelper
 		       week.LastWorkDayOfWeek().EqualsMonth(month);
 	}
 
-	private static (double InWeek, double InWeekWithinMonth) GetAvailableWorkHours(DateOnly month, Week week, Organization organization)
+	private static (double InWeek, double InWeekWithinMonth, double InWeekWithinOtherMonth) GetAvailableWorkHours(DateOnly month, Week week, Organization organization)
 	{
 		var holidaysInWeek = organization.GetHolidaysInWeek(week);
 
@@ -136,6 +153,8 @@ public static class MonthlyHoursHelper
 		var workHoursInWeek = organization.HoursPerWorkday * workdaysInWeek.Count;
 		var workHoursInWeekWithinMonth = organization.HoursPerWorkday * workdaysInWeekWithinMonth;
 
-		return (workHoursInWeek, workHoursInWeekWithinMonth);
+		var workHoursInWeekWithinOtherMonth = workHoursInWeek - workHoursInWeekWithinMonth;
+
+		return (workHoursInWeek, workHoursInWeekWithinMonth, workHoursInWeekWithinOtherMonth);
 	}
 }
