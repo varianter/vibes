@@ -17,6 +17,18 @@ export function MonthCell(props: {
   isLastCol: boolean;
   isSecondLastCol: boolean;
   numWorkHours: number;
+  forecastDragValue: number | undefined;
+  startDragForecast: number | undefined;
+  currentDragForecast: number | undefined;
+  setForecastDragValue: React.Dispatch<
+    React.SetStateAction<number | undefined>
+  >;
+  setStartDragForecast: React.Dispatch<
+    React.SetStateAction<number | undefined>
+  >;
+  setCurrentDragForecast: React.Dispatch<
+    React.SetStateAction<number | undefined>
+  >;
 }) {
   const {
     bookedHoursPerMonth: bookedHoursPerMonth,
@@ -30,6 +42,12 @@ export function MonthCell(props: {
     isLastCol,
     isSecondLastCol,
     numWorkHours,
+    forecastDragValue,
+    startDragForecast,
+    currentDragForecast,
+    setForecastDragValue,
+    setStartDragForecast,
+    setCurrentDragForecast,
   } = props;
 
   const uneditable = forecastValue === 100;

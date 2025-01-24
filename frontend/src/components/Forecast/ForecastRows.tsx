@@ -59,6 +59,16 @@ export default function ForecastRows({
     ProjectWithCustomerModel | undefined
   >(undefined);
 
+  const [forecastDragValue, setForecastDragValue] = useState<
+    number | undefined
+  >(undefined);
+  const [starDragForecast, setStartDragForecast] = useState<number | undefined>(
+    undefined,
+  );
+  const [currentDragForecast, setCurrentDragForecast] = useState<
+    number | undefined
+  >(undefined);
+
   const organisationUrl = usePathname().split("/")[1];
 
   useEffect(() => {
@@ -164,6 +174,12 @@ export default function ForecastRows({
             isLastCol={index == currentConsultant.bookings.length - 1}
             isSecondLastCol={index == currentConsultant.bookings.length - 2}
             numWorkHours={numWorkHours}
+            forecastDragValue={forecastDragValue}
+            startDragForecast={starDragForecast}
+            currentDragForecast={currentDragForecast}
+            setForecastDragValue={setForecastDragValue}
+            setStartDragForecast={setStartDragForecast}
+            setCurrentDragForecast={setCurrentDragForecast}
           />
         ))}
       </tr>
