@@ -162,13 +162,14 @@ public static class ReadModelFactory
         var totalVacations = DetailedBookingForMonth
 	        .GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.Vacation);
 
-        // In the forecast context, offered hours are considered booked hours
-        var bookedTime = totalOffered + totalBillable + totalAbsence + totalVacations + totalHolidayHours + totalNonBillable + totalNotStartedOrQuit;
+        var bookedTime = totalBillable + totalAbsence + totalVacations + totalHolidayHours + totalNonBillable + totalNotStartedOrQuit;
 
         var workDaysInMonth = month.CountWeekdaysInMonth();
         var hoursPerWorkDay = consultant.Department.Organization.HoursPerWorkday;
 
-        var totalSellableTime = Math.Max(hoursPerWorkDay * workDaysInMonth - bookedTime, 0);
+        var unsellableTime = bookedTime + totalOffered;
+
+        var totalSellableTime = Math.Max(hoursPerWorkDay * workDaysInMonth - unsellableTime, 0);
         var totalOverbooked = Math.Max(bookedTime - hoursPerWorkDay * workDaysInMonth, 0);
 
         return new BookedHoursInMonth(
