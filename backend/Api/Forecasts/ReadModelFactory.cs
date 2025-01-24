@@ -74,7 +74,7 @@ public static class ReadModelFactory
 		if (consultant.StartDate > firstWorkDayInScope)
 		{
 			var monthlyWorkHoursBeforeStartDate =
-				MonthlyHoursHelper.CalculateMonthlyWorkHoursBefore(consultant.StartDate.Value, months, organization);
+				WorkloadHelper.CalculateMonthlyWorkHoursBefore(consultant.StartDate.Value, months, organization);
 
 			detailedBookings = detailedBookings.Append(DetailedBookingForMonth.NotStartedOrQuit(monthlyWorkHoursBeforeStartDate));
 		}
@@ -82,7 +82,7 @@ public static class ReadModelFactory
 		if (consultant.EndDate < firstWorkDayOutOfScope)
 		{
 			var monthlyWorkHoursAfterEndDate =
-				MonthlyHoursHelper.CalculateMonthlyWorkHoursAfter(consultant.EndDate.Value, months, organization);
+				WorkloadHelper.CalculateMonthlyWorkHoursAfter(consultant.EndDate.Value, months, organization);
 
 			detailedBookings = detailedBookings.Append(DetailedBookingForMonth.NotStartedOrQuit(monthlyWorkHoursAfterEndDate));
 		}
@@ -167,7 +167,7 @@ public static class ReadModelFactory
         var bookedTime = totalBillable + totalAbsence + totalVacations + totalHolidayHours + totalNonBillable + totalNotStartedOrQuit;
         var forecastedBookedTime = bookedTime + totalOffered;
 
-        var workHoursInMonth = MonthlyHoursHelper.CalculateWorkHoursInMonth(month, organization);
+        var workHoursInMonth = WorkloadHelper.CalculateWorkHoursInMonth(month, organization);
 
         var totalSellableTime = Math.Max(workHoursInMonth - forecastedBookedTime, 0);
         var totalOverbooked = Math.Max(bookedTime - workHoursInMonth, 0);
@@ -213,7 +213,7 @@ public static class ReadModelFactory
 
 	private static double CalculateBookedPercentage(DateOnly month, Consultant consultant, BookingReadModel booking)
 	{
-		var workHoursInMonth = MonthlyHoursHelper.CalculateWorkHoursInMonth(month, consultant.Department.Organization);
+		var workHoursInMonth = WorkloadHelper.CalculateWorkHoursInMonth(month, consultant.Department.Organization);
 
 		var forecastedBookedHours = workHoursInMonth - booking.TotalSellableTime;
 
