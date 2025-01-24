@@ -57,7 +57,7 @@ public static class DateOnlyExtensions
 
 	public static IEnumerable<DateOnly> GetWeekdaysInMonth(this DateOnly month)
 	{
-		for (var date = month.FirstDayInMonth(); date.EqualsMonth(month); date.AddDays(1))
+		for (var date = month.FirstDayInMonth(); date.EqualsMonth(month); date = date.AddDays(1))
 		{
 			if (date.IsWeekday())
 			{
