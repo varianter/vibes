@@ -135,7 +135,9 @@ public static class ReadModelFactory
 	// Using a similar pattern as in GetBookedHours() in StaffingController/ReadModelFactory
 	private static BookedHoursInMonth GetBookedHours(Consultant consultant, DateOnly month, IEnumerable<DetailedBookingForMonth> detailedBookings)
 	{
-        var totalHolidayHours = consultant.Department.Organization.GetTotalHolidayHoursInMonth(month);
+		var organization = consultant.Department.Organization;
+
+		var totalHolidayHours = organization.GetTotalHolidayHoursInMonth(month);
 
         var detailedBookingsArray = detailedBookings as DetailedBookingForMonth[] ?? detailedBookings.ToArray();
 
@@ -163,14 +165,12 @@ public static class ReadModelFactory
 	        .GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.Vacation);
 
         var bookedTime = totalBillable + totalAbsence + totalVacations + totalHolidayHours + totalNonBillable + totalNotStartedOrQuit;
+        var forecastedBookedTime = bookedTime + totalOffered;
 
-        var workDaysInMonth = month.CountWeekdaysInMonth();
-        var hoursPerWorkDay = consultant.Department.Organization.HoursPerWorkday;
+        var workHoursInMonth = MonthlyHoursHelper.CalculateWorkHoursInMonth(month, organization);
 
-        var unsellableTime = bookedTime + totalOffered;
-
-        var totalSellableTime = Math.Max(hoursPerWorkDay * workDaysInMonth - unsellableTime, 0);
-        var totalOverbooked = Math.Max(bookedTime - hoursPerWorkDay * workDaysInMonth, 0);
+        var totalSellableTime = Math.Max(workHoursInMonth - forecastedBookedTime, 0);
+        var totalOverbooked = Math.Max(bookedTime - workHoursInMonth, 0);
 
         return new BookedHoursInMonth(
             month,
@@ -213,12 +213,10 @@ public static class ReadModelFactory
 
 	private static double CalculateBookedPercentage(DateOnly month, Consultant consultant, BookingReadModel booking)
 	{
-		var organization = consultant.Department.Organization;
+		var workHoursInMonth = MonthlyHoursHelper.CalculateWorkHoursInMonth(month, consultant.Department.Organization);
 
-		var workdaysInMonth = month.CountWeekdaysInMonth() - organization.GetTotalHolidaysInMonth(month);
+		var forecastedBookedHours = workHoursInMonth - booking.TotalSellableTime;
 
-		var hoursInMonth = organization.HoursPerWorkday * workdaysInMonth;
-
-		return (booking.TotalBillable + booking.TotalOffered) / hoursInMonth;
+		return 100 * (forecastedBookedHours / workHoursInMonth);
 	}
 }

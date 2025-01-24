@@ -42,6 +42,11 @@ public static class MonthlyHoursHelper
 		return GetHoursInWeekWithinMonth(month, week, absenceHoursInWeek, organization);
 	}
 
+	public static double CalculateWorkHoursInMonth(DateOnly month, Organization organization)
+	{
+		return organization.HoursPerWorkday * CalculateWorkdaysInMonth(month, organization);
+	}
+
 	private static List<MonthlyHours> CalculateMonthlyWorkHours(DateOnly fromDate, DateOnly toDateExclusive, Organization organization)
 	{
 		if (fromDate >= toDateExclusive)
