@@ -106,14 +106,7 @@ public static class ReadModelFactory
 			.Where(staffing => weeks.Contains(staffing.Week))
 			.GroupBy(staffing => staffing.Engagement.Id)
 			.Select(projectGroup => new DetailedBookingForMonth(
-				BookingDetails: new BookingDetails(
-					projectGroup.First().Engagement.Name,
-					bookingType,
-					projectGroup.First().Engagement.Customer.Name,
-					projectGroup.Key,
-					ExcludeFromBilling: false,
-					projectGroup.First().Engagement.IsBillable,
-					projectGroup.First().Engagement.Agreements.Select(a => (DateTime?)a.EndDate).DefaultIfEmpty(null).Max()),
+				BookingDetails.Staffing(projectGroup.Key, projectGroup.First(), bookingType),
 				Hours: months.Select(month => MonthlyHours.For(month, projectGroup.ToList(), consultant.Department.Organization)).ToList()));
 	}
 
@@ -123,12 +116,7 @@ public static class ReadModelFactory
 			.Where(absence => weeks.Contains(absence.Week))
 			.GroupBy(absence => absence.Absence.Name)
 			.Select(absenceGroup => new DetailedBookingForMonth(
-				BookingDetails: new BookingDetails(
-					absenceGroup.Key,
-					BookingType.PlannedAbsence,
-					absenceGroup.Key,
-					absenceGroup.First().Absence.Id,
-					absenceGroup.First().Absence.ExcludeFromBillRate),
+				BookingDetails.PlannedAbsence(absenceGroup.Key, absenceGroup.First()),
 				Hours: months.Select(month => MonthlyHours.For(month, absenceGroup.ToList(), consultant.Department.Organization)).ToList()));
 	}
 

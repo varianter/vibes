@@ -1,3 +1,6 @@
+using Core.PlannedAbsences;
+using Core.Staffings;
+
 namespace Api.Common.Types;
 
 public record BookingDetails(
@@ -9,6 +12,28 @@ public record BookingDetails(
 	bool IsBillable = false,
 	DateTime? EndDateAgreement = null)
 {
+	public static BookingDetails Staffing(int projectId, Staffing staffing, BookingType bookingType)
+	{
+		return new BookingDetails(
+			staffing.Engagement.Name,
+			bookingType,
+			staffing.Engagement.Customer.Name,
+			projectId,
+			ExcludeFromBilling: false,
+			staffing.Engagement.IsBillable,
+			staffing.Engagement.Agreements.Select(a => (DateTime?)a.EndDate).DefaultIfEmpty(null).Max());
+	}
+
+	public static BookingDetails PlannedAbsence(string name, PlannedAbsence plannedAbsence)
+	{
+		return new BookingDetails(
+			name,
+			BookingType.PlannedAbsence,
+			name,
+			plannedAbsence.Absence.Id,
+			plannedAbsence.Absence.ExcludeFromBillRate);
+	}
+
 	public static BookingDetails Vacation()
 	{
 		// 0 as ProjectId as vacation is weird
