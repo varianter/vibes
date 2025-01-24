@@ -1,6 +1,7 @@
 using Api.Common;
 using Api.Helpers;
 using Core.Consultants;
+using Core.Extensions;
 using Core.Forecasts;
 using Core.PlannedAbsences;
 using Core.Staffings;
@@ -26,7 +27,7 @@ public class ForecastController(
 	public async Task<ActionResult> Get(
 		[FromRoute] string orgUrlKey,
 		CancellationToken cancellationToken,
-		[FromQuery(Name = "Date")] DateOnly? selectedDate = null,
+		[FromQuery(Name = "Date")] DateOnly? requestedDate = null,
 		[FromQuery(Name = "MonthCount")] int monthCount = 0)
 	{
 		var service = new StorageService(cache, context);
@@ -34,10 +35,11 @@ public class ForecastController(
 		var consultants = service.LoadConsultants(orgUrlKey);
 		consultants = await AddRelationalDataToConsultant(consultants, cancellationToken);
 
-		// TODO Forecast: Does frontend set the "start of quarter" before making the API call?
-		var month = selectedDate ?? DateOnly.FromDateTime(DateTime.Today);
+		var date = requestedDate ?? DateOnly.FromDateTime(DateTime.Today);
 
-		var forecasts = ReadModelFactory.GetForecastReadModels(consultants, month, monthCount);
+		var firstDayInQuarter = date.FirstDayInQuarter();
+
+		var forecasts = ReadModelFactory.GetForecastReadModels(consultants, firstDayInQuarter, monthCount);
 
 		return Ok(forecasts);
 	}

@@ -4,6 +4,16 @@ namespace Core.Extensions;
 
 public static class DateOnlyExtensions
 {
+	private static readonly int FirstMonthInQ1 = DateOnly.MinValue.Month;
+
+	private static readonly List<int> QuarterlyMonths =
+	[
+		FirstMonthInQ1,
+		FirstMonthInQ1 + 3,
+		FirstMonthInQ1 + 6,
+		FirstMonthInQ1 + 9,
+	];
+
 	public static bool IsWeekday(this DateOnly date) => date.DayOfWeek is >= DayOfWeek.Monday and <= DayOfWeek.Friday;
 
 	public static int CountWeekdaysInMonth(this DateOnly month) => GetWeekdaysInMonth(month).Count();
@@ -33,6 +43,16 @@ public static class DateOnlyExtensions
 			DayOfWeek.Sunday => firstDayInMonth.AddDays(1),
 			_ => firstDayInMonth,
 		};
+	}
+
+	public static DateOnly FirstDayInQuarter(this DateOnly date)
+	{
+		return new DateOnly(date.Year, date.FirstMonthInQuarter(), 1);
+	}
+
+	private static int FirstMonthInQuarter(this DateOnly date)
+	{
+		return QuarterlyMonths.Where(month => date.Month >= month).Max();
 	}
 
 	public static IEnumerable<DateOnly> GetWeekdaysInMonth(this DateOnly month)
