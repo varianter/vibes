@@ -99,7 +99,7 @@ export default function ForecastRows({
         onMouseEnter={() => setIsRowHovered(true)}
         onMouseLeave={() => setIsRowHovered(false)}
       >
-        <td
+        {/* <td
           className={`border-l-2 ${
             isListElementVisible
               ? "border-l-secondary"
@@ -108,15 +108,15 @@ export default function ForecastRows({
               : "border-l-primary/5"
           } `}
         >
-          {/* //utkommentert foreløpig, kan slettes om vi ikke skal ha mulighet til å utvide raden <button
+          //utkommentert foreløpig, kan slettes om vi ikke skal ha mulighet til å utvide raden <button
             className={`p-2 rounded-lg ml-2 hover:bg-primary hover:bg-opacity-10 ${
               isListElementVisible && "rotate-180"
             }`}
             onClick={toggleListElementVisibility}
           >
             <ChevronDown className={`text-primary w-6 h-6`} />
-          </button> */}
-        </td>
+          </button>
+        </td> */}
         <td>
           <div className="flex justify-start gap-1 items-center">
             <div className="flex flex-row justify-center self-center gap-2 w-3/12">
@@ -167,67 +167,6 @@ export default function ForecastRows({
           />
         ))}
       </tr>
-      {isListElementVisible &&
-        currentConsultant.detailedBooking &&
-        currentConsultant.detailedBooking.map((db, index) => (
-          <DetailedBookingRows
-            key={index}
-            consultant={currentConsultant}
-            detailedBooking={db}
-            openEngagementAndSetID={openEngagementAndSetID}
-            numWorkHours={numWorkHours}
-          />
-        ))}
-      {isListElementVisible && addNewRow && (
-        <tr>
-          <td
-            className={`border-l-2 ${
-              isListElementVisible
-                ? "border-l-secondary"
-                : isRowHovered
-                ? "border-l-primary"
-                : "border-l-primary/5"
-            } `}
-          ></td>
-        </tr>
-      )}
-
-      {isListElementVisible && (
-        <tr>
-          <td
-            className={`border-l-2 ${
-              isListElementVisible
-                ? "border-l-secondary"
-                : isRowHovered
-                ? "border-l-primary"
-                : "border-l-primary/5"
-            } `}
-          ></td>
-          <td>
-            {!addNewRow && (
-              <button
-                onClick={() => {
-                  setAddNewRow(true);
-                  setIsDisabledHotkeys(true);
-                }}
-                className="flex flex-row items-center min-w-max gap-2 h-[52px]"
-                onMouseEnter={() => setIsAddStaffingHovered(true)}
-                onMouseLeave={() => setIsAddStaffingHovered(false)}
-              >
-                <span
-                  className={`w-8 h-8 flex justify-center items-center rounded bg-primary/0 ${
-                    isAddStaffingHovered && "bg-primary/10"
-                  }`}
-                >
-                  <Plus size={16} className="text-primary" />
-                </span>
-
-                <p className="small text-primary">Legg til bemanning</p>
-              </button>
-            )}
-          </td>
-        </tr>
-      )}
     </>
   );
 }

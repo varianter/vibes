@@ -99,7 +99,11 @@ export function MonthCell(props: {
   }
 
   return (
-    <td key={month} className={`h-[52px] relative`} ref={ref}>
+    <td
+      key={month}
+      className={`h-[56px] relative ${isLastCol ? "py-0.5 pl-0.5" : "p-0.5"}`}
+      ref={ref}
+    >
       <div
         className={`flex bg-primary/[3%] flex-col gap-1 p-2 justify-end rounded w-full h-full relative border border-transparent hover:border-primary/30 `}
         onMouseEnter={() => {
@@ -165,7 +169,7 @@ export function MonthCell(props: {
         </div>
       </div>
       {isActive && (
-        <ul className="flex flex-col border border-primary/30 rounded mt-0.5 absolute w-[99%] items-end bg-white opacity-100 z-50">
+        <ul className="flex flex-col border border-primary/30 rounded mt-1 absolute w-[calc(100%-0.25rem)] justify-center items-end bg-white opacity-100 z-50">
           {options.map((opt, index) => (
             <li
               key={opt.toString()}
