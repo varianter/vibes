@@ -28,7 +28,7 @@ public class ForecastController(
 		[FromRoute] string orgUrlKey,
 		CancellationToken cancellationToken,
 		[FromQuery(Name = "Date")] DateOnly? requestedDate = null,
-		[FromQuery(Name = "MonthCount")] int monthCount = 0)
+		[FromQuery(Name = "MonthCount")] int monthCount = 12)
 	{
 		var service = new StorageService(cache, context);
 
