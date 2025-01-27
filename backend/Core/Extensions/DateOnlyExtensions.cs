@@ -102,7 +102,7 @@ public static class DateOnlyExtensions
 	public static IEnumerable<Week> GetWeeksThrough(this DateOnly fromDate, DateOnly lastIncludedDate)
 	{
 		var firstWeek = Week.FromDateOnly(fromDate);
-		var lastWeek = Week.FromDateOnly(lastIncludedDate);
+		var lastWeek = Week.FromDateOnly(lastIncludedDate.LastDayInMonth());
 
 		return firstWeek.GetNextWeeks(lastWeek);
 	}

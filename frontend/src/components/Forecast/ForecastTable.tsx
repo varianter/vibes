@@ -3,26 +3,12 @@
 import { useConsultantsFilter } from "@/hooks/staffing/useConsultantsFilter";
 import React, { useEffect, useState } from "react";
 import ForecastRows from "./ForecastRows";
-import { MockConsultantsForForecast } from "../../../mockdata/mockData";
 import { fetchPublicHolidays } from "@/hooks/fetchPublicHolidays";
 import { usePathname } from "next/navigation";
 import { getBusinessHoursPerMonth } from "./BusinessHoursPerMonth";
 import getNextMonthNamesWithYear from "./NextMonths";
+import { useForecastFilter } from "@/hooks/ForecastFilter/useForecastFilter";
 
-const months = [
-  "Januar",
-  "Februar",
-  "Mars",
-  "April",
-  "Mai",
-  "Juni",
-  "Juli",
-  "August",
-  "September",
-  "Oktober",
-  "November",
-  "Desember",
-];
 const monthsShort = [
   "Jan",
   "Feb",
@@ -36,13 +22,9 @@ const monthsShort = [
   "Okt",
   "Nov",
   "Des",
-];
+] as const;
 
 const monthsWithYears = getNextMonthNamesWithYear(12);
-
-function mapMonthToNumber(month: string) {
-  return monthsShort.indexOf(month);
-}
 
 function mapNumberToMonthShortName(month: number) {
   return monthsShort[month];
@@ -52,13 +34,9 @@ function isCurrentMonth(month: number, year: number) {
   return today.getMonth() === month && today.getFullYear() === year;
 }
 export default function ForecastTable() {
-  const {
-    numWorkHours,
-    filteredConsultants,
-    weeklyTotalBillable,
-    weeklyTotalBillableAndOffered,
-    weeklyInvoiceRates,
-  } = useConsultantsFilter();
+  const { filteredForecasts } = useForecastFilter();
+  const { numWorkHours } = useConsultantsFilter();
+
   const [publicHolidays, setPublicHolidays] = useState<string[]>([]);
   const organisationName = usePathname().split("/")[1];
 
@@ -76,8 +54,12 @@ export default function ForecastTable() {
     <table className={`table-fixed`}>
       <colgroup>
         <col span={1} className="w-[190px]" />
-        {monthsWithYears.map((_, index) => (
-          <col key={index} span={1} className={`w-[calc((1%/15)*100)]`} />
+        {monthsWithYears.map((m) => (
+          <col
+            key={`${m.month}-${m.year}`}
+            span={1}
+            className={`w-[calc((1%/15)*100)]`}
+          />
         ))}
       </colgroup>
       <thead>
@@ -86,7 +68,7 @@ export default function ForecastTable() {
             <div className="flex flex-row gap-3 pb-4 items-center">
               <p className="normal-medium ">Konsulenter</p>
               <p className="text-primary small-medium rounded-full bg-secondary/30 px-2 py-1">
-                {filteredConsultants?.length}
+                {filteredForecasts?.length}
               </p>
             </div>
           </th>
@@ -120,7 +102,7 @@ export default function ForecastTable() {
                   </div>
                 ) : (
                   <div
-                    className={`flex justify-end 
+                    className={`flex justify-end
                          flex-row gap-2
                     `}
                   >
@@ -161,10 +143,10 @@ export default function ForecastTable() {
         </tr>
       </thead>
       <tbody>
-        {MockConsultantsForForecast.map((consultant) => (
+        {filteredForecasts.map((forecast) => (
           <ForecastRows
-            key={consultant.id}
-            consultant={consultant}
+            key={forecast.consultant.id}
+            forecast={forecast}
             numWorkHours={numWorkHours}
           />
         ))}
