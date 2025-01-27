@@ -153,11 +153,10 @@ public static class ReadModelFactory
 	        .GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.Vacation);
 
         var bookedTime = totalBillable + totalAbsence + totalVacations + totalHolidayHours + totalNonBillable + totalNotStartedOrQuit;
-        var forecastedBookedTime = bookedTime + totalOffered;
 
         var workHoursInMonth = WorkloadHelper.CalculateWorkHoursInMonth(month, organization);
 
-        var totalSellableTime = Math.Max(workHoursInMonth - forecastedBookedTime, 0);
+        var totalSellableTime = Math.Max(workHoursInMonth - bookedTime, 0);
         var totalOverbooked = Math.Max(bookedTime - workHoursInMonth, 0);
 
         return new BookedHoursInMonth(
@@ -203,8 +202,6 @@ public static class ReadModelFactory
 	{
 		var workHoursInMonth = WorkloadHelper.CalculateWorkHoursInMonth(month, consultant.Department.Organization);
 
-		var forecastedBookedHours = workHoursInMonth - booking.TotalSellableTime;
-
-		return 100 * (forecastedBookedHours / workHoursInMonth);
+		return 100 * (booking.TotalBillable / workHoursInMonth);
 	}
 }
