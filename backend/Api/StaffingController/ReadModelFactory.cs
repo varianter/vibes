@@ -1,8 +1,8 @@
 using Api.Common;
 using Api.Common.Types;
-using Api.Helpers;
 using Core.Consultants;
 using Core.Engagements;
+using Core.Extensions;
 using Core.Weeks;
 
 namespace Api.StaffingController;
@@ -69,7 +69,7 @@ public class ReadModelFactory(StorageService storageService)
         ).ToList();
 
         //checks if the consultant has 0 available hours each week
-        var isOccupied = bookingSummary.All(b => NumericsHelper.DoubleEquals(b.BookingModel.TotalSellableTime, 0));
+        var isOccupied = bookingSummary.All(b => b.BookingModel.TotalSellableTime.IsEqualTo(0));
 
         return new StaffingReadModel(
             consultant,
@@ -156,9 +156,7 @@ public class ReadModelFactory(StorageService storageService)
                 consultant.Department.Organization.HoursPerWorkday
             )).ToList();
             detailedBookings = detailedBookings.Append(new DetailedBooking(
-                new BookingDetails("Ferie", BookingType.Vacation,
-                    "Ferie",
-                    0), //Empty projectName as vacation does not have a project, 0 as projectId as vacation is weird
+                BookingDetails.Vacation(),
                 vacationsPrWeek));
         }
 
@@ -239,12 +237,7 @@ public class ReadModelFactory(StorageService storageService)
 
     private static DetailedBooking CreateNotStartedOrQuitDetailedBooking(List<WeeklyHours> weeks)
     {
-        return new DetailedBooking(
-            new BookingDetails("Ikke startet eller sluttet", BookingType.NotStartedOrQuit,
-                "Ikke startet eller sluttet",
-                0, true), //Empty projectName as NotStartedOrQuit does not have a project, 0 as projectId as NotStartedOrQuit since it's just used to mark not started or quit
-            weeks
-        );
+        return new DetailedBooking(BookingDetails.NotStartedOrQuit(), weeks);
     }
 
     private static BookedHoursPerWeek GetBookedHours(Week week, IEnumerable<DetailedBooking> detailedBookings,
