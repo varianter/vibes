@@ -60,7 +60,7 @@ public static class ReadModelFactory
 				.Select(month => new MonthlyHours(
 					month,
 					Hours: organization.HoursPerWorkday *
-					       vacations.Count(v => v.Date.EqualsMonth(month))))
+						   vacations.Count(v => v.Date.EqualsMonth(month))))
 				.ToList();
 
 			detailedBookings = detailedBookings.Append(new DetailedBookingForMonth(
@@ -127,51 +127,51 @@ public static class ReadModelFactory
 
 		var totalHolidayHours = organization.GetTotalHolidayHoursInMonth(month);
 
-        var detailedBookingsArray = detailedBookings as DetailedBookingForMonth[] ?? detailedBookings.ToArray();
+		var detailedBookingsArray = detailedBookings as DetailedBookingForMonth[] ?? detailedBookings.ToArray();
 
-        var totalBillable = DetailedBookingForMonth
-	        .GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.Booking, evaluateBillable: true);
+		var totalBillable = DetailedBookingForMonth
+			.GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.Booking, evaluateBillable: true);
 
-        var totalNonBillable = DetailedBookingForMonth
-	        .GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.Booking, evaluateBillable: true, isBillable: false);
+		var totalNonBillable = DetailedBookingForMonth
+			.GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.Booking, evaluateBillable: true, isBillable: false);
 
-        var totalOffered = DetailedBookingForMonth
-	        .GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.Offer);
+		var totalOffered = DetailedBookingForMonth
+			.GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.Offer);
 
-        var totalAbsence = DetailedBookingForMonth
-	        .GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.PlannedAbsence);
+		var totalAbsence = DetailedBookingForMonth
+			.GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.PlannedAbsence);
 
-        var totalNotStartedOrQuit = DetailedBookingForMonth
-	        .GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.NotStartedOrQuit);
+		var totalNotStartedOrQuit = DetailedBookingForMonth
+			.GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.NotStartedOrQuit);
 
-        var totalExcludableAbsence = detailedBookingsArray
-            .Where(s => s.BookingDetails is { Type: BookingType.PlannedAbsence, ExcludeFromBilling: true })
-            .Select(wh => wh.TotalHoursForMonth(month))
-            .Sum();
+		var totalExcludableAbsence = detailedBookingsArray
+			.Where(s => s.BookingDetails is { Type: BookingType.PlannedAbsence, ExcludeFromBilling: true })
+			.Select(wh => wh.TotalHoursForMonth(month))
+			.Sum();
 
-        var totalVacations = DetailedBookingForMonth
-	        .GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.Vacation);
+		var totalVacations = DetailedBookingForMonth
+			.GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.Vacation);
 
-        var bookedTime = totalBillable + totalAbsence + totalVacations + totalHolidayHours + totalNonBillable + totalNotStartedOrQuit;
+		var bookedTime = totalBillable + totalAbsence + totalVacations + totalHolidayHours + totalNonBillable + totalNotStartedOrQuit;
 
-        var workHoursInMonth = WorkloadHelper.CalculateWorkHoursInMonth(month, organization);
+		var workHoursInMonth = WorkloadHelper.CalculateWorkHoursInMonth(month, organization);
 
-        var totalSellableTime = Math.Max(workHoursInMonth - bookedTime, 0);
-        var totalOverbooked = Math.Max(bookedTime - workHoursInMonth, 0);
+		var totalSellableTime = Math.Max(workHoursInMonth - bookedTime, 0);
+		var totalOverbooked = Math.Max(bookedTime - workHoursInMonth, 0);
 
-        return new BookedHoursInMonth(
-            month,
-            new BookingReadModel(
-	            totalBillable,
-	            totalOffered,
-	            totalAbsence,
-	            totalExcludableAbsence,
-                totalSellableTime,
-                totalHolidayHours,
-	            totalVacations,
-                totalOverbooked,
-	            totalNotStartedOrQuit)
-        );
+		return new BookedHoursInMonth(
+			month,
+			new BookingReadModel(
+				totalBillable,
+				totalOffered,
+				totalAbsence,
+				totalExcludableAbsence,
+				totalSellableTime,
+				totalHolidayHours,
+				totalVacations,
+				totalOverbooked,
+				totalNotStartedOrQuit)
+		);
 	}
 
 	private static IEnumerable<ForecastForMonth> GetForecasts(Consultant consultant, List<DateOnly> months, List<BookedHoursInMonth> bookingSummary)
@@ -198,6 +198,16 @@ public static class ReadModelFactory
 		}
 	}
 
+	/*
+		TODO: This should probably rather be availableWorkHoursInMonth, which may differ between consultants.
+
+		If a month has 150 work hours available and a consultant has the following registrations within that month:
+
+		75 hours on leave
+		75 hours booked
+		, the consultant is in practice 100 % booked for that month.
+		The current implementation will presumably claim that the consultant is 50 % booked.
+	*/
 	private static double CalculateBookedPercentage(DateOnly month, Consultant consultant, BookingReadModel booking)
 	{
 		var workHoursInMonth = WorkloadHelper.CalculateWorkHoursInMonth(month, consultant.Department.Organization);

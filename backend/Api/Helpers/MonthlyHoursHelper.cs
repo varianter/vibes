@@ -47,6 +47,7 @@ public static class MonthlyHoursHelper
 
 		var availableWorkHoursMatchForBothMonths = availableWorkHours.InWeekWithinMonth.IsEqualTo(availableWorkHours.InWeekWithinOtherMonth);
 
+		// TODO: Edge case, we should handle registered vacation days as well
 		if (availableWorkHoursMatchForBothMonths)
 		{
 			// TODO Forecast: Handle edge case where an odd-numbered amount of holidays occur within a week containing a month change, so that each month has an equal amount of work days in that week
@@ -70,9 +71,10 @@ public static class MonthlyHoursHelper
 	private static bool WholeWorkWeekIsInMonth(DateOnly month, Week week)
 	{
 		return week.FirstDayOfWorkWeek().EqualsMonth(month) &&
-		       week.LastWorkDayOfWeek().EqualsMonth(month);
+			   week.LastWorkDayOfWeek().EqualsMonth(month);
 	}
 
+	// TODO: This method should probably consider registered vacation days as well
 	private static (double InWeek, double InWeekWithinMonth, double InWeekWithinOtherMonth) GetAvailableWorkHours(DateOnly month, Week week, Organization organization)
 	{
 		var holidaysInWeek = organization.GetHolidaysInWeek(week);
