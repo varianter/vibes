@@ -29,10 +29,20 @@ const monthsWithYears = getNextMonthNamesWithYear(12);
 function mapNumberToMonthShortName(month: number) {
   return monthsShort[month];
 }
-function isCurrentMonth(month: number, year: number) {
+function isCurrentMonth(dateString: string) {
+  const date = new Date(dateString);
   const today = new Date();
-  return today.getMonth() === month && today.getFullYear() === year;
+  return (
+    today.getMonth() === date.getMonth() &&
+    today.getFullYear() === date.getFullYear()
+  );
 }
+
+function getShortenedMonthName(dateString: string) {
+  const date = new Date(dateString);
+  return date.toLocaleString("nb-NO", { month: "short" });
+}
+
 export default function ForecastTable() {
   const { filteredForecasts } = useForecastFilter();
   const { numWorkHours } = useConsultantsFilter();
@@ -72,13 +82,10 @@ export default function ForecastTable() {
               </p>
             </div>
           </th>
-          {monthsWithYears.map((month) => (
-            <th
-              key={"" + month.month + month.year}
-              className=" px-2 py-1 pt-3 "
-            >
+          {filteredForecasts[0].forecasts.map((month) => (
+            <th key={"" + month.month} className=" px-2 py-1 pt-3 ">
               <div className="flex flex-col gap-1">
-                {isCurrentMonth(month.month, month.year) ? (
+                {isCurrentMonth(month.month) ? (
                   <div className="flex flex-row gap-2 items-center justify-end">
                     {/* {booking.bookingModel.totalHolidayHours > 0 && (
                       <InfoPill
@@ -97,7 +104,7 @@ export default function ForecastTable() {
                     <div className="h-2 w-2 rounded-full bg-primary" />
 
                     <p className="normal-medium text-right">
-                      {mapNumberToMonthShortName(month.month)}
+                      {getShortenedMonthName(month.month)}
                     </p>
                   </div>
                 ) : (
@@ -121,7 +128,7 @@ export default function ForecastTable() {
                       />
                     )} */}
                     <p className="normal text-right">
-                      {mapNumberToMonthShortName(month.month)}
+                      {getShortenedMonthName(month.month)}
                     </p>
                   </div>
                 )}
@@ -130,7 +137,6 @@ export default function ForecastTable() {
                     ? "" +
                       getBusinessHoursPerMonth(
                         month.month,
-                        month.year,
                         numWorkHours,
                         publicHolidays,
                       ) +
