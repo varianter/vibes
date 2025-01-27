@@ -5,13 +5,12 @@ import {
   DepartmentReadModel,
   CompetenceReadModel,
   EngagementPerCustomerReadModel,
+  ForecastReadModel,
 } from "@/api-types";
 import React, { createContext, ReactNode, useEffect, useState } from "react";
-import { parseYearWeekFromUrlString, weekToString } from "@/data/urlUtils";
-import { Week } from "@/types";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-const defaultFilters: StaffingFilters = {
+const defaultFilters: ForecastFilters = {
   availabilityFilter: false,
   departmentFilter: "",
   competenceFilter: "",
@@ -23,18 +22,18 @@ const defaultFilters: StaffingFilters = {
 };
 
 type FilterContextType = {
-  consultants: ConsultantReadModel[];
-  setConsultants: React.Dispatch<React.SetStateAction<ConsultantReadModel[]>>;
+  consultants: ForecastReadModel[];
+  setConsultants: React.Dispatch<React.SetStateAction<ForecastReadModel[]>>;
   departments: DepartmentReadModel[];
   competences: CompetenceReadModel[];
   customers: EngagementPerCustomerReadModel[];
   isDisabledHotkeys: boolean;
   setIsDisabledHotkeys: React.Dispatch<React.SetStateAction<boolean>>;
-  activeFilters: StaffingFilters;
+  activeFilters: ForecastFilters;
   updateFilters: UpdateFilters;
 };
 
-export const FilteredContext = createContext<FilterContextType>({
+export const FilteredForecastContext = createContext<FilterContextType>({
   consultants: [],
   setConsultants: () => null,
   departments: [],
@@ -46,8 +45,8 @@ export const FilteredContext = createContext<FilterContextType>({
   updateFilters: () => null,
 });
 
-export function ConsultantFilterProvider(props: {
-  consultants: ConsultantReadModel[];
+export function ForecastFilterProvider(props: {
+  consultants: ForecastReadModel[];
   departments: DepartmentReadModel[];
   competences: CompetenceReadModel[];
   customers: EngagementPerCustomerReadModel[];
@@ -60,7 +59,7 @@ export function ConsultantFilterProvider(props: {
   useEffect(() => setConsultants(props.consultants), [props.consultants]);
 
   return (
-    <FilteredContext.Provider
+    <FilteredForecastContext.Provider
       value={{
         ...props,
         isDisabledHotkeys,
@@ -72,7 +71,7 @@ export function ConsultantFilterProvider(props: {
       }}
     >
       {props.children}
-    </FilteredContext.Provider>
+    </FilteredForecastContext.Provider>
   );
 }
 
@@ -87,7 +86,7 @@ interface UpdateFilterParams {
   experienceTo?: string;
 }
 
-export type StaffingFilters = {
+export type ForecastFilters = {
   availabilityFilter: boolean;
   departmentFilter: string;
   competenceFilter: string;
@@ -100,7 +99,7 @@ export type StaffingFilters = {
 
 export type UpdateFilters = (updateParams: UpdateFilterParams) => void;
 
-function useUrlRouteFilter(): [StaffingFilters, UpdateFilters] {
+function useUrlRouteFilter(): [ForecastFilters, UpdateFilters] {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

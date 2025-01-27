@@ -1,19 +1,10 @@
-import { ConsultantForecastReadModel, YearRange } from "@/types";
-import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
+import { YearRange } from "@/types";
 import { useContext, useEffect, useState } from "react";
 import { useRawYearsFilter } from "../staffing/useRawYearFilter";
 import { useAvailabilityFilter } from "../staffing/useAvailabilityFilter";
 import { usePathname } from "next/navigation";
-import { ConsultantReadModel, ProjectWithCustomerModel } from "@/api-types";
+import { ForecastReadModel, SingleConsultantReadModel } from "@/api-types";
 import { FilteredForecastContext } from "./ForecastFilterProvider";
-import {
-  filterAvailable,
-  filterCompetence,
-  filterDepartment,
-  filterExperience,
-  filterRawYear,
-  filterSearch,
-} from "./FilterPredicates";
 
 async function getNumWorkHours(
   setNumWorkHours: Function,
@@ -129,24 +120,90 @@ export function filterConsultants({
   departmentFilter: string;
   competenceFilter: string;
   yearFilter: YearRange[];
-  consultants: ConsultantForecastReadModel[];
+  consultants: ForecastReadModel[];
   availabilityFilterOn: Boolean;
   activeExperienceFrom: string;
   activeExperienceTo: string;
 }) {
-  const newFilteredConsultants = [];
+  const newFilteredConsultants: ForecastReadModel[] = [];
 
-  for (const consultant of consultants) {
-    if (availabilityFilterOn && !filterAvailable(consultant)) continue;
-    if (!filterExperience(activeExperienceFrom, activeExperienceTo, consultant))
-      continue;
-    if (!filterRawYear(yearFilter, consultant)) continue;
-    if (!filterCompetence(competenceFilter, consultant)) continue;
-    if (!filterDepartment(departmentFilter, consultant)) continue;
-    if (!filterSearch(search, consultant)) continue;
+  function filterCompetence(
+    competenceFilter: string,
+    consultant: ForecastReadModel,
+  ) {
+    return competenceFilter
+      .toLowerCase()
+      .split(",")
+      .map((c) => c.trim())
+      .some((c) =>
+        consultant.consultant.competences
+          .map((c) => c.id.toLowerCase())
+          .includes(c),
+      );
+  }
+  function inYearRanges(
+    consultant: SingleConsultantReadModel,
+    yearRanges: YearRange[],
+  ) {
+    for (const range of yearRanges) {
+      if (
+        consultant.yearsOfExperience >= range.start &&
+        (!range.end || consultant.yearsOfExperience <= range.end)
+      )
+        return true;
+    }
+    return false;
+  }
+
+  function experienceRange(
+    consultant: ForecastReadModel,
+    experienceFrom: string,
+    experienceTo: string,
+  ) {
+    const experienceRange = {
+      start: parseInt(experienceFrom),
+      end: parseInt(experienceTo),
+    };
+    if (
+      (Number.isNaN(experienceRange.start) ||
+        consultant.consultant.yearsOfExperience >= experienceRange.start) &&
+      (Number.isNaN(experienceRange.end) ||
+        consultant.consultant.yearsOfExperience <= experienceRange.end)
+    )
+      return true;
+    else {
+      return false;
+    }
+  }
+
+  consultants.forEach((consultant) => {
+    if (
+      (availabilityFilterOn && !consultant.consultantIsAvailable) ||
+      ((activeExperienceFrom != "" || activeExperienceTo != "") &&
+        !experienceRange(
+          consultant,
+          activeExperienceFrom,
+          activeExperienceTo,
+        )) ||
+      (yearFilter.length > 0 &&
+        !inYearRanges(consultant.consultant, yearFilter)) ||
+      (competenceFilter &&
+        competenceFilter.length > 0 &&
+        !filterCompetence(competenceFilter, consultant)) ||
+      (departmentFilter &&
+        departmentFilter.length > 0 &&
+        !departmentFilter.includes(consultant.consultant.department.id)) ||
+      (search &&
+        search.length > 0 &&
+        !consultant.consultant.name.match(
+          new RegExp(`(?<!\\p{L})${search}.*\\b`, "giu"),
+        ))
+    )
+      return;
 
     newFilteredConsultants.push(consultant);
-  }
+  });
+
   return newFilteredConsultants;
 }
 
@@ -155,33 +212,35 @@ interface WeeklyTotal {
   weeklyTotalBillableAndOffered: Map<number, number>;
 }
 
+function getMonth(date: string) {
+  return new Date(date).getMonth();
+}
+
 export function setMonthlyTotalBillable(
-  filteredConsultants: ConsultantForecastReadModel[],
+  filteredConsultants: ForecastReadModel[],
 ): WeeklyTotal {
   const monthlyTotalBillable = new Map<number, number>();
   const monthlyTotalBillableAndOffered = new Map<number, number>();
 
   filteredConsultants.forEach((consultant) => {
     consultant.bookings.forEach((booking) => {
-      if (monthlyTotalBillable.has(booking.month)) {
+      let month = getMonth(booking.month);
+      if (monthlyTotalBillable.has(month)) {
         monthlyTotalBillable.set(
-          booking.month,
-          (monthlyTotalBillable.get(booking.month) || 0) +
+          month,
+          (monthlyTotalBillable.get(month) || 0) +
             booking.bookingModel.totalBillable,
         );
         monthlyTotalBillableAndOffered.set(
-          booking.month,
-          (monthlyTotalBillableAndOffered.get(booking.month) || 0) +
+          month,
+          (monthlyTotalBillableAndOffered.get(month) || 0) +
             booking.bookingModel.totalBillable +
             booking.bookingModel.totalOffered,
         );
       } else {
-        monthlyTotalBillable.set(
-          booking.month,
-          booking.bookingModel.totalBillable,
-        );
+        monthlyTotalBillable.set(month, booking.bookingModel.totalBillable);
         monthlyTotalBillableAndOffered.set(
-          booking.month,
+          month,
           booking.bookingModel.totalBillable +
             booking.bookingModel.totalOffered,
         );
@@ -196,7 +255,7 @@ export function setMonthlyTotalBillable(
 }
 
 function setMonthlyInvoiceRate(
-  filteredConsultants: ConsultantForecastReadModel[],
+  filteredConsultants: ForecastReadModel[],
   weeklyTotalBillable: Map<number, number>,
   numWorkHours: number,
 ) {
@@ -207,7 +266,7 @@ function setMonthlyInvoiceRate(
 
     filteredConsultants.forEach((consultant) => {
       consultant.bookings.forEach((booking) => {
-        if (booking.month === month) {
+        if (getMonth(booking.month) === month) {
           let consultantAvailableWeekHours =
             numWorkHours -
             booking.bookingModel.totalHolidayHours -
