@@ -75,15 +75,14 @@ export default function ForecastTable() {
   return (
     <table className={`table-fixed`}>
       <colgroup>
-        <col span={1} className="w-14" />
         <col span={1} className="w-[190px]" />
-        {filteredConsultants
-          .at(0)
-          ?.bookings.map((_, index) => <col key={index} span={1} />)}
+        {monthsWithYears.map((_, index) => (
+          <col key={index} span={1} className={`w-[calc((1%/15)*100)]`} />
+        ))}
       </colgroup>
       <thead>
         <tr className="sticky -top-6 bg-white z-10">
-          <th colSpan={2} className="pt-3 pl-2 -left-2 relative bg-white">
+          <th colSpan={1} className="pt-3 pl-2 -left-2 relative bg-white">
             <div className="flex flex-row gap-3 pb-4 items-center">
               <p className="normal-medium ">Konsulenter</p>
               <p className="text-primary small-medium rounded-full bg-secondary/30 px-2 py-1">

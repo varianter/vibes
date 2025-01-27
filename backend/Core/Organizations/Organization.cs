@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Core.Absences;
 using Core.Customers;
+using Core.Extensions;
 using Core.Weeks;
 using PublicHoliday;
 
@@ -23,15 +24,47 @@ public class Organization
     public required List<Customer> Customers { get; init; }
     public required List<Absence> AbsenceTypes { get; init; }
 
+    public IEnumerable<DateOnly> GetHolidaysInWeek(Week week)
+    {
+        var datesOfWorkWeek = week.GetDatesInWorkWeek();
+        return datesOfWorkWeek.Where(IsHoliday);
+    }
+
     private int GetTotalHolidaysOfWeek(Week week)
     {
-        var datesOfThisWeek = week.GetDatesInWorkWeek();
-        return datesOfThisWeek.Count(IsHoliday);
+        return GetHolidaysInWeek(week).Count();
     }
 
     public double GetTotalHolidayHoursOfWeek(Week week)
     {
         var holidayDays = GetTotalHolidaysOfWeek(week);
+        return holidayDays * HoursPerWorkday;
+    }
+
+    /// <summary>
+    /// Returns the count of holidays that occur on a weekday (work day) within the given month
+    /// </summary>
+    public int GetTotalHolidaysInMonth(DateOnly month)
+    {
+        return GetHolidaysInMonth(month).Count();
+    }
+
+    /// <summary>
+    /// Returns all holidays that occur on a weekday (work day) within the given month
+    /// </summary>
+    public IEnumerable<DateOnly> GetHolidaysInMonth(DateOnly month)
+    {
+        return GetPublicHolidays(month.Year)
+            .Where(holiday => holiday.EqualsMonth(month))
+            .Where(DateOnlyExtensions.IsWeekday);
+    }
+
+    /// <summary>
+    /// Returns the total amount of hours for the holidays that occur on a weekday (work day) within the given month
+    /// </summary>
+    public double GetTotalHolidayHoursInMonth(DateOnly month)
+    {
+        var holidayDays = GetTotalHolidaysInMonth(month);
         return holidayDays * HoursPerWorkday;
     }
 
@@ -69,6 +102,9 @@ public class Organization
         return date >= startDate && date <= endDate;
     }
 
+    /// <summary>
+    /// Returns a list of dates for all the public holidays and organization-provided holidays for the given year
+    /// </summary>
     public List<DateOnly> GetPublicHolidays(int year)
     {
         var publicHoliday = GetPublicHoliday();
