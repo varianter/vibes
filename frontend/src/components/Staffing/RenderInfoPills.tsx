@@ -1,4 +1,3 @@
-import { BookedHoursPerMonth } from "@/types";
 import InfoPill from "./InfoPill";
 import {
   AlertTriangle,
@@ -9,13 +8,13 @@ import {
   Sun,
 } from "react-feather";
 import { getInfopillVariantByColumnCount } from "./helpers/utils";
-import { BookedHoursPerWeek } from "@/api-types";
+import { BookedHoursInMonth, BookedHoursPerWeek } from "@/api-types";
 
 export default function RenderInfoPills({
   bookedHours,
   columnCount,
 }: {
-  bookedHours: BookedHoursPerMonth | BookedHoursPerWeek;
+  bookedHours: BookedHoursInMonth | BookedHoursPerWeek;
   columnCount: number;
 }) {
   let pillNumber = 0;

@@ -3,6 +3,7 @@ import {
   BookingDetails,
   DetailedBooking,
   BookingReadModel,
+  BookedHoursInMonth,
 } from "@/api-types";
 import { getMonthOfWeek, weekToWeekType } from "./WeekToMonthConverter";
 import {
@@ -82,14 +83,8 @@ function transformToMonthlyData(weeklyData: BookedHoursPerWeek[]) {
   return Object.values(monthlyData);
 }
 
-function bookingForMonth(
-  bookings: BookedHoursPerMonth[],
-  month: number,
-  year: number,
-) {
-  return bookings.find(
-    (booking) => booking.month === month && booking.year === year,
-  );
+function bookingForMonth(bookings: BookedHoursInMonth[], month: string) {
+  return bookings.find((booking) => booking.month === month);
 }
 
 function transformDetailedBookingToMonthlyData(
