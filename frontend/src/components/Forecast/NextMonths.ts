@@ -1,8 +1,4 @@
-import { Month } from "@/types";
-
-export default function getNextMonthNamesWithYear(
-  numberOfMonths: number,
-): Month[] {
+export default function getNextMonthNamesWithYear(numberOfMonths: number) {
   var now = new Date();
   var month = now.getMonth();
   var year = now.getFullYear();
