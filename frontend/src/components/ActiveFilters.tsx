@@ -2,17 +2,21 @@
 import { useDepartmentFilter } from "@/hooks/staffing/useDepartmentFilter";
 import { useRawYearsFilter } from "@/hooks/staffing/useRawYearFilter";
 import { useAvailabilityFilter } from "@/hooks/staffing/useAvailabilityFilter";
-import { useContext } from "react";
+import { Context, useContext } from "react";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
-export default function ActiveFilters() {
+export default function ActiveFilters({
+  context = FilteredContext,
+}: {
+  context?: Context<any>;
+}) {
   const filterTextComponents: string[] = [];
-  const { activeFilters } = useContext(FilteredContext);
+  const { activeFilters } = useContext(context);
 
   const { searchFilter } = activeFilters;
-  const { filteredDepartments } = useDepartmentFilter();
-  const { filteredYears } = useRawYearsFilter();
-  const { availabilityFilterOn } = useAvailabilityFilter();
+  const { filteredDepartments } = useDepartmentFilter(context);
+  const { filteredYears } = useRawYearsFilter(context);
+  const { availabilityFilterOn } = useAvailabilityFilter(context);
   const { experienceFromFilter, experienceToFilter } = activeFilters;
 
   if (experienceFromFilter != "" && experienceToFilter == "") {

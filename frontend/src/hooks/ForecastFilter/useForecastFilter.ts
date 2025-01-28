@@ -24,7 +24,7 @@ async function getNumWorkHours(
   }
 }
 
-export function useSimpleConsultantsFilter() {
+export function useSimpleForecastFilter() {
   const { consultants, setConsultants } = useContext(FilteredForecastContext);
 
   const {
@@ -36,7 +36,7 @@ export function useSimpleConsultantsFilter() {
     startDate,
   } = useContext(FilteredForecastContext).activeFilters;
 
-  const { filteredYears } = useRawYearsFilter();
+  const { filteredYears } = useRawYearsFilter(FilteredForecastContext);
   const { availabilityFilterOn } = useAvailabilityFilter();
 
   const filteredConsultants = filterConsultants({
@@ -56,7 +56,7 @@ export function useSimpleConsultantsFilter() {
   };
 }
 
-export function useConsultantsFilter() {
+export function useForecastFilter() {
   const { consultants } = useContext(FilteredForecastContext);
   const [numWorkHours, setNumWorkHours] = useState<number>(-1);
   const organisationName = usePathname().split("/")[1];
@@ -74,7 +74,7 @@ export function useConsultantsFilter() {
     startDate,
   } = useContext(FilteredForecastContext).activeFilters;
 
-  const { filteredYears } = useRawYearsFilter();
+  const { filteredYears } = useRawYearsFilter(FilteredForecastContext);
   const { availabilityFilterOn } = useAvailabilityFilter();
 
   const filteredConsultants = filterConsultants({

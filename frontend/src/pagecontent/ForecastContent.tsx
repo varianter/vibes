@@ -9,6 +9,7 @@ import { Filter } from "react-feather";
 import ActiveFilters from "@/components/ActiveFilters";
 import WeekSelection from "@/components/WeekSelection";
 import ForecastTable from "@/components/Forecast/ForecastTable";
+import { FilteredForecastContext } from "@/hooks/ForecastFilter/ForecastFilterProvider";
 
 export function ForecastContent() {
   const [isSideBarOpen, setIsSidebarOpen] = useState<boolean>(false);
@@ -18,6 +19,7 @@ export function ForecastContent() {
       <StaffingSidebar
         isSidebarOpen={isSideBarOpen}
         closeSidebar={() => setIsSidebarOpen(false)}
+        isForecast={true}
       />
 
       <div className="main p-4 pt-5 w-full flex flex-col gap-8">
@@ -30,7 +32,7 @@ export function ForecastContent() {
               icon={<Filter />}
               onClick={() => setIsSidebarOpen((wasOpen) => !wasOpen)}
             />
-            <ActiveFilters />
+            <ActiveFilters context={FilteredForecastContext} />
           </div>
         </div>
         <ForecastTable />

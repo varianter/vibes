@@ -1,11 +1,11 @@
 "use client";
 
-import { useCallback, useContext, useEffect } from "react";
+import { Context, useCallback, useContext, useEffect } from "react";
 import { FilteredContext } from "../ConsultantFilterProvider";
 
-export function useAvailabilityFilter() {
+export function useAvailabilityFilter(context: Context<any> = FilteredContext) {
   const { isDisabledHotkeys, updateFilters, activeFilters } =
-    useContext(FilteredContext);
+    useContext(context);
   const availabilityFilterOn = activeFilters.availabilityFilter;
 
   const setAvailabilityFilter = useCallback(

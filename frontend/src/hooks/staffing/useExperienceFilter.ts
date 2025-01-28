@@ -1,10 +1,10 @@
 "use client";
 
-import { useContext, useEffect, useState } from "react";
+import { Context, useContext, useEffect, useState } from "react";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
-export function useExperienceFilter() {
-  const { updateFilters, activeFilters } = useContext(FilteredContext);
+export function useExperienceFilter(context: Context<any> = FilteredContext) {
+  const { updateFilters, activeFilters } = useContext(context);
   const experienceFromFilter = activeFilters.experienceFromFilter;
   const experienceToFilter = activeFilters.experienceToFilter;
 

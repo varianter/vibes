@@ -1,10 +1,15 @@
 "use client";
 import { useDepartmentFilter } from "@/hooks/staffing/useDepartmentFilter";
 import FilterButton from "./Buttons/FilterButton";
+import { Context } from "react";
 
-export default function DepartmentFilter() {
+export default function DepartmentFilter({
+  context,
+}: {
+  context: Context<any>;
+}) {
   const { departments, filteredDepartments, toggleDepartmentFilter } =
-    useDepartmentFilter();
+    useDepartmentFilter(context);
 
   if (departments.length > 0) {
     departments.sort((a, b) => {

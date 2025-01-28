@@ -8,6 +8,7 @@ import { fetchPublicHolidays } from "@/hooks/fetchPublicHolidays";
 import { usePathname } from "next/navigation";
 import { getBusinessHoursPerMonth } from "./BusinessHoursPerMonth";
 import getNextMonthNamesWithYear from "./NextMonths";
+import { useForecastFilter } from "@/hooks/ForecastFilter/useForecastFilter";
 
 const months = [
   "Januar",
@@ -58,7 +59,7 @@ export default function ForecastTable() {
     weeklyTotalBillable,
     weeklyTotalBillableAndOffered,
     weeklyInvoiceRates,
-  } = useConsultantsFilter();
+  } = useForecastFilter();
   const [publicHolidays, setPublicHolidays] = useState<string[]>([]);
   const organisationName = usePathname().split("/")[1];
 
@@ -161,9 +162,9 @@ export default function ForecastTable() {
         </tr>
       </thead>
       <tbody>
-        {MockConsultantsForForecast.map((consultant) => (
+        {filteredConsultants.map((consultant) => (
           <ForecastRows
-            key={consultant.id}
+            key={consultant.consultant.id}
             consultant={consultant}
             numWorkHours={numWorkHours}
           />

@@ -21,7 +21,7 @@ const defaultFilters: ForecastFilters = {
   experienceToFilter: "",
 };
 
-type FilterContextType = {
+export type ForecastContextType = {
   consultants: ForecastReadModel[];
   setConsultants: React.Dispatch<React.SetStateAction<ForecastReadModel[]>>;
   departments: DepartmentReadModel[];
@@ -33,7 +33,7 @@ type FilterContextType = {
   updateFilters: UpdateFilters;
 };
 
-export const FilteredForecastContext = createContext<FilterContextType>({
+export const FilteredForecastContext = createContext<ForecastContextType>({
   consultants: [],
   setConsultants: () => null,
   departments: [],
