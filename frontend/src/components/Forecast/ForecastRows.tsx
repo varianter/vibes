@@ -49,7 +49,10 @@ export default function ForecastRows({
           <MonthCell
             bookedHoursInMonth={bookingForMonth(bookingsPerMonth, b.month)}
             key={index}
-            hasBeenEdited={b.displayedPercentage != b.calculatedPercentage}
+            hasBeenEdited={
+              Math.round(b.displayedPercentage) !=
+              Math.round(b.displayedPercentage)
+            }
             forecastValue={Math.round(b.displayedPercentage)}
             month={b.month}
             consultant={currentConsultant}

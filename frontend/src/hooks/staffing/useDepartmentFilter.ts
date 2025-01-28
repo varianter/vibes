@@ -1,8 +1,9 @@
 import { CompetenceReadModel, DepartmentReadModel } from "@/api-types";
 import { Context, useCallback, useContext, useEffect } from "react";
 import { toggleValueFromFilter } from "./UrlStringFilter";
+import { FilteredContext } from "../ConsultantFilterProvider";
 
-export function useDepartmentFilter(context: Context<any>) {
+export function useDepartmentFilter(context: Context<any> = FilteredContext) {
   const { departments } = useContext(context);
   const { isDisabledHotkeys, updateFilters, activeFilters } =
     useContext(context);

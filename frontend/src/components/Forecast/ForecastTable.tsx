@@ -65,7 +65,7 @@ export default function ForecastTable() {
       });
     }
   }, [organisationName]);
-
+  console.log("filteredConsultants", filteredConsultants[0]);
   return (
     <table className={`table-fixed`}>
       <colgroup>
