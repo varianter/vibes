@@ -9,8 +9,6 @@
  * ---------------------------------------------------------------
  */
 
-import { Forecast } from "./types";
-
 export interface BookedHoursPerWeek {
   /** @format int32 */
   year: number;
