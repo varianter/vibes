@@ -19,7 +19,8 @@ function isCurrentMonth(dateString: string) {
 
 function getShortenedMonthName(dateString: string) {
   const date = new Date(dateString);
-  return date.toLocaleString("nb-NO", { month: "short" });
+  const month = date.toLocaleString("nb-NO", { month: "short" });
+  return month.charAt(0).toUpperCase() + month.slice(1);
 }
 
 export default function ForecastTable() {
