@@ -1,12 +1,13 @@
 "use client";
-import { ForecastReadModel, ProjectWithCustomerModel } from "@/api-types";
-import React, { useContext, useEffect, useState } from "react";
-import { useModal } from "@/hooks/useModal";
-import { usePathname } from "next/navigation";
-import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
+import { BookedHoursInMonth, ForecastReadModel } from "@/api-types";
+import React, { useState } from "react";
 import { MonthCell } from "./MonthCell";
-import { bookingForMonth } from "./TransformWeekDataToMonth";
-import { FilteredForecastContext } from "@/hooks/ForecastFilter/ForecastFilterProvider";
+
+function bookingForMonth(bookings: BookedHoursInMonth[], month: string) {
+  const date = new Date(month);
+
+  return bookings.find((booking) => booking.month === month);
+}
 
 export default function ForecastRows({
   consultant,
@@ -19,7 +20,7 @@ export default function ForecastRows({
     useState<ForecastReadModel>(consultant);
   const [hoveredMonth, setHoveredMonth] = useState("");
 
-  const columnCount = currentConsultant.bookings.length ?? 0;
+  const columnCount = consultant.bookings.length ?? 0;
 
   const bookingsPerMonth = consultant.bookings;
 
@@ -46,7 +47,7 @@ export default function ForecastRows({
         </td>
         {currentConsultant.forecasts?.map((b, index) => (
           <MonthCell
-            bookedHoursPerMonth={bookingForMonth(bookingsPerMonth, b.month)}
+            bookedHoursInMonth={bookingForMonth(bookingsPerMonth, b.month)}
             key={index}
             hasBeenEdited={b.displayedPercentage != b.calculatedPercentage}
             forecastValue={Math.round(b.displayedPercentage)}

@@ -1,9 +1,6 @@
 "use client";
-
-import { useConsultantsFilter } from "@/hooks/staffing/useConsultantsFilter";
 import React, { useEffect, useState } from "react";
 import ForecastRows from "./ForecastRows";
-import { MockConsultantsForForecast } from "../../../mockdata/mockData";
 import { fetchPublicHolidays } from "@/hooks/fetchPublicHolidays";
 import { usePathname } from "next/navigation";
 import { getBusinessHoursPerMonth } from "./BusinessHoursPerMonth";
@@ -37,13 +34,9 @@ const monthsShort = [
   "Okt",
   "Nov",
   "Des",
-];
+] as const;
 
 const monthsWithYears = getNextMonthNamesWithYear(12);
-
-function mapMonthToNumber(month: string) {
-  return monthsShort.indexOf(month);
-}
 
 function mapNumberToMonthShortName(month: number) {
   return monthsShort[month];
@@ -77,8 +70,12 @@ export default function ForecastTable() {
     <table className={`table-fixed`}>
       <colgroup>
         <col span={1} className="w-[190px]" />
-        {monthsWithYears.map((_, index) => (
-          <col key={index} span={1} className={`w-[calc((1%/15)*100)]`} />
+        {monthsWithYears.map((m) => (
+          <col
+            key={`${m.month}-${m.year}`}
+            span={1}
+            className={`w-[calc((1%/15)*100)]`}
+          />
         ))}
       </colgroup>
       <thead>
@@ -121,7 +118,7 @@ export default function ForecastTable() {
                   </div>
                 ) : (
                   <div
-                    className={`flex justify-end 
+                    className={`flex justify-end
                          flex-row gap-2
                     `}
                   >

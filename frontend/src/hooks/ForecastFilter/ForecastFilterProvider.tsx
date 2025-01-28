@@ -1,10 +1,8 @@
 "use client";
 
 import {
-  ConsultantReadModel,
   DepartmentReadModel,
   CompetenceReadModel,
-  EngagementPerCustomerReadModel,
   ForecastReadModel,
 } from "@/api-types";
 import React, { createContext, ReactNode, useEffect, useState } from "react";
@@ -26,7 +24,6 @@ export type ForecastContextType = {
   setConsultants: React.Dispatch<React.SetStateAction<ForecastReadModel[]>>;
   departments: DepartmentReadModel[];
   competences: CompetenceReadModel[];
-  customers: EngagementPerCustomerReadModel[];
   isDisabledHotkeys: boolean;
   setIsDisabledHotkeys: React.Dispatch<React.SetStateAction<boolean>>;
   activeFilters: ForecastFilters;
@@ -38,7 +35,6 @@ export const FilteredForecastContext = createContext<ForecastContextType>({
   setConsultants: () => null,
   departments: [],
   competences: [],
-  customers: [],
   isDisabledHotkeys: false,
   setIsDisabledHotkeys: () => {},
   activeFilters: defaultFilters,
@@ -49,7 +45,6 @@ export function ForecastFilterProvider(props: {
   consultants: ForecastReadModel[];
   departments: DepartmentReadModel[];
   competences: CompetenceReadModel[];
-  customers: EngagementPerCustomerReadModel[];
   children: ReactNode;
 }) {
   const [isDisabledHotkeys, setIsDisabledHotkeys] = useState(false);

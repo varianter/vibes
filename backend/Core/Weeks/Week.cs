@@ -49,12 +49,18 @@ public sealed class Week(int year, int weekNumber) : IComparable<Week>, IEquatab
 
     public static Week FromDateTime(DateTime dateTime)
     {
-        return new Week(dateTime.Year, GetWeekNumber(dateTime));
+        var weekNumber = GetWeekNumber(dateTime);
+        var year = dateTime.Year;
+
+        if (weekNumber == 1 && dateTime.Month == 12)
+            year += 1;
+
+        return new Week(year, weekNumber);
     }
 
     public static Week FromDateOnly(DateOnly dateOnly)
     {
-        return new Week(dateOnly.Year, GetWeekNumber(dateOnly.ToDateTime(TimeOnly.MinValue)));
+        return FromDateTime(dateOnly.ToDateTime(TimeOnly.MinValue));
     }
 
     /// <summary>

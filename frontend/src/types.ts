@@ -1,13 +1,4 @@
-import {
-  BookingDetails,
-  BookingType,
-  Competence,
-  ConsultantReadModel,
-  Degree,
-  DepartmentReadModel,
-  EngagementState,
-  BookingReadModel,
-} from "@/api-types";
+import { BookingType, ConsultantReadModel, EngagementState } from "@/api-types";
 
 export type YearRange = {
   label: string;
@@ -20,20 +11,6 @@ export type Week = {
   year: number;
   weekNumber: number;
 };
-export interface ConsultantForecastReadModel {
-  id: number;
-  name: string;
-  competences: Competence[];
-  department: DepartmentReadModel;
-  yearsOfExperience: number;
-  graduationYear: number;
-  degree: Degree;
-  bookings: BookedHoursPerMonth[]; // <-- Endret
-  detailedBooking: MonthlyDetailedBooking[]; // <-- Endret
-  forecasts?: Forecast[]; // <-- Lagt til
-  isOccupied: boolean;
-  imageThumbUrl?: string; // populeres i frontend med data fra Chewbacca
-}
 
 export interface updateBookingHoursBody {
   hours: number;
@@ -44,29 +21,6 @@ export interface updateBookingHoursBody {
   endWeek?: number;
 }
 
-export interface Month {
-  month: number;
-  year: number;
-}
-export interface BookedHoursPerMonth {
-  month: number;
-  year: number;
-  bookingModel: BookingReadModel;
-}
-
-export interface Forecast {
-  id: number;
-  month: number;
-  year: number;
-  forecastValue: number;
-  hasBeenChanged: boolean;
-  valueAddedManually: number;
-}
-
-export interface MonthlyDetailedBooking {
-  bookingDetails: BookingDetails;
-  hours: MonthlyHours[];
-}
 export interface MonthlyHours {
   month: number;
   hours: number;

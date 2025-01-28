@@ -9,7 +9,7 @@ import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 export function useRawYearsFilter(context: Context<any> = FilteredContext) {
   const { updateFilters, activeFilters } = useContext(context);
   const { rawYearFilter } = activeFilters;
-  console.log("hehe", rawYearFilter);
+
   const filteredYears = rawYearFilter
     .split(",")
     .map((urlString: string) =>

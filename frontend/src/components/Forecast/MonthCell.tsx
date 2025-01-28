@@ -3,14 +3,13 @@ import {
   ConsultantReadModel,
   ForecastReadModel,
 } from "@/api-types";
-import { BookedHoursPerMonth } from "@/types";
 import React, { useRef, useState } from "react";
 import { HoveredMonth } from "./HoveredMonth";
 import RenderInfoPills from "../Staffing/RenderInfoPills";
 import { useOnClickOutside } from "usehooks-ts";
 
 export function MonthCell(props: {
-  bookedHoursPerMonth?: BookedHoursInMonth;
+  bookedHoursInMonth?: BookedHoursInMonth;
   forecastValue: number;
   hasBeenEdited: boolean;
   consultant: ForecastReadModel;
@@ -23,7 +22,7 @@ export function MonthCell(props: {
   numWorkHours: number;
 }) {
   const {
-    bookedHoursPerMonth: bookedHoursPerMonth,
+    bookedHoursInMonth,
     forecastValue,
     consultant,
     hasBeenEdited,
@@ -127,9 +126,9 @@ export function MonthCell(props: {
             columnCount={columnCount}
           />
         )}
-        {bookedHoursPerMonth && (
+        {bookedHoursInMonth && (
           <RenderInfoPills
-            bookedHours={bookedHoursPerMonth}
+            bookedHours={bookedHoursInMonth}
             columnCount={columnCount}
           />
         )}
@@ -140,7 +139,7 @@ export function MonthCell(props: {
             min={forecastValue}
             max={100}
             step={10}
-            value={`${inputValue}`}
+            value={`${Math.round(inputValue)}`}
             draggable={true}
             disabled={forecastValue >= 100}
             onChange={handleInputChange}
@@ -194,7 +193,7 @@ export function MonthCell(props: {
 
 function checkIfNotStartedOrQuit(
   consultant: ConsultantReadModel,
-  bookedHoursPerMonth: BookedHoursPerMonth,
+  bookedHoursPerMonth: BookedHoursInMonth,
   numWorkHours: number,
 ) {
   const notStartedOrQuitHours =

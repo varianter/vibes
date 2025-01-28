@@ -1,4 +1,3 @@
-import { BookedHoursPerMonth } from "@/types";
 import InfoPill from "./InfoPill";
 import {
   AlertTriangle,
