@@ -14,6 +14,7 @@ import {
 import { Metadata } from "next";
 import { ForecastContent } from "@/pagecontent/ForecastContent";
 import { getWeek } from "date-fns";
+import { ForecastFilterProvider } from "@/hooks/ForecastFilter/ForecastFilterProvider";
 export const metadata: Metadata = {
   title: "Prognose | VIBES",
 };
@@ -45,6 +46,9 @@ export default async function Prognose({
       }${weekSpan ? `${now ? "&" : "?"}WeekSpan=${weekSpan}` : ""}`,
     )) ?? [];
 
+  const forecasts =
+    (await fetchWithToken(`${params.organisation}/forecasts`)) ?? ([] as any);
+
   const departments =
     (await fetchWithToken<DepartmentReadModel[]>(
       `organisations/${params.organisation}/departments`,
@@ -59,13 +63,8 @@ export default async function Prognose({
     )) ?? [];
 
   return (
-    <ConsultantFilterProvider
-      consultants={consultants}
-      departments={departments}
-      competences={competences}
-      customers={customers}
-    >
+    <ForecastFilterProvider forecasts={forecasts}>
       <ForecastContent />
-    </ConsultantFilterProvider>
+    </ForecastFilterProvider>
   );
 }

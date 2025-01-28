@@ -1,5 +1,10 @@
 "use client";
-import { ConsultantReadModel, ProjectWithCustomerModel } from "@/api-types";
+import {
+  ConsultantReadModel,
+  ForecastReadModel,
+  ProjectWithCustomerModel,
+  SingleConsultantReadModel,
+} from "@/api-types";
 import React, { useContext, useEffect, useState } from "react";
 import { Plus } from "react-feather";
 import { DetailedBookingRows } from "@/components/Staffing/DetailedBookingRows";
@@ -12,7 +17,6 @@ import {
 import { useWeekSelectors } from "@/hooks/useWeekSelectors";
 import { setDetailedBookingHours } from "@/components/Staffing/DetailedBookingRows";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
-import { DateTime } from "luxon";
 import Image from "next/image";
 import { MonthCell } from "./MonthCell";
 import {
@@ -21,14 +25,14 @@ import {
 } from "./TransformWeekDataToMonth";
 
 export default function ForecastRows({
-  consultant,
+  forecast,
   numWorkHours,
 }: {
-  consultant: ConsultantReadModel;
+  forecast: ForecastReadModel;
   numWorkHours: number;
 }) {
-  const [currentConsultant, setCurrentConsultant] =
-    useState<ConsultantReadModel>(consultant);
+  const [currentForecast, setCurrentForecast] =
+    useState<ForecastReadModel>(forecast);
   const [isListElementVisible, setIsListElementVisible] = useState(false);
   const [isRowHovered, setIsRowHovered] = useState(false);
   const [hoveredRowWeek, setHoveredRowWeek] = useState(-1);
@@ -37,7 +41,7 @@ export default function ForecastRows({
   const { setIsDisabledHotkeys } = useContext(FilteredContext);
   const { selectedWeekFilter } = useContext(FilteredContext).activeFilters;
 
-  const columnCount = currentConsultant.bookings.length ?? 0;
+  const columnCount = forecast.bookings.length ?? 0;
 
   function toggleListElementVisibility() {
     setIsListElementVisible((old) => !old);
@@ -50,7 +54,7 @@ export default function ForecastRows({
   } = useModal({
     closeOnBackdropClick: false,
   });
-  const bookingsPerMonth = transformToMonthlyData(consultant.bookings);
+  const bookingsPerMonth = forecast.bookings;
 
   const [selectedProjectId, setSelectedProjectId] = useState<
     number | undefined
@@ -93,13 +97,12 @@ export default function ForecastRows({
   }
 
   return (
-    <>
-      <tr
-        className="h-[52px]"
-        onMouseEnter={() => setIsRowHovered(true)}
-        onMouseLeave={() => setIsRowHovered(false)}
-      >
-        {/* <td
+    <tr
+      className="h-[52px]"
+      onMouseEnter={() => setIsRowHovered(true)}
+      onMouseLeave={() => setIsRowHovered(false)}
+    >
+      {/* <td
           className={`border-l-2 ${
             isListElementVisible
               ? "border-l-secondary"
@@ -117,56 +120,67 @@ export default function ForecastRows({
             <ChevronDown className={`text-primary w-6 h-6`} />
           </button>
         </td> */}
-        <td>
-          <div className="flex justify-start gap-1 items-center">
-            <div className="flex flex-row justify-center self-center gap-2 w-3/12">
-              {consultant.imageThumbUrl ? (
-                <Image
-                  src={consultant.imageThumbUrl}
-                  alt={consultant.name}
-                  className="w-10 h-10 rounded-md self-center object-contain"
-                  width={32}
-                  height={32}
-                />
-              ) : (
-                <div className="w-10 h-10 rounded-md bg-primary"></div>
-              )}
-            </div>
-            <div className="flex flex-col gap-1 w-7/12 ">
-              <p
-                className={`text-black text-start ${
-                  isListElementVisible ? "normal-medium" : "normal"
-                }`}
-              >
-                {currentConsultant.name}
-              </p>
-              <p className="xsmall text-black/75 text-start">
-                {`${currentConsultant.yearsOfExperience} års erfaring`}
-              </p>
-            </div>
-          </div>
-        </td>
-        {currentConsultant.forecasts?.map((b, index) => (
-          <MonthCell
-            bookedHoursPerMonth={bookingForMonth(
-              bookingsPerMonth,
-              b.month,
-              b.year,
+      <td>
+        <div className="flex justify-start gap-1 items-center">
+          <div className="flex flex-row justify-center self-center gap-2 w-3/12">
+            {false ? (
+              <Image
+                src={""}
+                alt=""
+                className="w-10 h-10 rounded-md self-center object-contain"
+                width={32}
+                height={32}
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-md bg-primary"></div>
             )}
+          </div>
+          <div className="flex flex-col gap-1 w-7/12 ">
+            <p
+              className={`text-black text-start ${
+                isListElementVisible ? "normal-medium" : "normal"
+              }`}
+            >
+              {currentForecast.consultant.name}
+            </p>
+            <p className="xsmall text-black/75 text-start">
+              {`${currentForecast.consultant.yearsOfExperience} års erfaring`}
+            </p>
+          </div>
+        </div>
+      </td>
+      {currentForecast.forecasts?.map((f, index) => {
+        const hasBeenEdited = f.calculatedPercentage != f.displayedPercentage;
+        return (
+          <MonthCell
+            bookedHoursInMonth={
+              bookingForMonth(currentForecast.bookings, f.month)!
+            }
             key={index}
-            hasBeenEdited={b.hasBeenChanged}
-            forecastValue={b.forecastValue + b.valueAddedManually}
-            month={b.month}
-            consultant={currentConsultant}
+            hasBeenEdited={hasBeenEdited}
+            forecastValue={f.calculatedPercentage}
+            month={Number.parseInt(f.month.split("-")[1])}
+            consultant={mapToConsultantReadModel(currentForecast)}
             setHoveredRowWeek={setHoveredRowWeek}
             hoveredRowWeek={hoveredRowWeek}
             columnCount={columnCount}
-            isLastCol={index == currentConsultant.bookings.length - 1}
-            isSecondLastCol={index == currentConsultant.bookings.length - 2}
+            isLastCol={index == currentForecast.bookings.length - 1}
+            isSecondLastCol={index == currentForecast.bookings.length - 2}
             numWorkHours={numWorkHours}
           />
-        ))}
-      </tr>
-    </>
+        );
+      })}
+    </tr>
   );
+}
+
+function mapToConsultantReadModel(f: ForecastReadModel): ConsultantReadModel {
+  return {
+    ...f.consultant,
+    bookings: [],
+    detailedBooking: [],
+    isOccupied: false,
+    startDate: new Date(f.consultant.startDate),
+    endDate: new Date(f.consultant.endDate),
+  };
 }
