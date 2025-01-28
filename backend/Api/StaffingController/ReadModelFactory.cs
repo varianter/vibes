@@ -290,7 +290,7 @@ public class ReadModelFactory(StorageService storageService)
             week.WeekNumber,
             week.ToSortableInt(),
             GetDatesForWeek(week),
-            new BookingReadModel(totalBillable, totalOffered, totalAbsence, totalExcludableAbsence,
+            new BookingReadModel(totalBillable, totalNonBillable, totalOffered, totalAbsence, totalExcludableAbsence,
                 totalSellableTime,
                 totalHolidayHours, totalVacations,
                 totalOverbooked, totalNotStartedOrQuit)

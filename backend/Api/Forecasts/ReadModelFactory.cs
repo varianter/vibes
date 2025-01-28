@@ -163,6 +163,7 @@ public static class ReadModelFactory
 			month,
 			new BookingReadModel(
 				totalBillable,
+				totalNonBillable,
 				totalOffered,
 				totalAbsence,
 				totalExcludableAbsence,
@@ -190,28 +191,26 @@ public static class ReadModelFactory
 				continue;
 			}
 
-			var bookedPercentage = CalculateBookedPercentage(month, consultant, booking);
+			var billablePercentage = CalculateBillablePercentage(booking);
 
-			var displayedPercentage = Math.Max((int)bookedPercentage, forecastPercentage);
+			var displayedPercentage = Math.Max((int)billablePercentage, forecastPercentage);
 
-			yield return new ForecastForMonth(month, bookedPercentage, displayedPercentage);
+			yield return new ForecastForMonth(month, billablePercentage, displayedPercentage);
 		}
 	}
 
-	/*
-		TODO: This should probably rather be availableWorkHoursInMonth, which may differ between consultants.
-
-		If a month has 150 work hours available and a consultant has the following registrations within that month:
-
-		75 hours on leave
-		75 hours booked
-		, the consultant is in practice 100 % booked for that month.
-		The current implementation will presumably claim that the consultant is 50 % booked.
-	*/
-	private static double CalculateBookedPercentage(DateOnly month, Consultant consultant, BookingReadModel booking)
+	private static double CalculateBillablePercentage(BookingReadModel booking)
 	{
-		var workHoursInMonth = WorkloadHelper.CalculateWorkHoursInMonth(month, consultant.Department.Organization);
+		var billableHours = booking.TotalBillable;
 
-		return 100 * (booking.TotalBillable / workHoursInMonth);
+		if (billableHours.IsEqualTo(0))
+		{
+			return 0;
+		}
+
+		var bookedOrderHours = billableHours + booking.TotalNonBillable;
+		var bookableOrderHours = bookedOrderHours + booking.TotalSellableTime;
+
+		return 100 * (billableHours / bookableOrderHours);
 	}
 }

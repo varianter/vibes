@@ -272,6 +272,8 @@ export interface BookingReadModel {
   /** @format double */
   totalBillable: number;
   /** @format double */
+  totalNonBillable: number;
+  /** @format double */
   totalOffered: number;
   /** @format double */
   totalPlannedAbsences: number;
