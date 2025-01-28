@@ -64,7 +64,6 @@ export interface ConsultantReadModel {
   isOccupied: boolean;
   imageUrl?: string;
   imageThumbUrl?: string;
-  forecasts?: Forecast[];
 }
 
 export interface ConsultantWriteModel {
