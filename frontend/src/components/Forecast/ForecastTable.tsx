@@ -44,9 +44,9 @@ export default function ForecastTable() {
     <table className={`table-fixed`}>
       <colgroup>
         <col span={1} className="w-[190px]" />
-        {filteredForecasts[0].forecasts.map((m) => (
+        {filteredForecasts[0].forecasts.map((forecast) => (
           <col
-            key={`${m.month}`}
+            key={`${forecast.month}`}
             span={1}
             className={`w-[calc((1%/15)*100)]`}
           />
@@ -62,10 +62,10 @@ export default function ForecastTable() {
               </p>
             </div>
           </th>
-          {filteredForecasts[0].forecasts.map((month) => (
-            <th key={"" + month.month} className=" px-2 py-1 pt-3 ">
+          {filteredForecasts[0].forecasts.map((forecast) => (
+            <th key={"" + forecast.month} className=" px-2 py-1 pt-3 ">
               <div className="flex flex-col gap-1">
-                {isCurrentMonth(month.month) ? (
+                {isCurrentMonth(forecast.month) ? (
                   <div className="flex flex-row gap-2 items-center justify-end">
                     {/* {booking.bookingModel.totalHolidayHours > 0 && (
                       <InfoPill
@@ -84,7 +84,7 @@ export default function ForecastTable() {
                     <div className="h-2 w-2 rounded-full bg-primary" />
 
                     <p className="normal-medium text-right">
-                      {getShortenedMonthName(month.month)}
+                      {getShortenedMonthName(forecast.month)}
                     </p>
                   </div>
                 ) : (
@@ -108,7 +108,7 @@ export default function ForecastTable() {
                       />
                     )} */}
                     <p className="normal text-right">
-                      {getShortenedMonthName(month.month)}
+                      {getShortenedMonthName(forecast.month)}
                     </p>
                   </div>
                 )}
@@ -116,7 +116,7 @@ export default function ForecastTable() {
                   {publicHolidays.length > 0
                     ? "" +
                       getBusinessHoursPerMonth(
-                        month.month,
+                        forecast.month,
                         numWorkHours,
                         publicHolidays,
                       ) +
