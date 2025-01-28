@@ -6,29 +6,8 @@ import ForecastRows from "./ForecastRows";
 import { fetchPublicHolidays } from "@/hooks/fetchPublicHolidays";
 import { usePathname } from "next/navigation";
 import { getBusinessHoursPerMonth } from "./BusinessHoursPerMonth";
-import getNextMonthNamesWithYear from "./NextMonths";
 import { useForecastFilter } from "@/hooks/ForecastFilter/useForecastFilter";
 
-const monthsShort = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "Mai",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Okt",
-  "Nov",
-  "Des",
-] as const;
-
-const monthsWithYears = getNextMonthNamesWithYear(12);
-
-function mapNumberToMonthShortName(month: number) {
-  return monthsShort[month];
-}
 function isCurrentMonth(dateString: string) {
   const date = new Date(dateString);
   const today = new Date();
@@ -64,9 +43,9 @@ export default function ForecastTable() {
     <table className={`table-fixed`}>
       <colgroup>
         <col span={1} className="w-[190px]" />
-        {monthsWithYears.map((m) => (
+        {filteredForecasts[0].forecasts.map((m) => (
           <col
-            key={`${m.month}-${m.year}`}
+            key={`${m.month}`}
             span={1}
             className={`w-[calc((1%/15)*100)]`}
           />
