@@ -1,5 +1,5 @@
 "use client";
-import { BookedHoursInMonth, ForecastReadModel } from "@/api-types";
+import { BookedHoursInMonth, ConsultantWithForecast } from "@/api-types";
 import React, { useState } from "react";
 import { MonthCell } from "./MonthCell";
 
@@ -13,11 +13,11 @@ export default function ForecastRows({
   consultant,
   numWorkHours,
 }: {
-  consultant: ForecastReadModel;
+  consultant: ConsultantWithForecast;
   numWorkHours: number;
 }) {
   const [currentConsultant, setCurrentConsultant] =
-    useState<ForecastReadModel>(consultant);
+    useState<ConsultantWithForecast>(consultant);
   const [hoveredMonth, setHoveredMonth] = useState("");
 
   const columnCount = consultant.bookings.length ?? 0;
