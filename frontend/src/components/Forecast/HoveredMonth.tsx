@@ -16,7 +16,7 @@ function isMonthBookingZeroHours(
   return (
     detailedBooking.hours.filter(
       (monthHours) =>
-        monthHours.month == hoveredRowMonth && monthHours.hours != 0, //TODO check if works with new logic
+        monthHours.month == hoveredRowMonth && monthHours.hours != 0,
     ).length == 0
   );
 }
@@ -37,6 +37,7 @@ export function HoveredMonth(props: {
 
   const bookings = consultant.bookings;
   const detailedBookings = consultant.detailedBookings;
+
   const nonZeroHoursDetailedBookings = detailedBookings.filter(
     (d) => !isMonthBookingZeroHours(d, hoveredRowMonth),
   );
