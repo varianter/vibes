@@ -51,7 +51,7 @@ export default function ForecastRows({
             key={index}
             hasBeenEdited={
               Math.round(b.displayedPercentage) !=
-              Math.round(b.displayedPercentage)
+              Math.round(b.calculatedPercentage)
             }
             forecastValue={Math.round(b.displayedPercentage)}
             month={b.month}
