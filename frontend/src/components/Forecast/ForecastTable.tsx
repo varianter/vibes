@@ -4,47 +4,23 @@ import ForecastRows from "./ForecastRows";
 import { fetchPublicHolidays } from "@/hooks/fetchPublicHolidays";
 import { usePathname } from "next/navigation";
 import { getBusinessHoursPerMonth } from "./BusinessHoursPerMonth";
-import getNextMonthNamesWithYear from "./NextMonths";
 import { useForecastFilter } from "@/hooks/ForecastFilter/useForecastFilter";
 
-const months = [
-  "Januar",
-  "Februar",
-  "Mars",
-  "April",
-  "Mai",
-  "Juni",
-  "Juli",
-  "August",
-  "September",
-  "Oktober",
-  "November",
-  "Desember",
-];
-const monthsShort = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "Mai",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Okt",
-  "Nov",
-  "Des",
-] as const;
-
-const monthsWithYears = getNextMonthNamesWithYear(12);
-
-function mapNumberToMonthShortName(month: number) {
-  return monthsShort[month];
-}
-function isCurrentMonth(month: number, year: number) {
+function isCurrentMonth(dateString: string) {
+  const date = new Date(dateString);
   const today = new Date();
-  return today.getMonth() === month && today.getFullYear() === year;
+  return (
+    today.getMonth() === date.getMonth() &&
+    today.getFullYear() === date.getFullYear()
+  );
 }
+
+function getShortenedMonthName(dateString: string) {
+  const date = new Date(dateString);
+  const month = date.toLocaleString("nb-NO", { month: "short" });
+  return month.charAt(0).toUpperCase() + month.slice(1);
+}
+
 export default function ForecastTable() {
   const {
     numWorkHours,
@@ -69,9 +45,9 @@ export default function ForecastTable() {
     <table className={`table-fixed`}>
       <colgroup>
         <col span={1} className="w-[190px]" />
-        {monthsWithYears.map((m) => (
+        {filteredForecasts[0].forecasts.map((forecast) => (
           <col
-            key={`${m.month}-${m.year}`}
+            key={`${forecast.month}`}
             span={1}
             className={`w-[calc((1%/15)*100)]`}
           />
@@ -87,13 +63,10 @@ export default function ForecastTable() {
               </p>
             </div>
           </th>
-          {monthsWithYears.map((month) => (
-            <th
-              key={"" + month.month + month.year}
-              className=" px-2 py-1 pt-3 "
-            >
+          {filteredForecasts[0].forecasts.map((forecast) => (
+            <th key={"" + forecast.month} className=" px-2 py-1 pt-3 ">
               <div className="flex flex-col gap-1">
-                {isCurrentMonth(month.month, month.year) ? (
+                {isCurrentMonth(forecast.month) ? (
                   <div className="flex flex-row gap-2 items-center justify-end">
                     {/* {booking.bookingModel.totalHolidayHours > 0 && (
                       <InfoPill
@@ -112,7 +85,7 @@ export default function ForecastTable() {
                     <div className="h-2 w-2 rounded-full bg-primary" />
 
                     <p className="normal-medium text-right">
-                      {mapNumberToMonthShortName(month.month)}
+                      {getShortenedMonthName(forecast.month)}
                     </p>
                   </div>
                 ) : (
@@ -136,7 +109,7 @@ export default function ForecastTable() {
                       />
                     )} */}
                     <p className="normal text-right">
-                      {mapNumberToMonthShortName(month.month)}
+                      {getShortenedMonthName(forecast.month)}
                     </p>
                   </div>
                 )}
@@ -144,8 +117,7 @@ export default function ForecastTable() {
                   {publicHolidays.length > 0
                     ? "" +
                       getBusinessHoursPerMonth(
-                        month.month,
-                        month.year,
+                        forecast.month,
                         numWorkHours,
                         publicHolidays,
                       ) +
