@@ -152,12 +152,12 @@ public static class ConsultantWithForecastFactory
 		var totalVacations = DetailedBookingForMonth
 			.GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.Vacation);
 
-		var bookedTime = totalBillable + totalAbsence + totalVacations + totalHolidayHours + totalNonBillable + totalNotStartedOrQuit;
+		var bookedHours = totalBillable + totalAbsence + totalVacations + totalNonBillable + totalNotStartedOrQuit;
 
-		var workHoursInMonth = WorkloadHelper.CalculateWorkHoursInMonth(month, organization);
+		var bookableHours = WorkloadHelper.CalculateWorkHoursInMonth(month, organization);
 
-		var totalSellableTime = Math.Max(workHoursInMonth - bookedTime, 0);
-		var totalOverbooked = Math.Max(bookedTime - workHoursInMonth, 0);
+		var sellableHours = Math.Max(bookableHours - bookedHours, 0);
+		var overbookedHours = Math.Max(bookedHours - bookableHours, 0);
 
 		return new BookedHoursInMonth(
 			month,
@@ -166,10 +166,10 @@ public static class ConsultantWithForecastFactory
 				totalOffered,
 				totalAbsence,
 				totalExcludableAbsence,
-				totalSellableTime,
+				sellableHours,
 				totalHolidayHours,
 				totalVacations,
-				totalOverbooked,
+				overbookedHours,
 				totalNotStartedOrQuit)
 		);
 	}

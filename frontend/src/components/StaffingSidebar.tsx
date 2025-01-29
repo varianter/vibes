@@ -7,16 +7,19 @@ import RawYearsFilter from "./RawYearsFilter";
 import CompetenceFilter from "./CompetenceFilter";
 import ExperienceFilter from "./ExperienceFilter";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
+import { FilteredForecastContext } from "@/hooks/ForecastFilter/ForecastFilterProvider";
 
 // @ts-ignore
 export default function StaffingSidebar({
   isStaffing = true,
   isSidebarOpen,
   closeSidebar,
+  isForecast = false,
 }: {
   isStaffing?: boolean;
   isSidebarOpen: boolean;
   closeSidebar: () => void;
+  isForecast?: boolean;
 }) {
   return (
     <>
@@ -32,21 +35,33 @@ export default function StaffingSidebar({
             </button>
           </div>
           <SearchBarComponent
-            context={FilteredContext}
+            context={isForecast ? FilteredForecastContext : FilteredContext}
             placeholder="Søk etter konsulent"
           />
-          {isStaffing ? <AvailabilityFilter /> : null}
-          <DepartmentFilter />
-          <RawYearsFilter />
-          <ExperienceFilter />
-          <CompetenceFilter />
+          {isStaffing ? (
+            <AvailabilityFilter
+              context={isForecast ? FilteredForecastContext : FilteredContext}
+            />
+          ) : null}
+          <DepartmentFilter
+            context={isForecast ? FilteredForecastContext : FilteredContext}
+          />
+          <RawYearsFilter
+            context={isForecast ? FilteredForecastContext : FilteredContext}
+          />
+          <ExperienceFilter
+            context={isForecast ? FilteredForecastContext : FilteredContext}
+          />
+          <CompetenceFilter
+            context={isForecast ? FilteredForecastContext : FilteredContext}
+          />
         </div>
       )}
       {!isSidebarOpen && (
         <div className="sidebar z-10">
           <SearchBarComponent
             placeholder="Søk etter konsulent"
-            context={FilteredContext}
+            context={isForecast ? FilteredForecastContext : FilteredContext}
             hidden={!isSidebarOpen}
           />
         </div>
