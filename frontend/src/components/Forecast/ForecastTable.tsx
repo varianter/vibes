@@ -45,7 +45,7 @@ export default function ForecastTable() {
     <table className={`table-fixed`}>
       <colgroup>
         <col span={1} className="w-[190px]" />
-        {filteredForecasts[0].forecasts.map((forecast) => (
+        {filteredConsultants[0].forecasts.map((forecast) => (
           <col
             key={`${forecast.month}`}
             span={1}
@@ -63,7 +63,7 @@ export default function ForecastTable() {
               </p>
             </div>
           </th>
-          {filteredForecasts[0].forecasts.map((forecast) => (
+          {filteredConsultants[0].forecasts.map((forecast) => (
             <th key={"" + forecast.month} className=" px-2 py-1 pt-3 ">
               <div className="flex flex-col gap-1">
                 {isCurrentMonth(forecast.month) ? (
