@@ -19,13 +19,9 @@ export default async function Prognose({
   params: { organisation: string };
   searchParams: { selectedWeek?: string; weekSpan?: string };
 }) {
-  const today = new Date();
   const consultantsWithForecasts =
-    (await fetchWithToken<ForecastReadModel[]>(
-      `variant-norge/forecasts?Date=${today.getFullYear()}-${
-        today.getMonth() + 1
-      }-${today.getDate()}&MonthCount=12`,
-    )) ?? [];
+    (await fetchWithToken<ForecastReadModel[]>(`variant-norge/forecasts`)) ??
+    [];
 
   const departments =
     (await fetchWithToken<DepartmentReadModel[]>(

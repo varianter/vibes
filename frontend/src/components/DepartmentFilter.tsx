@@ -27,18 +27,16 @@ export default function DepartmentFilter({
       <div className="flex flex-col gap-2">
         <p className="small">Avdeling</p>
         <div className="flex flex-col gap-2 w-52">
-          {departments?.map(
-            (department: DepartmentReadModel, index: number) => (
-              <FilterButton
-                key={department.id}
-                label={department.name}
-                onClick={() => toggleDepartmentFilter(department)}
-                checked={filteredDepartments
-                  .map((d) => d.id)
-                  .includes(department.id)}
-              />
-            ),
-          )}
+          {departments?.map((department: DepartmentReadModel) => (
+            <FilterButton
+              key={department.id}
+              label={department.name}
+              onClick={() => toggleDepartmentFilter(department)}
+              checked={filteredDepartments
+                .map((d) => d.id)
+                .includes(department.id)}
+            />
+          ))}
         </div>
       </div>
     );

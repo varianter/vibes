@@ -22,18 +22,16 @@ export default function CompetenceFilter({
       <div className="flex flex-col gap-2">
         <p className="small">Kompetanse</p>
         <div className="flex flex-col gap-2 w-52">
-          {competences?.map(
-            (competence: CompetenceReadModel, index: number) => (
-              <FilterButton
-                key={competence.id}
-                label={competence.name}
-                onClick={() => toggleCompetenceFilter(competence)}
-                checked={filteredCompetences
-                  .map((d) => d.id)
-                  .includes(competence.id)}
-              />
-            ),
-          )}
+          {competences?.map((competence: CompetenceReadModel) => (
+            <FilterButton
+              key={competence.id}
+              label={competence.name}
+              onClick={() => toggleCompetenceFilter(competence)}
+              checked={filteredCompetences
+                .map((d) => d.id)
+                .includes(competence.id)}
+            />
+          ))}
         </div>
       </div>
     );
