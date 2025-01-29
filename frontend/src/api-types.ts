@@ -9,8 +9,6 @@
  * ---------------------------------------------------------------
  */
 
-import { Forecast } from "./types";
-
 export interface BookedHoursPerWeek {
   /** @format int32 */
   year: number;
@@ -64,7 +62,6 @@ export interface ConsultantReadModel {
   isOccupied: boolean;
   imageUrl?: string;
   imageThumbUrl?: string;
-  forecasts?: Forecast[];
 }
 
 export interface ConsultantWriteModel {

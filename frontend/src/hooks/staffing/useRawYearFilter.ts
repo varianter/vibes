@@ -1,19 +1,21 @@
 "use client";
 
 import { YearRange } from "@/types";
-import { useCallback, useContext } from "react";
+import { Context, useCallback, useContext } from "react";
 import { toggleValueFromFilter } from "./UrlStringFilter";
 import { rawYearRanges } from "@/components/RawYearsFilter";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
-export function useRawYearsFilter() {
-  const { updateFilters, activeFilters } = useContext(FilteredContext);
+export function useRawYearsFilter(context: Context<any> = FilteredContext) {
+  const { updateFilters, activeFilters } = useContext(context);
   const { rawYearFilter } = activeFilters;
 
   const filteredYears = rawYearFilter
     .split(",")
-    .map((urlString) => rawYearRanges.find((y) => y.urlString === urlString))
-    .filter((year) => year !== undefined) as YearRange[];
+    .map((urlString: string) =>
+      rawYearRanges.find((y) => y.urlString === urlString),
+    )
+    .filter((year: YearRange) => year !== undefined) as YearRange[];
 
   const toggleYearFilter = useCallback(
     (y: YearRange) => {

@@ -1,6 +1,7 @@
 import { CustomersWithProjectsReadModel } from "@/api-types";
 import InfoBox from "../InfoBox";
 import DepartmentFilter from "../DepartmentFilter";
+import { FilteredCustomerContext } from "@/hooks/CustomerFilter/CustomerFilterProvider";
 
 export default function CustomerSidebar({
   customer,
@@ -13,7 +14,7 @@ export default function CustomerSidebar({
         <div className="flex flex-row justify-between items-center gap-6">
           <h1 className="">Info og filter</h1>
         </div>
-        <DepartmentFilter />
+        <DepartmentFilter context={FilteredCustomerContext} />
 
         <div className="flex flex-col gap-2">
           <p className="small">Om</p>

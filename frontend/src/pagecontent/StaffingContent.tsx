@@ -8,6 +8,7 @@ import IconActionButton from "@/components/Buttons/IconActionButton";
 import { Filter } from "react-feather";
 import ActiveFilters from "@/components/ActiveFilters";
 import WeekSelection from "@/components/WeekSelection";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
 export function StaffingContent() {
   const [isSideBarOpen, setIsSidebarOpen] = useState<boolean>(false);
