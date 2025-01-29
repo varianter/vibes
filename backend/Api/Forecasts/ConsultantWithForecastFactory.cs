@@ -9,20 +9,20 @@ using Core.Weeks;
 
 namespace Api.Forecasts;
 
-public static class ReadModelFactory
+public static class ConsultantWithForecastFactory
 {
-	public static List<ForecastReadModel> GetForecastReadModels(List<Consultant> consultants, DateOnly fromMonth, int monthCount)
+	public static List<ConsultantWithForecast> CreateMultiple(List<Consultant> consultants, DateOnly fromMonth, int monthCount)
 	{
 		var toMonthExclusive = fromMonth.AddMonths(monthCount);
 
 		return consultants
 			.Where(c => c.EndDate == null || c.EndDate > fromMonth)
 			.Where(c => c.StartDate == null || c.StartDate < toMonthExclusive)
-			.Select(consultant => CreateModel(consultant, fromMonth, toMonthExclusive))
+			.Select(consultant => CreateSingle(consultant, fromMonth, toMonthExclusive))
 			.ToList();
 	}
 
-	private static ForecastReadModel CreateModel(Consultant consultant, DateOnly fromMonth, DateOnly firstExcludedMonth)
+	private static ConsultantWithForecast CreateSingle(Consultant consultant, DateOnly fromMonth, DateOnly firstExcludedMonth)
 	{
 		var months = fromMonth.GetMonthsUntil(firstExcludedMonth).ToList();
 
@@ -36,7 +36,7 @@ public static class ReadModelFactory
 
 		var isAvailable = bookingSummary.Any(bs => bs.BookingModel.TotalSellableTime.IsGreaterThan(0));
 
-		return new ForecastReadModel(new SingleConsultantReadModel(consultant), bookingSummary, detailedBookings, forecasts, isAvailable);
+		return new ConsultantWithForecast(new SingleConsultantReadModel(consultant), bookingSummary, detailedBookings, forecasts, isAvailable);
 	}
 
 	// Using a similar pattern as in DetailedBookings() in StaffingController/ReadModelFactory

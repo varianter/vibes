@@ -8,7 +8,7 @@ using Core.Staffings;
 
 namespace Api.Forecasts;
 
-public record ForecastReadModel(
+public record ConsultantWithForecast(
 	SingleConsultantReadModel Consultant,
 	List<BookedHoursInMonth> Bookings,
 	List<DetailedBookingForMonth> DetailedBookings,

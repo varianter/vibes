@@ -301,7 +301,7 @@ export interface CustomersWithProjectsReadModel {
   inactiveEngagements: EngagementReadModel[];
 }
 
-export interface ForecastReadModel {
+export interface ConsultantWithForecast {
   consultant: SingleConsultantReadModel;
   bookings: BookedHoursInMonth[];
   detailedBookings: DetailedBookingForMonth[];

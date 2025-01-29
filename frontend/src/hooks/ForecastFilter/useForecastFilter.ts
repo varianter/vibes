@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { useRawYearsFilter } from "../staffing/useRawYearFilter";
 import { useAvailabilityFilter } from "../staffing/useAvailabilityFilter";
 import { usePathname } from "next/navigation";
-import { ForecastReadModel, SingleConsultantReadModel } from "@/api-types";
+import { ConsultantWithForecast, SingleConsultantReadModel } from "@/api-types";
 import { FilteredForecastContext } from "./ForecastFilterProvider";
 
 async function getNumWorkHours(
@@ -120,16 +120,16 @@ export function filterConsultants({
   departmentFilter: string;
   competenceFilter: string;
   yearFilter: YearRange[];
-  consultants: ForecastReadModel[];
+  consultants: ConsultantWithForecast[];
   availabilityFilterOn: Boolean;
   activeExperienceFrom: string;
   activeExperienceTo: string;
 }) {
-  const newFilteredConsultants: ForecastReadModel[] = [];
+  const newFilteredConsultants: ConsultantWithForecast[] = [];
 
   function filterCompetence(
     competenceFilter: string,
-    consultant: ForecastReadModel,
+    consultant: ConsultantWithForecast,
   ) {
     return competenceFilter
       .toLowerCase()
@@ -156,7 +156,7 @@ export function filterConsultants({
   }
 
   function experienceRange(
-    consultant: ForecastReadModel,
+    consultant: ConsultantWithForecast,
     experienceFrom: string,
     experienceTo: string,
   ) {
@@ -217,7 +217,7 @@ function getMonth(date: string) {
 }
 
 export function setMonthlyTotalBillable(
-  filteredConsultants: ForecastReadModel[],
+  filteredConsultants: ConsultantWithForecast[],
 ): WeeklyTotal {
   const monthlyTotalBillable = new Map<number, number>();
   const monthlyTotalBillableAndOffered = new Map<number, number>();
@@ -255,7 +255,7 @@ export function setMonthlyTotalBillable(
 }
 
 function setMonthlyInvoiceRate(
-  filteredConsultants: ForecastReadModel[],
+  filteredConsultants: ConsultantWithForecast[],
   weeklyTotalBillable: Map<number, number>,
   numWorkHours: number,
 ) {
