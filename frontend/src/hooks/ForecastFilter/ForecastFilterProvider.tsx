@@ -21,7 +21,9 @@ const defaultFilters: ForecastFilters = {
 
 export type ForecastContextType = {
   consultants: ConsultantWithForecast[];
-  setConsultants: React.Dispatch<React.SetStateAction<ConsultantWithForecast[]>>;
+  setConsultants: React.Dispatch<
+    React.SetStateAction<ConsultantWithForecast[]>
+  >;
   departments: DepartmentReadModel[];
   competences: CompetenceReadModel[];
   isDisabledHotkeys: boolean;
