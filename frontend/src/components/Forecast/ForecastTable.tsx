@@ -41,6 +41,7 @@ export default function ForecastTable() {
       });
     }
   }, [organisationName]);
+
   return (
     <table className={`table-fixed`}>
       <colgroup>

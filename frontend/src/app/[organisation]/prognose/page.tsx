@@ -20,8 +20,9 @@ export default async function Prognose({
   searchParams: { selectedWeek?: string; weekSpan?: string };
 }) {
   const consultantsWithForecasts =
-    (await fetchWithToken<ForecastReadModel[]>(`variant-norge/forecasts`)) ??
-    [];
+    (await fetchWithToken<ForecastReadModel[]>(
+      `${params.organisation}/forecasts`,
+    )) ?? [];
 
   const departments =
     (await fetchWithToken<DepartmentReadModel[]>(
