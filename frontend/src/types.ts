@@ -1,10 +1,4 @@
-import {
-  BookingDetails,
-  BookingType,
-  ConsultantReadModel,
-  EngagementState,
-  BookingReadModel,
-} from "@/api-types";
+import { BookingType, ConsultantReadModel, EngagementState } from "@/api-types";
 
 export type YearRange = {
   label: string;
@@ -27,29 +21,6 @@ export interface updateBookingHoursBody {
   endWeek?: number;
 }
 
-export interface Month {
-  month: number;
-  year: number;
-}
-export interface BookedHoursPerMonth {
-  month: number;
-  year: number;
-  bookingModel: BookingReadModel;
-}
-
-export interface Forecast {
-  id: number;
-  month: number;
-  year: number;
-  forecastValue: number;
-  hasBeenChanged: boolean;
-  valueAddedManually: number;
-}
-
-export interface MonthlyDetailedBooking {
-  bookingDetails: BookingDetails;
-  hours: MonthlyHours[];
-}
 export interface MonthlyHours {
   month: number;
   hours: number;
