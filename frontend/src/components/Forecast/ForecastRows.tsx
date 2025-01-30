@@ -50,10 +50,10 @@ export default function ForecastRows({
             bookedHoursInMonth={bookingForMonth(bookingsPerMonth, b.month)}
             key={index}
             hasBeenEdited={
-              Math.round(b.displayedPercentage) !=
-              Math.round(b.calculatedPercentage)
+              b.displayedPercentage !=
+              b.billablePercentage
             }
-            forecastValue={Math.round(b.displayedPercentage)}
+            forecastValue={b.displayedPercentage}
             month={b.month}
             consultant={currentConsultant}
             setHoveredMonth={setHoveredMonth}
