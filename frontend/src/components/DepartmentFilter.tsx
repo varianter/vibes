@@ -1,13 +1,19 @@
 "use client";
 import { useDepartmentFilter } from "@/hooks/staffing/useDepartmentFilter";
 import FilterButton from "./Buttons/FilterButton";
+import { Context } from "react";
+import { DepartmentReadModel } from "@/api-types";
 
-export default function DepartmentFilter() {
+export default function DepartmentFilter({
+  context,
+}: {
+  context: Context<any>;
+}) {
   const { departments, filteredDepartments, toggleDepartmentFilter } =
-    useDepartmentFilter();
+    useDepartmentFilter(context);
 
   if (departments.length > 0) {
-    departments.sort((a, b) => {
+    departments.sort((a: DepartmentReadModel, b: DepartmentReadModel) => {
       if (!(a.hotkey || b.hotkey)) {
         return a.id.localeCompare(b.id);
       }
@@ -21,7 +27,7 @@ export default function DepartmentFilter() {
       <div className="flex flex-col gap-2">
         <p className="small">Avdeling</p>
         <div className="flex flex-col gap-2 w-52">
-          {departments?.map((department, index) => (
+          {departments?.map((department: DepartmentReadModel) => (
             <FilterButton
               key={department.id}
               label={department.name}

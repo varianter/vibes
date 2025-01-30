@@ -1,19 +1,12 @@
 import {
   CompetenceReadModel,
   DepartmentReadModel,
-  EngagementPerCustomerReadModel,
+  ConsultantWithForecast,
 } from "@/api-types";
-import { ConsultantFilterProvider } from "@/hooks/ConsultantFilterProvider";
-import { parseYearWeekFromUrlString } from "@/data/urlUtils";
 import React from "react";
-import { StaffingContent } from "@/pagecontent/StaffingContent";
-import {
-  fetchEmployeesWithImageAndToken,
-  fetchWithToken,
-} from "@/data/apiCallsWithToken";
+import { fetchWithToken } from "@/data/apiCallsWithToken";
 import { Metadata } from "next";
 import { ForecastContent } from "@/pagecontent/ForecastContent";
-import { getWeek } from "date-fns";
 import { ForecastFilterProvider } from "@/hooks/ForecastFilter/ForecastFilterProvider";
 export const metadata: Metadata = {
   title: "Prognose | VIBES",
@@ -26,28 +19,10 @@ export default async function Prognose({
   params: { organisation: string };
   searchParams: { selectedWeek?: string; weekSpan?: string };
 }) {
-  const today = new Date();
-  const firstWeekOfCurrentMonth = getWeek(
-    new Date(today.getFullYear(), today.getMonth(), 1),
-  );
-  const now = {
-    year: today.getFullYear(),
-    weekNumber: firstWeekOfCurrentMonth,
-  };
-  const selectedWeek = parseYearWeekFromUrlString(
-    searchParams.selectedWeek || undefined,
-  );
-  const weekSpan = "52";
-
-  const consultants =
-    (await fetchEmployeesWithImageAndToken(
-      `${params.organisation}/staffings${
-        now ? `?Year=${now.year}&Week=${now.weekNumber}` : ""
-      }${weekSpan ? `${now ? "&" : "?"}WeekSpan=${weekSpan}` : ""}`,
+  const consultantsWithForecasts =
+    (await fetchWithToken<ConsultantWithForecast[]>(
+      `${params.organisation}/forecasts`,
     )) ?? [];
-
-  const forecasts =
-    (await fetchWithToken(`${params.organisation}/forecasts`)) ?? ([] as any);
 
   const departments =
     (await fetchWithToken<DepartmentReadModel[]>(
@@ -57,13 +32,12 @@ export default async function Prognose({
   const competences =
     (await fetchWithToken<CompetenceReadModel[]>(`competences`)) ?? [];
 
-  const customers =
-    (await fetchWithToken<EngagementPerCustomerReadModel[]>(
-      `${params.organisation}/projects`,
-    )) ?? [];
-
   return (
-    <ForecastFilterProvider forecasts={forecasts}>
+    <ForecastFilterProvider
+      consultants={consultantsWithForecasts}
+      departments={departments}
+      competences={competences}
+    >
       <ForecastContent />
     </ForecastFilterProvider>
   );

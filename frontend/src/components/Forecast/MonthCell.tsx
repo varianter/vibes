@@ -1,17 +1,21 @@
-import { BookedHoursInMonth, ConsultantReadModel } from "@/api-types";
+import {
+  BookedHoursInMonth,
+  ConsultantReadModel,
+  ConsultantWithForecast,
+} from "@/api-types";
 import React, { useRef, useState } from "react";
 import { HoveredMonth } from "./HoveredMonth";
 import RenderInfoPills from "../Staffing/RenderInfoPills";
 import { useOnClickOutside } from "usehooks-ts";
 
 export function MonthCell(props: {
-  bookedHoursInMonth: BookedHoursInMonth;
+  bookedHoursInMonth?: BookedHoursInMonth;
   forecastValue: number;
   hasBeenEdited: boolean;
-  consultant: ConsultantReadModel;
-  setHoveredRowWeek: (number: number) => void;
-  hoveredRowWeek: number;
-  month: number;
+  consultant: ConsultantWithForecast;
+  setHoveredMonth: (date: string) => void;
+  hoveredMonth: string;
+  month: string;
   columnCount: number;
   isLastCol: boolean;
   isSecondLastCol: boolean;
@@ -22,8 +26,8 @@ export function MonthCell(props: {
     forecastValue,
     consultant,
     hasBeenEdited,
-    setHoveredRowWeek,
-    hoveredRowWeek,
+    setHoveredMonth: setHoveredMonth,
+    hoveredMonth: hoveredMonth,
     month,
     columnCount,
     isLastCol,
@@ -32,7 +36,6 @@ export function MonthCell(props: {
   } = props;
 
   const uneditable = forecastValue === 100;
-
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [isChangingHours, setIsChangingHours] = useState(false);
 
@@ -106,17 +109,17 @@ export function MonthCell(props: {
       <div
         className={`flex bg-primary/[3%] flex-col gap-1 p-2 justify-end rounded w-full h-full relative border border-transparent hover:border-primary/30 `}
         onMouseEnter={() => {
-          setHoveredRowWeek(month);
+          setHoveredMonth(month);
           setIsChangingHours(true);
         }}
         onMouseLeave={() => {
-          setHoveredRowWeek(-1);
+          setHoveredMonth("");
           setIsChangingHours(false);
         }}
       >
-        {hoveredRowWeek != -1 && hoveredRowWeek == month && (
+        {hoveredMonth != "" && hoveredMonth == month && (
           <HoveredMonth
-            hoveredRowMonth={hoveredRowWeek}
+            hoveredRowMonth={hoveredMonth}
             consultant={consultant}
             isLastCol={isLastCol}
             isSecondLastCol={isSecondLastCol}

@@ -9,20 +9,20 @@ using Core.Weeks;
 
 namespace Api.Forecasts;
 
-public static class ReadModelFactory
+public static class ConsultantWithForecastFactory
 {
-	public static List<ForecastReadModel> GetForecastReadModels(List<Consultant> consultants, DateOnly fromMonth, int monthCount)
+	public static List<ConsultantWithForecast> CreateMultiple(List<Consultant> consultants, DateOnly fromMonth, int monthCount)
 	{
 		var toMonthExclusive = fromMonth.AddMonths(monthCount);
 
 		return consultants
 			.Where(c => c.EndDate == null || c.EndDate > fromMonth)
 			.Where(c => c.StartDate == null || c.StartDate < toMonthExclusive)
-			.Select(consultant => CreateModel(consultant, fromMonth, toMonthExclusive))
+			.Select(consultant => CreateSingle(consultant, fromMonth, toMonthExclusive))
 			.ToList();
 	}
 
-	private static ForecastReadModel CreateModel(Consultant consultant, DateOnly fromMonth, DateOnly firstExcludedMonth)
+	private static ConsultantWithForecast CreateSingle(Consultant consultant, DateOnly fromMonth, DateOnly firstExcludedMonth)
 	{
 		var months = fromMonth.GetMonthsUntil(firstExcludedMonth).ToList();
 
@@ -36,7 +36,7 @@ public static class ReadModelFactory
 
 		var isAvailable = bookingSummary.Any(bs => bs.BookingModel.TotalSellableTime.IsGreaterThan(0));
 
-		return new ForecastReadModel(new SingleConsultantReadModel(consultant), bookingSummary, detailedBookings, forecasts, isAvailable);
+		return new ConsultantWithForecast(new SingleConsultantReadModel(consultant), bookingSummary, detailedBookings, forecasts, isAvailable);
 	}
 
 	// Using a similar pattern as in DetailedBookings() in StaffingController/ReadModelFactory
@@ -152,12 +152,12 @@ public static class ReadModelFactory
 		var totalVacations = DetailedBookingForMonth
 			.GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.Vacation);
 
-		var bookedTime = totalBillable + totalAbsence + totalVacations + totalHolidayHours + totalNonBillable + totalNotStartedOrQuit;
+		var bookedHours = totalBillable + totalAbsence + totalVacations + totalNonBillable + totalNotStartedOrQuit;
 
-		var workHoursInMonth = WorkloadHelper.CalculateWorkHoursInMonth(month, organization);
+		var bookableHours = WorkloadHelper.CalculateWorkHoursInMonth(month, organization);
 
-		var totalSellableTime = Math.Max(workHoursInMonth - bookedTime, 0);
-		var totalOverbooked = Math.Max(bookedTime - workHoursInMonth, 0);
+		var sellableHours = Math.Max(bookableHours - bookedHours, 0);
+		var overbookedHours = Math.Max(bookedHours - bookableHours, 0);
 
 		return new BookedHoursInMonth(
 			month,
@@ -167,10 +167,10 @@ public static class ReadModelFactory
 				totalOffered,
 				totalAbsence,
 				totalExcludableAbsence,
-				totalSellableTime,
+				sellableHours,
 				totalHolidayHours,
 				totalVacations,
-				totalOverbooked,
+				overbookedHours,
 				totalNotStartedOrQuit)
 		);
 	}

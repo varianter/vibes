@@ -1,9 +1,12 @@
 function getBusinessHoursPerMonth(
-  month: number,
-  year: number,
+  dateString: string,
   numWorkHours: number,
   publicHolidayDays: string[],
 ) {
+  const date = new Date(dateString);
+  const month = date.getMonth();
+  const year = date.getFullYear();
+
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
   const hoursInDay = numWorkHours / 5;

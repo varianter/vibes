@@ -7,6 +7,7 @@ import { Filter } from "react-feather";
 import ActiveFilters from "@/components/ActiveFilters";
 import WeekSelection from "@/components/WeekSelection";
 import { useSimpleConsultantsFilter } from "@/hooks/staffing/useConsultantsFilter";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
 export function ReportContent() {
   const [isSideBarOpen, setIsSidebarOpen] = useState<boolean>(false);

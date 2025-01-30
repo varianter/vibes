@@ -2,6 +2,8 @@
 import { YearRange } from "@/types";
 import FilterButton from "./Buttons/FilterButton";
 import { useRawYearsFilter } from "@/hooks/staffing/useRawYearFilter";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
+import { Context } from "react";
 
 export const rawYearRanges: YearRange[] = [
   { label: "0-2 Kilimanjaro", urlString: "0-2", start: 0, end: 2 },
@@ -11,8 +13,12 @@ export const rawYearRanges: YearRange[] = [
   { label: "12+ K2", urlString: "12", start: 12 },
 ];
 
-export default function RawYearsFilter() {
-  const { toggleYearFilter, filteredYears } = useRawYearsFilter();
+export default function RawYearsFilter({
+  context = FilteredContext,
+}: {
+  context?: Context<any>;
+}) {
+  const { toggleYearFilter, filteredYears } = useRawYearsFilter(context);
 
   if (rawYearRanges.length > 0) {
     return (

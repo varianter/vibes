@@ -1,17 +1,21 @@
 import { CompetenceReadModel, DepartmentReadModel } from "@/api-types";
-import { useCallback, useContext, useEffect } from "react";
+import { Context, useCallback, useContext, useEffect } from "react";
 import { toggleValueFromFilter } from "./UrlStringFilter";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
-export function useCompetencesFilter() {
-  const { competences } = useContext(FilteredContext);
-  const { updateFilters, activeFilters } = useContext(FilteredContext);
+export function useCompetencesFilter(context: Context<any> = FilteredContext) {
+  const { competences } = useContext(context);
+  const { updateFilters, activeFilters } = useContext(context);
   const competenceFilter = activeFilters.competenceFilter;
 
   const filteredCompetences = competenceFilter
     .split(",")
-    .map((id) => competences.find((d) => d.id === id))
-    .filter((dept) => dept !== undefined) as CompetenceReadModel[];
+    .map((id: string) =>
+      competences.find((d: CompetenceReadModel) => d.id === id),
+    )
+    .filter(
+      (competence: CompetenceReadModel) => competence !== undefined,
+    ) as CompetenceReadModel[];
 
   const toggleCompetenceFilter = useCallback(
     (d: CompetenceReadModel) => {
