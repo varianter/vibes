@@ -1,7 +1,7 @@
 import {
   CompetenceReadModel,
   DepartmentReadModel,
-  ForecastReadModel,
+  ConsultantWithForecast,
 } from "@/api-types";
 import React from "react";
 import { fetchWithToken } from "@/data/apiCallsWithToken";
@@ -20,7 +20,7 @@ export default async function Prognose({
   searchParams: { selectedWeek?: string; weekSpan?: string };
 }) {
   const consultantsWithForecasts =
-    (await fetchWithToken<ForecastReadModel[]>(
+    (await fetchWithToken<ConsultantWithForecast[]>(
       `${params.organisation}/forecasts`,
     )) ?? [];
 

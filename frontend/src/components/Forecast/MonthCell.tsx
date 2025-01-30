@@ -1,7 +1,7 @@
 import {
   BookedHoursInMonth,
   ConsultantReadModel,
-  ForecastReadModel,
+  ConsultantWithForecast,
 } from "@/api-types";
 import React, { useRef, useState } from "react";
 import { HoveredMonth } from "./HoveredMonth";
@@ -12,7 +12,7 @@ export function MonthCell(props: {
   bookedHoursInMonth?: BookedHoursInMonth;
   forecastValue: number;
   hasBeenEdited: boolean;
-  consultant: ForecastReadModel;
+  consultant: ConsultantWithForecast;
   setHoveredMonth: (date: string) => void;
   hoveredMonth: string;
   month: string;

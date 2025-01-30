@@ -1,7 +1,7 @@
 import {
   BookingType,
   DetailedBookingForMonth,
-  ForecastReadModel,
+  ConsultantWithForecast,
 } from "@/api-types";
 import {
   getColorByStaffingType,
@@ -22,7 +22,7 @@ function isMonthBookingZeroHours(
 }
 export function HoveredMonth(props: {
   hoveredRowMonth: string;
-  consultant: ForecastReadModel;
+  consultant: ConsultantWithForecast;
   isLastCol: boolean;
   isSecondLastCol: boolean;
   columnCount: number;

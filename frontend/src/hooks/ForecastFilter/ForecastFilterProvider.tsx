@@ -3,7 +3,7 @@
 import {
   DepartmentReadModel,
   CompetenceReadModel,
-  ForecastReadModel,
+  ConsultantWithForecast,
 } from "@/api-types";
 import React, { createContext, ReactNode, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -20,8 +20,10 @@ const defaultFilters: ForecastFilters = {
 };
 
 export type ForecastContextType = {
-  consultants: ForecastReadModel[];
-  setConsultants: React.Dispatch<React.SetStateAction<ForecastReadModel[]>>;
+  consultants: ConsultantWithForecast[];
+  setConsultants: React.Dispatch<
+    React.SetStateAction<ConsultantWithForecast[]>
+  >;
   departments: DepartmentReadModel[];
   competences: CompetenceReadModel[];
   isDisabledHotkeys: boolean;
@@ -42,7 +44,7 @@ export const FilteredForecastContext = createContext<ForecastContextType>({
 });
 
 export function ForecastFilterProvider(props: {
-  consultants: ForecastReadModel[];
+  consultants: ConsultantWithForecast[];
   departments: DepartmentReadModel[];
   competences: CompetenceReadModel[];
   children: ReactNode;
