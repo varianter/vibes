@@ -3,7 +3,6 @@ using Api.Consultants;
 using Api.Helpers;
 using Core.Consultants;
 using Core.Extensions;
-using Core.Organizations;
 using Core.PlannedAbsences;
 using Core.Staffings;
 
