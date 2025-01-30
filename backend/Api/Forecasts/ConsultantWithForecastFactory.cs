@@ -154,27 +154,25 @@ public static class ConsultantWithForecastFactory
 
 		var bookedHours = totalBillable + totalAbsence + totalVacations + totalNonBillable + totalNotStartedOrQuit;
 
-		var bookableHours = WorkloadHelper.CalculateWorkHoursInMonth(month, organization);
+		var availableOrganizationHours = WorkloadHelper.CalculateWorkHoursInMonth(month, organization);
 
-		var sellableHours = Math.Max(bookableHours - bookedHours, 0);
-		var overbookedHours = Math.Max(bookedHours - bookableHours, 0);
+		var sellableHours = Math.Max(availableOrganizationHours - bookedHours, 0);
+		var overbookedHours = Math.Max(bookedHours - availableOrganizationHours, 0);
 
-		var billablePercentage = GetBillablePercentage(totalBillable, totalNonBillable, sellableHours);
+		var booking = new BookingReadModel(
+			totalBillable,
+			totalOffered,
+			totalAbsence,
+			totalExcludableAbsence,
+			sellableHours,
+			totalHolidayHours,
+			totalVacations,
+			overbookedHours,
+			totalNotStartedOrQuit);
 
-		return new BookedHoursInMonth(
-			month,
-			billablePercentage,
-			new BookingReadModel(
-				totalBillable,
-				totalOffered,
-				totalAbsence,
-				totalExcludableAbsence,
-				sellableHours,
-				totalHolidayHours,
-				totalVacations,
-				overbookedHours,
-				totalNotStartedOrQuit)
-		);
+		var billablePercentage = GetBillablePercentage(availableOrganizationHours, booking);
+
+		return new BookedHoursInMonth(month, billablePercentage, booking);
 	}
 
 	private static IEnumerable<ForecastForMonth> GetForecasts(Consultant consultant, List<DateOnly> months, List<BookedHoursInMonth> bookingSummary)
@@ -201,16 +199,27 @@ public static class ConsultantWithForecastFactory
 		}
 	}
 
-	private static int GetBillablePercentage(double billableOrderHours, double nonBillableOrderHours, double availableHours)
+	private static int GetBillablePercentage(double availableOrganizationHours, BookingReadModel booking)
 	{
-		if (billableOrderHours.IsEqualTo(0))
+		var hoursOrganizationCanBillCustomer = booking.TotalBillable;
+
+		if (hoursOrganizationCanBillCustomer.IsEqualTo(0))
 		{
 			return 0;
 		}
 
-		var bookedOrderHours = billableOrderHours + nonBillableOrderHours;
-		var potentialOrderHours = bookedOrderHours + availableHours;
+		var hoursConsultantIsPaidByOrganization = availableOrganizationHours
+		                                          - booking.TotalVacationHours
+		                                          - booking.TotalExcludableAbsence
+		                                          - booking.TotalNotStartedOrQuit;
 
-		return (int)(100 * (billableOrderHours / potentialOrderHours));
+		if (hoursOrganizationCanBillCustomer.IsGreaterThan(hoursConsultantIsPaidByOrganization))
+		{
+			return 100;
+		}
+
+		var billableRate = hoursOrganizationCanBillCustomer / hoursConsultantIsPaidByOrganization;
+
+		return (int)(100 * billableRate);
 	}
 }
