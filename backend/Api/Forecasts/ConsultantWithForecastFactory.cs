@@ -183,15 +183,15 @@ public static class ConsultantWithForecastFactory
 				.SingleOrDefault(f => f.Month.EqualsMonth(month))?
 				.AdjustedValue ?? 0;
 
-			var bookedHours = bookingSummary.SingleOrDefault(bs => bs.Month.EqualsMonth(month));
+			var booking = bookingSummary.SingleOrDefault(bs => bs.Month.EqualsMonth(month));
 
-			if (bookedHours == null)
+			if (booking == null)
 			{
 				yield return new ForecastForMonth(month, 0, forecastPercentage);
 				continue;
 			}
 
-			var billablePercentage = bookedHours.BillablePercentage;
+			var billablePercentage = booking.BillablePercentage;
 
 			var displayedPercentage = Math.Max(billablePercentage, forecastPercentage);
 
