@@ -312,8 +312,6 @@ export interface ConsultantWithForecast {
 export interface BookedHoursInMonth {
   /** @format date */
   month: string;
-  /** @format int32 */
-  billablePercentage: number;
   bookingModel: BookingReadModel;
 }
 
