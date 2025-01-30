@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { getBusinessHoursPerMonth } from "./BusinessHoursPerMonth";
 import { useForecastFilter } from "@/hooks/ForecastFilter/useForecastFilter";
 import { ForecastForMonth } from "@/api-types";
+import { ForecastSums } from "./ForecastSums";
 
 function isCurrentMonth(dateString: string) {
   const date = new Date(dateString);
@@ -46,7 +47,7 @@ export default function ForecastTable() {
   return (
     <table className={`table-fixed`}>
       <colgroup>
-        <col span={1} className="w-[190px]" />
+        <col span={1} />
         {filteredConsultants[0]?.forecasts?.map(
           (forecast: ForecastForMonth) => (
             <col
@@ -144,6 +145,11 @@ export default function ForecastTable() {
           />
         ))}
       </tbody>
+      <ForecastSums
+        weeklyTotalBillable={weeklyTotalBillable}
+        weeklyInvoiceRates={weeklyInvoiceRates}
+        weeklyTotalBillableAndOffered={weeklyTotalBillableAndOffered}
+      />
     </table>
   );
 }
