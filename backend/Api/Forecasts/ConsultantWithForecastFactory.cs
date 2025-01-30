@@ -159,11 +159,13 @@ public static class ConsultantWithForecastFactory
 		var sellableHours = Math.Max(bookableHours - bookedHours, 0);
 		var overbookedHours = Math.Max(bookedHours - bookableHours, 0);
 
+		var billablePercentage = GetBillablePercentage(totalBillable, totalNonBillable, sellableHours);
+
 		return new BookedHoursInMonth(
 			month,
+			billablePercentage,
 			new BookingReadModel(
 				totalBillable,
-				totalNonBillable,
 				totalOffered,
 				totalAbsence,
 				totalExcludableAbsence,
@@ -183,34 +185,32 @@ public static class ConsultantWithForecastFactory
 				.SingleOrDefault(f => f.Month.EqualsMonth(month))?
 				.AdjustedValue ?? 0;
 
-			var booking = bookingSummary.SingleOrDefault(bs => bs.Month.EqualsMonth(month))?.BookingModel;
+			var bookedHours = bookingSummary.SingleOrDefault(bs => bs.Month.EqualsMonth(month));
 
-			if (booking == null)
+			if (bookedHours == null)
 			{
 				yield return new ForecastForMonth(month, 0, forecastPercentage);
 				continue;
 			}
 
-			var billablePercentage = CalculateBillablePercentage(booking);
+			var billablePercentage = bookedHours.BillablePercentage;
 
-			var displayedPercentage = Math.Max((int)billablePercentage, forecastPercentage);
+			var displayedPercentage = Math.Max(billablePercentage, forecastPercentage);
 
 			yield return new ForecastForMonth(month, billablePercentage, displayedPercentage);
 		}
 	}
 
-	private static double CalculateBillablePercentage(BookingReadModel booking)
+	private static int GetBillablePercentage(double billableOrderHours, double nonBillableOrderHours, double availableHours)
 	{
-		var billableHours = booking.TotalBillable;
-
-		if (billableHours.IsEqualTo(0))
+		if (billableOrderHours.IsEqualTo(0))
 		{
 			return 0;
 		}
 
-		var bookedOrderHours = billableHours + booking.TotalNonBillable;
-		var bookableOrderHours = bookedOrderHours + booking.TotalSellableTime;
+		var bookedOrderHours = billableOrderHours + nonBillableOrderHours;
+		var potentialOrderHours = bookedOrderHours + availableHours;
 
-		return 100 * (billableHours / bookableOrderHours);
+		return (int)(100 * (billableOrderHours / potentialOrderHours));
 	}
 }

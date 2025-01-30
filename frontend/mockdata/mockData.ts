@@ -17,7 +17,6 @@ const MockWeeklyBookingReadModel: BookingReadModel = {
   totalPlannedAbsences: 0,
   totalSellableTime: 0,
   totalBillable: 0,
-  totalNonBillable: 0,
   totalOffered: 0,
   totalVacationHours: 0,
   totalExcludableAbsence: 0,
@@ -120,7 +119,6 @@ const mockBookings: BookedHoursPerWeek[] = [
     dateString: "06.01 - 10.01",
     bookingModel: {
       totalBillable: 37.5,
-      totalNonBillable: 0,
       totalOffered: 0,
       totalPlannedAbsences: 0,
       totalExcludableAbsence: 0,
@@ -138,7 +136,6 @@ const mockBookings: BookedHoursPerWeek[] = [
     dateString: "13.01 - 17.01",
     bookingModel: {
       totalBillable: 37.5,
-      totalNonBillable: 0,
       totalOffered: 0,
       totalPlannedAbsences: 0,
       totalExcludableAbsence: 0,
@@ -156,7 +153,6 @@ const mockBookings: BookedHoursPerWeek[] = [
     dateString: "20.01 - 24.01",
     bookingModel: {
       totalBillable: 37.5,
-      totalNonBillable: 0,
       totalOffered: 0,
       totalPlannedAbsences: 0,
       totalExcludableAbsence: 0,
@@ -174,7 +170,6 @@ const mockBookings: BookedHoursPerWeek[] = [
     dateString: "27.01 - 31.01",
     bookingModel: {
       totalBillable: 37.5,
-      totalNonBillable: 0,
       totalOffered: 0,
       totalPlannedAbsences: 0,
       totalExcludableAbsence: 0,
@@ -192,7 +187,6 @@ const mockBookings: BookedHoursPerWeek[] = [
     dateString: "03.02 - 07.02",
     bookingModel: {
       totalBillable: 30,
-      totalNonBillable: 0,
       totalOffered: 0,
       totalPlannedAbsences: 0,
       totalExcludableAbsence: 0,
@@ -210,7 +204,6 @@ const mockBookings: BookedHoursPerWeek[] = [
     dateString: "10.02 - 14.02",
     bookingModel: {
       totalBillable: 22.5,
-      totalNonBillable: 0,
       totalOffered: 0,
       totalPlannedAbsences: 0,
       totalExcludableAbsence: 0,
@@ -228,7 +221,6 @@ const mockBookings: BookedHoursPerWeek[] = [
     dateString: "17.02 - 21.02",
     bookingModel: {
       totalBillable: 37.5,
-      totalNonBillable: 0,
       totalOffered: 0,
       totalPlannedAbsences: 0,
       totalExcludableAbsence: 0,
@@ -246,7 +238,6 @@ const mockBookings: BookedHoursPerWeek[] = [
     dateString: "24.02 - 28.02",
     bookingModel: {
       totalBillable: 37.5,
-      totalNonBillable: 0,
       totalOffered: 0,
       totalPlannedAbsences: 0,
       totalExcludableAbsence: 0,
@@ -264,7 +255,6 @@ const mockBookings: BookedHoursPerWeek[] = [
     dateString: "03.03 - 07.03",
     bookingModel: {
       totalBillable: 37.5,
-      totalNonBillable: 0,
       totalOffered: 0,
       totalPlannedAbsences: 0,
       totalExcludableAbsence: 0,
@@ -282,7 +272,6 @@ const mockBookings: BookedHoursPerWeek[] = [
     dateString: "10.03 - 14.03",
     bookingModel: {
       totalBillable: 30,
-      totalNonBillable: 0,
       totalOffered: 7.5,
       totalPlannedAbsences: 0,
       totalExcludableAbsence: 0,
@@ -300,7 +289,6 @@ const mockBookings: BookedHoursPerWeek[] = [
     dateString: "17.03 - 21.03",
     bookingModel: {
       totalBillable: 30,
-      totalNonBillable: 0,
       totalOffered: 7.5,
       totalPlannedAbsences: 0,
       totalExcludableAbsence: 0,
@@ -318,7 +306,6 @@ const mockBookings: BookedHoursPerWeek[] = [
     dateString: "24.03 - 28.03",
     bookingModel: {
       totalBillable: 30,
-      totalNonBillable: 0,
       totalOffered: 7.5,
       totalPlannedAbsences: 0,
       totalExcludableAbsence: 0,
@@ -336,7 +323,6 @@ const mockBookings: BookedHoursPerWeek[] = [
     dateString: "31.03 - 04.04",
     bookingModel: {
       totalBillable: 37.5,
-      totalNonBillable: 0,
       totalOffered: 0,
       totalPlannedAbsences: 0,
       totalExcludableAbsence: 0,
@@ -354,7 +340,6 @@ const mockBookings: BookedHoursPerWeek[] = [
     dateString: "07.04 - 11.04",
     bookingModel: {
       totalBillable: 37.5,
-      totalNonBillable: 0,
       totalOffered: 0,
       totalPlannedAbsences: 0,
       totalExcludableAbsence: 0,
@@ -372,7 +357,6 @@ const mockBookings: BookedHoursPerWeek[] = [
     dateString: "14.04 - 18.04",
     bookingModel: {
       totalBillable: 22.5,
-      totalNonBillable: 0,
       totalOffered: 0,
       totalPlannedAbsences: 0,
       totalExcludableAbsence: 0,
@@ -390,7 +374,6 @@ const mockBookings: BookedHoursPerWeek[] = [
     dateString: "21.04 - 25.04",
     bookingModel: {
       totalBillable: 30,
-      totalNonBillable: 0,
       totalOffered: 0,
       totalPlannedAbsences: 0,
       totalExcludableAbsence: 0,

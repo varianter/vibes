@@ -269,8 +269,6 @@ export interface BookingReadModel {
   /** @format double */
   totalBillable: number;
   /** @format double */
-  totalNonBillable: number;
-  /** @format double */
   totalOffered: number;
   /** @format double */
   totalPlannedAbsences: number;
@@ -314,6 +312,8 @@ export interface ConsultantWithForecast {
 export interface BookedHoursInMonth {
   /** @format date */
   month: string;
+  /** @format int32 */
+  billablePercentage: number;
   bookingModel: BookingReadModel;
 }
 

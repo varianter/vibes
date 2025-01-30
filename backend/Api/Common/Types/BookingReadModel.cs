@@ -2,7 +2,6 @@ namespace Api.Common.Types;
 
 public record BookingReadModel(
 	double TotalBillable,
-	double TotalNonBillable,
 	double TotalOffered,
 	double TotalPlannedAbsences,
 	double TotalExcludableAbsence,

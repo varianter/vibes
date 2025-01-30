@@ -15,7 +15,7 @@ public record ConsultantWithForecast(
 	List<ForecastForMonth> Forecasts,
 	bool ConsultantIsAvailable);
 
-public record BookedHoursInMonth(DateOnly Month, BookingReadModel BookingModel);
+public record BookedHoursInMonth(DateOnly Month, int BillablePercentage, BookingReadModel BookingModel);
 
 public record DetailedBookingForMonth(BookingDetails BookingDetails, List<MonthlyHours> Hours)
 {
