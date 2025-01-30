@@ -2,15 +2,20 @@
 import { YearRange } from "@/types";
 import FilterButton from "./Buttons/FilterButton";
 import { useExperienceFilter } from "@/hooks/staffing/useExperienceFilter";
-import { useState } from "react";
+import { Context, useState } from "react";
+import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
-export default function ExperienceFilter() {
+export default function ExperienceFilter({
+  context = FilteredContext,
+}: {
+  context?: Context<any>;
+}) {
   const {
     activeExperienceFrom,
     setActiveExperienceFrom,
     activeExperienceTo,
     setActiveExperienceTo,
-  } = useExperienceFilter();
+  } = useExperienceFilter(context);
 
   const [fromSearchIsActive, setFromSearchIsActive] = useState(false);
   const [toSearchIsActive, setToSearchIsActive] = useState(false);

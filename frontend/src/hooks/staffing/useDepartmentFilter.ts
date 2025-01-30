@@ -1,18 +1,22 @@
-import { DepartmentReadModel } from "@/api-types";
-import { useCallback, useContext, useEffect } from "react";
+import { CompetenceReadModel, DepartmentReadModel } from "@/api-types";
+import { Context, useCallback, useContext, useEffect } from "react";
 import { toggleValueFromFilter } from "./UrlStringFilter";
-import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
+import { FilteredContext } from "../ConsultantFilterProvider";
 
-export function useDepartmentFilter() {
-  const { departments } = useContext(FilteredContext);
+export function useDepartmentFilter(context: Context<any> = FilteredContext) {
+  const { departments } = useContext(context);
   const { isDisabledHotkeys, updateFilters, activeFilters } =
-    useContext(FilteredContext);
+    useContext(context);
   const departmentFilter = activeFilters.departmentFilter;
 
   const filteredDepartments = departmentFilter
     .split(",")
-    .map((id) => departments.find((d) => d.id === id))
-    .filter((dept) => dept !== undefined) as DepartmentReadModel[];
+    .map((id: string) =>
+      departments.find((d: CompetenceReadModel) => d.id === id),
+    )
+    .filter(
+      (dept: DepartmentReadModel) => dept !== undefined,
+    ) as DepartmentReadModel[];
 
   const toggleDepartmentFilter = useCallback(
     (d: DepartmentReadModel) => {
@@ -26,9 +30,9 @@ export function useDepartmentFilter() {
   useEffect(() => {
     function handleDepartmentHotkey(keyCode: string) {
       departments
-        .filter((d) => d.hotkey)
-        .filter((d) => keyCode.includes(`${d.hotkey!}`))
-        .forEach((d) => toggleDepartmentFilter(d));
+        .filter((d: DepartmentReadModel) => d.hotkey)
+        .filter((d: DepartmentReadModel) => keyCode.includes(`${d.hotkey!}`))
+        .forEach((d: DepartmentReadModel) => toggleDepartmentFilter(d));
     }
 
     function keyDownHandler(e: { code: string }) {

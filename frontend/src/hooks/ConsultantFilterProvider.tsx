@@ -23,7 +23,7 @@ const defaultFilters: StaffingFilters = {
   experienceToFilter: "",
 };
 
-type FilterContextType = {
+export type FilterContextType = {
   consultants: ConsultantReadModel[];
   setConsultants: React.Dispatch<React.SetStateAction<ConsultantReadModel[]>>;
   departments: DepartmentReadModel[];

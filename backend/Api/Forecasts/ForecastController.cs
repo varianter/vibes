@@ -39,9 +39,9 @@ public class ForecastController(
 
 		var firstDayInQuarter = date.FirstDayInQuarter();
 
-		var forecasts = ReadModelFactory.GetForecastReadModels(consultants, firstDayInQuarter, monthCount);
+		var consultantsWithForecast = ConsultantWithForecastFactory.CreateMultiple(consultants, firstDayInQuarter, monthCount);
 
-		return Ok(forecasts);
+		return Ok(consultantsWithForecast);
 	}
 
 	// Using the same pattern as in AddRelationalDataToConsultant() in StaffingController

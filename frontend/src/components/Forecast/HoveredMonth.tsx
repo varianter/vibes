@@ -1,29 +1,28 @@
-import { BookingType, ConsultantReadModel } from "@/api-types";
+import {
+  BookingType,
+  DetailedBookingForMonth,
+  ConsultantWithForecast,
+} from "@/api-types";
 import {
   getColorByStaffingType,
   getIconByBookingType,
 } from "@/components/Staffing/helpers/utils";
 import React from "react";
-import {
-  transformDetailedBookingToMonthlyData,
-  transformToMonthlyData,
-} from "./TransformWeekDataToMonth";
-import { MonthlyDetailedBooking, MonthlyHours } from "@/types";
 
 function isMonthBookingZeroHours(
-  detailedBooking: MonthlyDetailedBooking,
-  hoveredRowMonth: number,
+  detailedBooking: DetailedBookingForMonth,
+  hoveredRowMonth: string,
 ): boolean {
   return (
     detailedBooking.hours.filter(
       (monthHours) =>
-        monthHours.month % 100 == hoveredRowMonth && monthHours.hours != 0,
+        monthHours.month == hoveredRowMonth && monthHours.hours != 0,
     ).length == 0
   );
 }
 export function HoveredMonth(props: {
-  hoveredRowMonth: number;
-  consultant: ConsultantReadModel;
+  hoveredRowMonth: string;
+  consultant: ConsultantWithForecast;
   isLastCol: boolean;
   isSecondLastCol: boolean;
   columnCount: number;
@@ -36,10 +35,9 @@ export function HoveredMonth(props: {
     columnCount,
   } = props;
 
-  const bookings = transformToMonthlyData(consultant.bookings);
-  const detailedBookings = transformDetailedBookingToMonthlyData(
-    consultant.detailedBooking,
-  );
+  const bookings = consultant.bookings;
+  const detailedBookings = consultant.detailedBookings;
+
   const nonZeroHoursDetailedBookings = detailedBookings.filter(
     (d) => !isMonthBookingZeroHours(d, hoveredRowMonth),
   );
@@ -112,7 +110,7 @@ export function HoveredMonth(props: {
             <p className="small text-black/75">
               {
                 detailedBooking.hours.find(
-                  (hour: MonthlyHours) => hour.month % 100 == hoveredRowMonth,
+                  (hour) => hour.month == hoveredRowMonth,
                 )?.hours
               }
             </p>
