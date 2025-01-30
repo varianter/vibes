@@ -213,7 +213,7 @@ public static class ConsultantWithForecastFactory
 		                                          - booking.TotalExcludableAbsence
 		                                          - booking.TotalNotStartedOrQuit;
 
-		if (hoursOrganizationCanBillCustomer.IsGreaterThan(hoursConsultantIsPaidByOrganization))
+		if (hoursOrganizationCanBillCustomer.IsGreaterThanOrEqualTo(hoursConsultantIsPaidByOrganization))
 		{
 			return 100;
 		}
