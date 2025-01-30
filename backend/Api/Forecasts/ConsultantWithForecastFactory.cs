@@ -154,10 +154,10 @@ public static class ConsultantWithForecastFactory
 
 		var bookedHours = totalBillable + totalAbsence + totalVacations + totalNonBillable + totalNotStartedOrQuit;
 
-		var availableOrganizationHours = WorkloadHelper.CalculateWorkHoursInMonth(month, organization);
+		var workHoursInOrganization = WorkloadHelper.CalculateWorkHoursInMonth(month, organization);
 
-		var sellableHours = Math.Max(availableOrganizationHours - bookedHours, 0);
-		var overbookedHours = Math.Max(bookedHours - availableOrganizationHours, 0);
+		var sellableHours = Math.Max(workHoursInOrganization - bookedHours, 0);
+		var overbookedHours = Math.Max(bookedHours - workHoursInOrganization, 0);
 
 		var booking = new BookingReadModel(
 			totalBillable,
@@ -170,7 +170,7 @@ public static class ConsultantWithForecastFactory
 			overbookedHours,
 			totalNotStartedOrQuit);
 
-		var billablePercentage = GetBillablePercentage(availableOrganizationHours, booking);
+		var billablePercentage = GetBillablePercentage(workHoursInOrganization, booking);
 
 		return new BookedHoursInMonth(month, billablePercentage, booking);
 	}
@@ -199,7 +199,7 @@ public static class ConsultantWithForecastFactory
 		}
 	}
 
-	private static int GetBillablePercentage(double availableOrganizationHours, BookingReadModel booking)
+	private static int GetBillablePercentage(double workHoursInOrganization, BookingReadModel booking)
 	{
 		var hoursOrganizationCanBillCustomer = booking.TotalBillable;
 
@@ -208,7 +208,7 @@ public static class ConsultantWithForecastFactory
 			return 0;
 		}
 
-		var hoursConsultantIsPaidByOrganization = availableOrganizationHours
+		var hoursConsultantIsPaidByOrganization = workHoursInOrganization
 		                                          - booking.TotalVacationHours
 		                                          - booking.TotalExcludableAbsence
 		                                          - booking.TotalNotStartedOrQuit;
