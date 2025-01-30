@@ -47,7 +47,6 @@ public static class MonthlyHoursHelper
 
 		var bookableHoursMatchForBothMonths = bookableHours.InWeekWithinMonth.IsEqualTo(bookableHours.InWeekWithinOtherMonth);
 
-		// TODO: Edge case, we should handle registered vacation days as well
 		if (bookableHoursMatchForBothMonths)
 		{
 			// TODO Forecast: Handle edge case where an odd-numbered amount of holidays occur within a week containing a month change, so that each month has an equal amount of work days in that week
