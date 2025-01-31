@@ -154,25 +154,24 @@ public static class ConsultantWithForecastFactory
 
 		var bookedHours = totalBillable + totalAbsence + totalVacations + totalHolidayHours + totalNonBillable + totalNotStartedOrQuit;
 
-		var hoursInMonth = organization.HoursPerWorkday * month.CountWeekdaysInMonth();
+		var hoursInMonth = organization.GetTotalWeekdayHoursInMonth(month);
 
 		var sellableHours = Math.Max(hoursInMonth - bookedHours, 0);
 		var overbookedHours = Math.Max(bookedHours - hoursInMonth, 0);
 
-		var booking = new BookingReadModel(
-			totalBillable,
-			totalOffered,
-			totalAbsence,
-			totalExcludableAbsence,
-			sellableHours,
-			totalHolidayHours,
-			totalVacations,
-			overbookedHours,
-			totalNotStartedOrQuit);
-
-		var billablePercentage = GetBillablePercentage(hoursInMonth, booking);
-
-		return new BookedHoursInMonth(month, billablePercentage, booking);
+		return new BookedHoursInMonth(
+			month,
+			new BookingReadModel(
+				totalBillable,
+				totalOffered,
+				totalAbsence,
+				totalExcludableAbsence,
+				sellableHours,
+				totalHolidayHours,
+				totalVacations,
+				overbookedHours,
+				totalNotStartedOrQuit)
+		);
 	}
 
 	private static IEnumerable<ForecastForMonth> GetForecasts(Consultant consultant, List<DateOnly> months, List<BookedHoursInMonth> bookingSummary)
@@ -191,7 +190,7 @@ public static class ConsultantWithForecastFactory
 				continue;
 			}
 
-			var billablePercentage = booking.BillablePercentage;
+			var billablePercentage = GetBillablePercentage(month, consultant, booking.BookingModel);
 
 			var displayedPercentage = Math.Max(billablePercentage, forecastPercentage);
 
@@ -199,7 +198,7 @@ public static class ConsultantWithForecastFactory
 		}
 	}
 
-	private static int GetBillablePercentage(double hoursInMonth, BookingReadModel booking)
+	private static int GetBillablePercentage(DateOnly month, Consultant consultant, BookingReadModel booking)
 	{
 		var hoursOrganizationCanBillCustomer = booking.TotalBillable;
 
@@ -207,6 +206,8 @@ public static class ConsultantWithForecastFactory
 		{
 			return 0;
 		}
+
+		var hoursInMonth = consultant.Department.Organization.GetTotalWeekdayHoursInMonth(month);
 
 		var hoursConsultantIsPaidByOrganization = hoursInMonth
 		                                          - booking.TotalHolidayHours
