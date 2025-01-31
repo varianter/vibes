@@ -152,12 +152,12 @@ public static class ConsultantWithForecastFactory
 		var totalVacations = DetailedBookingForMonth
 			.GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.Vacation);
 
-		var bookedHours = totalBillable + totalAbsence + totalVacations + totalNonBillable + totalNotStartedOrQuit;
+		var bookedHours = totalBillable + totalAbsence + totalVacations + totalHolidayHours + totalNonBillable + totalNotStartedOrQuit;
 
-		var workHoursInOrganization = WorkloadHelper.CalculateWorkHoursInMonth(month, organization);
+		var hoursInMonth = organization.HoursPerWorkday * month.CountWeekdaysInMonth();
 
-		var sellableHours = Math.Max(workHoursInOrganization - bookedHours, 0);
-		var overbookedHours = Math.Max(bookedHours - workHoursInOrganization, 0);
+		var sellableHours = Math.Max(hoursInMonth - bookedHours, 0);
+		var overbookedHours = Math.Max(bookedHours - hoursInMonth, 0);
 
 		var booking = new BookingReadModel(
 			totalBillable,
@@ -170,7 +170,7 @@ public static class ConsultantWithForecastFactory
 			overbookedHours,
 			totalNotStartedOrQuit);
 
-		var billablePercentage = GetBillablePercentage(workHoursInOrganization, booking);
+		var billablePercentage = GetBillablePercentage(hoursInMonth, booking);
 
 		return new BookedHoursInMonth(month, billablePercentage, booking);
 	}
@@ -199,7 +199,7 @@ public static class ConsultantWithForecastFactory
 		}
 	}
 
-	private static int GetBillablePercentage(double workHoursInOrganization, BookingReadModel booking)
+	private static int GetBillablePercentage(double hoursInMonth, BookingReadModel booking)
 	{
 		var hoursOrganizationCanBillCustomer = booking.TotalBillable;
 
@@ -208,7 +208,8 @@ public static class ConsultantWithForecastFactory
 			return 0;
 		}
 
-		var hoursConsultantIsPaidByOrganization = workHoursInOrganization
+		var hoursConsultantIsPaidByOrganization = hoursInMonth
+		                                          - booking.TotalHolidayHours
 		                                          - booking.TotalVacationHours
 		                                          - booking.TotalExcludableAbsence
 		                                          - booking.TotalNotStartedOrQuit;
