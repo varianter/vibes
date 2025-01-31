@@ -71,9 +71,9 @@ public record ForecastForMonth(
 	int BillablePercentage,
 	int DisplayedPercentage)
 {
-	public static ForecastForMonth GetForecast(Consultant consultant, DateOnly month, List<BookedHoursInMonth> bookingSummary)
+	public static ForecastForMonth GetFor(Consultant consultant, DateOnly month, IEnumerable<BookedHoursInMonth> bookingSummary)
 	{
-		var forecastPercentage = consultant.Forecasts
+		var manuallySetPercentage = consultant.Forecasts
 			.SingleOrDefault(f => f.Month.EqualsMonth(month))?
 			.AdjustedValue ?? 0;
 
@@ -81,14 +81,14 @@ public record ForecastForMonth(
 
 		if (booking == null)
 		{
-			return WithoutBookingInfo(month, forecastPercentage);
+			return WithoutBookingInfo(month, manuallySetPercentage);
 		}
 
 		var billableHours = GetBillableHours(booking);
 		var salariedHours = GetSalariedHoursForMonth(month, consultant, booking);
 
 		var billablePercentage = GetBillablePercentage(billableHours, salariedHours);
-		var displayedPercentage = Math.Max(billablePercentage, forecastPercentage);
+		var displayedPercentage = Math.Max(billablePercentage, manuallySetPercentage);
 
 		return new ForecastForMonth(month, billableHours, salariedHours, billablePercentage, displayedPercentage);
 	}

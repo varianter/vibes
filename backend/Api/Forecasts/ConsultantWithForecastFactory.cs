@@ -33,7 +33,7 @@ public static class ConsultantWithForecastFactory
 			.ToList();
 
 		var forecasts = months
-			.Select(month => ForecastForMonth.GetForecast(consultant, month, bookingSummary))
+			.Select(month => ForecastForMonth.GetFor(consultant, month, bookingSummary))
 			.ToList();
 
 		var isAvailable = bookingSummary.Any(bs => bs.BookingModel.TotalSellableTime.IsGreaterThan(0));
