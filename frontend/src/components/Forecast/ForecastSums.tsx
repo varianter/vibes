@@ -1,38 +1,46 @@
 import { useEffect, useState } from "react";
 
-interface StaffingSumsProps {
-  weeklyTotalBillable?: Map<number, number>;
-  weeklyTotalBillableAndOffered: Map<number, number>;
-  weeklyInvoiceRates?: Map<number, number>;
+interface ForecastSumsProps {
+  monthlyTotalBillable?: Map<number, number>;
+  monthlyTotalBillableAndOffered: Map<number, number>;
+  monthlyInvoiceRates?: Map<number, number>;
+  monthlyForecastSums: Map<number, number>;
+  hoursInMonth: Map<number, number>;
 }
 
 export function ForecastSums({
-  weeklyTotalBillable,
-  weeklyTotalBillableAndOffered,
-  weeklyInvoiceRates,
-}: StaffingSumsProps) {
+  monthlyTotalBillable,
+  monthlyTotalBillableAndOffered,
+  monthlyInvoiceRates,
+  monthlyForecastSums,
+  hoursInMonth,
+}: ForecastSumsProps) {
   const [totalBillableHours, setTotalBillableHours] = useState<number[]>();
   const totalBillableAndOfferedHours = Array.from(
-    weeklyTotalBillableAndOffered.values(),
+    monthlyTotalBillableAndOffered.values(),
   );
-  const [weeklyInvoiceRatesArray, setWeeklyInvoiceRatesArray] =
+  const [monthlyInvoiceRatesArray, setMonthlyInvoiceRatesArray] =
     useState<number[]>();
+  const [monthlyForecastTotal, setMonthlyForecastTotal] = useState<number[]>();
 
   useEffect(() => {
-    if (weeklyTotalBillable) {
-      setTotalBillableHours(Array.from(weeklyTotalBillable.values()));
+    if (monthlyTotalBillable) {
+      setTotalBillableHours(Array.from(monthlyTotalBillable.values()));
     }
-    if (weeklyInvoiceRates) {
-      setWeeklyInvoiceRatesArray(Array.from(weeklyInvoiceRates.values()));
+    if (monthlyInvoiceRates) {
+      setMonthlyInvoiceRatesArray(Array.from(monthlyInvoiceRates.values()));
     }
-  }, [weeklyTotalBillable, weeklyInvoiceRates]);
+    if (monthlyForecastSums) {
+      setMonthlyForecastTotal(Array.from(monthlyForecastSums.values()));
+    }
+  }, [monthlyTotalBillable, monthlyInvoiceRates]);
 
   return (
     <thead className="border-t-[3px] border-t-primary/20">
-      {weeklyTotalBillable && (
+      {monthlyTotalBillable && (
         <tr>
           <td colSpan={1}>
-            <p className="small-medium text-black">Sum bemanning i timer</p>
+            <p className="small-medium text-black">Sum bemanning</p>
           </td>
           {totalBillableHours?.map((totalBillableHour, index) => (
             <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
@@ -48,9 +56,7 @@ export function ForecastSums({
       )}
       <tr>
         <td colSpan={1}>
-          <p className="small-medium text-black">
-            Sum bemanning og tilbud i timer
-          </p>
+          <p className="small-medium text-black">Sum bemanning og tilbud</p>
         </td>
         {totalBillableAndOfferedHours.map(
           (totalBillableAndOfferedHour, index) => (
@@ -65,26 +71,26 @@ export function ForecastSums({
           ),
         )}
       </tr>
-      {weeklyInvoiceRatesArray && (
+      {/* {monthlyForecastTotal && (
         <tr>
           <td colSpan={1}>
             <p className="small-medium text-black">Prognosetall i timer</p>
           </td>
-          {weeklyInvoiceRatesArray.map((indexRates, index) => (
+          {monthlyForecastTotal.map((indexRates, index) => (
             <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
               <p className="small-medium text-right">
-                {Math.round(indexRates * 100)}%
+                {Math.round((indexRates / 100) * hoursInMonth.get(index)!)} t
               </p>
             </td>
           ))}
         </tr>
-      )}
-      {weeklyInvoiceRatesArray && (
+      )} */}
+      {monthlyInvoiceRatesArray && (
         <tr>
           <td colSpan={1}>
-            <p className="small-medium text-black">Fakureringsgrad i prosent</p>
+            <p className="small-medium text-black">Fakureringsgrad</p>
           </td>
-          {weeklyInvoiceRatesArray.map((indexRates, index) => (
+          {monthlyInvoiceRatesArray.map((indexRates, index) => (
             <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
               <p className="small-medium text-right">
                 {Math.round(indexRates * 100)}%

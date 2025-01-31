@@ -27,9 +27,10 @@ export default function ForecastTable() {
   const {
     numWorkHours,
     filteredConsultants,
-    weeklyTotalBillable,
-    weeklyTotalBillableAndOffered,
+    monthlyTotalBillable,
+    monthlyTotalBillableAndOffered,
     weeklyInvoiceRates,
+    monthlyForecastSums,
   } = useForecastFilter();
   const [publicHolidays, setPublicHolidays] = useState<string[]>([]);
   const organisationName = usePathname().split("/")[1];
@@ -43,6 +44,15 @@ export default function ForecastTable() {
       });
     }
   }, [organisationName]);
+
+  const hoursInMonth = new Map<number, number>();
+
+  filteredConsultants[0]?.forecasts?.forEach((forecast: ForecastForMonth) =>
+    hoursInMonth.set(
+      new Date(forecast.month).getMonth(),
+      getBusinessHoursPerMonth(forecast.month, numWorkHours, publicHolidays),
+    ),
+  );
 
   return (
     <table className={`table-fixed`}>
@@ -146,9 +156,11 @@ export default function ForecastTable() {
         ))}
       </tbody>
       <ForecastSums
-        weeklyTotalBillable={weeklyTotalBillable}
-        weeklyInvoiceRates={weeklyInvoiceRates}
-        weeklyTotalBillableAndOffered={weeklyTotalBillableAndOffered}
+        monthlyTotalBillable={monthlyTotalBillable}
+        monthlyInvoiceRates={weeklyInvoiceRates}
+        monthlyTotalBillableAndOffered={monthlyTotalBillableAndOffered}
+        monthlyForecastSums={monthlyForecastSums}
+        hoursInMonth={hoursInMonth}
       />
     </table>
   );
