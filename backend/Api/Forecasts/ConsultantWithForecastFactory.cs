@@ -33,7 +33,7 @@ public static class ConsultantWithForecastFactory
 			.ToList();
 
 		var forecasts = months
-			.Select(month => GetForecast(consultant, month, bookingSummary))
+			.Select(month => ForecastForMonth.GetForecast(consultant, month, bookingSummary))
 			.ToList();
 
 		var isAvailable = bookingSummary.Any(bs => bs.BookingModel.TotalSellableTime.IsGreaterThan(0));
@@ -174,52 +174,5 @@ public static class ConsultantWithForecastFactory
 				overbookedHours,
 				totalNotStartedOrQuit)
 		);
-	}
-
-	private static ForecastForMonth GetForecast(Consultant consultant, DateOnly month, List<BookedHoursInMonth> bookingSummary)
-	{
-		var forecastPercentage = consultant.Forecasts
-			.SingleOrDefault(f => f.Month.EqualsMonth(month))?
-			.AdjustedValue ?? 0;
-
-		var booking = bookingSummary.SingleOrDefault(bs => bs.Month.EqualsMonth(month));
-
-		if (booking == null)
-		{
-			return new ForecastForMonth(month, 0, forecastPercentage);
-		}
-
-		var billablePercentage = GetBillablePercentage(month, consultant, booking.BookingModel);
-
-		var displayedPercentage = Math.Max(billablePercentage, forecastPercentage);
-
-		return new ForecastForMonth(month, billablePercentage, displayedPercentage);
-	}
-
-	private static int GetBillablePercentage(DateOnly month, Consultant consultant, BookingReadModel booking)
-	{
-		var hoursOrganizationCanBillCustomer = booking.TotalBillable;
-
-		if (hoursOrganizationCanBillCustomer.IsEqualTo(0))
-		{
-			return 0;
-		}
-
-		var hoursInMonth = consultant.Department.Organization.GetTotalWeekdayHoursInMonth(month);
-
-		var hoursConsultantIsPaidByOrganization = hoursInMonth
-		                                          - booking.TotalHolidayHours
-		                                          - booking.TotalVacationHours
-		                                          - booking.TotalExcludableAbsence
-		                                          - booking.TotalNotStartedOrQuit;
-
-		if (hoursOrganizationCanBillCustomer.IsGreaterThanOrEqualTo(hoursConsultantIsPaidByOrganization))
-		{
-			return 100;
-		}
-
-		var billableRate = hoursOrganizationCanBillCustomer / hoursConsultantIsPaidByOrganization;
-
-		return (int)(100 * billableRate);
 	}
 }
