@@ -32,7 +32,9 @@ public static class ConsultantWithForecastFactory
 			.Select(month => GetBookedHours(consultant, month, detailedBookings))
 			.ToList();
 
-		var forecasts = GetForecasts(consultant, months, bookingSummary).ToList();
+		var forecasts = months
+			.Select(month => GetForecast(consultant, month, bookingSummary))
+			.ToList();
 
 		var isAvailable = bookingSummary.Any(bs => bs.BookingModel.TotalSellableTime.IsGreaterThan(0));
 
@@ -174,28 +176,24 @@ public static class ConsultantWithForecastFactory
 		);
 	}
 
-	private static IEnumerable<ForecastForMonth> GetForecasts(Consultant consultant, List<DateOnly> months, List<BookedHoursInMonth> bookingSummary)
+	private static ForecastForMonth GetForecast(Consultant consultant, DateOnly month, List<BookedHoursInMonth> bookingSummary)
 	{
-		foreach (var month in months)
+		var forecastPercentage = consultant.Forecasts
+			.SingleOrDefault(f => f.Month.EqualsMonth(month))?
+			.AdjustedValue ?? 0;
+
+		var booking = bookingSummary.SingleOrDefault(bs => bs.Month.EqualsMonth(month));
+
+		if (booking == null)
 		{
-			var forecastPercentage = consultant.Forecasts
-				.SingleOrDefault(f => f.Month.EqualsMonth(month))?
-				.AdjustedValue ?? 0;
-
-			var booking = bookingSummary.SingleOrDefault(bs => bs.Month.EqualsMonth(month));
-
-			if (booking == null)
-			{
-				yield return new ForecastForMonth(month, 0, forecastPercentage);
-				continue;
-			}
-
-			var billablePercentage = GetBillablePercentage(month, consultant, booking.BookingModel);
-
-			var displayedPercentage = Math.Max(billablePercentage, forecastPercentage);
-
-			yield return new ForecastForMonth(month, billablePercentage, displayedPercentage);
+			return new ForecastForMonth(month, 0, forecastPercentage);
 		}
+
+		var billablePercentage = GetBillablePercentage(month, consultant, booking.BookingModel);
+
+		var displayedPercentage = Math.Max(billablePercentage, forecastPercentage);
+
+		return new ForecastForMonth(month, billablePercentage, displayedPercentage);
 	}
 
 	private static int GetBillablePercentage(DateOnly month, Consultant consultant, BookingReadModel booking)
