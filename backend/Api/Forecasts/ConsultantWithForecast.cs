@@ -88,27 +88,27 @@ public record ForecastForMonth(DateOnly Month, int BillablePercentage, int Displ
 
 	private static int GetBillablePercentage(DateOnly month, Consultant consultant, BookingReadModel booking)
 	{
-		var hoursOrganizationCanBillCustomer = booking.TotalBillable;
+		var billableHours = booking.TotalBillable;
 
-		if (hoursOrganizationCanBillCustomer.IsEqualTo(0))
+		if (billableHours.IsEqualTo(0))
 		{
 			return 0;
 		}
 
 		var hoursInMonth = consultant.Department.Organization.GetTotalWeekdayHoursInMonth(month);
 
-		var hoursConsultantIsPaidByOrganization = hoursInMonth
-		                                          - booking.TotalHolidayHours
-		                                          - booking.TotalVacationHours
-		                                          - booking.TotalExcludableAbsence
-		                                          - booking.TotalNotStartedOrQuit;
+		var salariedHours = hoursInMonth
+		                    - booking.TotalHolidayHours
+		                    - booking.TotalVacationHours
+		                    - booking.TotalExcludableAbsence
+		                    - booking.TotalNotStartedOrQuit;
 
-		if (hoursOrganizationCanBillCustomer.IsGreaterThanOrEqualTo(hoursConsultantIsPaidByOrganization))
+		if (billableHours.IsGreaterThanOrEqualTo(salariedHours))
 		{
 			return 100;
 		}
 
-		var billableRate = hoursOrganizationCanBillCustomer / hoursConsultantIsPaidByOrganization;
+		var billableRate = billableHours / salariedHours;
 
 		return (int)(100 * billableRate);
 	}
