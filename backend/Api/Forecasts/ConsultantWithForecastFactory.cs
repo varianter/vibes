@@ -107,7 +107,7 @@ public static class ConsultantWithForecastFactory
 			.GroupBy(staffing => staffing.Engagement.Id)
 			.Select(projectGroup => new DetailedBookingForMonth(
 				BookingDetails.Staffing(projectGroup.Key, projectGroup.First(), bookingType),
-				Hours: months.Select(month => MonthlyHours.For(month, projectGroup.ToList(), consultant.Department.Organization)).ToList()));
+				Hours: months.Select(month => MonthlyHours.For(month, projectGroup.ToList(), consultant)).ToList()));
 	}
 
 	private static IEnumerable<DetailedBookingForMonth> GetPlannedAbsences(Consultant consultant, List<DateOnly> months, List<Week> weeks)
@@ -117,7 +117,7 @@ public static class ConsultantWithForecastFactory
 			.GroupBy(absence => absence.Absence.Name)
 			.Select(absenceGroup => new DetailedBookingForMonth(
 				BookingDetails.PlannedAbsence(absenceGroup.Key, absenceGroup.First()),
-				Hours: months.Select(month => MonthlyHours.For(month, absenceGroup.ToList(), consultant.Department.Organization)).ToList()));
+				Hours: months.Select(month => MonthlyHours.For(month, absenceGroup.ToList(), consultant)).ToList()));
 	}
 
 	// Using a similar pattern as in GetBookedHours() in StaffingController/ReadModelFactory
