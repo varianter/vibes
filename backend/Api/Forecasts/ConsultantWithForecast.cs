@@ -64,4 +64,68 @@ public record struct MonthlyHours(DateOnly Month, double Hours)
 	}
 }
 
-public record ForecastForMonth(DateOnly Month, int BillablePercentage, int DisplayedPercentage);
+public record ForecastForMonth(
+	DateOnly Month,
+	double BillableHours,
+	double SalariedHours,
+	int BillablePercentage,
+	int DisplayedPercentage)
+{
+	public static ForecastForMonth GetFor(Consultant consultant, DateOnly month, IEnumerable<BookedHoursInMonth> bookingSummary)
+	{
+		var manuallySetPercentage = consultant.Forecasts
+			.SingleOrDefault(f => f.Month.EqualsMonth(month))?
+			.AdjustedValue ?? 0;
+
+		var booking = bookingSummary.SingleOrDefault(bs => bs.Month.EqualsMonth(month))?.BookingModel;
+
+		if (booking == null)
+		{
+			return WithoutBookingInfo(month, manuallySetPercentage);
+		}
+
+		var billableHours = GetBillableHours(booking);
+		var salariedHours = GetSalariedHoursForMonth(month, consultant, booking);
+
+		var billablePercentage = GetBillablePercentage(billableHours, salariedHours);
+		var displayedPercentage = Math.Max(billablePercentage, manuallySetPercentage);
+
+		return new ForecastForMonth(month, billableHours, salariedHours, billablePercentage, displayedPercentage);
+	}
+
+	private static ForecastForMonth WithoutBookingInfo(DateOnly month, int displayedPercentage)
+	{
+		return new ForecastForMonth(month, 0, 0, 0, displayedPercentage);
+	}
+
+	private static double GetBillableHours(BookingReadModel booking)
+	{
+		return booking.TotalBillable;
+	}
+
+	private static double GetSalariedHoursForMonth(DateOnly month, Consultant consultant, BookingReadModel booking)
+	{
+		var hoursInMonth = consultant.Department.Organization.GetTotalWeekdayHoursInMonth(month);
+
+		return hoursInMonth
+		       - booking.TotalHolidayHours
+		       - booking.TotalVacationHours
+		       - booking.TotalExcludableAbsence
+		       - booking.TotalNotStartedOrQuit;
+	}
+
+	private static int GetBillablePercentage(double billableHours, double salariedHours)
+	{
+		if (billableHours.IsEqualTo(0))
+		{
+			return 0;
+		}
+
+		if (billableHours.IsGreaterThanOrEqualTo(salariedHours))
+		{
+			return 100;
+		}
+
+		return (int)(100 * (billableHours / salariedHours));
+	}
+}
