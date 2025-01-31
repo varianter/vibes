@@ -76,7 +76,7 @@ public record ForecastForMonth(DateOnly Month, int BillablePercentage, int Displ
 
 		if (booking == null)
 		{
-			return new ForecastForMonth(month, 0, forecastPercentage);
+			return WithoutBookingInfo(month, forecastPercentage);
 		}
 
 		var billablePercentage = GetBillablePercentage(month, consultant, booking.BookingModel);
@@ -84,6 +84,11 @@ public record ForecastForMonth(DateOnly Month, int BillablePercentage, int Displ
 		var displayedPercentage = Math.Max(billablePercentage, forecastPercentage);
 
 		return new ForecastForMonth(month, billablePercentage, displayedPercentage);
+	}
+
+	private static ForecastForMonth WithoutBookingInfo(DateOnly month, int displayedPercentage)
+	{
+		return new ForecastForMonth(month, 0, displayedPercentage);
 	}
 
 	private static double GetBillableHours(BookingReadModel booking)
