@@ -64,7 +64,12 @@ public record struct MonthlyHours(DateOnly Month, double Hours)
 	}
 }
 
-public record ForecastForMonth(DateOnly Month, int BillablePercentage, int DisplayedPercentage)
+public record ForecastForMonth(
+	DateOnly Month,
+	double BillableHours,
+	double SalariedHours,
+	int BillablePercentage,
+	int DisplayedPercentage)
 {
 	public static ForecastForMonth GetForecast(Consultant consultant, DateOnly month, List<BookedHoursInMonth> bookingSummary)
 	{
@@ -85,12 +90,12 @@ public record ForecastForMonth(DateOnly Month, int BillablePercentage, int Displ
 		var billablePercentage = GetBillablePercentage(billableHours, salariedHours);
 		var displayedPercentage = Math.Max(billablePercentage, forecastPercentage);
 
-		return new ForecastForMonth(month, billablePercentage, displayedPercentage);
+		return new ForecastForMonth(month, billableHours, salariedHours, billablePercentage, displayedPercentage);
 	}
 
 	private static ForecastForMonth WithoutBookingInfo(DateOnly month, int displayedPercentage)
 	{
-		return new ForecastForMonth(month, 0, displayedPercentage);
+		return new ForecastForMonth(month, 0, 0, 0, displayedPercentage);
 	}
 
 	private static double GetBillableHours(BookingReadModel booking)
