@@ -6,11 +6,6 @@ namespace Api.Helpers;
 
 public static class WorkloadHelper
 {
-	public static double CalculateWorkHoursInMonth(DateOnly month, Organization organization)
-	{
-		return organization.HoursPerWorkday * CalculateWorkdaysInMonth(month, organization);
-	}
-
 	public static List<MonthlyHours> CalculateMonthlyWorkHoursBefore(DateOnly date, List<DateOnly> months, Organization organization)
 	{
 		var fromDate = months.Min().FirstWeekdayInMonth();

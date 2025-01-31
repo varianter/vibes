@@ -152,12 +152,12 @@ public static class ConsultantWithForecastFactory
 		var totalVacations = DetailedBookingForMonth
 			.GetTotalHoursForBookingTypeAndMonth(detailedBookingsArray, month, BookingType.Vacation);
 
-		var bookedHours = totalBillable + totalAbsence + totalVacations + totalNonBillable + totalNotStartedOrQuit;
+		var bookedHours = totalBillable + totalAbsence + totalVacations + totalHolidayHours + totalNonBillable + totalNotStartedOrQuit;
 
-		var bookableHours = WorkloadHelper.CalculateWorkHoursInMonth(month, organization);
+		var hoursInMonth = organization.GetTotalWeekdayHoursInMonth(month);
 
-		var sellableHours = Math.Max(bookableHours - bookedHours, 0);
-		var overbookedHours = Math.Max(bookedHours - bookableHours, 0);
+		var sellableHours = Math.Max(hoursInMonth - bookedHours, 0);
+		var overbookedHours = Math.Max(bookedHours - hoursInMonth, 0);
 
 		return new BookedHoursInMonth(
 			month,
@@ -182,7 +182,7 @@ public static class ConsultantWithForecastFactory
 				.SingleOrDefault(f => f.Month.EqualsMonth(month))?
 				.AdjustedValue ?? 0;
 
-			var booking = bookingSummary.SingleOrDefault(bs => bs.Month.EqualsMonth(month))?.BookingModel;
+			var booking = bookingSummary.SingleOrDefault(bs => bs.Month.EqualsMonth(month));
 
 			if (booking == null)
 			{
@@ -190,28 +190,38 @@ public static class ConsultantWithForecastFactory
 				continue;
 			}
 
-			var bookedPercentage = CalculateBookedPercentage(month, consultant, booking);
+			var billablePercentage = GetBillablePercentage(month, consultant, booking.BookingModel);
 
-			var displayedPercentage = Math.Max((int)bookedPercentage, forecastPercentage);
+			var displayedPercentage = Math.Max(billablePercentage, forecastPercentage);
 
-			yield return new ForecastForMonth(month, bookedPercentage, displayedPercentage);
+			yield return new ForecastForMonth(month, billablePercentage, displayedPercentage);
 		}
 	}
 
-	/*
-		TODO: This should probably rather be availableWorkHoursInMonth, which may differ between consultants.
-
-		If a month has 150 work hours available and a consultant has the following registrations within that month:
-
-		75 hours on leave
-		75 hours booked
-		, the consultant is in practice 100 % booked for that month.
-		The current implementation will presumably claim that the consultant is 50 % booked.
-	*/
-	private static double CalculateBookedPercentage(DateOnly month, Consultant consultant, BookingReadModel booking)
+	private static int GetBillablePercentage(DateOnly month, Consultant consultant, BookingReadModel booking)
 	{
-		var workHoursInMonth = WorkloadHelper.CalculateWorkHoursInMonth(month, consultant.Department.Organization);
+		var hoursOrganizationCanBillCustomer = booking.TotalBillable;
 
-		return 100 * (booking.TotalBillable / workHoursInMonth);
+		if (hoursOrganizationCanBillCustomer.IsEqualTo(0))
+		{
+			return 0;
+		}
+
+		var hoursInMonth = consultant.Department.Organization.GetTotalWeekdayHoursInMonth(month);
+
+		var hoursConsultantIsPaidByOrganization = hoursInMonth
+		                                          - booking.TotalHolidayHours
+		                                          - booking.TotalVacationHours
+		                                          - booking.TotalExcludableAbsence
+		                                          - booking.TotalNotStartedOrQuit;
+
+		if (hoursOrganizationCanBillCustomer.IsGreaterThanOrEqualTo(hoursConsultantIsPaidByOrganization))
+		{
+			return 100;
+		}
+
+		var billableRate = hoursOrganizationCanBillCustomer / hoursConsultantIsPaidByOrganization;
+
+		return (int)(100 * billableRate);
 	}
 }
