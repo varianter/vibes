@@ -72,15 +72,17 @@ public record ForecastForMonth(DateOnly Month, int BillablePercentage, int Displ
 			.SingleOrDefault(f => f.Month.EqualsMonth(month))?
 			.AdjustedValue ?? 0;
 
-		var booking = bookingSummary.SingleOrDefault(bs => bs.Month.EqualsMonth(month));
+		var booking = bookingSummary.SingleOrDefault(bs => bs.Month.EqualsMonth(month))?.BookingModel;
 
 		if (booking == null)
 		{
 			return WithoutBookingInfo(month, forecastPercentage);
 		}
 
-		var billablePercentage = GetBillablePercentage(month, consultant, booking.BookingModel);
+		var billableHours = GetBillableHours(booking);
+		var salariedHours = GetSalariedHoursForMonth(month, consultant, booking);
 
+		var billablePercentage = GetBillablePercentage(billableHours, salariedHours);
 		var displayedPercentage = Math.Max(billablePercentage, forecastPercentage);
 
 		return new ForecastForMonth(month, billablePercentage, displayedPercentage);
@@ -107,11 +109,8 @@ public record ForecastForMonth(DateOnly Month, int BillablePercentage, int Displ
 		       - booking.TotalNotStartedOrQuit;
 	}
 
-	private static int GetBillablePercentage(DateOnly month, Consultant consultant, BookingReadModel booking)
+	private static int GetBillablePercentage(double billableHours, double salariedHours)
 	{
-		var billableHours = GetBillableHours(booking);
-		var salariedHours = GetSalariedHoursForMonth(month, consultant, booking);
-
 		if (billableHours.IsEqualTo(0))
 		{
 			return 0;
