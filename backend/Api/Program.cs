@@ -34,6 +34,8 @@ builder.Services.AddSwaggerGen(genOptions =>
 
 var app = builder.Build();
 
+await app.ApplyMigrations();
+
 app.UsePathBase("/v0");
 app.MapControllers();
 
