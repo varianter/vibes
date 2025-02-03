@@ -3,10 +3,8 @@ using Api.Common;
 using Core.Consultants;
 using Core.Organizations;
 using Core.Vacations;
-using Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 
 // ReSharper disable NotAccessedPositionalProperty.Global
 
@@ -16,8 +14,7 @@ namespace Api.VacationsController;
 [Route("/v0/{orgUrlKey}/vacations")]
 [ApiController]
 public class VacationsController(
-    ApplicationContext context,
-    IMemoryCache cache,
+    IStorageService storageService,
     IOrganisationRepository organisationRepository,
     IConsultantRepository consultantRepository) : ControllerBase
 {
@@ -47,9 +44,7 @@ public class VacationsController(
         var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, cancellationToken);
         if (selectedOrg is null) return BadRequest();
 
-        var service = new StorageService(cache, context);
-
-        var vacationDays = service.LoadConsultantVacation(consultantId);
+        var vacationDays = storageService.LoadConsultantVacation(consultantId);
         var consultant = await consultantRepository.GetConsultantById(consultantId, cancellationToken);
 
         if (consultant is null || !VacationsValidator.ValidateVacation(consultant, orgUrlKey))
@@ -69,9 +64,7 @@ public class VacationsController(
         var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, cancellationToken);
         if (selectedOrg is null) return BadRequest();
 
-        var service = new StorageService(cache, context);
-
-        var vacationDays = service.LoadConsultantVacation(consultantId);
+        var vacationDays = storageService.LoadConsultantVacation(consultantId);
         var consultant = await consultantRepository.GetConsultantById(consultantId, cancellationToken);
 
         if (consultant is null || !VacationsValidator.ValidateVacation(consultant, orgUrlKey))
@@ -80,7 +73,7 @@ public class VacationsController(
         try
         {
             var dateObject = DateOnly.FromDateTime(DateTime.Parse(date, CultureInfo.InvariantCulture));
-            service.RemoveVacationDay(consultantId, dateObject, orgUrlKey);
+            storageService.RemoveVacationDay(consultantId, dateObject, orgUrlKey);
         }
         catch (Exception e)
         {
@@ -102,9 +95,7 @@ public class VacationsController(
         var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, cancellationToken);
         if (selectedOrg is null) return BadRequest();
 
-        var service = new StorageService(cache, context);
-
-        var vacationDays = service.LoadConsultantVacation(consultantId);
+        var vacationDays = storageService.LoadConsultantVacation(consultantId);
         var consultant = await consultantRepository.GetConsultantById(consultantId, cancellationToken);
 
         if (consultant is null || !VacationsValidator.ValidateVacation(consultant, orgUrlKey))
@@ -112,8 +103,8 @@ public class VacationsController(
 
         try
         {
-            var dateObject = DateOnly.FromDateTime(DateTime.Parse(date));
-            service.AddVacationDay(consultantId, dateObject, orgUrlKey);
+            var dateObject = DateOnly.FromDateTime(DateTime.Parse(date, CultureInfo.InvariantCulture));
+            storageService.AddVacationDay(consultantId, dateObject, orgUrlKey);
         }
         catch (Exception e)
         {
