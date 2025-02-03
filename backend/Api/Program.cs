@@ -21,7 +21,13 @@ builder.AddRepositories();
 builder.Services.AddScoped<IStorageService, StorageService>();
 
 builder.Services.AddControllers()
-    .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.JsonSerializerOptions.NumberHandling = JsonNumberHandling.AllowReadingFromString |
+                                                       JsonNumberHandling.WriteAsString |
+                                                       JsonNumberHandling.AllowNamedFloatingPointLiterals;
+    });
 builder.Services.AddEndpointsApiExplorer();
 
 var adOptions = builder.Configuration.GetSection("AzureAd").Get<AzureAdOptions>();
