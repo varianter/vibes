@@ -24,7 +24,7 @@ export default async function Prognose({
       `${params.organisation}/forecasts`,
     )) ?? [];
 
-  console.log(consultantsWithForecasts);
+  console.log("consultant list from API in page.tsx", consultantsWithForecasts);
 
   const departments =
     (await fetchWithToken<DepartmentReadModel[]>(
