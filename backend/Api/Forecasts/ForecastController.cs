@@ -18,6 +18,7 @@ namespace Api.Forecasts;
 public class ForecastController(
 	ApplicationContext context,
 	IMemoryCache cache,
+	ILogger<StorageService> logger,
 	IForecastRepository forecastRepository,
 	IStaffingRepository staffingRepository,
 	IPlannedAbsenceRepository plannedAbsenceRepository)
@@ -30,7 +31,7 @@ public class ForecastController(
 		[FromQuery(Name = "Date")] DateOnly? requestedDate = null,
 		[FromQuery(Name = "MonthCount")] int monthCount = 12)
 	{
-		var service = new StorageService(cache, context);
+		var service = new StorageService(cache, logger, context);
 
 		var consultants = service.LoadConsultants(orgUrlKey);
 		consultants = await AddRelationalDataToConsultant(consultants, cancellationToken);

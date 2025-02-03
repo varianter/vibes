@@ -18,6 +18,7 @@ namespace Api.Projects;
 public class ProjectController(
     ApplicationContext context,
     IMemoryCache cache,
+    ILogger<StorageService> logger,
     IOrganisationRepository organisationRepository,
     IEngagementRepository engagementRepository) : ControllerBase
 {
@@ -83,7 +84,7 @@ public class ProjectController(
 
         var thisWeek = Week.FromDateTime(DateTime.Now);
 
-        var service = new StorageService(cache, context);
+        var service = new StorageService(cache, logger, context);
 
         if (customerId == -1) //CustomerId == -1 means PlannedAbsences
             return Ok(HandleGetAbsenceWithAbsences(orgUrlKey));
@@ -128,7 +129,7 @@ public class ProjectController(
         [FromBody] UpdateProjectWriteModel projectWriteModel)
     {
         // Note: Service will be injected with DI soon
-        var service = new StorageService(cache, context);
+        var service = new StorageService(cache, logger, context);
 
         if (!ProjectControllerValidator.ValidateUpdateProjectWriteModel(projectWriteModel, service, orgUrlKey))
             return BadRequest("Error in data");
@@ -173,7 +174,7 @@ public class ProjectController(
         [FromBody] UpdateEngagementNameWriteModel engagementWriteModel)
     {
         // Note: Service will be injected with DI soon
-        var service = new StorageService(cache, context);
+        var service = new StorageService(cache, logger, context);
 
         if (!ProjectControllerValidator.ValidateUpdateEngagementNameWriteModel(engagementWriteModel, service,
                 orgUrlKey))
@@ -211,7 +212,7 @@ public class ProjectController(
     public async Task<Results<Ok, NotFound<string>>> Put([FromRoute] int customerId, [FromQuery] bool activate,
         string orgUrlKey, CancellationToken ct)
     {
-        var service = new StorageService(cache, context);
+        var service = new StorageService(cache, logger, context);
         var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, ct);
         if (selectedOrg is null) return TypedResults.NotFound("Selected org not found");
         var customer = service.DeactivateOrActivateCustomer(customerId, selectedOrg, activate, orgUrlKey);
@@ -223,7 +224,7 @@ public class ProjectController(
     public async Task<ActionResult<ProjectWithCustomerModel>> Put([FromRoute] string orgUrlKey,
         [FromBody] EngagementWriteModel body, CancellationToken cancellationToken)
     {
-        var service = new StorageService(cache, context);
+        var service = new StorageService(cache, logger, context);
 
         var selectedOrg = await organisationRepository.GetOrganizationByUrlKey(orgUrlKey, cancellationToken);
         if (selectedOrg is null) return BadRequest("Selected org not found");

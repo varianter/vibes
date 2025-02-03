@@ -14,10 +14,11 @@ namespace Api.Consultants;
 public class ConsultantController(
     ApplicationContext context,
     IMemoryCache cache,
+    ILogger<StorageService> logger,
     IOrganisationRepository organisationRepository,
     IConsultantRepository consultantRepository) : ControllerBase
 {
-    private readonly StorageService _storageService = new(cache, context);
+    private readonly StorageService _storageService = new(cache, logger, context);
     
     [HttpGet]
     [Route("{Email}")]

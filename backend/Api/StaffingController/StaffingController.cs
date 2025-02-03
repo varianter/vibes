@@ -18,6 +18,7 @@ namespace Api.StaffingController;
 public class StaffingController(
     ApplicationContext context,
     IMemoryCache cache,
+    ILogger<StorageService> logger,
     IStaffingRepository staffingRepository,
     IPlannedAbsenceRepository plannedAbsenceRepository)
     : ControllerBase
@@ -37,7 +38,7 @@ public class StaffingController(
 
         var weekSet = selectedWeek.GetNextWeeks(numberOfWeeks);
 
-        var service = new StorageService(cache, context);
+        var service = new StorageService(cache, logger, context);
         var consultants = service.LoadConsultants(orgUrlKey);
         consultants = await AddRelationalDataToConsultant(consultants, cancellationToken);
 
@@ -62,7 +63,7 @@ public class StaffingController(
 
         var weekSet = selectedWeek.GetNextWeeks(numberOfWeeks);
 
-        var service = new StorageService(cache, context);
+        var service = new StorageService(cache, logger, context);
 
         switch (isAbsence)
         {
@@ -99,7 +100,7 @@ public class StaffingController(
         CancellationToken cancellationToken
     )
     {
-        var service = new StorageService(cache, context);
+        var service = new StorageService(cache, logger, context);
 
         if (!StaffingControllerValidator.ValidateStaffingWriteModel(staffingWriteModel, service, orgUrlKey))
             return BadRequest();
@@ -154,7 +155,7 @@ public class StaffingController(
         CancellationToken cancellationToken
     )
     {
-        var service = new StorageService(cache, context);
+        var service = new StorageService(cache, logger, context);
 
         if (!StaffingControllerValidator.ValidateStaffingWriteModel(severalStaffingWriteModel, service, orgUrlKey))
             return BadRequest();
