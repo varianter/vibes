@@ -24,6 +24,8 @@ export default async function Prognose({
       `${params.organisation}/forecasts`,
     )) ?? [];
 
+  console.log(consultantsWithForecasts);
+
   const departments =
     (await fetchWithToken<DepartmentReadModel[]>(
       `organisations/${params.organisation}/departments`,
@@ -32,7 +34,7 @@ export default async function Prognose({
   const competences =
     (await fetchWithToken<CompetenceReadModel[]>(`competences`)) ?? [];
 
-  return (
+  /* return (
     <ForecastFilterProvider
       consultants={consultantsWithForecasts}
       departments={departments}
@@ -40,5 +42,7 @@ export default async function Prognose({
     >
       <ForecastContent />
     </ForecastFilterProvider>
-  );
+  ); */
+
+  return <ForecastContent consultants={consultantsWithForecasts} />;
 }
