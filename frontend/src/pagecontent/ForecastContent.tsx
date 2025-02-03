@@ -8,8 +8,13 @@ import { Filter } from "react-feather";
 import ActiveFilters from "@/components/ActiveFilters";
 import ForecastTable from "@/components/Forecast/ForecastTable";
 import { FilteredForecastContext } from "@/hooks/ForecastFilter/ForecastFilterProvider";
+import { ConsultantWithForecast } from "@/api-types";
 
-export function ForecastContent() {
+export function ForecastContent({
+  consultants,
+}: {
+  consultants: ConsultantWithForecast[];
+}) {
   const [isSideBarOpen, setIsSidebarOpen] = useState<boolean>(false);
 
   return (
@@ -33,7 +38,7 @@ export function ForecastContent() {
             <ActiveFilters context={FilteredForecastContext} />
           </div>
         </div>
-        <ForecastTable />
+        <ForecastTable filteredConsultants={consultants} />
         <InfoPillDescriptions />
       </div>
     </>

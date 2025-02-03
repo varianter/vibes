@@ -20,7 +20,7 @@ async function getNumWorkHours(
     const numWeeklyHours = await data.json();
     setNumWorkHours(numWeeklyHours || 37.5);
   } catch (e) {
-    console.error("Error fetching number of weekly work hours", e);
+    console.error("Erro∏r fetching number of weekly work hours", e);
   }
 }
 
