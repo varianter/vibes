@@ -25,7 +25,6 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         options.JsonSerializerOptions.NumberHandling = JsonNumberHandling.AllowReadingFromString |
-                                                       JsonNumberHandling.WriteAsString |
                                                        JsonNumberHandling.AllowNamedFloatingPointLiterals;
     });
 builder.Services.AddEndpointsApiExplorer();
