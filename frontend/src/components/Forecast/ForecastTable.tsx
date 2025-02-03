@@ -5,7 +5,7 @@ import { fetchPublicHolidays } from "@/hooks/fetchPublicHolidays";
 import { usePathname } from "next/navigation";
 import { getBusinessHoursPerMonth } from "./BusinessHoursPerMonth";
 import { useForecastFilter } from "@/hooks/ForecastFilter/useForecastFilter";
-import { ConsultantWithForecast, ForecastForMonth } from "@/api-types";
+import { ForecastForMonth } from "@/api-types";
 
 function isCurrentMonth(dateString: string) {
   const date = new Date(dateString);
@@ -22,18 +22,14 @@ function getShortenedMonthName(dateString: string) {
   return month.charAt(0).toUpperCase() + month.slice(1);
 }
 
-export default function ForecastTable({
-  filteredConsultants,
-}: {
-  filteredConsultants: ConsultantWithForecast[];
-}) {
-  /* const {
+export default function ForecastTable() {
+  const {
     numWorkHours,
     filteredConsultants,
     weeklyTotalBillable,
     weeklyTotalBillableAndOffered,
     weeklyInvoiceRates,
-  } = useForecastFilter(); */
+  } = useForecastFilter();
   const [publicHolidays, setPublicHolidays] = useState<string[]>([]);
   const organisationName = usePathname().split("/")[1];
 
@@ -127,7 +123,7 @@ export default function ForecastTable({
                       ? "" +
                         getBusinessHoursPerMonth(
                           forecast.month,
-                          7.5,
+                          numWorkHours,
                           publicHolidays,
                         ) +
                         "t"
@@ -144,7 +140,7 @@ export default function ForecastTable({
           <ForecastRows
             key={consultant.consultant.id}
             consultant={consultant}
-            numWorkHours={7.5}
+            numWorkHours={numWorkHours}
           />
         ))}
       </tbody>
