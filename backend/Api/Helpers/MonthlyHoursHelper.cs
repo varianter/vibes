@@ -63,6 +63,11 @@ public static class MonthlyHoursHelper
 			return 0;
 		}
 
+		if (bookableHours.InWeek.IsEqualTo(0))
+		{
+			return bookedHoursInWeek;
+		}
+
 		// We are done trying to be smart: Making the assumption that the work hours are evenly distributed between each work day of the week
 		return bookedHoursInWeek * (bookableHours.InWeekWithinMonth / bookableHours.InWeek);
 	}
