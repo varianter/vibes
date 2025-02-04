@@ -68,6 +68,11 @@ public class Organization
         return holidayDays * HoursPerWorkday;
     }
 
+    public double GetTotalWeekdayHoursInMonth(DateOnly month)
+    {
+        return HoursPerWorkday * month.CountWeekdaysInMonth();
+    }
+
     private bool IsHoliday(DateOnly day)
     {
         return IsPublicHoliday(day) || IsChristmasHoliday(day);

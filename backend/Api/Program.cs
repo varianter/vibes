@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Api.AppExtensions;
+using Api.Common;
 using Api.Options;
 using Infrastructure;
 using Infrastructure.Repositories;
@@ -17,8 +18,15 @@ builder.Services.AddAuthorization(opt => { opt.FallbackPolicy = opt.DefaultPolic
 builder.Services.AddMemoryCache();
 builder.AddRepositories();
 
+builder.Services.AddScoped<IStorageService, StorageService>();
+
 builder.Services.AddControllers()
-    .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.JsonSerializerOptions.NumberHandling = JsonNumberHandling.AllowReadingFromString |
+                                                       JsonNumberHandling.AllowNamedFloatingPointLiterals;
+    });
 builder.Services.AddEndpointsApiExplorer();
 
 var adOptions = builder.Configuration.GetSection("AzureAd").Get<AzureAdOptions>();
@@ -33,6 +41,8 @@ builder.Services.AddSwaggerGen(genOptions =>
 });
 
 var app = builder.Build();
+
+await app.ApplyMigrations();
 
 app.UsePathBase("/v0");
 app.MapControllers();
