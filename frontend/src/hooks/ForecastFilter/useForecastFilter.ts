@@ -9,8 +9,6 @@ import {
   SingleConsultantReadModel,
 } from "@/api-types";
 import { FilteredForecastContext } from "./ForecastFilterProvider";
-import { fetchPublicHolidays } from "../fetchPublicHolidays";
-import { getBusinessHoursPerMonth } from "@/components/Forecast/BusinessHoursPerMonth";
 
 async function getNumWorkHours(
   setNumWorkHours: Function,
@@ -28,34 +26,6 @@ async function getNumWorkHours(
   } catch (e) {
     console.error("Error fetching number of weekly work hours", e);
   }
-}
-
-async function getWorkHoursInMonth(
-  organisationName: string,
-  filteredConsultants: ConsultantWithForecast[],
-  numWorkHours: number,
-) {
-  let publicHolidays: string[] = [];
-  try {
-    if (organisationName) {
-      const res = await fetchPublicHolidays(organisationName);
-      if (res) {
-        publicHolidays = res;
-      }
-    }
-  } catch (e) {
-    console.error("Error fetching public holidays", e);
-  }
-
-  const hoursInMonth = new Map<number, number>();
-
-  filteredConsultants[0]?.forecasts?.forEach((forecast: ForecastForMonth) =>
-    hoursInMonth.set(
-      new Date(forecast.month).getMonth(),
-      getBusinessHoursPerMonth(forecast.month, numWorkHours, publicHolidays),
-    ),
-  );
-  return hoursInMonth;
 }
 
 export function useSimpleForecastFilter() {
@@ -92,28 +62,13 @@ export function useSimpleForecastFilter() {
 
 export function useForecastFilter() {
   const { consultants } = useContext(FilteredForecastContext);
-  const [hoursInMonth, setHoursInMonth] = useState<Map<number, number>>();
+
   const [numWorkHours, setNumWorkHours] = useState<number>(-1);
   const organisationName = usePathname().split("/")[1];
 
   useEffect(() => {
     getNumWorkHours(setNumWorkHours, organisationName);
   }, [organisationName]);
-
-  useEffect(() => {
-    const fetchHoursInMonth = async () => {
-      if (numWorkHours < 0 || consultants.length === 0) return;
-
-      const result = await getWorkHoursInMonth(
-        organisationName,
-        consultants,
-        numWorkHours,
-      );
-      setHoursInMonth(result);
-    };
-
-    fetchHoursInMonth();
-  }, [numWorkHours, consultants, organisationName]);
 
   const {
     departmentFilter,
@@ -141,11 +96,11 @@ export function useForecastFilter() {
   const { monthlyTotalBillable, monthlyTotalBillableAndOffered } =
     setMonthlyTotalBillable(filteredConsultants);
   const monthlyForecastSums = setMonthlyForecastSum(filteredConsultants);
-
+  const monthlyForecastTotalHours =
+    setMonthlyForecastHours(filteredConsultants);
   const weeklyInvoiceRates = setMonthlyInvoiceRate(
     filteredConsultants,
     monthlyTotalBillable,
-    hoursInMonth,
   );
 
   return {
@@ -155,7 +110,7 @@ export function useForecastFilter() {
     monthlyTotalBillableAndOffered,
     weeklyInvoiceRates,
     monthlyForecastSums,
-    hoursInMonth,
+    monthlyForecastTotalHours,
   };
 }
 
@@ -332,10 +287,30 @@ export function setMonthlyTotalBillable(
   };
 }
 
+function setMonthlyForecastHours(filterConsultants: ConsultantWithForecast[]) {
+  const monthlyForecastHours = new Map<number, number>();
+  filterConsultants.forEach((consultant) => {
+    consultant.forecasts.forEach((forecast) => {
+      const month = getMonth(forecast.month);
+      //hours is billableHours from forecast unless the forecast value has been adjusted, and in that case we calculate it based on the adjusted percentage and salaried hours
+      const hours =
+        forecast.displayedPercentage == forecast.billablePercentage
+          ? forecast.billableHours
+          : (forecast.displayedPercentage / 100) * forecast.salariedHours;
+      if (monthlyForecastHours.has(month)) {
+        const totalHours = monthlyForecastHours.get(month) || 0;
+        monthlyForecastHours.set(month, totalHours + hours);
+      } else {
+        monthlyForecastHours.set(month, hours);
+      }
+    });
+  });
+  return monthlyForecastHours;
+}
+
 function setMonthlyInvoiceRate(
   filteredConsultants: ConsultantWithForecast[],
   monthlyTotalBillable: Map<number, number>,
-  hoursInMonth: Map<number, number> | undefined,
 ) {
   const monthlyInvoiceRate = new Map<number, number>();
 
@@ -343,17 +318,9 @@ function setMonthlyInvoiceRate(
     let totalAvailableMonthHours = 0;
 
     filteredConsultants.forEach((consultant) => {
-      consultant.bookings.forEach((booking) => {
-        if (getMonth(booking.month) === month) {
-          if (!hoursInMonth) return;
-          let consultantAvailableWeekHours =
-            hoursInMonth.get(month)! -
-            booking.bookingModel.totalHolidayHours -
-            booking.bookingModel.totalExcludableAbsence -
-            booking.bookingModel.totalNotStartedOrQuit -
-            booking.bookingModel.totalVacationHours;
-
-          totalAvailableMonthHours += consultantAvailableWeekHours;
+      consultant.forecasts.forEach((forecast) => {
+        if (getMonth(forecast.month) === month) {
+          totalAvailableMonthHours += forecast.salariedHours;
         }
       });
     });

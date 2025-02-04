@@ -4,16 +4,14 @@ interface ForecastSumsProps {
   monthlyTotalBillable?: Map<number, number>;
   monthlyTotalBillableAndOffered: Map<number, number>;
   monthlyInvoiceRates?: Map<number, number>;
-  monthlyForecastSums: Map<number, number>;
-  hoursInMonth: Map<number, number>;
+  monthlyForecastTotalHours: Map<number, number>;
 }
 
 export function ForecastSums({
   monthlyTotalBillable,
   monthlyTotalBillableAndOffered,
   monthlyInvoiceRates,
-  monthlyForecastSums,
-  hoursInMonth,
+  monthlyForecastTotalHours,
 }: ForecastSumsProps) {
   const [totalBillableHours, setTotalBillableHours] = useState<number[]>();
   const totalBillableAndOfferedHours = Array.from(
@@ -21,7 +19,7 @@ export function ForecastSums({
   );
   const [monthlyInvoiceRatesArray, setMonthlyInvoiceRatesArray] =
     useState<number[]>();
-  const [monthlyForecastTotal, setMonthlyForecastTotal] = useState<number[]>();
+  const [monthlyForecastHours, setMonthlyForecastHours] = useState<number[]>();
 
   useEffect(() => {
     if (monthlyTotalBillable) {
@@ -30,8 +28,9 @@ export function ForecastSums({
     if (monthlyInvoiceRates) {
       setMonthlyInvoiceRatesArray(Array.from(monthlyInvoiceRates.values()));
     }
-    if (monthlyForecastSums) {
-      setMonthlyForecastTotal(Array.from(monthlyForecastSums.values()));
+
+    if (monthlyForecastTotalHours) {
+      setMonthlyForecastHours(Array.from(monthlyForecastTotalHours.values()));
     }
   }, [monthlyTotalBillable, monthlyInvoiceRates]);
 
@@ -71,20 +70,23 @@ export function ForecastSums({
           ),
         )}
       </tr>
-      {/* {monthlyForecastTotal && (
+      {monthlyForecastHours && (
         <tr>
           <td colSpan={1}>
             <p className="small-medium text-black">Prognosetall i timer</p>
           </td>
-          {monthlyForecastTotal.map((indexRates, index) => (
+          {monthlyForecastHours.map((indexRates, index) => (
             <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
               <p className="small-medium text-right">
-                {Math.round((indexRates / 100) * hoursInMonth.get(index)!)} t
+                {indexRates.toLocaleString("nb-No", {
+                  maximumFractionDigits: 1,
+                  minimumFractionDigits: 1,
+                })}
               </p>
             </td>
           ))}
         </tr>
-      )} */}
+      )}
       {monthlyInvoiceRatesArray && (
         <tr>
           <td colSpan={1}>
