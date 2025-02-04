@@ -24,4 +24,17 @@ public static class NumericsExtensions
 
 		return a > b;
 	}
+
+	/// <summary>
+	/// Returns true if a &ge; b (with the given precision); otherwise, false
+	/// </summary>
+	public static bool IsGreaterThanOrEqualTo(this double a, double b, double precision = Epsilon)
+	{
+		if (a.IsEqualTo(b, precision))
+		{
+			return true;
+		}
+
+		return a > b;
+	}
 }

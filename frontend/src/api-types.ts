@@ -330,8 +330,8 @@ export interface MonthlyHours {
 export interface ForecastForMonth {
   /** @format date */
   month: string;
-  /** @format double */
-  calculatedPercentage: number;
+  /** @format int32 */
+  billablePercentage: number;
   /** @format int32 */
   displayedPercentage: number;
 }

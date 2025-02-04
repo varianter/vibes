@@ -12,7 +12,7 @@ using NuGet.Packaging;
 
 namespace Api.Common;
 
-public class StorageService(IMemoryCache cache, ApplicationContext context)
+public class StorageService(IMemoryCache cache, ILogger<StorageService> logger, ApplicationContext context) : IStorageService
 {
     private const string ConsultantCacheKey = "consultantCacheKey";
 
@@ -31,12 +31,19 @@ public class StorageService(IMemoryCache cache, ApplicationContext context)
         return loadedConsultants;
     }
 
-    public Consultant LoadConsultantForSingleWeek(int consultantId, Week week)
+    public Consultant? LoadConsultantForSingleWeek(int consultantId, Week week)
     {
         var consultant = context.Consultant
             .Include(c => c.Department)
             .ThenInclude(d => d.Organization)
-            .Single(c => c.Id == consultantId);
+            .FirstOrDefault(c => c.Id == consultantId);
+
+        if (consultant is null)
+        {
+            logger.LogWarning("{Method}: Consultant with id {ConsultantId} not found",
+                nameof(LoadConsultantForSingleWeek), consultantId);
+            return null;
+        }
 
         consultant.Staffings = context.Staffing.Where(staffing =>
                 staffing.Week.Equals(week) && staffing.ConsultantId == consultantId)
@@ -54,12 +61,19 @@ public class StorageService(IMemoryCache cache, ApplicationContext context)
         return consultant;
     }
 
-    public Consultant LoadConsultantForWeekSet(int consultantId, List<Week> weeks)
+    public Consultant? LoadConsultantForWeekSet(int consultantId, List<Week> weeks)
     {
         var consultant = context.Consultant
             .Include(c => c.Department)
             .ThenInclude(d => d.Organization)
-            .Single(c => c.Id == consultantId);
+            .FirstOrDefault(c => c.Id == consultantId);
+        
+        if (consultant is null)
+        {
+            logger.LogWarning("{Method}: Consultant with id {ConsultantId} not found",
+                nameof(LoadConsultantForSingleWeek), consultantId);
+            return null;
+        }
 
 
         consultant.Staffings = context.Staffing.Where(staffing =>
@@ -83,7 +97,7 @@ public class StorageService(IMemoryCache cache, ApplicationContext context)
     public Consultant? GetBaseConsultantById(int id)
     {
         return context.Consultant.Include(c => c.Department).ThenInclude(d => d.Organization)
-            .SingleOrDefault(c => c.Id == id);
+            .FirstOrDefault(c => c.Id == id);
     }
 
     private List<Consultant> LoadConsultantsFromDb(string orgUrlKey)
@@ -243,13 +257,13 @@ public class StorageService(IMemoryCache cache, ApplicationContext context)
         return context.Project.Find(id);
     }
 
-    public Engagement GetProjectWithOrganisationById(int id)
+    public Engagement? GetProjectWithOrganisationById(int id)
     {
         return context.Project
             .Where(p => p.Id == id)
             .Include(p => p.Customer)
             .ThenInclude(c => c.Organization)
-            .Single(p => p.Id == id);
+            .FirstOrDefault(p => p.Id == id);
     }
 
     public Customer? GetCustomerFromId(string orgUrlKey, int customerId)
@@ -258,7 +272,7 @@ public class StorageService(IMemoryCache cache, ApplicationContext context)
             .Include(c => c.Organization)
             .Include(c => c.Projects)
             .ThenInclude(p => p.Staffings)
-            .SingleOrDefault(customer => customer.Organization.UrlKey == orgUrlKey && customer.Id.Equals(customerId));
+            .FirstOrDefault(customer => customer.Organization.UrlKey == orgUrlKey && customer.Id.Equals(customerId));
     }
 
     public List<Vacation> LoadConsultantVacation(int consultantId)
@@ -268,7 +282,13 @@ public class StorageService(IMemoryCache cache, ApplicationContext context)
 
     public void RemoveVacationDay(int consultantId, DateOnly date, string orgUrlKey)
     {
-        var vacation = context.Vacation.Single(v => v.ConsultantId == consultantId && v.Date.Equals(date));
+        var vacation = context.Vacation.FirstOrDefault(v => v.ConsultantId == consultantId && v.Date.Equals(date));
+        if (vacation is null)
+        {
+            logger.LogWarning("{Method}: Vacation date {Date} not found for consultant {ConsultantId}",
+                nameof(RemoveVacationDay), date, consultantId);
+            return;
+        }
 
         context.Vacation.Remove(vacation);
         context.SaveChanges();
@@ -278,7 +298,14 @@ public class StorageService(IMemoryCache cache, ApplicationContext context)
 
     public void AddVacationDay(int consultantId, DateOnly date, string orgUrlKey)
     {
-        var consultant = context.Consultant.Single(c => c.Id == consultantId);
+        var consultant = context.Consultant.FirstOrDefault(c => c.Id == consultantId);
+        if (consultant is null)
+        {
+            logger.LogWarning("{Method}: Consultant with id {ConsultantId} not found", nameof(AddVacationDay),
+                consultantId);
+            return;
+        }
+        
         if (context.Vacation.Any(v => v.ConsultantId == consultantId && v.Date.Equals(date))) return;
         var vacation = new Vacation
         {

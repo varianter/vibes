@@ -1,7 +1,6 @@
 import { CustomersWithProjectsReadModel } from "@/api-types";
 import InfoBox from "../InfoBox";
 import DepartmentFilter from "../DepartmentFilter";
-import { FilteredCustomerContext } from "@/hooks/CustomerFilter/CustomerFilterProvider";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 
 export default function CustomerSidebar({

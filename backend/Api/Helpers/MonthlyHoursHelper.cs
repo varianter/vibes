@@ -1,5 +1,5 @@
+using Core.Consultants;
 using Core.Extensions;
-using Core.Organizations;
 using Core.PlannedAbsences;
 using Core.Staffings;
 using Core.Weeks;
@@ -8,64 +8,68 @@ namespace Api.Helpers;
 
 public static class MonthlyHoursHelper
 {
-	public static double GetStaffedHoursForMonthInWeek(DateOnly month, Week week, List<Staffing> staffings, Organization organization)
+	public static double GetStaffedHoursForMonthInWeek(DateOnly month, Week week, List<Staffing> staffings, Consultant consultant)
 	{
 		var staffedHoursInWeek = staffings
 			.Where(staffing => staffing.Week.Equals(week))
 			.Sum(staffing => staffing.Hours);
 
-		return GetHoursInWeekWithinMonth(month, week, staffedHoursInWeek, organization);
+		return GetBookedHoursInWeekWithinMonth(month, week, staffedHoursInWeek, consultant);
 	}
 
-	public static double GetPlannedAbsenceHoursForMonthInWeek(DateOnly month, Week week, List<PlannedAbsence> plannedAbsences, Organization organization)
+	public static double GetPlannedAbsenceHoursForMonthInWeek(DateOnly month, Week week, List<PlannedAbsence> plannedAbsences, Consultant consultant)
 	{
 		var absenceHoursInWeek = plannedAbsences
 			.Where(absence => absence.Week.Equals(week))
 			.Sum(absence => absence.Hours);
 
-		return GetHoursInWeekWithinMonth(month, week, absenceHoursInWeek, organization);
+		return GetBookedHoursInWeekWithinMonth(month, week, absenceHoursInWeek, consultant);
 	}
 
-	private static double GetHoursInWeekWithinMonth(DateOnly month, Week week, double hoursInWeek, Organization organization)
+	private static double GetBookedHoursInWeekWithinMonth(DateOnly month, Week week, double bookedHoursInWeek, Consultant consultant)
 	{
-		if (hoursInWeek.IsEqualTo(0))
+		if (bookedHoursInWeek.IsEqualTo(0))
 		{
 			return 0;
 		}
 
 		if (WholeWorkWeekIsInMonth(month, week))
 		{
-			return hoursInWeek;
+			return bookedHoursInWeek;
 		}
 
-		var availableWorkHours = GetAvailableWorkHours(month, week, organization);
+		var bookableHours = GetBookableHours(month, week, consultant);
 
-		if (hoursInWeek.IsEqualTo(availableWorkHours.InWeek))
+		if (bookedHoursInWeek.IsEqualTo(bookableHours.InWeek))
 		{
-			return availableWorkHours.InWeekWithinMonth;
+			return bookableHours.InWeekWithinMonth;
 		}
 
-		var availableWorkHoursMatchForBothMonths = availableWorkHours.InWeekWithinMonth.IsEqualTo(availableWorkHours.InWeekWithinOtherMonth);
+		var bookableHoursMatchForBothMonths = bookableHours.InWeekWithinMonth.IsEqualTo(bookableHours.InWeekWithinOtherMonth);
 
-		// TODO: Edge case, we should handle registered vacation days as well
-		if (availableWorkHoursMatchForBothMonths)
+		if (bookableHoursMatchForBothMonths)
 		{
 			// TODO Forecast: Handle edge case where an odd-numbered amount of holidays occur within a week containing a month change, so that each month has an equal amount of work days in that week
 			// Perhaps make a decision based on data from the previous and next week?
 		}
 
-		if (hoursInWeek.IsEqualTo(availableWorkHours.InWeekWithinMonth))
+		if (bookedHoursInWeek.IsEqualTo(bookableHours.InWeekWithinMonth))
 		{
-			return availableWorkHours.InWeekWithinMonth;
+			return bookableHours.InWeekWithinMonth;
 		}
 
-		if (hoursInWeek.IsEqualTo(availableWorkHours.InWeekWithinOtherMonth))
+		if (bookedHoursInWeek.IsEqualTo(bookableHours.InWeekWithinOtherMonth))
 		{
 			return 0;
 		}
 
+		if (bookableHours.InWeek.IsEqualTo(0))
+		{
+			return bookedHoursInWeek;
+		}
+
 		// We are done trying to be smart: Making the assumption that the work hours are evenly distributed between each work day of the week
-		return hoursInWeek * (availableWorkHours.InWeekWithinMonth / availableWorkHours.InWeek);
+		return bookedHoursInWeek * (bookableHours.InWeekWithinMonth / bookableHours.InWeek);
 	}
 
 	private static bool WholeWorkWeekIsInMonth(DateOnly month, Week week)
@@ -74,23 +78,25 @@ public static class MonthlyHoursHelper
 			   week.LastWorkDayOfWeek().EqualsMonth(month);
 	}
 
-	// TODO: This method should probably consider registered vacation days as well
-	private static (double InWeek, double InWeekWithinMonth, double InWeekWithinOtherMonth) GetAvailableWorkHours(DateOnly month, Week week, Organization organization)
+	private static (double InWeek, double InWeekWithinMonth, double InWeekWithinOtherMonth) GetBookableHours(DateOnly month, Week week, Consultant consultant)
 	{
+		var organization = consultant.Department.Organization;
+
 		var holidaysInWeek = organization.GetHolidaysInWeek(week);
 
-		var workdaysInWeek = week.GetDatesInWorkWeek()
+		var bookableDaysInWeek = week.GetDatesInWorkWeek()
 			.Where(date => !holidaysInWeek.Contains(date))
+			.Where(date => !consultant.Vacations.Any(vacation => vacation.Date.Equals(date)))
 			.ToList();
 
-		var workdaysInWeekWithinMonth = workdaysInWeek
+		var bookableDaysInWeekWithinMonth = bookableDaysInWeek
 			.Count(workday => workday.EqualsMonth(month));
 
-		var workHoursInWeek = organization.HoursPerWorkday * workdaysInWeek.Count;
-		var workHoursInWeekWithinMonth = organization.HoursPerWorkday * workdaysInWeekWithinMonth;
+		var bookableHoursInWeek = organization.HoursPerWorkday * bookableDaysInWeek.Count;
+		var bookableHoursInWeekWithinMonth = organization.HoursPerWorkday * bookableDaysInWeekWithinMonth;
 
-		var workHoursInWeekWithinOtherMonth = workHoursInWeek - workHoursInWeekWithinMonth;
+		var bookableHoursInWeekWithinOtherMonth = bookableHoursInWeek - bookableHoursInWeekWithinMonth;
 
-		return (workHoursInWeek, workHoursInWeekWithinMonth, workHoursInWeekWithinOtherMonth);
+		return (bookableHoursInWeek, bookableHoursInWeekWithinMonth, bookableHoursInWeekWithinOtherMonth);
 	}
 }
