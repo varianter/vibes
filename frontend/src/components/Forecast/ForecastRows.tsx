@@ -27,7 +27,7 @@ export default function ForecastRows({
   return (
     <>
       <tr className="h-[52px]">
-        <td>
+        <td colSpan={1} className="w-[15%]">
           <div className="flex justify-start gap-1 items-center">
             <div className="flex flex-row justify-center self-center gap-2 w-3/12">
               <div className="w-10 h-10 rounded-md bg-primary"></div>
