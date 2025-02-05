@@ -210,6 +210,8 @@ export interface SingleConsultantReadModel {
   /** @format int32 */
   yearsOfExperience: number;
   degree: Degree;
+  imageUrl?: string;
+  imageThumbUrl?: string;
 }
 
 export interface StaffingWriteModel {
