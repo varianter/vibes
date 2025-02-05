@@ -9,7 +9,11 @@ import {
   MockEngagements,
   MockOrganisations,
 } from "../../mockdata/mockData";
-import { ConsultantReadModel, EmployeeItemChewbacca } from "@/api-types";
+import {
+  ConsultantReadModel,
+  ConsultantWithForecast,
+  EmployeeItemChewbacca,
+} from "@/api-types";
 
 type HttpMethod = "GET" | "PUT" | "POST" | "DELETE";
 
@@ -91,6 +95,12 @@ export async function fetchWithToken<ReturnType>(
   return callApi<ReturnType, undefined>(path, "GET");
 }
 
+export async function fetchForecastWithToken(
+  path: string,
+): Promise<ConsultantWithForecast[] | undefined> {
+  return callForecastEmployee(path);
+}
+
 export async function fetchEmployeesWithImageAndToken(
   path: string,
 ): Promise<ConsultantReadModel[] | undefined> {
@@ -126,6 +136,60 @@ async function fetchWithTimeoutOrNull<T>(
   } catch (e) {
     console.error(e);
     return null;
+  }
+}
+export async function callForecastEmployee(path: string) {
+  if (process.env.NEXT_PUBLIC_NO_AUTH) {
+    return mockedCall<undefined>(path);
+  }
+
+  const session = await getCustomServerSession(authOptions);
+
+  if (!session || !session.access_token) return;
+
+  const apiBackendUrl = process.env.BACKEND_URL ?? "http://localhost:7172/v0";
+
+  const headers = new Headers();
+  const bearer = `Bearer ${session.access_token}`;
+
+  headers.append("Authorization", bearer);
+
+  const options = {
+    method: "GET",
+    headers: headers,
+  };
+
+  const completeUrl = `${apiBackendUrl}/${path}`;
+
+  try {
+    const [response, employeeResponse] = await Promise.all([
+      fetch(completeUrl, options),
+      fetchWithTimeoutOrNull<{ employees: EmployeeItemChewbacca[] }>(
+        `https://chewie-webapp-ld2ijhpvmb34c.azurewebsites.net/employees`,
+      ),
+    ]);
+
+    const consultantsRes: ConsultantWithForecast[] = await response.json();
+    const employees = employeeResponse?.employees || [];
+
+    const consultants = consultantsRes?.map((consultant) => {
+      const imageCons = employees.find(
+        (imageConsultant) =>
+          imageConsultant.email === consultant.consultant.email,
+      );
+      return {
+        ...consultant,
+        consultant: {
+          ...consultant.consultant,
+          imageThumbUrl: imageCons?.imageThumbUrl,
+        },
+      };
+    });
+
+    return consultants;
+  } catch (e) {
+    console.error(e);
+    throw new Error(`${options.method} ${completeUrl} failed`);
   }
 }
 
