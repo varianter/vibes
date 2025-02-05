@@ -105,18 +105,75 @@ public class ForecastRepositoryTests(ApiFactory apiFactory) : TestsBase(apiFacto
     [Fact]
     public async Task Can_Update_Multiple_Forecasts()
     {
-        
+        var org = await InsertData();
+        var forecast1 = CreateForecast(org);
+        var forecast2 = CreateForecast(org);
+
+        var updatedForecast1 = new Forecast {
+            ConsultantId = forecast1.ConsultantId,
+            Month = forecast1.Month,
+            AdjustedValue = forecast1.AdjustedValue + 5
+        };
+
+        var updatedForecast2 = new Forecast {
+            ConsultantId = forecast2.ConsultantId,
+            Month = forecast2.Month,
+            AdjustedValue = forecast2.AdjustedValue + 8
+        };
+
+        DatabaseContext.Forecasts.Add(forecast1);
+        DatabaseContext.Forecasts.Add(forecast2);
+        await DatabaseContext.SaveChangesAsync(CancellationToken.None);
+        DatabaseContext.ChangeTracker.Clear();
+
+        var repository = new ForecastDbRepository(DatabaseContext);
+        var forecasts = await repository.UpsertForecasts([updatedForecast1, updatedForecast2], CancellationToken.None);
+
+        Assert.Equal(2, forecasts.Length);
+        Assert.Equivalent(updatedForecast1, forecasts[0]);
+        Assert.Equivalent(updatedForecast2, forecasts[1]);
     }
     
     [Fact]
     public async Task Can_Insert_Multiple_Forecasts()
     {
-        
+        var org = await InsertData();
+        var forecast1 = CreateForecast(org);
+        var forecast2 = CreateForecast(org);
+
+        DatabaseContext.ChangeTracker.Clear();
+
+        var repository = new ForecastDbRepository(DatabaseContext);
+        var forecasts = await repository.UpsertForecasts([ forecast1, forecast2 ], CancellationToken.None);
+
+        Assert.Equal(2, forecasts.Length);
+        Assert.Equivalent(forecast1, forecasts[0]);
+        Assert.Equivalent(forecast2, forecasts[1]);
     }
     
     [Fact]
     public async Task Can_Update_And_Insert_Multiple_Forecasts()
     {
-        
+        var org = await InsertData();
+        var forecast1 = CreateForecast(org);
+        var forecast2 = CreateForecast(org);
+
+        var updatedForecast1 = new Forecast {
+            ConsultantId = forecast1.ConsultantId,
+            Month = forecast1.Month,
+            AdjustedValue = forecast1.AdjustedValue + 5
+        };
+
+        DatabaseContext.Forecasts.Add(forecast1);
+        await DatabaseContext.SaveChangesAsync(CancellationToken.None);
+        DatabaseContext.ChangeTracker.Clear();
+
+        var repository = new ForecastDbRepository(DatabaseContext);
+        var forecasts = await repository.UpsertForecasts([ updatedForecast1, forecast2 ], CancellationToken.None);
+
+        Assert.Equal(2, forecasts.Length);
+        Assert.Equivalent(updatedForecast1, forecasts[0]);
+        Assert.Equivalent(forecast2, forecasts[1]);
+
     }
 }
