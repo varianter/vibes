@@ -56,6 +56,10 @@ export default function ConsultantRows({
     }
   }, [consultant.bookings.length, consultant]);
 
+  useEffect(() => {
+    setNewWeekList(weekList);
+  }, [weekList]);
+
   const columnCount = currentConsultant.bookings.length ?? 0;
 
   function toggleListElementVisibility() {
