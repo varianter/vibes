@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using Core.Consultants.Competences;
 using Core.Engagements;
 using Core.Forecasts;
 using Core.Organizations;
@@ -11,7 +12,7 @@ namespace Core.Consultants;
 public class Consultant
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; set; }
+    public int Id { get; init; }
 
     public required string Name { get; set; }
     public required string Email { get; set; }
@@ -25,17 +26,12 @@ public class Consultant
     public int GraduationYear { get; set; }
     public int TransferredVacationDays { get; set; }
 
-    public ICollection<CompetenceConsultant> CompetenceConsultant { get; set; } = new List<CompetenceConsultant>();
-
-    public List<Vacation> Vacations { get; set; } = new();
-
-    public List<PlannedAbsence> PlannedAbsences { get; set; } = new();
-
-    public List<Engagement> Projects { get; set; } = new();
-
-    public List<Staffing> Staffings { get; set; } = new();
-
-    public List<Forecast> Forecasts { get; set; } = new();
+    public List<CompetenceConsultant> CompetenceConsultant { get; set; } = [];
+    public List<Vacation> Vacations { get; set; } = [];
+    public List<PlannedAbsence> PlannedAbsences { get; set; } = [];
+    public List<Engagement> Projects { get; set; } = [];
+    public List<Staffing> Staffings { get; set; } = [];
+    public List<Forecast> Forecasts { get; set; } = [];
 
 
     public int YearsOfExperience
@@ -70,22 +66,6 @@ public class Consultant
         return TotalAvailableVacationDays + TransferredVacationDays - GetUsedVacationDays(day) -
                GetPlannedVacationDays(day);
     }
-}
-
-public class Competence
-{
-    public required string Id { get; set; }
-
-    public required string Name { get; set; }
-    public ICollection<CompetenceConsultant> CompetenceConsultant { get; set; } = new List<CompetenceConsultant>();
-}
-
-public class CompetenceConsultant
-{
-    public int ConsultantId { get; set; }
-    public Consultant? Consultant { get; set; } = null!;
-    public required string CompetencesId { get; set; }
-    public Competence Competence { get; set; } = null!;
 }
 
 public enum Degree

@@ -1,4 +1,5 @@
 using Core.Consultants;
+using Core.Consultants.Competences;
 using Infrastructure.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;

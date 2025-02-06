@@ -1,5 +1,6 @@
 using Api.Consultants;
 using Core.Consultants;
+using Core.Consultants.Competences;
 using Core.Customers;
 using Core.Engagements;
 using Core.Organizations;

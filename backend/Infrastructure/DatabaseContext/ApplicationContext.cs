@@ -1,6 +1,7 @@
 using Core.Absences;
 using Core.Agreements;
 using Core.Consultants;
+using Core.Consultants.Competences;
 using Core.Customers;
 using Core.Engagements;
 using Core.Forecasts;
