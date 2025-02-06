@@ -2,6 +2,7 @@
 import { BookedHoursInMonth, ConsultantWithForecast } from "@/api-types";
 import React, { useState } from "react";
 import { MonthCell } from "./MonthCell";
+import Image from "next/image";
 
 function bookingForMonth(bookings: BookedHoursInMonth[], month: string) {
   const date = new Date(month);
@@ -27,10 +28,20 @@ export default function ForecastRows({
   return (
     <>
       <tr className="h-[52px]">
-        <td>
+        <td colSpan={1} className="w-[15%]">
           <div className="flex justify-start gap-1 items-center">
             <div className="flex flex-row justify-center self-center gap-2 w-3/12">
-              <div className="w-10 h-10 rounded-md bg-primary"></div>
+              {consultant.consultant.imageThumbUrl ? (
+                <Image
+                  src={consultant.consultant.imageThumbUrl}
+                  alt={consultant.consultant.name}
+                  className="w-10 h-10 rounded-md self-center object-contain"
+                  width={32}
+                  height={32}
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-md bg-primary"></div>
+              )}
             </div>
             <div className="flex flex-col gap-1 w-7/12 ">
               <p
