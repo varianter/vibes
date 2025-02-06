@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Core.Consultants.Competences;
+using Core.Consultants.Disciplines;
 using Core.Engagements;
 using Core.Forecasts;
 using Core.Organizations;
@@ -32,6 +33,9 @@ public class Consultant
     public List<Engagement> Projects { get; set; } = [];
     public List<Staffing> Staffings { get; set; } = [];
     public List<Forecast> Forecasts { get; set; } = [];
+
+    public Discipline? Discipline { get; set; }
+    public string? DisciplineId { get; set; }
 
 
     public int YearsOfExperience

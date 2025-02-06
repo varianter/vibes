@@ -1,5 +1,6 @@
 using Api.Common.Types;
 using Core.Consultants;
+using Core.Consultants.Disciplines;
 using Core.Weeks;
 
 // ReSharper disable NotAccessedPositionalProperty.Global
@@ -16,7 +17,8 @@ public record StaffingReadModel(
     Degree Degree,
     List<BookedHoursPerWeek> Bookings,
     List<DetailedBooking> DetailedBooking,
-    bool IsOccupied)
+    bool IsOccupied,
+    Discipline? Discipline)
 {
     public StaffingReadModel(Consultant consultant, List<BookedHoursPerWeek> bookings,
         List<DetailedBooking> detailedBookings, bool IsOccupied)
@@ -31,7 +33,8 @@ public record StaffingReadModel(
             consultant.Degree ?? Degree.Master,
             bookings,
             detailedBookings,
-            IsOccupied
+            IsOccupied,
+            consultant.Discipline
         )
     {
     }

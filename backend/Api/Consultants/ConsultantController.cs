@@ -3,6 +3,7 @@ using Core.Consultants;
 using Core.Organizations;
 using Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -68,6 +69,11 @@ public class ConsultantController(
 
         var consultant = await _storageService.UpdateConsultant(selectedOrg, body, cancellationToken);
 
+        if (consultant is null)
+        {
+            return NotFound($"Could not find consultant with id {body.Id}");
+        }
+
         var responseModel =
             new SingleConsultantReadModel(consultant);
 
@@ -87,5 +93,19 @@ public class ConsultantController(
             new SingleConsultantReadModel(consultant);
 
         return Ok(responseModel);
+    }
+
+    [HttpPut]
+    [Route("{consultantId:int}/discipline")]
+    public async Task<Results<NotFound<string>, Ok<SingleConsultantReadModel>>> UpdateDiscipline(
+        [FromRoute] string orgUrlKey, [FromRoute] int consultantId, [FromQuery] string disciplineId,
+        CancellationToken cancellationToken)
+    {
+        var consultant = await consultantRepository.UpdateDiscipline(consultantId, disciplineId, cancellationToken);
+
+        if (consultant is null)
+            return TypedResults.NotFound($"Could not find consultant with id {consultantId}");
+
+        return TypedResults.Ok(new SingleConsultantReadModel(consultant));
     }
 }
