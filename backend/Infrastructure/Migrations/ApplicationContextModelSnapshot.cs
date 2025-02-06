@@ -45,7 +45,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("Absence", (string)null);
+                    b.ToTable("Absence");
                 });
 
             modelBuilder.Entity("Core.Agreements.Agreement", b =>
@@ -92,7 +92,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("EngagementId");
 
-                    b.ToTable("Agreements", (string)null);
+                    b.ToTable("Agreements");
                 });
 
             modelBuilder.Entity("Core.Consultants.Competence", b =>
@@ -106,7 +106,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Competence", (string)null);
+                    b.ToTable("Competence");
 
                     b.HasData(
                         new
@@ -148,7 +148,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("CompetencesId");
 
-                    b.ToTable("CompetenceConsultant", (string)null);
+                    b.ToTable("CompetenceConsultant");
                 });
 
             modelBuilder.Entity("Core.Consultants.Consultant", b =>
@@ -192,7 +192,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("DepartmentId");
 
-                    b.ToTable("Consultant", (string)null);
+                    b.ToTable("Consultant");
 
                     b.HasData(
                         new
@@ -231,7 +231,7 @@ namespace Infrastructure.Migrations
                     b.HasIndex("OrganizationId", "Name", "IsActive")
                         .IsUnique();
 
-                    b.ToTable("Customer", (string)null);
+                    b.ToTable("Customer");
                 });
 
             modelBuilder.Entity("Core.Engagements.Engagement", b =>
@@ -261,7 +261,7 @@ namespace Infrastructure.Migrations
                     b.HasIndex("CustomerId", "Name")
                         .IsUnique();
 
-                    b.ToTable("Project", (string)null);
+                    b.ToTable("Project");
                 });
 
             modelBuilder.Entity("Core.Forecasts.Forecast", b =>
@@ -277,7 +277,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("ConsultantId", "Month");
 
-                    b.ToTable("Forecasts", (string)null);
+                    b.ToTable("Forecasts");
                 });
 
             modelBuilder.Entity("Core.Organizations.Department", b =>
@@ -301,7 +301,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("Department", (string)null);
+                    b.ToTable("Department");
 
                     b.HasData(
                         new
@@ -340,7 +340,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Organization", (string)null);
+                    b.ToTable("Organization");
 
                     b.HasData(
                         new
@@ -373,7 +373,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ConsultantId");
 
-                    b.ToTable("PlannedAbsence", (string)null);
+                    b.ToTable("PlannedAbsence");
                 });
 
             modelBuilder.Entity("Core.Staffings.Staffing", b =>
@@ -394,7 +394,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ConsultantId");
 
-                    b.ToTable("Staffing", (string)null);
+                    b.ToTable("Staffing");
                 });
 
             modelBuilder.Entity("Core.Vacations.Vacation", b =>
@@ -415,7 +415,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ConsultantId");
 
-                    b.ToTable("Vacation", (string)null);
+                    b.ToTable("Vacation");
                 });
 
             modelBuilder.Entity("Core.Absences.Absence", b =>
@@ -441,7 +441,7 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("EngagementId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.OwnsMany("Core.Agreements.Agreement.Files#Core.Agreements.FileReference", "Files", b1 =>
+                    b.OwnsMany("Core.Agreements.FileReference", "Files", b1 =>
                         {
                             b1.Property<int>("Id")
                                 .ValueGeneratedOnAdd()
@@ -470,7 +470,7 @@ namespace Infrastructure.Migrations
 
                             b1.HasIndex("AgreementId");
 
-                            b1.ToTable("FileReference", (string)null);
+                            b1.ToTable("FileReference");
 
                             b1.WithOwner()
                                 .HasForeignKey("AgreementId");
