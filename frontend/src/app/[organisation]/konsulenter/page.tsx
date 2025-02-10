@@ -20,24 +20,20 @@ export default async function Konsulenter({
 }: {
   params: { organisation: string };
 }) {
-  const consultants: ConsultantReadModel[] =
-    (await fetchEmployeesWithImageAndToken(
-      `${params.organisation}/consultants`,
-    )) ?? [];
-
-  const departments =
-    (await fetchWithToken<DepartmentReadModel[]>(
+  const [consultants, departments, comptences] = await Promise.all([
+    fetchEmployeesWithImageAndToken(`${params.organisation}/consultants`),
+    ,
+    fetchWithToken<DepartmentReadModel[]>(
       `organisations/${params.organisation}/departments`,
-    )) ?? [];
-
-  const comptences =
-    (await fetchWithToken<CompetenceReadModel[]>(`competences`)) ?? [];
+    ),
+    fetchWithToken<CompetenceReadModel[]>(`competences`),
+  ]);
 
   return (
     <ConsultantFilterProvider
-      consultants={consultants}
-      departments={departments}
-      competences={comptences}
+      consultants={consultants ?? []}
+      departments={departments ?? []}
+      competences={comptences ?? []}
       customers={[]}
     >
       <ConsultantsContent />

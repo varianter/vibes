@@ -22,22 +22,20 @@ export default async function Prognose({
   params: { organisation: string };
   searchParams: { selectedWeek?: string; weekSpan?: string };
 }) {
-  const consultantsWithForecasts =
-    (await fetchForecastWithToken(`${params.organisation}/forecasts`)) ?? [];
-
-  const departments =
-    (await fetchWithToken<DepartmentReadModel[]>(
-      `organisations/${params.organisation}/departments`,
-    )) ?? [];
-
-  const competences =
-    (await fetchWithToken<CompetenceReadModel[]>(`competences`)) ?? [];
+  const [consultantsWithForecasts, departments, competences] =
+    await Promise.all([
+      fetchForecastWithToken(`${params.organisation}/forecasts`),
+      fetchWithToken<DepartmentReadModel[]>(
+        `organisations/${params.organisation}/departments`,
+      ),
+      fetchWithToken<CompetenceReadModel[]>(`competences`),
+    ]);
 
   return (
     <ForecastFilterProvider
-      consultants={consultantsWithForecasts}
-      departments={departments}
-      competences={competences}
+      consultants={consultantsWithForecasts ?? []}
+      departments={departments ?? []}
+      competences={competences ?? []}
     >
       <ForecastContent />
     </ForecastFilterProvider>
