@@ -162,7 +162,14 @@ public class ApplicationContext(IOptions<InfrastructureConfig> config) : DbConte
             .HasForeignKey(us => us.CompetencesId);
 
         modelBuilder.Entity<Forecast>()
-            .HasKey(f => new ForecastKey(f.ConsultantId, f.Month));
+            .HasKey(f => new { f.ConsultantId, f.Month });
+
+        /*
+        modelBuilder.Entity<Forecast>()
+            .HasIndex(f => new { f.ConsultantId, f.Month })
+            .IsUnique();
+            */
+
 
         modelBuilder.Entity<Competence>().HasData(new List<Competence>
         {
