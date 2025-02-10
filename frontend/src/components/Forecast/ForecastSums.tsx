@@ -39,7 +39,7 @@ export function ForecastSums({
       {monthlyTotalBillable && (
         <tr>
           <td colSpan={1}>
-            <p className="small-medium text-black">Sum bemanning</p>
+            <p className="small-medium text-black">Sum ordre</p>
           </td>
           {totalBillableHours?.map((totalBillableHour, index) => (
             <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
@@ -55,7 +55,7 @@ export function ForecastSums({
       )}
       <tr>
         <td colSpan={1}>
-          <p className="small-medium text-black">Sum bemanning og tilbud</p>
+          <p className="small-medium text-black">Sum ordre og tilbud</p>
         </td>
         {totalBillableAndOfferedHours.map(
           (totalBillableAndOfferedHour, index) => (

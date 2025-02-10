@@ -23,19 +23,16 @@ export default async function Ferie({
   const email =
     session && session.user && session.user.email ? session.user.email : "";
 
-  const consultant =
-    (await fetchWithToken<ConsultantReadModel>(
+  const [consultant, publicHolidays] = await Promise.all([
+    fetchWithToken<ConsultantReadModel>(
       `${params.organisation}/consultants/${email}`,
-    )) ?? undefined;
+    ),
+    fetchWithToken<string[]>(`${params.organisation}/vacations/publicHolidays`),
+  ]);
 
   const vacationDays =
     (await fetchWithToken<VacationReadModel>(
       `${params.organisation}/vacations/${consultant?.id}/get`,
-    )) ?? undefined;
-
-  const publicHolidays =
-    (await fetchWithToken<string[]>(
-      `${params.organisation}/vacations/publicHolidays`,
     )) ?? undefined;
 
   return (
