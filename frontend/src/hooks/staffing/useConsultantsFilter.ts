@@ -1,31 +1,14 @@
 import { YearRange } from "@/types";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useRawYearsFilter } from "./useRawYearFilter";
 import { useAvailabilityFilter } from "./useAvailabilityFilter";
 import { usePathname } from "next/navigation";
 import { ConsultantReadModel, ProjectWithCustomerModel } from "@/api-types";
 
-async function getNumWorkHours(
-  setNumWorkHours: Function,
-  organisationUrlKey: string,
-) {
-  try {
-    const data = await fetch(
-      `/${organisationUrlKey}/bemanning/api/weeklyWorkHours`,
-      {
-        method: "get",
-      },
-    );
-    const numWeeklyHours = await data.json();
-    setNumWorkHours(numWeeklyHours || 37.5);
-  } catch (e) {
-    console.error("Error fetching number of weekly work hours", e);
-  }
-}
-
 export function useSimpleConsultantsFilter() {
-  const { consultants, setConsultants } = useContext(FilteredContext);
+  const { consultants, setConsultants, activeFilters } =
+    useContext(FilteredContext);
 
   const {
     departmentFilter,
@@ -33,7 +16,7 @@ export function useSimpleConsultantsFilter() {
     searchFilter,
     experienceFromFilter,
     experienceToFilter,
-  } = useContext(FilteredContext).activeFilters;
+  } = activeFilters;
 
   const { filteredYears } = useRawYearsFilter();
   const { availabilityFilterOn } = useAvailabilityFilter();
@@ -56,13 +39,25 @@ export function useSimpleConsultantsFilter() {
 }
 
 export function useConsultantsFilter() {
-  const { consultants } = useContext(FilteredContext);
+  const { consultants, activeFilters } = useContext(FilteredContext);
   const [numWorkHours, setNumWorkHours] = useState<number>(-1);
   const organisationName = usePathname().split("/")[1];
 
-  useEffect(() => {
-    getNumWorkHours(setNumWorkHours, organisationName);
+  const fetchNumWorkHours = useCallback(async () => {
+    try {
+      const data = await fetch(
+        `/${organisationName}/bemanning/api/weeklyWorkHours`,
+      );
+      const numWeeklyHours = await data.json();
+      setNumWorkHours(numWeeklyHours || 37.5);
+    } catch (e) {
+      console.error("Error fetching number of weekly work hours", e);
+    }
   }, [organisationName]);
+
+  useEffect(() => {
+    fetchNumWorkHours();
+  }, [fetchNumWorkHours]);
 
   const {
     departmentFilter,
@@ -70,7 +65,7 @@ export function useConsultantsFilter() {
     searchFilter,
     experienceFromFilter,
     experienceToFilter,
-  } = useContext(FilteredContext).activeFilters;
+  } = activeFilters;
 
   const { filteredYears } = useRawYearsFilter();
   const { availabilityFilterOn } = useAvailabilityFilter();
@@ -119,30 +114,39 @@ export function filterConsultants({
   competenceFilter: string;
   yearFilter: YearRange[];
   consultants: ConsultantReadModel[];
-  availabilityFilterOn: Boolean;
+  availabilityFilterOn: boolean;
   activeExperienceFrom: string;
   activeExperienceTo: string;
 }) {
-  let newFilteredConsultants = consultants;
+  console.time("filterConsultants");
+
+  let newFilteredConsultants = consultants ?? [];
+
   if (search && search.length > 0) {
-    newFilteredConsultants = newFilteredConsultants?.filter((consultant) =>
-      consultant.name.match(new RegExp(`(?<!\\p{L})${search}.*\\b`, "giu")),
+    const searchRegex = new RegExp(`(?<!\\p{L})${search}.*\\b`, "giu");
+
+    newFilteredConsultants = newFilteredConsultants.filter((consultant) =>
+      searchRegex.test(consultant.name),
     );
   }
   if (departmentFilter && departmentFilter.length > 0) {
-    newFilteredConsultants = newFilteredConsultants?.filter((consultant) =>
-      departmentFilter.includes(consultant.department.id),
+    const departmentFilterSet = new Set(departmentFilter);
+    newFilteredConsultants = newFilteredConsultants.filter((consultant) =>
+      departmentFilterSet.has(consultant.department.id),
     );
   }
   if (competenceFilter && competenceFilter.length > 0) {
-    newFilteredConsultants = newFilteredConsultants?.filter((consultant) =>
+    const competenceFilterSet = new Set(
       competenceFilter
         .toLowerCase()
         .split(",")
-        .map((c) => c.trim())
-        .some((c) =>
-          consultant.competences.map((c) => c.id.toLowerCase()).includes(c),
-        ),
+        .map((c) => c.trim()),
+    );
+
+    newFilteredConsultants = newFilteredConsultants.filter((consultant) =>
+      consultant.competences.some((c) =>
+        competenceFilterSet.has(c.id.toLowerCase()),
+      ),
     );
   }
   if (yearFilter.length > 0) {
@@ -160,6 +164,8 @@ export function filterConsultants({
       experienceRange(consultant, activeExperienceFrom, activeExperienceTo),
     );
   }
+  console.timeEnd("filterConsultants");
+
   return newFilteredConsultants;
 }
 
@@ -214,12 +220,12 @@ export function setWeeklyTotalBillable(
       if (weeklyTotalBillable.has(booking.weekNumber)) {
         weeklyTotalBillable.set(
           booking.weekNumber,
-          (weeklyTotalBillable.get(booking.weekNumber) || 0) +
+          (weeklyTotalBillable.get(booking.weekNumber) ?? 0) +
             booking.bookingModel.totalBillable,
         );
         weeklyTotalBillableAndOffered.set(
           booking.weekNumber,
-          (weeklyTotalBillableAndOffered.get(booking.weekNumber) || 0) +
+          (weeklyTotalBillableAndOffered.get(booking.weekNumber) ?? 0) +
             booking.bookingModel.totalBillable +
             booking.bookingModel.totalOffered,
         );
@@ -249,16 +255,16 @@ export function setWeeklyTotalBillableForProject(
 ) {
   const weeklyTotalBillableAndOffered = new Map<number, number>();
 
-  selectedConsultants.map((consultant) => {
+  selectedConsultants.forEach((consultant) => {
     const bookingDetail = consultant.detailedBooking.find(
       (booking) => booking.bookingDetails.projectId === project.projectId,
     );
 
     if (bookingDetail) {
-      bookingDetail.hours.map((weeklyHours) => {
+      bookingDetail.hours.forEach((weeklyHours) => {
         weeklyTotalBillableAndOffered.set(
           weeklyHours.week,
-          (weeklyTotalBillableAndOffered.get(weeklyHours.week) || 0) +
+          (weeklyTotalBillableAndOffered.get(weeklyHours.week) ?? 0) +
             weeklyHours.hours,
         );
       });
