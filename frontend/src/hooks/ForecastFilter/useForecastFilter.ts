@@ -123,8 +123,6 @@ export function filterConsultants({
   activeExperienceFrom: string;
   activeExperienceTo: string;
 }) {
-  console.time("filterForecasts");
-
   const yearFilterOn = yearFilter.length > 0;
   const competenceFilterOn = competenceFilter && competenceFilter.length > 0;
   const departmentFilterOn = departmentFilter && departmentFilter.length > 0;
@@ -218,8 +216,6 @@ export function filterConsultants({
 
     return true;
   });
-
-  console.timeEnd("filterForecasts");
 
   return newFilteredConsultants;
 }

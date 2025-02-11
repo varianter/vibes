@@ -118,8 +118,6 @@ export function filterConsultants({
   activeExperienceFrom: string;
   activeExperienceTo: string;
 }) {
-  console.time("filterConsultants");
-
   let newFilteredConsultants = consultants ?? [];
 
   if (search && search.length > 0) {
@@ -164,7 +162,6 @@ export function filterConsultants({
       experienceRange(consultant, activeExperienceFrom, activeExperienceTo),
     );
   }
-  console.timeEnd("filterConsultants");
 
   return newFilteredConsultants;
 }
