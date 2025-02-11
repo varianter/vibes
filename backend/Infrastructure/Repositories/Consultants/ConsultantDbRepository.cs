@@ -33,7 +33,7 @@ public class ConsultantDbRepository(ApplicationContext context) : IConsultantRep
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<Consultant?> UpdateDiscipline(int consultantId, string disciplineId,
+    public async Task<Consultant?> UpdateDiscipline(int consultantId, string? disciplineId,
         CancellationToken cancellationToken)
     {
         var affectedRows = await context.Consultant.Where(c => c.Id == consultantId)

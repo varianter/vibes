@@ -98,7 +98,7 @@ public class ConsultantController(
     [HttpPut]
     [Route("{consultantId:int}/discipline")]
     public async Task<Results<NotFound<string>, Ok<SingleConsultantReadModel>>> UpdateDiscipline(
-        [FromRoute] string orgUrlKey, [FromRoute] int consultantId, [FromQuery] string disciplineId,
+        [FromRoute] string orgUrlKey, [FromRoute] int consultantId, [FromQuery] string? disciplineId,
         CancellationToken cancellationToken)
     {
         var consultant = await consultantRepository.UpdateDiscipline(consultantId, disciplineId, cancellationToken);
