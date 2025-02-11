@@ -128,7 +128,9 @@ export function filterConsultants({
     );
   }
   if (departmentFilter && departmentFilter.length > 0) {
-    const departmentFilterSet = new Set(departmentFilter);
+    const departmentFilterSet = new Set(
+      departmentFilter.toLowerCase().split(","),
+    );
     newFilteredConsultants = newFilteredConsultants.filter((consultant) =>
       departmentFilterSet.has(consultant.department.id),
     );
