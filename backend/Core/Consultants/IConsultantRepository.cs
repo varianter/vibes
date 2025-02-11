@@ -14,5 +14,5 @@ public interface IConsultantRepository
 
     Task<List<Consultant>> GetConsultantsInOrganizationByUrlKey(string urlKey, CancellationToken cancellationToken);
 
-    Task<Consultant?> UpdateDiscipline(int consultantId, string disciplineId, CancellationToken cancellationToken);
+    Task<Consultant?> UpdateDiscipline(int consultantId, string? disciplineId, CancellationToken cancellationToken);
 }
