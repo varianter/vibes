@@ -66,7 +66,7 @@ export default function StaffingSums({
       {weeklyInvoiceRatesArray && (
         <tr>
           <td colSpan={2}>
-            <p className="small-medium text-black">Fakureringsgrad</p>
+            <p className="small-medium text-black">Faktureringsgrad</p>
           </td>
           {weeklyInvoiceRatesArray.map((indexRates, index) => (
             <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">

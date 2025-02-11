@@ -90,7 +90,7 @@ export function ForecastSums({
       {monthlyInvoiceRatesArray && (
         <tr>
           <td colSpan={1}>
-            <p className="small-medium text-black">Fakureringsgrad</p>
+            <p className="small-medium text-black">Faktureringsgrad</p>
           </td>
           {monthlyInvoiceRatesArray.map((indexRates, index) => (
             <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
