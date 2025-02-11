@@ -70,6 +70,26 @@ export function useConsultantsFilter() {
   const { filteredYears } = useRawYearsFilter();
   const { availabilityFilterOn } = useAvailabilityFilter();
 
+  function test() {
+    console.time("filtertest");
+    for (let step = 0; step < 100000; step++) {
+      filterConsultants({
+        search: searchFilter,
+        departmentFilter,
+        competenceFilter,
+        yearFilter: filteredYears,
+        consultants,
+        availabilityFilterOn,
+        activeExperienceFrom: experienceFromFilter,
+        activeExperienceTo: experienceToFilter,
+      });
+      if (step === 99999) {
+        console.timeEnd("filtertest");
+      }
+    }
+  }
+
+  test();
   const filteredConsultants = filterConsultants({
     search: searchFilter,
     departmentFilter,
@@ -118,8 +138,6 @@ export function filterConsultants({
   activeExperienceFrom: string;
   activeExperienceTo: string;
 }) {
-  console.time("filterConsultants");
-
   let newFilteredConsultants = consultants ?? [];
 
   if (search && search.length > 0) {
@@ -130,7 +148,7 @@ export function filterConsultants({
     );
   }
   if (departmentFilter && departmentFilter.length > 0) {
-    const departmentFilterSet = new Set(departmentFilter);
+    const departmentFilterSet = new Set(departmentFilter.split(","));
     newFilteredConsultants = newFilteredConsultants.filter((consultant) =>
       departmentFilterSet.has(consultant.department.id),
     );
@@ -164,7 +182,6 @@ export function filterConsultants({
       experienceRange(consultant, activeExperienceFrom, activeExperienceTo),
     );
   }
-  console.timeEnd("filterConsultants");
 
   return newFilteredConsultants;
 }

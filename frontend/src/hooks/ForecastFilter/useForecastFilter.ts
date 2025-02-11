@@ -72,6 +72,26 @@ export function useForecastFilter() {
   const { filteredYears } = useRawYearsFilter(FilteredForecastContext);
   const { availabilityFilterOn } = useAvailabilityFilter();
 
+  function test() {
+    console.time("filtertest");
+    for (let step = 0; step < 100000; step++) {
+      filterConsultants({
+        search: searchFilter,
+        departmentFilter,
+        competenceFilter,
+        yearFilter: filteredYears,
+        consultants,
+        availabilityFilterOn,
+        activeExperienceFrom: experienceFromFilter,
+        activeExperienceTo: experienceToFilter,
+      });
+      if (step === 99999) {
+        console.timeEnd("filtertest");
+      }
+    }
+  }
+
+  test();
   const filteredConsultants = filterConsultants({
     search: searchFilter,
     departmentFilter,
@@ -123,8 +143,6 @@ export function filterConsultants({
   activeExperienceFrom: string;
   activeExperienceTo: string;
 }) {
-  console.time("filterForecasts");
-
   const yearFilterOn = yearFilter.length > 0;
   const competenceFilterOn = competenceFilter && competenceFilter.length > 0;
   const departmentFilterOn = departmentFilter && departmentFilter.length > 0;
@@ -134,7 +152,7 @@ export function filterConsultants({
 
   const startExp = parseInt(activeExperienceFrom);
   const endExp = parseInt(activeExperienceTo);
-  const departmentFilterSet = new Set(departmentFilter);
+  const departmentFilterSet = new Set(departmentFilter.split(","));
   const competenceFilterSet = new Set(
     competenceFilter
       .toLowerCase()
@@ -218,8 +236,6 @@ export function filterConsultants({
 
     return true;
   });
-
-  console.timeEnd("filterForecasts");
 
   return newFilteredConsultants;
 }
