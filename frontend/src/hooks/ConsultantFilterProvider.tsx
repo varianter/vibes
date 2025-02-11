@@ -127,7 +127,7 @@ function useUrlRouteFilter(): [StaffingFilters, UpdateFilters] {
     searchParams.get("experienceToFilter") || "",
   );
   const [availabilityFilter, setAvailabilityFilter] = useState<boolean>(
-    !!searchParams.get("availabilityFilter") || false,
+    searchParams.get("availabilityFilter") === "true",
   );
   const [selectedWeek, setSelectedWeek] = useState(
     parseYearWeekFromUrlString(searchParams.get("selectedWeek") || undefined),
