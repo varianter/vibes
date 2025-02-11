@@ -19,34 +19,30 @@ export default async function Project({
   params: { organisation: string; project: string };
   searchParams: { selectedWeek?: string; weekSpan?: string };
 }) {
-  const project =
-    (await fetchWithToken<ProjectWithCustomerModel>(
-      `${params.organisation}/projects/get/${params.project}`,
-    )) ?? undefined;
-
   const selectedWeek = parseYearWeekFromUrlString(
     searchParams.selectedWeek || undefined,
   );
   const weekSpan = searchParams.weekSpan || undefined;
-
-  const numWorkHours =
-    (await fetchWorkHoursPerWeek(params.organisation)) || 37.5;
-
-  const consultants =
-    (await fetchEmployeesWithImageAndToken(
+  const [project, numWorkHours, consultants] = await Promise.all([
+    fetchWithToken<ProjectWithCustomerModel>(
+      `${params.organisation}/projects/get/${params.project}`,
+    ),
+    fetchWorkHoursPerWeek(params.organisation),
+    fetchEmployeesWithImageAndToken(
       `${params.organisation}/staffings${
         selectedWeek
           ? `?Year=${selectedWeek.year}&Week=${selectedWeek.weekNumber}`
           : ""
       }${weekSpan ? `${selectedWeek ? "&" : "?"}WeekSpan=${weekSpan}` : ""}`,
-    )) ?? [];
+    ),
+  ]);
 
   const isInternalProject = project?.customerName === INTERNAL_CUSTOMER_NAME;
 
   if (project) {
     return (
       <ConsultantFilterProvider
-        consultants={consultants}
+        consultants={consultants ?? []}
         departments={[]}
         competences={[]}
         customers={[]}
@@ -67,7 +63,10 @@ export default async function Project({
             <h2>{project.customerName}</h2>
           </div>
 
-          <EditEngagementHour project={project} numWorkHours={numWorkHours} />
+          <EditEngagementHour
+            project={project}
+            numWorkHours={numWorkHours ?? 37.5}
+          />
 
           {project ? <AgreementEdit project={project} /> : null}
         </div>

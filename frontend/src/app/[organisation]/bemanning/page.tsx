@@ -29,35 +29,28 @@ export default async function Bemanning({
     searchParams.selectedWeek || undefined,
   );
   const weekSpan = searchParams.weekSpan || undefined;
-
-  const consultants =
-    (await fetchEmployeesWithImageAndToken(
+  const [consultants, departments, competences, customers] = await Promise.all([
+    fetchEmployeesWithImageAndToken(
       `${params.organisation}/staffings${
         selectedWeek
           ? `?Year=${selectedWeek.year}&Week=${selectedWeek.weekNumber}`
           : ""
       }${weekSpan ? `${selectedWeek ? "&" : "?"}WeekSpan=${weekSpan}` : ""}`,
-    )) ?? [];
-
-  const departments =
-    (await fetchWithToken<DepartmentReadModel[]>(
+    ),
+    fetchWithToken<DepartmentReadModel[]>(
       `organisations/${params.organisation}/departments`,
-    )) ?? [];
-
-  const competences =
-    (await fetchWithToken<CompetenceReadModel[]>(`competences`)) ?? [];
-
-  const customers =
-    (await fetchWithToken<EngagementPerCustomerReadModel[]>(
+    ),
+    fetchWithToken<CompetenceReadModel[]>(`competences`),
+    fetchWithToken<EngagementPerCustomerReadModel[]>(
       `${params.organisation}/projects`,
-    )) ?? [];
-
+    ),
+  ]);
   return (
     <ConsultantFilterProvider
-      consultants={consultants}
-      departments={departments}
-      competences={competences}
-      customers={customers}
+      consultants={consultants ?? []}
+      departments={departments ?? []}
+      competences={competences ?? []}
+      customers={customers ?? []}
     >
       <StaffingContent />
     </ConsultantFilterProvider>
