@@ -70,28 +70,10 @@ export function useForecastFilter() {
   } = activeFilters;
 
   const { filteredYears } = useRawYearsFilter(FilteredForecastContext);
-  const { availabilityFilterOn } = useAvailabilityFilter();
+  const { availabilityFilterOn } = useAvailabilityFilter(
+    FilteredForecastContext,
+  );
 
-  function test() {
-    console.time("filtertest");
-    for (let step = 0; step < 100000; step++) {
-      filterConsultants({
-        search: searchFilter,
-        departmentFilter,
-        competenceFilter,
-        yearFilter: filteredYears,
-        consultants,
-        availabilityFilterOn,
-        activeExperienceFrom: experienceFromFilter,
-        activeExperienceTo: experienceToFilter,
-      });
-      if (step === 99999) {
-        console.timeEnd("filtertest");
-      }
-    }
-  }
-
-  test();
   const filteredConsultants = filterConsultants({
     search: searchFilter,
     departmentFilter,
@@ -143,103 +125,100 @@ export function filterConsultants({
   activeExperienceFrom: string;
   activeExperienceTo: string;
 }) {
-  const yearFilterOn = yearFilter.length > 0;
-  const competenceFilterOn = competenceFilter && competenceFilter.length > 0;
-  const departmentFilterOn = departmentFilter && departmentFilter.length > 0;
-  const searchFilterOn = search && search.length > 0;
-  const experienceFilterOn =
-    activeExperienceFrom != "" || activeExperienceTo != "";
+  let anyFilterActive = [
+    search,
+    departmentFilter,
+    competenceFilter,
+    activeExperienceFrom,
+    activeExperienceTo,
+    availabilityFilterOn,
+  ].some((filter) => filter);
+  let newFilteredConsultants = consultants ?? [];
 
-  const startExp = parseInt(activeExperienceFrom);
-  const endExp = parseInt(activeExperienceTo);
-  const departmentFilterSet = new Set(departmentFilter.split(","));
-  const competenceFilterSet = new Set(
-    competenceFilter
-      .toLowerCase()
-      .split(",")
-      .map((c) => c.trim()),
-  );
+  if (anyFilterActive || yearFilter.length > 0) {
+    if (search && search.length > 0) {
+      const searchRegex = new RegExp(`(?<!\\p{L})${search}.*\\b`, "giu");
 
-  const searchRegex = searchFilterOn
-    ? new RegExp(`(?<!\\p{L})${search}.*\\b`, "giu")
-    : null;
+      newFilteredConsultants = newFilteredConsultants.filter((consultant) =>
+        searchRegex.test(consultant.consultant.name),
+      );
+    }
+    if (departmentFilter && departmentFilter.length > 0) {
+      const departmentFilterSet = new Set(departmentFilter.split(","));
+      newFilteredConsultants = newFilteredConsultants.filter((consultant) =>
+        departmentFilterSet.has(consultant.consultant.department.id),
+      );
+    }
+    if (competenceFilter && competenceFilter.length > 0) {
+      const competenceFilterSet = new Set(
+        competenceFilter
+          .toLowerCase()
+          .split(",")
+          .map((c) => c.trim()),
+      );
 
-  function inYearRanges(
-    consultant: SingleConsultantReadModel,
-    yearRanges: YearRange[],
-  ) {
-    return yearRanges.some(
-      (range) =>
-        consultant.yearsOfExperience >= range.start &&
-        (!range.end || consultant.yearsOfExperience <= range.end),
-    );
+      newFilteredConsultants = newFilteredConsultants.filter((consultant) =>
+        consultant.consultant.competences.some((c) =>
+          competenceFilterSet.has(c.id.toLowerCase()),
+        ),
+      );
+    }
+    if (yearFilter.length > 0) {
+      newFilteredConsultants = newFilteredConsultants.filter((consultant) =>
+        inYearRanges(consultant, yearFilter),
+      );
+    }
+    if (availabilityFilterOn) {
+      newFilteredConsultants = newFilteredConsultants.filter(
+        (consultant) => consultant.consultantIsAvailable,
+      );
+    }
+    if (activeExperienceFrom != "" || activeExperienceTo != "") {
+      newFilteredConsultants = newFilteredConsultants.filter((consultant) =>
+        experienceRange(consultant, activeExperienceFrom, activeExperienceTo),
+      );
+    }
   }
-
-  function experienceRange(
-    consultant: ConsultantWithForecast,
-    experienceFrom: string,
-    experienceTo: string,
-  ) {
-    const start = parseInt(experienceFrom);
-    const end = parseInt(experienceTo);
-
-    return (
-      (Number.isNaN(start) ||
-        consultant.consultant.yearsOfExperience >= start) &&
-      (Number.isNaN(end) || consultant.consultant.yearsOfExperience <= end)
-    );
-  }
-
-  const newFilteredConsultants = consultants.filter((consultant) => {
-    const { consultantIsAvailable, consultant: details } = consultant;
-
-    if (availabilityFilterOn && !consultantIsAvailable) {
-      return false;
-    }
-
-    if (searchFilterOn && searchRegex && !searchRegex.test(details.name)) {
-      return false;
-    }
-
-    if (departmentFilterOn && !departmentFilterSet.has(details.department.id)) {
-      return false;
-    }
-
-    if (experienceFilterOn) {
-      const years = details.yearsOfExperience;
-      if (
-        (!Number.isNaN(startExp) && years < startExp) ||
-        (!Number.isNaN(endExp) && years > endExp)
-      )
-        return false;
-    }
-
-    if (
-      yearFilterOn &&
-      !yearFilter.some(
-        ({ start, end }) =>
-          details.yearsOfExperience >= start &&
-          (!end || details.yearsOfExperience <= end),
-      )
-    ) {
-      return false;
-    }
-
-    if (
-      competenceFilterOn &&
-      !details.competences.some((c) =>
-        competenceFilterSet.has(c.id.toLowerCase()),
-      )
-    ) {
-      return false;
-    }
-
-    return true;
-  });
 
   return newFilteredConsultants;
 }
 
+function experienceRange(
+  consultant: ConsultantWithForecast,
+  experienceFrom: string,
+  experienceTo: string,
+) {
+  const experienceRange = {
+    start: parseInt(experienceFrom),
+    end: parseInt(experienceTo),
+  };
+  let currentConsultant = consultant.consultant;
+  if (
+    (Number.isNaN(experienceRange.start) ||
+      currentConsultant.yearsOfExperience >= experienceRange.start) &&
+    (Number.isNaN(experienceRange.end) ||
+      currentConsultant.yearsOfExperience <= experienceRange.end)
+  )
+    return true;
+  else {
+    return false;
+  }
+}
+
+function inYearRanges(
+  consultant: ConsultantWithForecast,
+  yearRanges: YearRange[],
+) {
+  let currentConsultant = consultant.consultant;
+  for (const range of yearRanges) {
+    if (
+      currentConsultant.yearsOfExperience >= range.start &&
+      (!range.end || currentConsultant.yearsOfExperience <= range.end)
+    )
+      return true;
+  }
+  return false;
+}
 interface MonthlyTotal {
   monthlyTotalBillable: Map<number, number>;
   monthlyTotalBillableAndOffered: Map<number, number>;
