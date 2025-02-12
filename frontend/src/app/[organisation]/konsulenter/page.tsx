@@ -20,9 +20,8 @@ export default async function Konsulenter({
 }: {
   params: { organisation: string };
 }) {
-  const [consultants, departments, comptences] = await Promise.all([
+  const [consultants, departments, competences] = await Promise.all([
     fetchEmployeesWithImageAndToken(`${params.organisation}/consultants`),
-    ,
     fetchWithToken<DepartmentReadModel[]>(
       `organisations/${params.organisation}/departments`,
     ),
@@ -33,7 +32,7 @@ export default async function Konsulenter({
     <ConsultantFilterProvider
       consultants={consultants ?? []}
       departments={departments ?? []}
-      competences={comptences ?? []}
+      competences={competences ?? []}
       customers={[]}
     >
       <ConsultantsContent />
