@@ -30,6 +30,7 @@ export type ForecastContextType = {
   setIsDisabledHotkeys: React.Dispatch<React.SetStateAction<boolean>>;
   activeFilters: ForecastFilters;
   updateFilters: UpdateFilters;
+  numWorkHours: number;
 };
 
 export const FilteredForecastContext = createContext<ForecastContextType>({
@@ -41,6 +42,7 @@ export const FilteredForecastContext = createContext<ForecastContextType>({
   setIsDisabledHotkeys: () => {},
   activeFilters: defaultFilters,
   updateFilters: () => null,
+  numWorkHours: 0,
 });
 
 export function ForecastFilterProvider(props: {
@@ -48,11 +50,12 @@ export function ForecastFilterProvider(props: {
   departments: DepartmentReadModel[];
   competences: CompetenceReadModel[];
   children: ReactNode;
+  numWorkHours: number;
 }) {
   const [isDisabledHotkeys, setIsDisabledHotkeys] = useState(false);
   const [consultants, setConsultants] = useState(props.consultants ?? []);
   const [activeFilters, updateFilters] = useUrlRouteFilter();
-
+  const numWorkHours = props.numWorkHours;
   useEffect(() => setConsultants(props.consultants), [props.consultants]);
 
   return (
@@ -65,6 +68,7 @@ export function ForecastFilterProvider(props: {
         setConsultants,
         activeFilters,
         updateFilters,
+        numWorkHours,
       }}
     >
       {props.children}

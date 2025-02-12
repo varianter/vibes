@@ -3,7 +3,7 @@
 import StaffingSidebar from "@/components/StaffingSidebar";
 import FilteredConsultantsList from "@/components/FilteredConsultantsList";
 import InfoPillDescriptions from "@/components/Staffing/InfoPillDescriptions";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import IconActionButton from "@/components/Buttons/IconActionButton";
 import { Filter } from "react-feather";
 import ActiveFilters from "@/components/ActiveFilters";

@@ -33,6 +33,7 @@ export type FilterContextType = {
   setIsDisabledHotkeys: React.Dispatch<React.SetStateAction<boolean>>;
   activeFilters: StaffingFilters;
   updateFilters: UpdateFilters;
+  numWorkHours: number;
 };
 
 export const FilteredContext = createContext<FilterContextType>({
@@ -45,6 +46,7 @@ export const FilteredContext = createContext<FilterContextType>({
   setIsDisabledHotkeys: () => {},
   activeFilters: defaultFilters,
   updateFilters: () => null,
+  numWorkHours: 0,
 });
 
 export function ConsultantFilterProvider(props: {
@@ -52,11 +54,13 @@ export function ConsultantFilterProvider(props: {
   departments: DepartmentReadModel[];
   competences: CompetenceReadModel[];
   customers: EngagementPerCustomerReadModel[];
+  numWorkHours: number;
   children: ReactNode;
 }) {
   const [isDisabledHotkeys, setIsDisabledHotkeys] = useState(false);
   const [consultants, setConsultants] = useState(props.consultants ?? []);
   const [activeFilters, updateFilters] = useUrlRouteFilter();
+  const numWorkHours = props.numWorkHours;
 
   useEffect(() => setConsultants(props.consultants), [props.consultants]);
 
@@ -70,6 +74,7 @@ export function ConsultantFilterProvider(props: {
         setConsultants,
         activeFilters,
         updateFilters,
+        numWorkHours,
       }}
     >
       {props.children}
