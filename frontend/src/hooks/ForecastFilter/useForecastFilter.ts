@@ -1,35 +1,15 @@
 import { YearRange } from "@/types";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useRawYearsFilter } from "../staffing/useRawYearFilter";
 import { useAvailabilityFilter } from "../staffing/useAvailabilityFilter";
 import { usePathname } from "next/navigation";
-import {
-  ConsultantWithForecast,
-  ForecastForMonth,
-  SingleConsultantReadModel,
-} from "@/api-types";
+import { ConsultantWithForecast, SingleConsultantReadModel } from "@/api-types";
 import { FilteredForecastContext } from "./ForecastFilterProvider";
 
-async function getNumWorkHours(
-  setNumWorkHours: Function,
-  organisationUrlKey: string,
-) {
-  try {
-    const data = await fetch(
-      `/${organisationUrlKey}/bemanning/api/weeklyWorkHours`,
-      {
-        method: "get",
-      },
-    );
-    const numWeeklyHours = await data.json();
-    setNumWorkHours(numWeeklyHours || 37.5);
-  } catch (e) {
-    console.error("Error fetching number of weekly work hours", e);
-  }
-}
-
 export function useSimpleForecastFilter() {
-  const { consultants, setConsultants } = useContext(FilteredForecastContext);
+  const { consultants, setConsultants, activeFilters } = useContext(
+    FilteredForecastContext,
+  );
 
   const {
     departmentFilter,
@@ -37,8 +17,7 @@ export function useSimpleForecastFilter() {
     searchFilter,
     experienceFromFilter,
     experienceToFilter,
-    startDate,
-  } = useContext(FilteredForecastContext).activeFilters;
+  } = activeFilters;
 
   const { filteredYears } = useRawYearsFilter(FilteredForecastContext);
   const { availabilityFilterOn } = useAvailabilityFilter();
@@ -61,14 +40,26 @@ export function useSimpleForecastFilter() {
 }
 
 export function useForecastFilter() {
-  const { consultants } = useContext(FilteredForecastContext);
+  const { consultants, activeFilters } = useContext(FilteredForecastContext);
 
   const [numWorkHours, setNumWorkHours] = useState<number>(-1);
   const organisationName = usePathname().split("/")[1];
 
-  useEffect(() => {
-    getNumWorkHours(setNumWorkHours, organisationName);
+  const fetchNumWorkHours = useCallback(async () => {
+    try {
+      const data = await fetch(
+        `/${organisationName}/bemanning/api/weeklyWorkHours`,
+      );
+      const numWeeklyHours = await data.json();
+      setNumWorkHours(numWeeklyHours || 37.5);
+    } catch (e) {
+      console.error("Error fetching number of weekly work hours", e);
+    }
   }, [organisationName]);
+
+  useEffect(() => {
+    fetchNumWorkHours();
+  }, [fetchNumWorkHours]);
 
   const {
     departmentFilter,
@@ -76,11 +67,12 @@ export function useForecastFilter() {
     searchFilter,
     experienceFromFilter,
     experienceToFilter,
-    startDate,
-  } = useContext(FilteredForecastContext).activeFilters;
+  } = activeFilters;
 
   const { filteredYears } = useRawYearsFilter(FilteredForecastContext);
-  const { availabilityFilterOn } = useAvailabilityFilter();
+  const { availabilityFilterOn } = useAvailabilityFilter(
+    FilteredForecastContext,
+  );
 
   const filteredConsultants = filterConsultants({
     search: searchFilter,
@@ -129,92 +121,104 @@ export function filterConsultants({
   competenceFilter: string;
   yearFilter: YearRange[];
   consultants: ConsultantWithForecast[];
-  availabilityFilterOn: Boolean;
+  availabilityFilterOn: boolean;
   activeExperienceFrom: string;
   activeExperienceTo: string;
 }) {
-  const newFilteredConsultants: ConsultantWithForecast[] = [];
+  let anyFilterActive = [
+    search,
+    departmentFilter,
+    competenceFilter,
+    activeExperienceFrom,
+    activeExperienceTo,
+    availabilityFilterOn,
+  ].some((filter) => filter);
+  let newFilteredConsultants = consultants ?? [];
 
-  function filterCompetence(
-    competenceFilter: string,
-    consultant: ConsultantWithForecast,
-  ) {
-    return competenceFilter
-      .toLowerCase()
-      .split(",")
-      .map((c) => c.trim())
-      .some((c) =>
-        consultant.consultant.competences
-          .map((c) => c.id.toLowerCase())
-          .includes(c),
+  if (anyFilterActive || yearFilter.length > 0) {
+    if (search && search.length > 0) {
+      const searchRegex = new RegExp(`(?<!\\p{L})${search}.*\\b`, "giu");
+
+      newFilteredConsultants = newFilteredConsultants.filter((consultant) =>
+        searchRegex.test(consultant.consultant.name),
       );
-  }
-  function inYearRanges(
-    consultant: SingleConsultantReadModel,
-    yearRanges: YearRange[],
-  ) {
-    for (const range of yearRanges) {
-      if (
-        consultant.yearsOfExperience >= range.start &&
-        (!range.end || consultant.yearsOfExperience <= range.end)
-      )
-        return true;
     }
-    return false;
-  }
+    if (departmentFilter && departmentFilter.length > 0) {
+      const departmentFilterSet = new Set(departmentFilter.split(","));
+      newFilteredConsultants = newFilteredConsultants.filter((consultant) =>
+        departmentFilterSet.has(consultant.consultant.department.id),
+      );
+    }
+    if (competenceFilter && competenceFilter.length > 0) {
+      const competenceFilterSet = new Set(
+        competenceFilter
+          .toLowerCase()
+          .split(",")
+          .map((c) => c.trim()),
+      );
 
-  function experienceRange(
-    consultant: ConsultantWithForecast,
-    experienceFrom: string,
-    experienceTo: string,
-  ) {
-    const experienceRange = {
-      start: parseInt(experienceFrom),
-      end: parseInt(experienceTo),
-    };
-    if (
-      (Number.isNaN(experienceRange.start) ||
-        consultant.consultant.yearsOfExperience >= experienceRange.start) &&
-      (Number.isNaN(experienceRange.end) ||
-        consultant.consultant.yearsOfExperience <= experienceRange.end)
-    )
-      return true;
-    else {
-      return false;
+      newFilteredConsultants = newFilteredConsultants.filter((consultant) =>
+        consultant.consultant.competences.some((c) =>
+          competenceFilterSet.has(c.id.toLowerCase()),
+        ),
+      );
+    }
+    if (yearFilter.length > 0) {
+      newFilteredConsultants = newFilteredConsultants.filter((consultant) =>
+        inYearRanges(consultant, yearFilter),
+      );
+    }
+    if (availabilityFilterOn) {
+      newFilteredConsultants = newFilteredConsultants.filter(
+        (consultant) => consultant.consultantIsAvailable,
+      );
+    }
+    if (activeExperienceFrom != "" || activeExperienceTo != "") {
+      newFilteredConsultants = newFilteredConsultants.filter((consultant) =>
+        experienceRange(consultant, activeExperienceFrom, activeExperienceTo),
+      );
     }
   }
-
-  consultants.forEach((consultant) => {
-    if (
-      (availabilityFilterOn && !consultant.consultantIsAvailable) ||
-      ((activeExperienceFrom != "" || activeExperienceTo != "") &&
-        !experienceRange(
-          consultant,
-          activeExperienceFrom,
-          activeExperienceTo,
-        )) ||
-      (yearFilter.length > 0 &&
-        !inYearRanges(consultant.consultant, yearFilter)) ||
-      (competenceFilter &&
-        competenceFilter.length > 0 &&
-        !filterCompetence(competenceFilter, consultant)) ||
-      (departmentFilter &&
-        departmentFilter.length > 0 &&
-        !departmentFilter.includes(consultant.consultant.department.id)) ||
-      (search &&
-        search.length > 0 &&
-        !consultant.consultant.name.match(
-          new RegExp(`(?<!\\p{L})${search}.*\\b`, "giu"),
-        ))
-    )
-      return;
-
-    newFilteredConsultants.push(consultant);
-  });
 
   return newFilteredConsultants;
 }
 
+function experienceRange(
+  consultant: ConsultantWithForecast,
+  experienceFrom: string,
+  experienceTo: string,
+) {
+  const experienceRange = {
+    start: parseInt(experienceFrom),
+    end: parseInt(experienceTo),
+  };
+  let currentConsultant = consultant.consultant;
+  if (
+    (Number.isNaN(experienceRange.start) ||
+      currentConsultant.yearsOfExperience >= experienceRange.start) &&
+    (Number.isNaN(experienceRange.end) ||
+      currentConsultant.yearsOfExperience <= experienceRange.end)
+  )
+    return true;
+  else {
+    return false;
+  }
+}
+
+function inYearRanges(
+  consultant: ConsultantWithForecast,
+  yearRanges: YearRange[],
+) {
+  let currentConsultant = consultant.consultant;
+  for (const range of yearRanges) {
+    if (
+      currentConsultant.yearsOfExperience >= range.start &&
+      (!range.end || currentConsultant.yearsOfExperience <= range.end)
+    )
+      return true;
+  }
+  return false;
+}
 interface MonthlyTotal {
   monthlyTotalBillable: Map<number, number>;
   monthlyTotalBillableAndOffered: Map<number, number>;
@@ -229,23 +233,22 @@ function setMonthlyForecastSum(
 ): Map<number, number> {
   const monthlyForecastSums = new Map<number, number>();
 
-  filteredConsultants.forEach((consultant) => {
-    consultant.forecasts.forEach((forecast: ForecastForMonth) => {
-      let month = getMonth(forecast.month);
-      if (monthlyForecastSums.has(month)) {
-        const existingSum = monthlyForecastSums.get(month) || 0;
-        monthlyForecastSums.set(
-          month,
-          existingSum + forecast.displayedPercentage,
-        );
-      } else {
-        monthlyForecastSums.set(month, forecast.displayedPercentage);
-      }
+  if (filteredConsultants.length == 0) return monthlyForecastSums;
+
+  filteredConsultants.forEach(({ forecasts }) => {
+    forecasts.forEach(({ month, displayedPercentage }) => {
+      let monthIndex = getMonth(month);
+      monthlyForecastSums.set(
+        monthIndex,
+        (monthlyForecastSums.get(monthIndex) ?? 0) + displayedPercentage,
+      );
     });
   });
+
   monthlyForecastSums.forEach((value, key) => {
     monthlyForecastSums.set(key, value / filteredConsultants.length);
   });
+
   return monthlyForecastSums;
 }
 
@@ -261,12 +264,12 @@ export function setMonthlyTotalBillable(
       if (monthlyTotalBillable.has(month)) {
         monthlyTotalBillable.set(
           month,
-          (monthlyTotalBillable.get(month) || 0) +
+          (monthlyTotalBillable.get(month) ?? 0) +
             booking.bookingModel.totalBillable,
         );
         monthlyTotalBillableAndOffered.set(
           month,
-          (monthlyTotalBillableAndOffered.get(month) || 0) +
+          (monthlyTotalBillableAndOffered.get(month) ?? 0) +
             booking.bookingModel.totalBillable +
             booking.bookingModel.totalOffered,
         );
@@ -298,7 +301,7 @@ function setMonthlyForecastHours(filterConsultants: ConsultantWithForecast[]) {
           ? forecast.billableHours
           : (forecast.displayedPercentage / 100) * forecast.salariedHours;
       if (monthlyForecastHours.has(month)) {
-        const totalHours = monthlyForecastHours.get(month) || 0;
+        const totalHours = monthlyForecastHours.get(month) ?? 0;
         monthlyForecastHours.set(month, totalHours + hours);
       } else {
         monthlyForecastHours.set(month, hours);
