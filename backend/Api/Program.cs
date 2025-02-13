@@ -50,10 +50,11 @@ app.MapControllers();
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("v0/swagger.json", "Vibes Backend API");
-    c.OAuthClientId(adOptions.ClientId);
-    c.OAuthUsePkce();
-    c.OAuthScopeSeparator(" ");
+  c.SwaggerEndpoint("v0/swagger.json", "Vibes Backend API");
+  c.EnableTryItOutByDefault();
+  c.OAuthClientId(adOptions.ClientId);
+  c.OAuthUsePkce();
+  c.OAuthScopeSeparator(" ");
 });
 
 if (!app.Environment.IsProduction()) app.UseDeveloperExceptionPage();
