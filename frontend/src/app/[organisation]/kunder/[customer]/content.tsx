@@ -39,7 +39,6 @@ export function CustomerPageContent(props: Props) {
       ),
   });
 
-
   return (
     <ConsultantFilterProvider
       consultants={[]}

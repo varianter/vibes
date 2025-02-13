@@ -5,7 +5,7 @@ import { useAvailabilityFilter } from "../staffing/useAvailabilityFilter";
 import { usePathname } from "next/navigation";
 import { ConsultantWithForecast, SingleConsultantReadModel } from "@/api-types";
 import { FilteredForecastContext } from "./ForecastFilterProvider";
-import {useOrganizationContext} from "@/context/organization";
+import { useOrganizationContext } from "@/context/organization";
 
 export function useSimpleForecastFilter() {
   const { consultants, setConsultants, activeFilters } = useContext(

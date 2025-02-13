@@ -10,5 +10,10 @@ export default async function Kunde({
 }: {
   params: { organisation: string; customer: string };
 }) {
-  return <CustomerPageContent customer={params.customer} organization={params.organisation}/>;
+  return (
+    <CustomerPageContent
+      customer={params.customer}
+      organization={params.organisation}
+    />
+  );
 }
