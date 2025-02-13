@@ -5,6 +5,7 @@ import { useAvailabilityFilter } from "../staffing/useAvailabilityFilter";
 import { usePathname } from "next/navigation";
 import { ConsultantWithForecast, SingleConsultantReadModel } from "@/api-types";
 import { FilteredForecastContext } from "./ForecastFilterProvider";
+import {useOrganizationContext} from "@/context/organization";
 
 export function useSimpleForecastFilter() {
   const { consultants, setConsultants, activeFilters } = useContext(
@@ -41,25 +42,8 @@ export function useSimpleForecastFilter() {
 
 export function useForecastFilter() {
   const { consultants, activeFilters } = useContext(FilteredForecastContext);
-
-  const [numWorkHours, setNumWorkHours] = useState<number>(-1);
-  const organisationName = usePathname().split("/")[1];
-
-  const fetchNumWorkHours = useCallback(async () => {
-    try {
-      const data = await fetch(
-        `/${organisationName}/bemanning/api/weeklyWorkHours`,
-      );
-      const numWeeklyHours = await data.json();
-      setNumWorkHours(numWeeklyHours || 37.5);
-    } catch (e) {
-      console.error("Error fetching number of weekly work hours", e);
-    }
-  }, [organisationName]);
-
-  useEffect(() => {
-    fetchNumWorkHours();
-  }, [fetchNumWorkHours]);
+  const { currentOrganization } = useOrganizationContext();
+  const numWorkHours = currentOrganization?.hoursPerWeek ?? 0;
 
   const {
     departmentFilter,
