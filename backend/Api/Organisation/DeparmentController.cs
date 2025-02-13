@@ -13,7 +13,8 @@ public class OrganisationController(ApplicationContext applicationContext, IDepa
     public ActionResult<List<OrganisationReadModel>> Get()
     {
         return applicationContext.Organization
-            .Select(organization => new OrganisationReadModel(organization.Name, organization.UrlKey))
+            .Select(org =>
+                new OrganisationReadModel(org.Name, org.UrlKey, org.HoursPerWorkday, org.HoursPerWorkday * 5))
             .ToList();
     }
 
@@ -44,4 +45,4 @@ public record DepartmentReadModel(string Id, string Name, int? Hotkey)
     }
 }
 
-public record OrganisationReadModel(string Name, string UrlKey);
+public record OrganisationReadModel(string Name, string UrlKey, double HoursPerWorkday, double HoursPerWeek);
