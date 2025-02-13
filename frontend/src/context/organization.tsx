@@ -1,18 +1,25 @@
 "use client";
 
-import React, { createContext, PropsWithChildren, useContext } from "react";
+import React, {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useMemo,
+} from "react";
 import { OrganisationReadModel } from "@/api-types";
 
 export type OrganizationContextType = {
   organization: string | undefined;
   setOrganization: (organization: string) => void;
   organizations: OrganisationReadModel[];
+  currentOrganization: OrganisationReadModel | undefined;
 };
 
 export const OrganizationContext = createContext<OrganizationContextType>({
   organization: "",
   setOrganization: () => null,
   organizations: [],
+  currentOrganization: undefined,
 });
 
 export function OrganizationContextProvider({
@@ -25,12 +32,17 @@ export function OrganizationContextProvider({
   organization: string | undefined;
   setOrganization: (organization: string) => void;
 }>) {
+  const currentOrganization = useMemo(
+    () => organizations.find((o) => o.urlKey === organization),
+    [organization, organizations],
+  );
   return (
     <OrganizationContext.Provider
       value={{
         organizations,
         organization,
         setOrganization,
+        currentOrganization,
       }}
       {...props}
     />
