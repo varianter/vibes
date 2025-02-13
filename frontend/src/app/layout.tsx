@@ -9,6 +9,7 @@ import { PropsWithChildren } from "react";
 import { fetchWithToken } from "@/data/apiCallsWithToken";
 import { OrganisationReadModel } from "@/api-types";
 import { OrganizationContextProvider } from "@/context/organization";
+import { ReactQueryClientProvider } from "@/query-client";
 
 export const metadata: Metadata = {
   title: "VIBES",
@@ -32,20 +33,22 @@ export default async function RootLayout({ children }: PropsWithChildren) {
   return (
     <html>
       <body className="layout-grid">
-        <OrganizationContextProvider
-          organizations={organizations}
-          organization={chosenOrg}
-          setOrganization={setOrganisationInCookie}
-        >
-          <NavBar />
-          <NextTopLoader
-            showSpinner={false}
-            color="#FF87B7"
-            height={3}
-            initialPosition={0.2}
-          />
-          {children}
-        </OrganizationContextProvider>
+        <ReactQueryClientProvider>
+          <OrganizationContextProvider
+            organizations={organizations}
+            organization={chosenOrg}
+            setOrganization={setOrganisationInCookie}
+          >
+            <NavBar />
+            <NextTopLoader
+              showSpinner={false}
+              color="#FF87B7"
+              height={3}
+              initialPosition={0.2}
+            />
+            {children}
+          </OrganizationContextProvider>
+        </ReactQueryClientProvider>
       </body>
     </html>
   );
