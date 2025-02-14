@@ -14,7 +14,7 @@ public class OrganisationController(ApplicationContext applicationContext, IDepa
     {
         return applicationContext.Organization
             .Select(org =>
-                new OrganisationReadModel(org.Name, org.UrlKey, org.HoursPerWorkday, org.HoursPerWorkday * 5))
+                new OrganisationReadModel(org.Name, org.UrlKey, org.HoursPerWorkday, org.HoursPerWeek))
             .ToList();
     }
 
