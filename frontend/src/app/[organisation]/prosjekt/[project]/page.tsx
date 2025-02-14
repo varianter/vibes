@@ -42,7 +42,15 @@ export default function Project({
 
   // TODO: loading indicator(s)
   const { data: consultants, isFetching: consultantsFetching } = useQuery({
-    queryKey: ["staffings", params.organisation],
+    queryKey: [
+      "staffings",
+      params.organisation,
+      [
+        ...(selectedWeek
+          ? ["week", selectedWeek.year, selectedWeek.weekNumber]
+          : []),
+      ],
+    ],
     queryFn: () =>
       fetchEmployeesWithImageAndToken(
         `${params.organisation}/staffings${
