@@ -9,12 +9,8 @@ import { useOrganizationContext } from "@/context/organization";
 export default function NavBarOrganisationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { organizations, organization, setOrganization } =
+  const { currentOrganization, organizations, setOrganization } =
     useOrganizationContext();
-
-  const currentOrganization = organizations.find(
-    (o) => o.urlKey == organization,
-  );
 
   const menuRef = useRef(null);
 
