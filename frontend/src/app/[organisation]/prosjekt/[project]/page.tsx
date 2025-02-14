@@ -41,7 +41,7 @@ export default function Project({
   });
 
   // TODO: loading indicator(s)
-  const { data: consultants } = useQuery({
+  const { data: consultants, isFetching: consultantsFetching } = useQuery({
     queryKey: ["staffings", params.organisation],
     queryFn: () =>
       fetchEmployeesWithImageAndToken(
@@ -55,7 +55,9 @@ export default function Project({
 
   const isInternalProject = project?.customerName === INTERNAL_CUSTOMER_NAME;
 
-  if (projectFetching) {
+  const isFetching = projectFetching || consultantsFetching;
+
+  if (isFetching) {
     return <></>;
   }
 

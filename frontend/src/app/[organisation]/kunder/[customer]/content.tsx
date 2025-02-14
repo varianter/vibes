@@ -22,7 +22,7 @@ export function CustomerPageContent(props: Props) {
   const numWorkHours = currentOrganization?.hoursPerWeek ?? 0;
 
   // TODO: loading indicator(s)
-  const { data: customer } = useQuery({
+  const { data: customer, isFetching: customerFetching } = useQuery({
     queryKey: ["customers", props.customer],
     queryFn: () =>
       fetchWithToken<CustomersWithProjectsReadModel>(
@@ -31,13 +31,19 @@ export function CustomerPageContent(props: Props) {
   });
 
   // TODO: loading indicator(s)
-  const { data: departments } = useQuery({
+  const { data: departments, isFetching: departmentsFetching } = useQuery({
     queryKey: ["departments", props.organization],
     queryFn: () =>
       fetchWithToken<DepartmentReadModel[]>(
         `organisations/${props.organization}/departments`,
       ),
   });
+
+  const isFetching = customerFetching || departmentsFetching;
+
+  if (isFetching) {
+    return <></>;
+  }
 
   return (
     <ConsultantFilterProvider
