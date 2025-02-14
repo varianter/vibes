@@ -32,7 +32,7 @@ export default function Project({
   const weekSpan = searchParams.weekSpan || undefined;
 
   // TODO: loading indicator(s)
-  const { data: project } = useQuery({
+  const { data: project, isFetching: projectFetching } = useQuery({
     queryKey: ["projects", params.project],
     queryFn: () =>
       fetchWithToken<ProjectWithCustomerModel>(
@@ -54,6 +54,10 @@ export default function Project({
   });
 
   const isInternalProject = project?.customerName === INTERNAL_CUSTOMER_NAME;
+
+  if (projectFetching) {
+    return <></>;
+  }
 
   if (project) {
     return (
