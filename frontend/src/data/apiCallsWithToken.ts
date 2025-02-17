@@ -63,6 +63,9 @@ export async function callApi<T, Body>(
   if (process.env.NEXT_PUBLIC_NO_AUTH) {
     return mockedCall<T>(path);
   }
+  const session = await getCustomServerSession(authOptions);
+
+  if (!session || !session.access_token) return;
 
   try {
     const response = await callApiNoParse(path, method, bodyInit);
