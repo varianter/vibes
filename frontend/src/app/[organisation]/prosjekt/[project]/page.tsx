@@ -23,6 +23,7 @@ export default async function Project({
     searchParams.selectedWeek || undefined,
   );
   const weekSpan = searchParams.weekSpan || undefined;
+  console.time("Project page.tsx fetch");
   const [project, numWorkHours, consultants] = await Promise.all([
     fetchWithToken<ProjectWithCustomerModel>(
       `${params.organisation}/projects/get/${params.project}`,
@@ -36,6 +37,7 @@ export default async function Project({
       }${weekSpan ? `${selectedWeek ? "&" : "?"}WeekSpan=${weekSpan}` : ""}`,
     ),
   ]);
+  console.timeEnd("Project page.tsx fetch");
 
   const isInternalProject = project?.customerName === INTERNAL_CUSTOMER_NAME;
 

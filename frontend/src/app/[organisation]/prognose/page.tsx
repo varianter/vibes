@@ -22,6 +22,7 @@ export default async function Prognose({
   params: { organisation: string };
   searchParams: { selectedWeek?: string; weekSpan?: string };
 }) {
+  console.time("Forecast page.tsx fetch");
   const [consultantsWithForecasts, departments, competences] =
     await Promise.all([
       fetchForecastWithToken(`${params.organisation}/forecasts`),
@@ -30,7 +31,7 @@ export default async function Prognose({
       ),
       fetchWithToken<CompetenceReadModel[]>(`competences`),
     ]);
-
+  console.timeEnd("Forecast page.tsx fetch");
   return (
     <ForecastFilterProvider
       consultants={consultantsWithForecasts ?? []}

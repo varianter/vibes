@@ -14,7 +14,7 @@ export async function GET(
   const isAbsence = searchParams.get("isAbsence") || "";
 
   const week = parseYearWeekFromUrlString(selectedWeekParam);
-
+  console.log("in bemanning/api/projects/staffings/route.ts ");
   const endpointUrl = `${
     params.organisation
   }/staffings/project/${projectId}?Year=${week?.year}&Week=${week?.weekNumber}&WeekSpan=${selectedWeekSpan}${
