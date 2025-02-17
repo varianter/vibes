@@ -9,10 +9,8 @@ export function Skeleton({ className, rounded }: Props) {
   return (
     <div
       className={cn(
-        "animate-pulse bg-skeleton w-full h-full rounded-md",
-        {
-          "rounded-full": rounded,
-        },
+        "animate-pulse bg-skeleton w-full h-full",
+        rounded ? "rounded-full" : "rounded-md",
         className,
       )}
     />
