@@ -13,7 +13,8 @@ public class OrganisationController(ApplicationContext applicationContext, IDepa
     public ActionResult<List<OrganisationReadModel>> Get()
     {
         return applicationContext.Organization
-            .Select(organization => new OrganisationReadModel(organization.Name, organization.UrlKey))
+            .Select(org =>
+                new OrganisationReadModel(org.Name, org.UrlKey, org.HoursPerWorkday, org.HoursPerWeek))
             .ToList();
     }
 
@@ -26,15 +27,6 @@ public class OrganisationController(ApplicationContext applicationContext, IDepa
         var departments = await departmentRepository.GetDepartmentsInOrganizationByUrlKey(orgUrlKey, cancellationToken);
         return departments.Select(department => new DepartmentReadModel(department)).ToList();
     }
-
-    [HttpGet]
-    [Route("{orgUrlKey}/weeklyWorkHours")]
-    public ActionResult<double> GetWeeklyWorkHours([FromRoute] string orgUrlKey)
-    {
-        return applicationContext.Organization
-            .Single(o => o.UrlKey == orgUrlKey)
-            .HoursPerWorkday * 5;
-    }
 }
 
 public record DepartmentReadModel(string Id, string Name, int? Hotkey)
@@ -44,4 +36,4 @@ public record DepartmentReadModel(string Id, string Name, int? Hotkey)
     }
 }
 
-public record OrganisationReadModel(string Name, string UrlKey);
+public record OrganisationReadModel(string Name, string UrlKey, double HoursPerWorkday, double HoursPerWeek);

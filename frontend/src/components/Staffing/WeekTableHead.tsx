@@ -1,10 +1,19 @@
-import { fetchPublicHolidays } from "@/hooks/fetchPublicHolidays";
 import { isCurrentWeek } from "@/hooks/staffing/dateTools";
 import { DateTime } from "luxon";
-import { useEffect, useState } from "react";
+import { useCallback, useMemo } from "react";
 import InfoPill from "./InfoPill";
 import { Calendar } from "react-feather";
-import { fetchWorkHoursPerWeek } from "@/hooks/fetchWorkHoursPerDay";
+import { useOrganizationContext } from "@/context/organization";
+import { useQuery } from "@tanstack/react-query";
+import { fetchWithToken } from "@/data/apiCallsWithToken";
+
+type Props = {
+  title: string;
+  number: number;
+  weekList: DateTime[];
+  selectedWeekSpan: number;
+  orgUrl?: string;
+};
 
 export function WeekSpanTableHead({
   title,
@@ -12,55 +21,52 @@ export function WeekSpanTableHead({
   weekList,
   selectedWeekSpan,
   orgUrl,
-}: {
-  title: string;
-  number: number;
-  weekList: DateTime[];
-  selectedWeekSpan: number;
-  orgUrl?: string;
-}) {
-  const [publicHolidays, setPublicHolidays] = useState<string[]>([]);
+}: Props) {
+  const { organizations } = useOrganizationContext();
+  const currentOrganization = useMemo(
+    () => organizations.find((o) => o.urlKey === orgUrl),
+    [organizations, orgUrl],
+  );
 
-  const [workHoursPerDay, setWorkHoursPerDay] = useState(7.5);
+  const hoursPerWorkday = currentOrganization?.hoursPerWorkday ?? 0;
 
-  useEffect(() => {
-    if (orgUrl) {
-      fetchPublicHolidays(orgUrl).then((res) => {
-        if (res) {
-          setPublicHolidays(res);
-        }
-      });
-      fetchWorkHoursPerWeek(orgUrl).then((res) => {
-        if (res) {
-          setWorkHoursPerDay(res / 5); //Since the api call returns hours per week, its divided by 5
-        }
-      });
-    }
-  }, [orgUrl]);
+  // TODO: loading indicator(s)
+  const { data: publicHolidays } = useQuery({
+    queryKey: ["publicHolidays", orgUrl],
+    queryFn: () =>
+      fetchWithToken<string[]>(`${orgUrl}/vacations/publicHolidays`),
+    enabled: orgUrl !== undefined,
+  });
 
-  function getHolidayHoursForWeek(firstDayofWeek: DateTime) {
-    var daySpan = [firstDayofWeek];
-    for (let i = 1; i < 5; i++) {
-      daySpan.push(firstDayofWeek.plus({ days: i }));
-    }
-
-    var publicHolidayHours = 0;
-
-    daySpan.forEach((day) => {
-      if (
-        publicHolidays.length > 0 &&
-        publicHolidays.includes(
-          `${day.year.toString()}-${
-            day.month > 9 ? day.month.toString() : "0" + day.month.toString()
-          }-${day.day > 9 ? day.day.toString() : "0" + day.day.toString()}`,
-        )
-      ) {
-        publicHolidayHours += workHoursPerDay;
+  const getHolidayHoursForWeek = useCallback(
+    (firstDayOfWeek: DateTime) => {
+      if (!publicHolidays) {
+        return 0;
       }
-    });
+      const daySpan = [firstDayOfWeek];
+      for (let i = 1; i < 5; i++) {
+        daySpan.push(firstDayOfWeek.plus({ days: i }));
+      }
 
-    return publicHolidayHours;
-  }
+      let publicHolidayHours = 0;
+
+      daySpan.forEach((day) => {
+        if (
+          publicHolidays.length > 0 &&
+          publicHolidays.includes(
+            `${day.year.toString()}-${
+              day.month > 9 ? day.month.toString() : "0" + day.month.toString()
+            }-${day.day > 9 ? day.day.toString() : "0" + day.day.toString()}`,
+          )
+        ) {
+          publicHolidayHours += hoursPerWorkday;
+        }
+      });
+
+      return publicHolidayHours;
+    },
+    [publicHolidays, hoursPerWorkday],
+  );
 
   return (
     <thead>

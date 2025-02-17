@@ -161,6 +161,10 @@ export interface OrganisationReadModel {
   name: string;
   /** @minLength 1 */
   urlKey: string;
+  /** @format double */
+  hoursPerWorkday: number;
+  /** @format double */
+  hoursPerWeek: number;
 }
 
 export interface ProjectWithCustomerModel {

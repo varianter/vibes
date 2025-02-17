@@ -33,6 +33,8 @@ export const MockOrganisations: OrganisationReadModel[] = [
   {
     name: "My Organisation",
     urlKey: "my-org",
+    hoursPerWeek: 37.5,
+    hoursPerWorkday: 7.5,
   },
 ];
 

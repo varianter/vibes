@@ -24,6 +24,10 @@ public class Organization
     public required List<Customer> Customers { get; init; }
     public required List<Absence> AbsenceTypes { get; init; }
 
+    private const int WorkdaysPerWeek = 5;
+
+    public double HoursPerWeek => HoursPerWorkday * WorkdaysPerWeek;
+
     public IEnumerable<DateOnly> GetHolidaysInWeek(Week week)
     {
         var datesOfWorkWeek = week.GetDatesInWorkWeek();
