@@ -215,7 +215,9 @@ async function fetchConsultantsFromProject(
   }&selectedWeek=${weekToString(
     selectedWeek,
   )}&selectedWeekSpan=${selectedWeekSpan}`;
-
+  console.time(
+    "fetching consultants from project, EditEngagementHoursModal.tsx",
+  );
   try {
     const data = await fetch(url, {
       method: "get",
@@ -224,6 +226,9 @@ async function fetchConsultantsFromProject(
   } catch (e) {
     console.error("Error updating staffing", e);
   }
+  console.timeEnd(
+    "fetching consultants from project, EditEngagementHoursModal.tsx",
+  );
 
   return [];
 }

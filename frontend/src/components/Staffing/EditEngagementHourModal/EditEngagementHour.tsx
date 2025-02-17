@@ -104,6 +104,7 @@ export function EditEngagementHour({
 
   useEffect(() => {
     if (chosenProject != undefined) {
+      console.time("fetching consultants EditEngagementHour");
       fetchConsultantsFromProject(
         chosenProject,
         organisationUrl,
@@ -114,6 +115,7 @@ export function EditEngagementHour({
           // Use spread to make a new list, forcing a re-render
           ...res,
         ]);
+        console.timeEnd("fetching consultants EditEngagementHour");
       });
     }
   }, [chosenProject, organisationUrl, selectedWeek, selectedWeekSpan]);
