@@ -103,8 +103,11 @@ export function EditEngagementHour({
   const organisationUrl = usePathname().split("/")[1];
 
   useEffect(() => {
+    const randomInt = Math.round(Math.random() * 100);
     if (chosenProject != undefined) {
-      console.time("fetching consultants EditEngagementHour");
+      console.time(
+        `fetching consultants EditEngagementHour, random num ${randomInt}`,
+      );
       fetchConsultantsFromProject(
         chosenProject,
         organisationUrl,
@@ -115,7 +118,9 @@ export function EditEngagementHour({
           // Use spread to make a new list, forcing a re-render
           ...res,
         ]);
-        console.timeEnd("fetching consultants EditEngagementHour");
+        console.timeEnd(
+          `fetching consultants EditEngagementHour, random num ${randomInt}`,
+        );
       });
     }
   }, [chosenProject, organisationUrl, selectedWeek, selectedWeekSpan]);
