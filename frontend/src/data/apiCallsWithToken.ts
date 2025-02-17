@@ -63,26 +63,22 @@ export async function callApi<T, Body>(
   if (process.env.NEXT_PUBLIC_NO_AUTH) {
     return mockedCall<T>(path);
   }
-  try {
-    const response = await callApiNoParse(path, method, bodyInit);
-    if (!response || response.status == 204 || !response.ok) {
-      const responseText = await response?.text();
-      console.error(`Failed from ${path}. Response text: ${responseText}`);
-      return;
-    }
-    const contentType = response.headers.get("Content-Type");
-    let result: T;
-
-    if (contentType && contentType.includes("application/json")) {
-      result = await response.json();
-    } else {
-      result = (await response.text()) as unknown as T;
-    }
-
-    return result as T;
-  } catch (e) {
-    throw new Error(`${method} ${path} failed`);
+  const response = await callApiNoParse(path, method, bodyInit);
+  if (!response || response.status == 204 || !response.ok) {
+    const responseText = await response?.text();
+    console.error(`Failed from ${path}. Response text: ${responseText}`);
+    return;
   }
+  const contentType = response.headers.get("Content-Type");
+  let result: T;
+
+  if (contentType && contentType.includes("application/json")) {
+    result = await response.json();
+  } else {
+    result = (await response.text()) as unknown as T;
+  }
+
+  return result as T;
 }
 
 export async function fetchWithToken<ReturnType>(
@@ -134,6 +130,7 @@ async function fetchWithTimeoutOrNull<T>(
     return null;
   }
 }
+
 export async function callForecastEmployee(path: string) {
   if (process.env.NEXT_PUBLIC_NO_AUTH) {
     return mockedCall<undefined>(path);
