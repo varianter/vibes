@@ -62,3 +62,4 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           call: check
+          file: Frontend.Dockerfile
