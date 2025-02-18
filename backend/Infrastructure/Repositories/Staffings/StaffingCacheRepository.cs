@@ -8,6 +8,7 @@ public class StaffingCacheRepository(IStaffingRepository sourceRepository, IMemo
     public async Task<Dictionary<int, List<Staffing>>> GetStaffingForConsultants(List<int> consultantIds,
         CancellationToken cancellationToken)
     {
+        Console.WriteLine($"CACHE GetStaffingForConsultants (count: {consultantIds.Count})");
         var nonCachedIds = new List<int>();
         var result = new Dictionary<int, List<Staffing>>();
 
@@ -42,12 +43,14 @@ public class StaffingCacheRepository(IStaffingRepository sourceRepository, IMemo
 
     public async Task UpsertStaffing(Staffing staffing, CancellationToken cancellationToken)
     {
+        Console.WriteLine($"CACHE UpsertStaffing for consultant #{staffing.ConsultantId}");
         await sourceRepository.UpsertStaffing(staffing, cancellationToken);
         ClearStaffingCache(staffing.ConsultantId);
     }
 
     public async Task UpsertMultipleStaffings(List<Staffing> staffings, CancellationToken cancellationToken)
     {
+        Console.WriteLine($"CACHE UpsertMultipleStaffings (count: {staffings.Count})");
         await sourceRepository.UpsertMultipleStaffings(staffings, cancellationToken);
 
         var consultantIds = staffings.Select(staffing => staffing.ConsultantId).Distinct();
