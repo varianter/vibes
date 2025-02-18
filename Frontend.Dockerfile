@@ -21,7 +21,7 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 RUN mkdir .next
 RUN chown nextjs:nodejs .next
-RUN chown nextjs:nodejs /app
+RUN chown nextjs:nodejs app
 
 USER nextjs
 
