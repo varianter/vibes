@@ -1,6 +1,4 @@
 import NavBarLink from "./NavBarLink";
-import { fetchWithToken } from "@/data/apiCallsWithToken";
-import { OrganisationReadModel } from "@/api-types";
 import NavBarOrganisationDropdown from "./NavBarOrganisationDropdown";
 import NavBarMobile from "./NavBarMobile";
 import {
@@ -10,9 +8,6 @@ import {
 import NavBarDropdown from "./NavBarDropdown";
 
 export default async function NavBar() {
-  const orgs =
-    (await fetchWithToken<OrganisationReadModel[]>("organisations")) ?? [];
-
   const session =
     !process.env.NEXT_PUBLIC_NO_AUTH &&
     (await getCustomServerSession(authOptions));
@@ -38,13 +33,13 @@ export default async function NavBar() {
           ))}
         </div>
         <div className="flex flex-row gap-4 items-center">
-          <NavBarOrganisationDropdown organisations={orgs} />
+          <NavBarOrganisationDropdown />
           <div className="w-[1px] h-8 bg-white/20" />
           <NavBarDropdown initial={initial} />
         </div>
       </div>
       <div className="flex sm:hidden">
-        <NavBarMobile orgs={orgs} initial={initial} navBarLinks={navBarLinks} />
+        <NavBarMobile initial={initial} navBarLinks={navBarLinks} />
       </div>
     </div>
   );

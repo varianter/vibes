@@ -1,10 +1,10 @@
 import { YearRange } from "@/types";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { useRawYearsFilter } from "./useRawYearFilter";
 import { useAvailabilityFilter } from "./useAvailabilityFilter";
-import { usePathname } from "next/navigation";
 import { ConsultantReadModel, ProjectWithCustomerModel } from "@/api-types";
+import { useOrganizationContext } from "@/context/organization";
 
 export function useSimpleConsultantsFilter() {
   const { consultants, setConsultants, activeFilters } =
@@ -40,24 +40,8 @@ export function useSimpleConsultantsFilter() {
 
 export function useConsultantsFilter() {
   const { consultants, activeFilters } = useContext(FilteredContext);
-  const [numWorkHours, setNumWorkHours] = useState<number>(-1);
-  const organisationName = usePathname().split("/")[1];
-
-  const fetchNumWorkHours = useCallback(async () => {
-    try {
-      const data = await fetch(
-        `/${organisationName}/bemanning/api/weeklyWorkHours`,
-      );
-      const numWeeklyHours = await data.json();
-      setNumWorkHours(numWeeklyHours || 37.5);
-    } catch (e) {
-      console.error("Error fetching number of weekly work hours", e);
-    }
-  }, [organisationName]);
-
-  useEffect(() => {
-    fetchNumWorkHours();
-  }, [fetchNumWorkHours]);
+  const { currentOrganization } = useOrganizationContext();
+  const numWorkHours = currentOrganization?.hoursPerWeek ?? 0;
 
   const {
     departmentFilter,

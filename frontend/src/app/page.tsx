@@ -1,29 +1,20 @@
-import OrganisationButton from "@/components/OrganisationButton";
-import { fetchWithToken } from "@/data/apiCallsWithToken";
-import { OrganisationReadModel } from "@/api-types";
-import { cookies } from "next/headers";
+"use client";
+
+import { useOrganizationContext } from "@/context/organization";
 import Link from "next/link";
+import OrganisationButton from "@/components/OrganisationButton";
 import { redirect } from "next/navigation";
-import { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "VIBES",
-};
+export default function Root() {
+  const { organization, organizations } = useOrganizationContext();
 
-export default async function Root() {
-  const orgs =
-    (await fetchWithToken<OrganisationReadModel[]>("organisations")) ?? [];
-
-  const cookieStore = cookies();
-  const chosenOrg = cookieStore.get("chosenOrg")?.value;
-
-  if (orgs.find((o) => o.urlKey == chosenOrg)) {
-    redirect(`/${chosenOrg}/bemanning`);
+  if (organizations.find((o) => o.urlKey == organization)) {
+    redirect(`/${organization}/bemanning`);
   }
 
   return (
     <ul className="main h-screen flex items-center justify-center gap-4">
-      {orgs.map((o) => (
+      {organizations.map((o) => (
         <li key={o.urlKey}>
           <Link href={`/${o.urlKey}/bemanning`}>
             <OrganisationButton org={o} />
