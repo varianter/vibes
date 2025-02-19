@@ -114,7 +114,17 @@ export default function CustomerTable({
         />
 
         <tbody>
-          <EngagementsRows engagements={customer.activeEngagements} />
+          {customer.activeEngagements.map((engagement) => (
+            <EngagementRow
+              key={engagement.engagementId}
+              engagement={engagement}
+              orgUrl={orgUrl}
+              selectedWeek={selectedWeek}
+              selectedWeekSpan={selectedWeekSpan}
+              weekList={weekList}
+              numWorkHours={numWorkHours}
+            />
+          ))}
 
           <tr>
             <td colSpan={2}>
@@ -127,32 +137,20 @@ export default function CustomerTable({
             </td>
           </tr>
 
-          <EngagementsRows engagements={customer.inactiveEngagements} />
+          {customer.inactiveEngagements.map((inactiveEngagement) => (
+            <EngagementRow
+              key={inactiveEngagement.engagementId}
+              engagement={inactiveEngagement}
+              orgUrl={orgUrl}
+              selectedWeek={selectedWeek}
+              selectedWeekSpan={selectedWeekSpan}
+              weekList={weekList}
+              numWorkHours={numWorkHours}
+            />
+          ))}
         </tbody>
       </table>
       <AgreementEdit customer={customer} />
     </div>
   );
-
-  function EngagementsRows({
-    engagements,
-  }: {
-    engagements: EngagementReadModel[];
-  }) {
-    return (
-      <>
-        {engagements.map((engagement) => (
-          <EngagementRow
-            key={engagement.engagementId}
-            engagement={engagement}
-            orgUrl={orgUrl}
-            selectedWeek={selectedWeek}
-            selectedWeekSpan={selectedWeekSpan}
-            weekList={weekList}
-            numWorkHours={numWorkHours}
-          />
-        ))}
-      </>
-    );
-  }
 }
