@@ -1,5 +1,6 @@
 "use client";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 export default function NavBarLink(props: { text: string; path: string }) {
   const pathname = usePathname();
@@ -7,7 +8,7 @@ export default function NavBarLink(props: { text: string; path: string }) {
   const orgUrl = pathname.split("/")[1] || "";
 
   return (
-    <a
+    <Link
       className={`py-4 flex justify-center items-center text-white ${
         isCurrentPath
           ? "large-medium border-b-[3px] border-secondary"
@@ -16,6 +17,6 @@ export default function NavBarLink(props: { text: string; path: string }) {
       href={orgUrl != "" ? `/${orgUrl}/${props.path}` : "/"}
     >
       {props.text}
-    </a>
+    </Link>
   );
 }
