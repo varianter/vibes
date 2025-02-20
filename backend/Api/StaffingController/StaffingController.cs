@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Api.Common;
 using Api.Common.Types;
 using Api.Helpers;
@@ -32,6 +33,8 @@ public class StaffingController(
         [FromQuery(Name = "WeekSpan")] int numberOfWeeks = 8,
         [FromQuery(Name = "includeOccupied")] bool includeOccupied = true)
     {
+        var stopwatch = Stopwatch.StartNew();
+        Console.WriteLine($"GET STAFFINGS - [Checkpoint 0] Start - {stopwatch.ElapsedMilliseconds} ms");
         var selectedWeek = selectedYearParam is null || selectedWeekParam is null
             ? Week.FromDateTime(DateTime.Now)
             : new Week((int)selectedYearParam, (int)selectedWeekParam);
@@ -39,10 +42,15 @@ public class StaffingController(
         var weekSet = selectedWeek.GetNextWeeks(numberOfWeeks);
 
         var service = new StorageService(cache, logger, context);
+        Console.WriteLine($"GET STAFFINGS - [Checkpoint 1] Service created - {stopwatch.ElapsedMilliseconds} ms");
         var consultants = service.LoadConsultants(orgUrlKey);
+        Console.WriteLine($"GET STAFFINGS - [Checkpoint 2] Loaded consultants - {stopwatch.ElapsedMilliseconds} ms");
         consultants = await AddRelationalDataToConsultant(consultants, cancellationToken);
+        Console.WriteLine($"GET STAFFINGS - [Checkpoint 6] Add relational data completed - {stopwatch.ElapsedMilliseconds} ms");
 
         var readModels = ReadModelFactory.GetConsultantReadModelsForWeeks(consultants, weekSet);
+        Console.WriteLine($"GET STAFFINGS - [Checkpoint 7] Created read models - {stopwatch.ElapsedMilliseconds} ms");
+        stopwatch.Stop();
 
         return Ok(readModels);
     }
@@ -69,25 +77,25 @@ public class StaffingController(
         {
             // -1 as projectId and isAbsence == true is a workaround to get vacations
             case true when projectId == -1:
-            {
-                var vacationReadModel =
-                    new ReadModelFactory(service).GetConsultantsReadModelsForVacationsAndWeeks(orgUrlKey, weekSet);
-                return Ok(vacationReadModel);
-            }
+                {
+                    var vacationReadModel =
+                        new ReadModelFactory(service).GetConsultantsReadModelsForVacationsAndWeeks(orgUrlKey, weekSet);
+                    return Ok(vacationReadModel);
+                }
             case true:
-            {
-                var absenceReadModel =
-                    new ReadModelFactory(service).GetConsultantsReadModelsForAbsenceAndWeeks(orgUrlKey, weekSet,
-                        projectId);
-                return Ok(absenceReadModel);
-            }
+                {
+                    var absenceReadModel =
+                        new ReadModelFactory(service).GetConsultantsReadModelsForAbsenceAndWeeks(orgUrlKey, weekSet,
+                            projectId);
+                    return Ok(absenceReadModel);
+                }
             default:
-            {
-                var readModels =
-                    new ReadModelFactory(service).GetConsultantsReadModelsForProjectAndWeeks(orgUrlKey, weekSet,
-                        projectId);
-                return Ok(readModels);
-            }
+                {
+                    var readModels =
+                        new ReadModelFactory(service).GetConsultantsReadModelsForProjectAndWeeks(orgUrlKey, weekSet,
+                            projectId);
+                    return Ok(readModels);
+                }
         }
     }
 
@@ -207,31 +215,43 @@ public class StaffingController(
     }
 
     // TODO: Move this to a future application layer. This is to consolidate data from various repositories such as Staffing or PlannedAbsence
-    private async Task<List<Consultant>> AddRelationalDataToConsultant(List<Consultant> consultants,
-        CancellationToken cancellationToken)
+
+
+    private async Task<List<Consultant>> AddRelationalDataToConsultant(
+        List<Consultant> consultants, CancellationToken cancellationToken)
     {
+        var stopwatch = Stopwatch.StartNew(); // Start tracking time
+
         var consultantIds = consultants.Select(c => c.Id).Distinct().ToList();
+        Console.WriteLine($"ADDING RELATIONAL DATA - [Checkpoint 3] Extracted consultant IDs - {stopwatch.ElapsedMilliseconds} ms");
 
-        var consultantStaffings =
-            await staffingRepository.GetStaffingForConsultants(consultantIds, cancellationToken);
-        var consultantAbsences =
-            await plannedAbsenceRepository.GetPlannedAbsenceForConsultants(consultantIds, cancellationToken);
+        var consultantStaffings = await staffingRepository.GetStaffingForConsultants(consultantIds, cancellationToken);
+        Console.WriteLine($"ADDING RELATIONAL DATA - [Checkpoint 4] Retrieved staffing data - {stopwatch.ElapsedMilliseconds} ms");
 
-        return consultants.Select(c =>
+        var consultantAbsences = await plannedAbsenceRepository.GetPlannedAbsenceForConsultants(consultantIds, cancellationToken);
+        Console.WriteLine($"ADDING RELATIONAL DATA - [Checkpoint 5] Retrieved absence data - {stopwatch.ElapsedMilliseconds} ms");
+
+        var result = consultants.Select(c =>
         {
             c.Staffings = DictionaryHelper.GetFromDictOrDefault(c.Id, consultantStaffings);
             c.PlannedAbsences = DictionaryHelper.GetFromDictOrDefault(c.Id, consultantAbsences);
-
             return c;
         }).ToList();
+        Console.WriteLine($"ADDING RELATIONAL DATA - [Checkpoint 6] Mapped data to consultants - {stopwatch.ElapsedMilliseconds} ms");
+
+        stopwatch.Stop(); // Stop tracking
+        Console.WriteLine($"ADDING RELATIONAL DATA - [Total Execution Time] {stopwatch.ElapsedMilliseconds} ms");
+
+        return result;
     }
+
 
     //TODO: Divide this more neatly into various functions for readability. 
     // This is skipped for now to avoid massive scope-creep. Comments are added for a temporary readability-buff
     private List<Staffing> GenerateUpdatedStaffings(int consultantId, int engagementId,
-        List<Week> weeks,
-        double hours,
-        string orgUrlKey)
+            List<Week> weeks,
+            double hours,
+            string orgUrlKey)
     {
         // Get base data we need.
         var consultant = context.Consultant.Single(c => c.Id == consultantId);

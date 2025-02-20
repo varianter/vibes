@@ -47,5 +47,19 @@ jobs:
         run: yarn next lint 
       - name: Check formatting
         working-directory: ./frontend
-        run: yarn prettier:ci       
+        run: yarn prettier:ci
+
+  build-frontend:
+    runs-on: ubuntu-latest
       
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f95db51fddba0c2d1ec667646a06c2ce06100226 # v3.0.0
+
+      - name: Validate build configuration
+        uses: docker/build-push-action@v6
+        with:
+          call: check
+          file: Frontend.Dockerfile
