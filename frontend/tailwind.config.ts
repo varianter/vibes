@@ -31,6 +31,7 @@ export default {
       overbooked: "#E43D47",
       deactivate: "#E71D2A",
       activate: "#267A13",
+      skeleton: "#c5c5c5",
 
       error: "#B91456",
     },
