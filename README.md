@@ -18,7 +18,7 @@
 Du kan lese mer dokumentasjon om mål og struktur i [manifestet](docs/MANIFESTO.md) under docs/
 
 ## Kjør
-For å starte utviklingsmiljø, følg henholdsvis [README.md](frontend/README.md) i frontend og [README.md](backend/README.md) i backend mappene.
+For å starte utviklingsmiljø, følg henholdsvis [README.md](frontend/README.md) i frontend og [README.md](backend/README.md) i backend mappene. Avhengig av om du bygger opp databasen selv eller kjører [migreringene](https://github.com/varianter/vibes-data-migration), så burde du sjekke at du selv ligger inne som konsulent med variant-mailen din. Da får man tilgang på ferie-fanen og bilde. 
 
 ## Deploy
 Kjør actions for deploy i Github Actions for hhv. dev og prod 
