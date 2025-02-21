@@ -1,23 +1,16 @@
 "use client";
+
 import React, { useRef, useState } from "react";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
-import { OrganisationReadModel } from "@/api-types";
-import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Check, ChevronDown, ChevronUp } from "react-feather";
-import { setOrganisationInCookie } from "../../hooks/setOrganisationInCookies";
+import { useOrganizationContext } from "@/context/organization";
 
-export default function NavBarOrganisationDropdown({
-  organisations,
-}: {
-  organisations: OrganisationReadModel[];
-}) {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+export default function NavBarOrganisationDropdown() {
+  const [isOpen, setIsOpen] = useState(false);
 
-  const currentOrganisationUrl = usePathname().split("/")[1];
-  const currentOrganisation = organisations.find(
-    (o) => o.urlKey == currentOrganisationUrl,
-  );
+  const { currentOrganization, organizations, setOrganization } =
+    useOrganizationContext();
 
   const menuRef = useRef(null);
 
@@ -28,17 +21,17 @@ export default function NavBarOrganisationDropdown({
   return (
     <>
       <div className="relative" ref={menuRef}>
-        {currentOrganisation && (
+        {currentOrganization && (
           <>
             <button
               className={`p-2 rounded flex gap-2 text-white ${
-                organisations.length > 1 && "hover:bg-white/10"
+                organizations.length > 1 && "hover:bg-white/10"
               }`}
               onClick={() => setIsOpen(!isOpen)}
-              disabled={organisations.length == 1}
+              disabled={organizations.length == 1}
             >
-              <p className="normal-medium">{currentOrganisation?.name}</p>
-              {organisations.length > 1 &&
+              <p className="normal-medium">{currentOrganization?.name}</p>
+              {organizations.length > 1 &&
                 (isOpen ? (
                   <ChevronUp className="h-4 w-4" />
                 ) : (
@@ -50,17 +43,17 @@ export default function NavBarOrganisationDropdown({
                 !isOpen && "hidden"
               }`}
             >
-              {organisations.map((organisation, index) => (
+              {organizations.map((organisation, index) => (
                 <Link
                   key={index}
                   className="hover:bg-primary/10 px-3 py-2 rounded flex flex-row justify-between items-center "
                   href={`/${organisation.urlKey}/bemanning`}
-                  onClick={() => setOrganisationInCookie(organisation.urlKey)}
+                  onClick={() => setOrganization(organisation.urlKey)}
                 >
                   <p className="h-6 flex items-center normal-semibold text-primary">
                     {organisation.name}
                   </p>
-                  {organisation == currentOrganisation && (
+                  {organisation == currentOrganization && (
                     <Check className="h-6 w-6 text-primary" />
                   )}
                 </Link>
