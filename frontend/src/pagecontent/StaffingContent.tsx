@@ -3,12 +3,14 @@
 import StaffingSidebar from "@/components/StaffingSidebar";
 import FilteredConsultantsList from "@/components/FilteredConsultantsList";
 import InfoPillDescriptions from "@/components/Staffing/InfoPillDescriptions";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import IconActionButton from "@/components/Buttons/IconActionButton";
 import { Filter } from "react-feather";
 import ActiveFilters from "@/components/ActiveFilters";
 import WeekSelection from "@/components/WeekSelection";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
+import { StaffingSkeleton } from "@/components/Staffing/StaffingSkeleton";
+import { DelayRender } from "@/components/DelayRender";
 
 export function StaffingContent() {
   const [isSideBarOpen, setIsSidebarOpen] = useState<boolean>(false);
@@ -35,7 +37,10 @@ export function StaffingContent() {
 
           <WeekSelection />
         </div>
-        <FilteredConsultantsList />
+
+        <Suspense fallback={<StaffingSkeleton />}>
+          <FilteredConsultantsList />
+        </Suspense>
         <InfoPillDescriptions />
       </div>
     </>

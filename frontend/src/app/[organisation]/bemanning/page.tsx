@@ -6,13 +6,15 @@ import {
 } from "@/api-types";
 import { ConsultantFilterProvider } from "@/hooks/ConsultantFilterProvider";
 import { parseYearWeekFromUrlString } from "@/data/urlUtils";
-import React from "react";
+import React, { Suspense } from "react";
 import { StaffingContent } from "@/pagecontent/StaffingContent";
 import {
   fetchEmployeesWithImageAndToken,
   fetchWithToken,
 } from "@/data/apiCallsWithToken";
 import { Metadata } from "next";
+import { StaffingSkeleton } from "@/components/Staffing/StaffingSkeleton";
+import { DelayRender } from "@/components/DelayRender";
 
 export const metadata: Metadata = {
   title: "Bemanning | VIBES",
@@ -29,7 +31,6 @@ export default async function Bemanning({
     searchParams.selectedWeek || undefined,
   );
   const weekSpan = searchParams.weekSpan || undefined;
-  console.time("Staffing page.tsx fetch all");
   const [consultants, departments, competences, customers] = await Promise.all([
     fetchEmployeesWithImageAndToken(
       `${params.organisation}/staffings${
@@ -46,7 +47,6 @@ export default async function Bemanning({
       `${params.organisation}/projects`,
     ),
   ]);
-  console.timeEnd("Staffing page.tsx fetch all");
   return (
     <ConsultantFilterProvider
       consultants={consultants ?? []}
