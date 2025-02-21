@@ -29,6 +29,7 @@ export default async function Bemanning({
     searchParams.selectedWeek || undefined,
   );
   const weekSpan = searchParams.weekSpan || undefined;
+  console.time("Staffing page.tsx fetch all");
   const [consultants, departments, competences, customers] = await Promise.all([
     fetchEmployeesWithImageAndToken(
       `${params.organisation}/staffings${
@@ -45,6 +46,7 @@ export default async function Bemanning({
       `${params.organisation}/projects`,
     ),
   ]);
+  console.timeEnd("Staffing page.tsx fetch all");
   return (
     <ConsultantFilterProvider
       consultants={consultants ?? []}

@@ -50,6 +50,8 @@ export default function EngagementRows({
   >([]);
 
   useEffect(() => {
+    const randomInt = Math.round(Math.random() * 100);
+    console.time(`fetching consultants EngagementRow, random num ${randomInt}`);
     fetchConsultantsFromProject(
       engagement,
       orgUrl,
@@ -60,6 +62,9 @@ export default function EngagementRows({
         // Use spread to make a new list, forcing a re-render
         ...res,
       ]);
+      console.timeEnd(
+        `fetching consultants EngagementRow, random num ${randomInt}`,
+      );
     });
   }, [engagement, orgUrl, selectedWeek, selectedWeekSpan]);
 
