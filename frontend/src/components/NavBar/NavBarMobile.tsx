@@ -1,6 +1,5 @@
 "use client";
 
-import { OrganisationReadModel } from "@/api-types";
 import { useState } from "react";
 import NavBarLink from "./NavBarLink";
 import NavBarOrganisationDropdown from "./NavBarOrganisationDropdown";
@@ -8,11 +7,9 @@ import NavBarDropdown from "./NavBarDropdown";
 import { Menu, X } from "react-feather";
 
 export default function NavBarMobile({
-  orgs,
   initial,
   navBarLinks,
 }: {
-  orgs: OrganisationReadModel[];
   initial: string;
   navBarLinks: { text: string; path: string }[];
 }) {
@@ -30,7 +27,7 @@ export default function NavBarMobile({
           {navBarLinks.map((link, index) => (
             <NavBarLink key={index} text={link.text} path={link.path} />
           ))}
-          <NavBarOrganisationDropdown organisations={orgs} />
+          <NavBarOrganisationDropdown />
           <NavBarDropdown initial={initial} />
         </div>
       )}
