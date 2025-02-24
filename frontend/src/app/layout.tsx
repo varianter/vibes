@@ -10,6 +10,11 @@ import { fetchWithToken } from "@/data/apiCallsWithToken";
 import { OrganisationReadModel } from "@/api-types";
 import { OrganizationContextProvider } from "@/context/organization";
 import { ReactQueryClientProvider } from "@/query-client";
+import {
+  authOptions,
+  getCustomServerSession,
+} from "@/app/api/auth/[...nextauth]/route";
+import {SessionContextProvider} from "@/context/session";
 
 export const metadata: Metadata = {
   title: "VIBES",
@@ -27,6 +32,10 @@ export default async function RootLayout({ children }: PropsWithChildren) {
   const cookieStore = cookies();
   const chosenOrg = cookieStore.get("chosenOrg")?.value;
 
+  const session = !process.env.NEXT_PUBLIC_SESSION
+    ? await getCustomServerSession(authOptions)
+    : null;
+
   const organizations =
     (await fetchWithToken<OrganisationReadModel[]>("organisations")) ?? [];
 
@@ -34,20 +43,22 @@ export default async function RootLayout({ children }: PropsWithChildren) {
     <html>
       <body className="layout-grid">
         <ReactQueryClientProvider>
-          <OrganizationContextProvider
-            organizations={organizations}
-            organization={chosenOrg}
-            setOrganization={setOrganisationInCookie}
-          >
-            <NavBar />
-            <NextTopLoader
-              showSpinner={false}
-              color="#FF87B7"
-              height={3}
-              initialPosition={0.2}
-            />
-            {children}
-          </OrganizationContextProvider>
+          <SessionContextProvider session={session}>
+            <OrganizationContextProvider
+              organizations={organizations}
+              organization={chosenOrg}
+              setOrganization={setOrganisationInCookie}
+            >
+              <NavBar />
+              <NextTopLoader
+                showSpinner={false}
+                color="#FF87B7"
+                height={3}
+                initialPosition={0.2}
+              />
+              {children}
+            </OrganizationContextProvider>
+          </SessionContextProvider>
         </ReactQueryClientProvider>
       </body>
     </html>
