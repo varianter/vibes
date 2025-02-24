@@ -9,6 +9,10 @@ import React, { useState } from "react";
 import { MonthCell } from "./MonthCell";
 import Image from "next/image";
 import { putWithToken } from "@/data/apiCallsWithToken";
+import {
+  useForecastFilter,
+  useSimpleForecastFilter,
+} from "@/hooks/ForecastFilter/useForecastFilter";
 
 function bookingForMonth(bookings: BookedHoursInMonth[], month: string) {
   return bookings.find((booking) => booking.month === month);
@@ -31,12 +35,33 @@ export default function ForecastRows({
 
   const bookingsPerMonth = consultant.bookings;
 
+  const { filteredConsultants, setConsultants } = useSimpleForecastFilter();
+
   async function save(month: string, value: number) {
     await putWithToken<Forecast, Forecast>(`${orgUrlKey}/forecasts/update`, {
       consultantId: consultant.consultant.id,
       month: month,
       adjustedValue: value,
-    })
+    }).then((res) => {
+      if (!res) return;
+
+      // Attempt to locate forecast in consultant, and update value, so that the
+      // forecast table sums update accordingly
+      const filteredConsultant = filteredConsultants.find(
+        (c) => c.consultant.id === consultant.consultant.id,
+      );
+      if (!filteredConsultant) {
+        return;
+      }
+      const forecast = filteredConsultant.forecasts.find(
+        (f) => f.month === month,
+      );
+      if (!forecast) {
+        return;
+      }
+      forecast.displayedPercentage = res.adjustedValue;
+      setConsultants([...filteredConsultants]);
+    });
   }
 
   return (
