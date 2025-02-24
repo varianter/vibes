@@ -5,7 +5,7 @@ import type { Value } from "react-multi-date-picker";
 import { Calendar, DateObject } from "react-multi-date-picker";
 import InfoBox from "./InfoBox";
 import { Skeleton } from "@/components/Skeleton";
-import {useSessionContext} from "@/context/session";
+import { useSessionContext } from "@/context/session";
 
 type Props = {
   consultant: ConsultantReadModel | undefined;
@@ -201,7 +201,9 @@ export default function VacationCalendar({
 
       <div className="flex flex-row gap-3 w-full">
         <div className="flex flex-col justify-center m-4">
-          <h1 className="text-black">{consultant?.name || session?.user?.name}</h1>
+          <h1 className="text-black">
+            {consultant?.name || session?.user?.name}
+          </h1>
 
           {isLoading ? (
             <Skeleton className="h-4 w-16" />

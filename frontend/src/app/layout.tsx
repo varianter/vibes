@@ -14,7 +14,7 @@ import {
   authOptions,
   getCustomServerSession,
 } from "@/app/api/auth/[...nextauth]/route";
-import {SessionContextProvider} from "@/context/session";
+import { SessionContextProvider } from "@/context/session";
 
 export const metadata: Metadata = {
   title: "VIBES",
