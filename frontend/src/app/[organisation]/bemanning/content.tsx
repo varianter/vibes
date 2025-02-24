@@ -72,7 +72,10 @@ export default function Staffing({
       competences={competences ?? []}
       customers={customers ?? []}
     >
-      <StaffingContent isFetching={isFetching} />
+      <StaffingContent
+        weekSpan={weekSpan ? parseInt(weekSpan) : 8}
+        isFetching={isFetching}
+      />
     </ConsultantFilterProvider>
   );
 }

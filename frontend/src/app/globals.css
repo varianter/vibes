@@ -191,10 +191,6 @@
     place-content: center;
   }
 
-  .skeletonGrid {
-    grid-template-columns: 1.65fr repeat(8, 1fr);
-  }
-
   /*Here an svg has been converted to a clip-path, which is why that field is so long*/
   .checkBoxWithCustomCheckmark::before {
     content: "";

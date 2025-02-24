@@ -12,7 +12,13 @@ import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { StaffingSkeleton } from "@/components/Staffing/StaffingSkeleton";
 import { DelayRender } from "@/components/DelayRender";
 
-export function StaffingContent({ isFetching }: { isFetching: boolean }) {
+export function StaffingContent({
+  isFetching,
+  weekSpan,
+}: {
+  isFetching: boolean;
+  weekSpan: number;
+}) {
   const [isSideBarOpen, setIsSidebarOpen] = useState<boolean>(false);
 
   return (
@@ -37,7 +43,11 @@ export function StaffingContent({ isFetching }: { isFetching: boolean }) {
 
           <WeekSelection />
         </div>
-        {isFetching ? <StaffingSkeleton /> : <FilteredConsultantsList />}
+        {isFetching ? (
+          <StaffingSkeleton weekSpan={weekSpan} />
+        ) : (
+          <FilteredConsultantsList />
+        )}
         <InfoPillDescriptions />
       </div>
     </>

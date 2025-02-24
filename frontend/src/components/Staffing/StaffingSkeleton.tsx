@@ -1,12 +1,15 @@
 import { Fragment } from "react";
 import { Skeleton } from "../Skeleton";
 
-function StaffingSkeleton() {
+function StaffingSkeleton({ weekSpan }: { weekSpan: number }) {
   const numbers = Array.from({ length: 50 }, (_, i) => i + 1);
-  const numberOfTds = Array.from({ length: 8 }, (_, i) => i + 1);
+  const numberOfTds = Array.from({ length: weekSpan }, (_, i) => i + 1);
   return (
     <div className="mt-14">
-      <div className="grid skeletonGrid gap-[4px]">
+      <div
+        style={{ gridTemplateColumns: `1.65fr repeat(${weekSpan}, 1fr)` }}
+        className="grid gap-[4px]"
+      >
         {numbers.map((number) => (
           <Fragment key={number}>
             <div className="flex gap-1 border-l-2 border-l-primary/5">
