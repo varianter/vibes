@@ -2,8 +2,10 @@ using Api.Common;
 using Api.StaffingController;
 using Core.Engagements;
 using Core.Organizations;
+using Core.Staffings;
 using Core.Weeks;
 using Infrastructure.DatabaseContext;
+using Infrastructure.Repositories.Staffings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +22,7 @@ public class ProjectController(
     IMemoryCache cache,
     ILogger<StorageService> logger,
     IOrganisationRepository organisationRepository,
+    IStaffingRepository staffingRepository,
     IEngagementRepository engagementRepository) : ControllerBase
 {
     private const string AbsenceCustomerName = "Variant - Fravær";
@@ -118,6 +121,12 @@ public class ProjectController(
         {
             context.Project.Remove(engagement);
             context.SaveChanges();
+
+            var staffingCacheRepository = new StaffingCacheRepository(staffingRepository, cache);
+            foreach (var consultant in engagement.Consultants)
+            {
+                staffingCacheRepository.ClearStaffingCache(consultant.Id);
+            }
         }
 
         return Ok();
@@ -158,6 +167,12 @@ public class ProjectController(
 
             service.ClearConsultantCache(orgUrlKey);
 
+            var staffingCacheRepository = new StaffingCacheRepository(staffingRepository, cache);
+            foreach (var consultant in engagement.Consultants)
+            {
+                staffingCacheRepository.ClearStaffingCache(consultant.Id);
+            }
+
             return new ReadModelFactory(service).GetConsultantReadModelForWeeks(
                 engagement.Consultants.Select(c => c.Id).ToList(), weekSet);
         }
@@ -194,6 +209,12 @@ public class ProjectController(
 
             service.ClearConsultantCache(orgUrlKey);
 
+            var staffingCacheRepository = new StaffingCacheRepository(staffingRepository, cache);
+            foreach (var consultant in engagement.Consultants)
+            {
+                staffingCacheRepository.ClearStaffingCache(consultant.Id);
+            }
+
             var responseModel =
                 new EngagementReadModel(engagement.Id, engagement.Name, engagement.State, engagement.IsBillable);
 
@@ -217,6 +238,14 @@ public class ProjectController(
         if (selectedOrg is null) return TypedResults.NotFound("Selected org not found");
         var customer = service.DeactivateOrActivateCustomer(customerId, selectedOrg, activate, orgUrlKey);
         if (customer is null) return TypedResults.NotFound("Selected customer not found");
+
+        var staffingCacheRepository = new StaffingCacheRepository(staffingRepository, cache);
+        foreach (var consultantId in customer.Projects.SelectMany(project => project.Staffings)
+                     .Select(staffing => staffing.ConsultantId).Distinct())
+        {
+            staffingCacheRepository.ClearStaffingCache(consultantId);
+        }
+
         return TypedResults.Ok();
     }
 
