@@ -49,7 +49,7 @@ export default function ConsultantRows({
         setNewWeekList((old) => [
           ...old,
           DateTime.fromISO(
-            `${selectedWeekFilter?.year}-W${selectedWeekFilter?.weekNumber}`,
+            `${selectedWeekFilter?.year}W${String(selectedWeekFilter?.weekNumber).padStart(2, "0")}`,
           ).plus({ weeks: index }),
         ]);
       });
