@@ -22,7 +22,7 @@ public static class ConsultantWithForecastFactory
 			.ToList();
 	}
 
-	private static ConsultantWithForecast CreateSingle(Consultant consultant, DateOnly fromMonth, DateOnly firstExcludedMonth)
+	public static ConsultantWithForecast CreateSingle(Consultant consultant, DateOnly fromMonth, DateOnly firstExcludedMonth)
 	{
 		var months = fromMonth.GetMonthsUntil(firstExcludedMonth).ToList();
 

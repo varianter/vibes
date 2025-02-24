@@ -15,6 +15,11 @@ public interface IForecastRepository
 		CancellationToken cancellationToken);
 
 	/// <summary>
+	/// Gets the forecasts registered on the given consultant
+	/// </summary>
+	public Task<List<Forecast>> GetForecastForConsultant(int consultantId, CancellationToken cancellationToken);
+
+	/// <summary>
 	///     Inserts new or updates existing forecasts
 	/// </summary>
 	public Task<Forecast[]> UpsertForecasts(Forecast[] forecasts, CancellationToken cancellationToken);
