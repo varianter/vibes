@@ -3,7 +3,7 @@ import {
   ConsultantReadModel,
   ConsultantWithForecast,
 } from "@/api-types";
-import React, { useRef, useState } from "react";
+import React, {useMemo, useRef, useState} from "react";
 import { HoveredMonth } from "./HoveredMonth";
 import RenderInfoPills from "../Staffing/RenderInfoPills";
 import { useOnClickOutside } from "usehooks-ts";
@@ -11,6 +11,7 @@ import { useOnClickOutside } from "usehooks-ts";
 type Props = {
   bookedHoursInMonth?: BookedHoursInMonth;
   forecastValue: number;
+  billablePercentage: number;
   hasBeenEdited: boolean;
   consultant: ConsultantWithForecast;
   setHoveredMonth: (date: string) => void;
@@ -26,6 +27,7 @@ type Props = {
 export function MonthCell({
   bookedHoursInMonth,
   forecastValue,
+  billablePercentage,
   consultant,
   hasBeenEdited,
   setHoveredMonth: setHoveredMonth,
@@ -37,7 +39,7 @@ export function MonthCell({
   numWorkHours,
   onChange,
 }: Props) {
-  const uneditable = forecastValue === 100;
+  const uneditable = billablePercentage === 100;
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [isChangingHours, setIsChangingHours] = useState(false);
 
@@ -53,12 +55,10 @@ export function MonthCell({
 
   useOnClickOutside(ref, handleClickOutside);
 
-  function optionGenerator(forecastValue: number) {
+  const options = useMemo(() => {
     const allOptions = [50, 80, 100];
-    return allOptions.filter((option) => option >= forecastValue);
-  }
-
-  const options = optionGenerator(forecastValue);
+    return allOptions.filter((option) => option >= billablePercentage);
+  }, [billablePercentage])
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     setInputValue(parseInt(e.target.value));
@@ -66,8 +66,8 @@ export function MonthCell({
   }
 
   function validateInput() {
-    if (inputValue < forecastValue) {
-      alert("Du kan ikke legge inn en prognose som er lavere enn bemanningen");
+    if (inputValue < billablePercentage) {
+      alert(`Du kan ikke legge inn en prognose som er lavere enn bemanningen (${billablePercentage}%)`);
       setInputValue(forecastValue);
       return false;
     }
@@ -143,12 +143,12 @@ export function MonthCell({
         <div className={`flex flex-row justify-end gap-[0.05rem] `}>
           <input
             type="number"
-            min={forecastValue}
+            min={billablePercentage}
             max={100}
             step={10}
             value={`${Math.round(inputValue)}`}
             draggable={true}
-            disabled={forecastValue >= 100}
+            disabled={billablePercentage >= 100}
             onChange={handleInputChange}
             onFocus={(e) => {
               e.target.select();
@@ -164,14 +164,14 @@ export function MonthCell({
             }}
             onKeyDown={handleKeyDown}
             className={`${
-              forecastValue == inputValue ? "small" : "small-medium"
+              billablePercentage == inputValue ? "small" : "small-medium"
             } rounded w-full bg-transparent focus:outline-none min-w-[24px] text-right ${
               uneditable ? "text-primary/60" : "text-primary"
             }`}
           />
           <span
             className={`${
-              forecastValue == inputValue ? "small" : "small-medium"
+              billablePercentage == inputValue ? "small" : "small-medium"
             } ${uneditable ? "text-primary/60" : "text-primary"} `}
           >
             %
