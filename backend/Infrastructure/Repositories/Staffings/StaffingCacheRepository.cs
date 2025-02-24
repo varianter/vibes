@@ -66,7 +66,7 @@ public class StaffingCacheRepository(IStaffingRepository sourceRepository, IMemo
         return null;
     }
 
-    private void ClearStaffingCache(int consultantId)
+    public void ClearStaffingCache(int consultantId)
     {
         cache.Remove(StaffingCacheKey(consultantId));
     }
