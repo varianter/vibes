@@ -3,7 +3,7 @@ import {
   ConsultantReadModel,
   ConsultantWithForecast,
 } from "@/api-types";
-import React, {useMemo, useRef, useState} from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { HoveredMonth } from "./HoveredMonth";
 import RenderInfoPills from "../Staffing/RenderInfoPills";
 import { useOnClickOutside } from "usehooks-ts";
@@ -58,7 +58,7 @@ export function MonthCell({
   const options = useMemo(() => {
     const allOptions = [50, 80, 100];
     return allOptions.filter((option) => option >= billablePercentage);
-  }, [billablePercentage])
+  }, [billablePercentage]);
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     setInputValue(parseInt(e.target.value));
@@ -67,7 +67,9 @@ export function MonthCell({
 
   function validateInput() {
     if (inputValue < billablePercentage) {
-      alert(`Du kan ikke legge inn en prognose som er lavere enn bemanningen (${billablePercentage}%)`);
+      alert(
+        `Du kan ikke legge inn en prognose som er lavere enn bemanningen (${billablePercentage}%)`,
+      );
       setInputValue(forecastValue);
       return false;
     }
