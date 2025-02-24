@@ -34,6 +34,7 @@ public class StorageService(IMemoryCache cache, ILogger<StorageService> logger, 
     public Consultant? LoadConsultantForSingleWeek(int consultantId, Week week)
     {
         var consultant = context.Consultant
+            .AsNoTracking()
             .Include(c => c.Department)
             .ThenInclude(d => d.Organization)
             .FirstOrDefault(c => c.Id == consultantId);
@@ -47,12 +48,14 @@ public class StorageService(IMemoryCache cache, ILogger<StorageService> logger, 
 
         consultant.Staffings = context.Staffing.Where(staffing =>
                 staffing.Week.Equals(week) && staffing.ConsultantId == consultantId)
+            .AsNoTracking()
             .Include(s => s.Engagement)
             .ThenInclude(p => p.Customer)
             .Include(s => s.Engagement)
             .ThenInclude(e => e.Agreements).ToList();
 
         consultant.PlannedAbsences = context.PlannedAbsence
+            .AsNoTracking()
             .Where(absence => absence.Week.Equals(week) && absence.ConsultantId == consultantId).Include(a => a.Absence)
             .ToList();
 
