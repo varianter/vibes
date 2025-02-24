@@ -1,21 +1,27 @@
 "use client";
-import { BookedHoursInMonth, ConsultantWithForecast } from "@/api-types";
+
+import {
+  BookedHoursInMonth,
+  ConsultantWithForecast,
+  Forecast,
+} from "@/api-types";
 import React, { useState } from "react";
 import { MonthCell } from "./MonthCell";
 import Image from "next/image";
+import { putWithToken } from "@/data/apiCallsWithToken";
 
 function bookingForMonth(bookings: BookedHoursInMonth[], month: string) {
-  const date = new Date(month);
-
   return bookings.find((booking) => booking.month === month);
 }
 
 export default function ForecastRows({
   consultant,
   numWorkHours,
+  orgUrlKey,
 }: {
   consultant: ConsultantWithForecast;
   numWorkHours: number;
+  orgUrlKey: string;
 }) {
   const [currentConsultant, setCurrentConsultant] =
     useState<ConsultantWithForecast>(consultant);
@@ -24,6 +30,14 @@ export default function ForecastRows({
   const columnCount = consultant.bookings.length ?? 0;
 
   const bookingsPerMonth = consultant.bookings;
+
+  async function save(month: string, value: number) {
+    await putWithToken<Forecast, Forecast>(`${orgUrlKey}/forecasts/update`, {
+      consultantId: consultant.consultant.id,
+      month: month,
+      adjustedValue: value,
+    })
+  }
 
   return (
     <>
@@ -70,6 +84,7 @@ export default function ForecastRows({
             isLastCol={index == currentConsultant.bookings.length - 1}
             isSecondLastCol={index == currentConsultant.bookings.length - 2}
             numWorkHours={numWorkHours}
+            onChange={(value) => save(b.month, value)}
           />
         ))}
       </tr>

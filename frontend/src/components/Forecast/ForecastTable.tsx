@@ -153,6 +153,7 @@ export default function ForecastTable() {
             key={consultant.consultant.id}
             consultant={consultant}
             numWorkHours={numWorkHours}
+            orgUrlKey={organisationName}
           />
         ))}
       </tbody>

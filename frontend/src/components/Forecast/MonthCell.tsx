@@ -8,7 +8,7 @@ import { HoveredMonth } from "./HoveredMonth";
 import RenderInfoPills from "../Staffing/RenderInfoPills";
 import { useOnClickOutside } from "usehooks-ts";
 
-export function MonthCell(props: {
+type Props = {
   bookedHoursInMonth?: BookedHoursInMonth;
   forecastValue: number;
   hasBeenEdited: boolean;
@@ -20,21 +20,23 @@ export function MonthCell(props: {
   isLastCol: boolean;
   isSecondLastCol: boolean;
   numWorkHours: number;
-}) {
-  const {
-    bookedHoursInMonth,
-    forecastValue,
-    consultant,
-    hasBeenEdited,
-    setHoveredMonth: setHoveredMonth,
-    hoveredMonth: hoveredMonth,
-    month,
-    columnCount,
-    isLastCol,
-    isSecondLastCol,
-    numWorkHours,
-  } = props;
+  onChange?: (value: number) => void;
+};
 
+export function MonthCell({
+  bookedHoursInMonth,
+  forecastValue,
+  consultant,
+  hasBeenEdited,
+  setHoveredMonth: setHoveredMonth,
+  hoveredMonth: hoveredMonth,
+  month,
+  columnCount,
+  isLastCol,
+  isSecondLastCol,
+  numWorkHours,
+  onChange,
+}: Props) {
   const uneditable = forecastValue === 100;
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [isChangingHours, setIsChangingHours] = useState(false);
@@ -67,10 +69,14 @@ export function MonthCell(props: {
     if (inputValue < forecastValue) {
       alert("Du kan ikke legge inn en prognose som er lavere enn bemanningen");
       setInputValue(forecastValue);
-    } else if (inputValue > 100) {
+      return false;
+    }
+    if (inputValue > 100) {
       alert("Du kan ikke legge inn en prognose som er høyere enn 100%");
       setInputValue(forecastValue);
+      return false;
     }
+    return true;
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -98,6 +104,7 @@ export function MonthCell(props: {
   function handleOptionClick(option: number) {
     setInputValue(option);
     setIsActive(false);
+    onChange?.(option);
   }
 
   return (
@@ -148,8 +155,9 @@ export function MonthCell(props: {
               setIsInputFocused(true);
             }}
             onBlur={() => {
+              if (!validateInput()) return;
               setIsInputFocused(false);
-              validateInput();
+              !isActive && onChange?.(inputValue);
             }}
             onClick={() => {
               setIsActive(true);
@@ -182,7 +190,7 @@ export function MonthCell(props: {
                   : "bg-transparent"
               }`}
             >
-              {opt.toString()} <span>%</span>
+              {opt.toString()}%
             </li>
           ))}
         </ul>
