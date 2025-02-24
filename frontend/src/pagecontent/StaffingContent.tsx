@@ -12,7 +12,7 @@ import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { StaffingSkeleton } from "@/components/Staffing/StaffingSkeleton";
 import { DelayRender } from "@/components/DelayRender";
 
-export function StaffingContent() {
+export function StaffingContent({ isFetching }: { isFetching: boolean }) {
   const [isSideBarOpen, setIsSidebarOpen] = useState<boolean>(false);
 
   return (
@@ -37,10 +37,7 @@ export function StaffingContent() {
 
           <WeekSelection />
         </div>
-
-        <Suspense fallback={<StaffingSkeleton />}>
-          <FilteredConsultantsList />
-        </Suspense>
+        {isFetching ? <StaffingSkeleton /> : <FilteredConsultantsList />}
         <InfoPillDescriptions />
       </div>
     </>
