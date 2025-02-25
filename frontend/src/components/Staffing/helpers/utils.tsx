@@ -143,12 +143,11 @@ export function upsertConsultantBooking(
       if (detailedBookingIndex === -1) {
         // Either staffing or vacation was changed in a different tab since `old` was initially loaded.
         // Attempt to manually update the new data for the current week from `res`.
-        let hours = [];
         if (
           consultantToUpdate.detailedBooking.length > 0 &&
           consultantToUpdate.detailedBooking[0].hours.length > 0
         ) {
-          hours = consultantToUpdate.detailedBooking[0].hours;
+          const hours = consultantToUpdate.detailedBooking[0].hours;
           for (const h of detailedBooking.hours) {
             for (let i = 0; i < hours.length; i++) {
               if (hours[i].week === h.week) {
