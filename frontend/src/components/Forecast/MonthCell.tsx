@@ -37,20 +37,20 @@ export function MonthCell({
   isLastCol,
   isSecondLastCol,
   numWorkHours,
-  onChange,
+  ...props
 }: Props) {
   const uneditable = billablePercentage === 100;
-  const [isInputFocused, setIsInputFocused] = useState(false);
-  const [isChangingHours, setIsChangingHours] = useState(false);
 
-  const [isActive, setIsActive] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [storedValue, setStoredValue] = useState<number>(forecastValue);
   const [inputValue, setInputValue] = useState<number>(forecastValue);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
+  const inputRef = useRef<HTMLInputElement>(null);
   const ref = useRef(null);
 
   function handleClickOutside() {
-    setIsActive(false);
+    setDropdownOpen(false);
   }
 
   useOnClickOutside(ref, handleClickOutside);
@@ -59,6 +59,13 @@ export function MonthCell({
     const allOptions = [50, 80, 100];
     return allOptions.filter((option) => option >= billablePercentage);
   }, [billablePercentage]);
+
+  function onChange(value: number) {
+    // If values match, there's been no changes
+    if (storedValue === value) return;
+    props.onChange?.(value);
+    setStoredValue(value);
+  }
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     setInputValue(parseInt(e.target.value));
@@ -82,31 +89,58 @@ export function MonthCell({
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (isActive) {
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        setHighlightedIndex((prevIndex) => (prevIndex + 1) % options.length);
-      } else if (e.key === "ArrowUp") {
+    switch (e.key) {
+      case "ArrowUp":
+        if (!dropdownOpen) break;
         e.preventDefault();
         setHighlightedIndex(
           (prevIndex) => (prevIndex - 1 + options.length) % options.length,
         );
-      } else if (e.key === "Enter") {
+        break;
+      case "ArrowDown":
+        if (!dropdownOpen) break;
         e.preventDefault();
-        if (highlightedIndex >= 0) {
-          setInputValue(options[highlightedIndex]);
+        setHighlightedIndex((prevIndex) => (prevIndex + 1) % options.length);
+        break;
+      case "Escape":
+        e.preventDefault();
+        if (dropdownOpen) {
+          setDropdownOpen(false);
         }
-        setIsActive(false);
-      } else if (e.key === "Escape") {
-        setIsActive(false);
-      }
+        setInputValue(forecastValue);
+        // delay blur just a tiny bit to avoid any potential alerts about invalid value (which we discarded above anyway)
+        setTimeout(() => inputRef.current?.blur(), 5);
+        break;
+      case "Enter":
+        e.preventDefault();
+        if (dropdownOpen && highlightedIndex >= 0) {
+          setInputValue(options[highlightedIndex]);
+          onChange(options[highlightedIndex]);
+        } else {
+          onChange(inputValue);
+        }
+        inputRef.current?.blur();
+        setDropdownOpen(false);
+        break;
+      case "Tab":
+        setDropdownOpen(false);
+        break;
     }
   }
 
   function handleOptionClick(option: number) {
     setInputValue(option);
-    setIsActive(false);
-    onChange?.(option);
+    setDropdownOpen(false);
+    onChange(option);
+  }
+
+  function handleOnFocus(e: React.FocusEvent<HTMLInputElement>) {
+    e.target.select();
+  }
+
+  function handleOnBlur(e: React.FocusEvent<HTMLInputElement>) {
+    if (!validateInput()) return;
+    !dropdownOpen && onChange(inputValue);
   }
 
   return (
@@ -119,11 +153,9 @@ export function MonthCell({
         className={`flex bg-primary/[3%] flex-col gap-1 p-2 justify-end rounded w-full h-full relative border border-transparent hover:border-primary/30 `}
         onMouseEnter={() => {
           setHoveredMonth(month);
-          setIsChangingHours(true);
         }}
         onMouseLeave={() => {
           setHoveredMonth("");
-          setIsChangingHours(false);
         }}
       >
         {hoveredMonth != "" && hoveredMonth == month && (
@@ -146,23 +178,17 @@ export function MonthCell({
           <input
             type="number"
             min={billablePercentage}
+            ref={inputRef}
             max={100}
             step={10}
             value={`${Math.round(inputValue)}`}
             draggable={true}
             disabled={billablePercentage >= 100}
             onChange={handleInputChange}
-            onFocus={(e) => {
-              e.target.select();
-              setIsInputFocused(true);
-            }}
-            onBlur={() => {
-              if (!validateInput()) return;
-              setIsInputFocused(false);
-              !isActive && onChange?.(inputValue);
-            }}
+            onFocus={handleOnFocus}
+            onBlur={handleOnBlur}
             onClick={() => {
-              setIsActive(true);
+              setDropdownOpen(true);
             }}
             onKeyDown={handleKeyDown}
             className={`${
@@ -180,7 +206,7 @@ export function MonthCell({
           </span>
         </div>
       </div>
-      {isActive && (
+      {dropdownOpen && (
         <ul className="flex flex-col border border-primary/30 rounded mt-1 absolute w-[calc(100%-0.25rem)] justify-center items-end bg-white opacity-100 z-50">
           {options.map((opt, index) => (
             <li
@@ -198,19 +224,5 @@ export function MonthCell({
         </ul>
       )}
     </td>
-  );
-}
-
-function checkIfNotStartedOrQuit(
-  consultant: ConsultantReadModel,
-  bookedHoursPerMonth: BookedHoursInMonth,
-  numWorkHours: number,
-) {
-  const notStartedOrQuitHours =
-    bookedHoursPerMonth.bookingModel.totalNotStartedOrQuit;
-
-  return (
-    notStartedOrQuitHours ==
-    numWorkHours - bookedHoursPerMonth.bookingModel.totalHolidayHours
   );
 }
