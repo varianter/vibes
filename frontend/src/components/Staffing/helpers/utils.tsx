@@ -135,7 +135,7 @@ export function upsertConsultantBooking(
   });
   if (res.detailedBooking) {
     res.detailedBooking.map((detailedBooking, bookingIndex) => {
-      let detailedBookingIndex = consultantToUpdate.detailedBooking.findIndex(
+      const detailedBookingIndex = consultantToUpdate.detailedBooking.findIndex(
         (db) =>
           db.bookingDetails.projectId ==
           detailedBooking.bookingDetails.projectId,
