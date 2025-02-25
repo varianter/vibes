@@ -160,7 +160,7 @@ export function upsertConsultantBooking(
           }
           detailedBooking.hours = hours;
         }
-        consultantToUpdate.detailedBooking[bookingIndex] = detailedBooking;
+        consultantToUpdate.detailedBooking.push(detailedBooking);
         old[consultantIndex] = consultantToUpdate;
         return [...old];
       }
