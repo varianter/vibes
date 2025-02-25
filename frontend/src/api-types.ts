@@ -345,3 +345,12 @@ export interface ForecastForMonth {
   /** @format int32 */
   displayedPercentage: number;
 }
+
+export interface Forecast {
+  /** @format int32 */
+  consultantId: number;
+  /** @format date */
+  month: string;
+  /** @format int32 */
+  adjustedValue: number;
+}
