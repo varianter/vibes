@@ -121,6 +121,8 @@ export function upsertConsultantBooking(
   const consultantToUpdate = old.find((c) => c.id === res.id);
   if (!consultantToUpdate || !res) return old;
 
+  const consultantIndex = old.findIndex((c) => c.id === res.id);
+
   consultantToUpdate.bookings = consultantToUpdate.bookings ?? [];
   res.bookings?.map((booking) => {
     const bookingIndex = consultantToUpdate.bookings.findIndex(
@@ -174,7 +176,6 @@ export function upsertConsultantBooking(
     });
   }
 
-  const consultantIndex = old.findIndex((c) => c.id === res.id);
   old[consultantIndex] = consultantToUpdate;
 
   return [...old];
