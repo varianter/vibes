@@ -121,6 +121,8 @@ export function upsertConsultantBooking(
   const consultantToUpdate = old.find((c) => c.id === res.id);
   if (!consultantToUpdate || !res) return old;
 
+  const consultantIndex = old.findIndex((c) => c.id === res.id);
+
   consultantToUpdate.bookings = consultantToUpdate.bookings ?? [];
   res.bookings?.map((booking) => {
     const bookingIndex = consultantToUpdate.bookings.findIndex(
@@ -134,12 +136,42 @@ export function upsertConsultantBooking(
       consultantToUpdate.detailedBooking ?? [];
   });
   if (res.detailedBooking) {
-    res.detailedBooking.map((detailedBooking) => {
+    res.detailedBooking.map((detailedBooking, bookingIndex) => {
       const detailedBookingIndex = consultantToUpdate.detailedBooking.findIndex(
         (db) =>
           db.bookingDetails.projectId ==
           detailedBooking.bookingDetails.projectId,
       );
+      if (detailedBookingIndex === -1) {
+        // Either staffing or vacation was changed in a different tab since `old` was initially loaded.
+        // Attempt to manually update the new data for the current week from `res`.
+        if (
+          consultantToUpdate.detailedBooking.length > 0 &&
+          consultantToUpdate.detailedBooking[0].hours.length > 0
+        ) {
+          // Get week numbers
+          const hours = consultantToUpdate.detailedBooking[0].hours.map(
+            (hour) => ({
+              hours: 0,
+              week: hour.week,
+            }),
+          );
+
+          for (const h of detailedBooking.hours) {
+            for (let i = 0; i < hours.length; i++) {
+              if (hours[i].week === h.week) {
+                hours[i].hours = h.hours;
+                break;
+              }
+            }
+          }
+          detailedBooking.hours = hours;
+        }
+        consultantToUpdate.detailedBooking.push(detailedBooking);
+        old[consultantIndex] = consultantToUpdate;
+        return [...old];
+      }
+
       detailedBooking.hours.map((hour) => {
         const hoursIndex = consultantToUpdate.detailedBooking[
           detailedBookingIndex
@@ -151,7 +183,6 @@ export function upsertConsultantBooking(
     });
   }
 
-  const consultantIndex = old.findIndex((c) => c.id === res.id);
   old[consultantIndex] = consultantToUpdate;
 
   return [...old];
