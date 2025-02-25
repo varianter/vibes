@@ -159,7 +159,8 @@ export function upsertConsultantBooking(
           detailedBooking.hours = hours;
         }
         consultantToUpdate.detailedBooking[bookingIndex] = detailedBooking;
-        return;
+        old[consultantIndex] = consultantToUpdate;
+        return [...old];
       }
 
       detailedBooking.hours.map((hour) => {
