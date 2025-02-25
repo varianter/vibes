@@ -149,7 +149,14 @@ export function upsertConsultantBooking(
           consultantToUpdate.detailedBooking.length > 0 &&
           consultantToUpdate.detailedBooking[0].hours.length > 0
         ) {
-          const hours = consultantToUpdate.detailedBooking[0].hours;
+          // Get week numbers
+          const hours = consultantToUpdate.detailedBooking[0].hours.map(
+            (hour) => ({
+              hours: 0,
+              week: hour.week,
+            }),
+          );
+
           for (const h of detailedBooking.hours) {
             for (let i = 0; i < hours.length; i++) {
               if (hours[i].week === h.week) {
