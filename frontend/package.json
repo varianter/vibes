@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "start-test": "NEXT_PUBLIC_NO_AUTH=true NEXTAUTH_SECRET='insecure-secret' next dev",
-    "build": "next build",
+    "build": "NEXT_PUBLIC_VIBES_GIT_SHA=`git rev-parse --short HEAD` next build",
     "start": "next start",
     "lint": "next lint",
     "prettier:ci": "prettier --check . ",

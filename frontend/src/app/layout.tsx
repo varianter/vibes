@@ -21,6 +21,9 @@ export const metadata: Metadata = {
     initialScale: 1,
     width: "device-width",
   },
+  other: {
+    version: `vibes-${process.env.NEXT_PUBLIC_VIBES_GIT_SHA || "dev"}`,
+  },
 };
 
 export default async function RootLayout({ children }: PropsWithChildren) {
