@@ -307,7 +307,6 @@ function setMonthlyInvoiceRate(
     filteredConsultants.forEach((consultant) => {
       consultant.forecasts.forEach((forecast) => {
         if (getMonth(forecast.month) === month) {
-          console.log(forecast);
           totalAvailableMonthHours += forecast.salariedHours;
         }
       });

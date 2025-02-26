@@ -11,7 +11,8 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
-      staleTime: 5000,
+      staleTime: 1000,
+      structuralSharing: false,
     },
   },
   queryCache: new QueryCache({

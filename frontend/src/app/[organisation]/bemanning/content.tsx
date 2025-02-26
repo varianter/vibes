@@ -13,7 +13,6 @@ import { StaffingContent } from "@/pagecontent/StaffingContent";
 import { useQueries } from "@tanstack/react-query";
 import { Week } from "@/types";
 import { useEffect } from "react";
-import { uniqueId } from "lodash";
 
 export default function Staffing({
   selectedWeek,
@@ -68,16 +67,6 @@ export default function Staffing({
 
   const isFetching = queries.some((query) => query.isFetching);
 
-  useEffect(() => {
-    console.log(
-      "isfetching",
-      isFetching,
-      queries[0].isFetching,
-      queries[1].isFetching,
-      queries[2].isFetching,
-      queries[3].isFetching,
-    );
-  }, [queries]);
   return (
     <ConsultantFilterProvider
       consultants={consultants ?? []}
