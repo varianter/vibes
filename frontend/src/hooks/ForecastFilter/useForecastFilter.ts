@@ -76,7 +76,7 @@ export function useForecastFilter() {
     setMonthlyForecastHours(filteredConsultants);
   const weeklyInvoiceRates = setMonthlyInvoiceRate(
     filteredConsultants,
-    monthlyTotalBillable,
+    monthlyForecastTotalHours,
   );
 
   return {
@@ -297,11 +297,11 @@ function setMonthlyForecastHours(filterConsultants: ConsultantWithForecast[]) {
 
 function setMonthlyInvoiceRate(
   filteredConsultants: ConsultantWithForecast[],
-  monthlyTotalBillable: Map<number, number>,
+  monthlyTotalBillableWithForecast: Map<number, number>,
 ) {
   const monthlyInvoiceRate = new Map<number, number>();
 
-  monthlyTotalBillable.forEach((totalBillable, month) => {
+  monthlyTotalBillableWithForecast.forEach((totalBillable, month) => {
     let totalAvailableMonthHours = 0;
 
     filteredConsultants.forEach((consultant) => {

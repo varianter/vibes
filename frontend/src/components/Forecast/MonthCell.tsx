@@ -55,6 +55,8 @@ export function MonthCell({
 
   useOnClickOutside(ref, handleClickOutside);
 
+  const hasFreeTime = bookedHoursInMonth?.bookingModel?.totalSellableTime! > 0;
+
   const options = useMemo(() => {
     const allOptions = [50, 80, 100];
     return allOptions.filter((option) => option >= billablePercentage);
@@ -146,11 +148,13 @@ export function MonthCell({
   return (
     <td
       key={month}
-      className={`h-[56px] relative ${isLastCol ? "py-0.5 pl-0.5" : "p-0.5"}`}
+      className={`h-[56px]  relative ${isLastCol ? "py-0.5 pl-0.5" : "p-0.5"}`}
       ref={ref}
     >
       <div
-        className={`flex bg-primary/[3%] flex-col gap-1 p-2 justify-end rounded w-full h-full relative border border-transparent hover:border-primary/30 `}
+        className={`flex  ${
+          hasFreeTime ? "bg-available/50" : "bg-primary/[3%]"
+        } flex-col gap-1 p-2 justify-end rounded w-full h-full relative border border-transparent hover:border-primary/30 `}
         onMouseEnter={() => {
           setHoveredMonth(month);
         }}
