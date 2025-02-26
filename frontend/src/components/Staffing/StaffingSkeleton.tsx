@@ -21,7 +21,7 @@ function StaffingSkeleton({ weekSpan }: { weekSpan: number }) {
               </div>
             </div>
             {numberOfTds.map((num) => (
-              <Skeleton key={num + 100} className="" />
+              <Skeleton key={num} className="" />
             ))}
           </Fragment>
         ))}
