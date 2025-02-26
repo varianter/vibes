@@ -18,7 +18,7 @@ export function useSelectedWeek() {
     const newDate = date
       .plus({ week: numberOfWeeks })
       .plus({ day: -date.weekday + 4 });
-
+    console.log("updating", newDate);
     updateFilters({
       week: { year: newDate.year, weekNumber: newDate.weekNumber },
     });

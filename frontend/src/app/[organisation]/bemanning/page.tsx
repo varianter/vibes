@@ -28,17 +28,6 @@ export default async function Bemanning({
 
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery({
-    queryKey: ["consultants", selectedWeek],
-    queryFn: () =>
-      fetchEmployeesWithImageAndToken(
-        `${organisation}/staffings${
-          selectedWeek
-            ? `?Year=${selectedWeek.year}&Week=${selectedWeek.weekNumber}`
-            : ""
-        }${weekSpan ? `${selectedWeek ? "&" : "?"}WeekSpan=${weekSpan}` : ""}`,
-      ),
-  });
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Staffing

@@ -10,6 +10,7 @@ import { fetchWithToken } from "@/data/apiCallsWithToken";
 import { OrganisationReadModel } from "@/api-types";
 import { OrganizationContextProvider } from "@/context/organization";
 import { ReactQueryClientProvider } from "@/query-client";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 export const metadata: Metadata = {
   title: "VIBES",
@@ -48,6 +49,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
             />
             {children}
           </OrganizationContextProvider>
+          <ReactQueryDevtools initialIsOpen={true} />
         </ReactQueryClientProvider>
       </body>
     </html>
