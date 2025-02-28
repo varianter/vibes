@@ -1,6 +1,8 @@
 using Core.Absences;
 using Core.Agreements;
 using Core.Consultants;
+using Core.Consultants.Competences;
+using Core.Consultants.Disciplines;
 using Core.Customers;
 using Core.Engagements;
 using Core.Forecasts;
@@ -17,6 +19,7 @@ namespace Infrastructure.DatabaseContext;
 
 public class ApplicationContext(IOptions<InfrastructureConfig> config) : DbContext
 {
+    public DbSet<Discipline> Disciplines { get; init; } = null!;
     public DbSet<Consultant> Consultant { get; init; } = null!;
     public DbSet<Competence> Competence { get; init; } = null!;
     public DbSet<CompetenceConsultant> CompetenceConsultant { get; init; } = null!;
@@ -178,6 +181,26 @@ public class ApplicationContext(IOptions<InfrastructureConfig> config) : DbConte
             new() { Id = "design", Name = "Design" },
             new() { Id = "project-mgmt", Name = "Project Management" },
             new() { Id = "development", Name = "Utvikling" }
+        });
+
+        modelBuilder.Entity<Discipline>()
+            .HasMany(d => d.Consultants)
+            .WithOne(c => c.Discipline)
+            .HasForeignKey(c => c.DisciplineId);
+
+        modelBuilder.Entity<Discipline>().HasData(new List<Discipline>
+        {
+            new() { Id = "frontend", Name = "Frontend" },
+            new() { Id = "dotnet", Name = ".NET" },
+            new() { Id = "platform", Name = "Plattform" },
+            new() { Id = "strategic-design", Name = "Strategisk Design" },
+            new() { Id = "ux-design", Name = "UX Design" },
+            new() { Id = "service-design", Name = "Tjenestedesign" },
+            new() { Id = "ppp", Name = "Prosjekt/Produkt/Prosess" },
+            new() { Id = "counselling", Name = "Rådgivning" },
+            new() { Id = "data-engineer", Name = "Data Engineer" },
+            new() { Id = "app-development", Name = "App-utvikling" },
+            new() { Id = "jvm", Name = "Java/JVM" }
         });
 
         modelBuilder.Entity<Agreement>(entity =>
