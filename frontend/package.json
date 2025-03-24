@@ -26,7 +26,7 @@
     "eslint-config-next": "^13.5.2",
     "lodash": "^4.17.21",
     "luxon": "^3.4.3",
-    "next": "13.5.9",
+    "next": "^13.5.9",
     "next-auth": "^4.23.2",
     "nextjs-toploader": "^1.5.3",
     "playwright": "^1.49.1",

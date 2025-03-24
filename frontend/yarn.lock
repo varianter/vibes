@@ -2360,7 +2360,7 @@ next-auth@^4.23.2:
     preact-render-to-string "^5.1.19"
     uuid "^8.3.2"
 
-next@13.5.9:
+next@^13.5.9:
   version "13.5.9"
   resolved "https://registry.yarnpkg.com/next/-/next-13.5.9.tgz#a8c38254279eb30a264c1c640bf77340289ba6e3"
   integrity sha512-h4ciD/Uxf1PwsiX0DQePCS5rMoyU5a7rQ3/Pg6HBLwpa/SefgNj1QqKSZsWluBrYyqdtEyqKrjeOszgqZlyzFQ==
