@@ -201,7 +201,6 @@ export default function VacationCalendar({
             multiple
             fullYear
             weekStartDayIndex={1}
-            displayWeekNumbers
             currentDate={today}
             value={value}
             onChange={handleChange}
