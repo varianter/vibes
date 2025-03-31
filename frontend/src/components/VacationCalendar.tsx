@@ -1,10 +1,10 @@
 "use client";
+
 import { ConsultantReadModel, VacationReadModel } from "@/api-types";
 import React, { useState } from "react";
-import type { Value } from "react-multi-date-picker";
-import { Calendar, DateObject } from "react-multi-date-picker";
+import { MantineProvider } from "@mantine/core";
+import { DatePicker, DatePickerProps } from "@mantine/dates";
 import InfoBox from "./InfoBox";
-import { map } from "lodash";
 
 export default function VacationCalendar({
   consultant,
@@ -17,31 +17,41 @@ export default function VacationCalendar({
   publicHolidays: string[];
   organisationUrl: string;
 }) {
-  const [value, setValue] = useState<Value>(
-    vacationDays.vacationDays?.map((date) => new DateObject(date)) ?? [],
+  const [value, setValue] = useState<Date[]>(
+    vacationDays.vacationDays?.map((day) => new Date(day)) ?? [],
   );
   const [vacationInformation, setVacationInformation] = useState(vacationDays);
   const [savedMessage, setSavedMessage] = useState("");
 
-  const today = new DateObject();
+  const today = new Date();
+  const thisYear = today.getFullYear();
 
-  function handleChange(e: Value) {
-    const searchRegExp = /\//g;
-    const replaceWith = "-";
-    const dates = e?.toString().replace(searchRegExp, replaceWith).split(",");
-    const valueDates = value
-      ?.toString()
-      .replace(searchRegExp, replaceWith)
-      .split(",");
+  const dayRenderer: DatePickerProps['renderDay'] = (date: Date) => {
+    const day = date.getDate(); // TODO 'One hour extra' trick?
 
-    if (!dates || !valueDates) {
+    if (dateIsPublicHoliday(date)) {
+      return (<div style={{ color: "#B91456" }}>{day}</div>);
+    }
+    if (dateIsWeekend(date)) {
+      return (<div style={{ color: "#00445B" }}>{day}</div>);
+    }
+
+    return (<div>{day}</div>);
+  };
+
+  function handleChange(e: Date[]) {
+    if (!e || !value) {
       return;
     }
+
+    const currentSelection = e.map(getDateString);
+    const previousSelection = value.map(getDateString);
+
     if (
-      dates.length > valueDates.length ||
-      (valueDates.length == 1 && valueDates[0] == "")
+      currentSelection.length > previousSelection.length ||
+      (previousSelection.length == 1 && previousSelection[0] == "")
     ) {
-      const newDates = dates.filter((item) => valueDates.indexOf(item) < 0);
+      const newDates = currentSelection.filter((item) => previousSelection.indexOf(item) < 0);
       addVacationDay(newDates[0]).then((res) => {
         if (res) {
           setSavedMessage(`Ferie ${newDates[0]} ble lagret`);
@@ -50,10 +60,10 @@ export default function VacationCalendar({
       });
     }
     if (
-      dates.length < valueDates.length ||
-      (dates.length == 1 && dates[0] == "")
+      currentSelection.length < previousSelection.length ||
+      (currentSelection.length == 1 && currentSelection[0] == "")
     ) {
-      const removeDates = valueDates.filter((item) => dates.indexOf(item) < 0);
+      const removeDates = previousSelection.filter((item) => currentSelection.indexOf(item) < 0);
       removeVacationDay(removeDates[0]).then((res) => {
         if (res) {
           setSavedMessage(`Ferie ${removeDates[0]} ble fjernet`);
@@ -62,6 +72,14 @@ export default function VacationCalendar({
       });
     }
     setValue(e);
+  }
+
+  function getDateString(date: Date) {
+    const year = date.getFullYear().toString();
+    const month = date.getMonth().toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
   }
 
   async function addVacationDay(vacationDay: string) {
@@ -104,69 +122,27 @@ export default function VacationCalendar({
     }
   }
 
-  function dateIsPublicHoliday(date: DateObject) {
-    return publicHolidays.includes(
-      `${date.year.toString()}-${
-        date.month.number > 9
-          ? date.month.number.toString()
-          : "0" + date.month.number.toString()
-      }-${date.day > 9 ? date.day.toString() : "0" + date.day.toString()}`,
-    );
+  function dateIsUnselectable(date: Date) {
+    return dateIsWeekend(date) || dateIsPublicHoliday(date);
   }
 
-  function dateIsVacationDayInThePast(date: DateObject, dateCopy: DateObject) {
-    return (
-      vacationDays.vacationDays?.includes(
-        `${date.year.toString()}-${
-          date.month.number > 9
-            ? date.month.number.toString()
-            : "0" + date.month.number.toString()
-        }-${date.day > 9 ? date.day.toString() : "0" + date.day.toString()}`,
-      ) && dateCopy.toDate() < new Date()
-    );
+    // TODO Handle 0-indexed month more consistently
+    function dateIsPublicHoliday(date: Date) {
+    var shiftedDate = new Date(date);
+    shiftedDate.setMonth(1 + date.getMonth());
+
+    return publicHolidays.includes(getDateString(shiftedDate));
   }
 
-  function dateIsWeekend(date: DateObject) {
-    return [0, 6].includes(date.weekDay.index);
-  }
-
-  function dateIsPast(date: DateObject) {
-    return date.toDate() < new Date();
-  }
-
-  function mapDayToStyling(date: DateObject) {
-    //Since the date object is created before the today object, an extra hour is added to a copied version of the date object to ensure that you can edit today
-    const dateCopy = new DateObject(date);
-    dateCopy.add(1, "h");
-
-    /*
-    if (dateIsVacationDayInThePast(date, dateCopy))
-      return {
-        disabled: true,
-        style: {
-          color: "#00445B",
-          opacity: 0.5,
-          backgroundColor: "#C8EEFB",
-        },
-      };
-     */
-    if (dateIsPublicHoliday(date))
-      return {
-        disabled: true,
-        style: { color: "#B91456", opacity: 0.5 },
-      };
-    else if (dateIsWeekend(date) || dateIsPast(dateCopy))
-      return {
-        disabled: true,
-        style: { color: "#00445B", opacity: 0.5 },
-      };
+  function dateIsWeekend(date: Date) {
+    return [0, 6].includes(date.getDay());
   }
 
   return (
     <div className="flex flex-row">
       <div className="sidebar z-10">
         <div className="bg-primary/5 h-full flex flex-col gap-6 p-4 w-[300px]">
-          <h1 className="">{new Date().getFullYear()}</h1>
+          <h1 className="">{thisYear}</h1>
           <div className="flex flex-col gap-2">
             <p className="small text-black">Ferieoversikt</p>
             <InfoBox
@@ -192,22 +168,27 @@ export default function VacationCalendar({
           </div>
         </div>
       </div>
-
       <div className="flex flex-row gap-3 w-full">
         <div className="flex flex-col justify-center m-4">
           <h1 className="text-black">{consultant.name}</h1>
           <p className="normal text-black">{consultant.department.name}</p>
-          <Calendar
-            multiple
-            fullYear
-            weekStartDayIndex={1}
-            displayWeekNumbers
-            currentDate={today}
-            value={value}
-            onChange={handleChange}
-            className="custom-calendar"
-            mapDays={({ date }) => mapDayToStyling(date)}
-          />
+          <MantineProvider>
+            <DatePicker
+              type="multiple"
+              numberOfColumns={12}
+              withWeekNumbers
+              maxLevel="month"
+              weekdayFormat="ddd"
+              excludeDate={dateIsUnselectable}
+              defaultDate={new Date(thisYear, 0, 1)}
+              minDate={today}
+              highlightToday={true}
+              value={value}
+              onChange={handleChange}
+              class-name="custom-calendar"
+              renderDay={dayRenderer}
+            />
+          </MantineProvider>
         </div>
         <p className="absolute right-1 p-4 hidden lg:flex normal-semibold">
           {savedMessage}

@@ -1,6 +1,8 @@
 import NextTopLoader from "nextjs-toploader";
 
 import "./globals.css";
+import "@mantine/core/styles.css";
+import "@mantine/dates/styles.css";
 import NavBar from "@/components/NavBar/NavBar";
 import { Metadata } from "next";
 import { cookies } from "next/headers";

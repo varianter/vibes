@@ -164,11 +164,6 @@
     width: 0;
   }
 
-  .custom-calendar.rmdp-wrapper,
-  .rmdp-container .custom-calendar.ep-arrow::after {
-    box-shadow: none;
-  }
-
   .h1 {
     font-size: 1.625rem;
     font-family: "Graphik-Regular", sans-serif;
@@ -286,5 +281,14 @@
     border-radius: 5px;
     padding: 0.3rem 0.7rem;
     background-color: #242424;
+  }
+
+  [class-name='custom-calendar'] {
+    display: flex;
+  }
+
+  [class-name='custom-calendar'] > div {
+    flex-wrap: wrap;
+    flex-basis: 50%;
   }
 }
