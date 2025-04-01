@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { MantineProvider } from "@mantine/core";
 import { DatePicker, DatePickerProps } from "@mantine/dates";
 import InfoBox from "./InfoBox";
+import { isPast, isToday } from "date-fns";
 
 export default function VacationCalendar({
   consultant,
@@ -28,16 +29,34 @@ export default function VacationCalendar({
 
   const dayRenderer: DatePickerProps['renderDay'] = (date: Date) => {
     const day = date.getDate(); // TODO 'One hour extra' trick?
+    const style = getStyle(date);
 
+    return style
+      ? (<div style={style}>{day}</div>)
+      : (<div>{day}</div>);
+  };
+
+  function getStyle(date: Date): React.CSSProperties | null {
+    if (dateIsPastVacation(date)) {
+      return {
+        color: "#FFF",
+        backgroundColor: "var(--mantine-color-dimmed)",
+        borderRadius: "inherit",
+        width: "100%",
+        height: "100%",
+        textAlign: "center",
+        alignContent: "center"
+      };
+    }
     if (dateIsPublicHoliday(date)) {
-      return (<div style={{ color: "#B91456" }}>{day}</div>);
+      return { color: "#B91456" };
     }
     if (dateIsWeekend(date)) {
-      return (<div style={{ color: "#00445B" }}>{day}</div>);
+      return { color: "#00445B" };
     }
 
-    return (<div>{day}</div>);
-  };
+    return null;
+  }
 
   function handleChange(e: Date[]) {
     if (!e || !value) {
@@ -126,8 +145,18 @@ export default function VacationCalendar({
     }
   }
 
+  function dateIsPastVacation(date: Date) {
+    const isVacation = value.find((vacationDay) => getDateString(vacationDay) == getDateString(date));
+
+    return isVacation && dateIsBeforeToday(date);
+  }
+
   function dateIsUnselectable(date: Date) {
-    return dateIsWeekend(date) || dateIsPublicHoliday(date);
+    return dateIsBeforeToday(date) || dateIsWeekend(date) || dateIsPublicHoliday(date);
+  }
+
+  function dateIsBeforeToday(date: Date) {
+    return isPast(date) && !isToday(date);
   }
 
   function dateIsPublicHoliday(date: Date) {
@@ -181,7 +210,6 @@ export default function VacationCalendar({
               weekdayFormat="ddd"
               excludeDate={dateIsUnselectable}
               defaultDate={new Date(thisYear, 0, 1)}
-              minDate={today}
               highlightToday={true}
               value={value}
               onChange={handleChange}
