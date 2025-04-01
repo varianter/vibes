@@ -21,7 +21,7 @@ export default function VacationCalendar({
   publicHolidays: string[];
   organisationUrl: string;
 }) {
-  const [value, setValue] = useState<Date[]>(
+  const [vacationDates, setVacationDates] = useState<Date[]>(
     vacationDays.vacationDays?.map((day) => new Date(day)) ?? [],
   );
   const [vacationInformation, setVacationInformation] = useState(vacationDays);
@@ -41,7 +41,7 @@ export default function VacationCalendar({
   };
 
   function getStyle(date: Date): React.CSSProperties | null {
-    if (dateIsPastVacation(date)) {
+    if (isPastVacation(date)) {
       return {
         color: "#FFF",
         backgroundColor: "var(--mantine-color-dimmed)",
@@ -52,49 +52,49 @@ export default function VacationCalendar({
         alignContent: "center"
       };
     }
-    if (dateIsPublicHoliday(date)) {
+    if (isPublicHoliday(date)) {
       return { color: "#B91456" };
     }
-    if (dateIsWeekend(date)) {
+    if (isWeekend(date)) {
       return { color: "#00445B" };
     }
 
     return null;
   }
 
-  function handleChange(e: Date[]) {
-    if (!e || !value) {
+  function updateVacationDates(selection: Date[]) {
+    if (!selection || !vacationDates) {
       return;
     }
 
-    const currentSelection = e.map(getDateString);
-    const previousSelection = value.map(getDateString);
+    const updatedSelection = selection.map(getDateString);
+    const previousSelection = vacationDates.map(getDateString);
 
     if (
-      currentSelection.length > previousSelection.length ||
+      updatedSelection.length > previousSelection.length ||
       (previousSelection.length == 1 && previousSelection[0] == "")
     ) {
-      const newDates = currentSelection.filter((item) => previousSelection.indexOf(item) < 0);
-      addVacationDay(newDates[0]).then((res) => {
+      const addedDate = updatedSelection.find((date) => previousSelection.indexOf(date) < 0)!;
+      addVacationDay(addedDate).then((res) => {
         if (res) {
-          setSavedMessage(`Ferie ${newDates[0]} ble lagret`);
+          setSavedMessage(`Ferie ${addedDate} ble lagret`);
           setVacationInformation({ ...res });
         }
       });
     }
     if (
-      currentSelection.length < previousSelection.length ||
-      (currentSelection.length == 1 && currentSelection[0] == "")
+      updatedSelection.length < previousSelection.length ||
+      (updatedSelection.length == 1 && updatedSelection[0] == "")
     ) {
-      const removeDates = previousSelection.filter((item) => currentSelection.indexOf(item) < 0);
-      removeVacationDay(removeDates[0]).then((res) => {
+      const removedDate = previousSelection.find((date) => updatedSelection.indexOf(date) < 0)!;
+      removeVacationDay(removedDate).then((res) => {
         if (res) {
-          setSavedMessage(`Ferie ${removeDates[0]} ble fjernet`);
+          setSavedMessage(`Ferie ${removedDate} ble fjernet`);
           setVacationInformation({ ...res });
         }
       });
     }
-    setValue(e);
+    setVacationDates(selection);
   }
 
   function getDateString(date: Date) {
@@ -149,25 +149,25 @@ export default function VacationCalendar({
     }
   }
 
-  function dateIsPastVacation(date: Date) {
-    const isVacation = value.find((vacationDay) => getDateString(vacationDay) == getDateString(date));
+  function isPastVacation(date: Date) {
+    const isVacation = vacationDates.find((vacationDay) => getDateString(vacationDay) == getDateString(date));
 
-    return isVacation && dateIsBeforeToday(date);
+    return isVacation && isBeforeToday(date);
   }
 
-  function dateIsUnselectable(date: Date) {
-    return dateIsBeforeToday(date) || dateIsWeekend(date) || dateIsPublicHoliday(date);
+  function isUnselectable(date: Date) {
+    return isBeforeToday(date) || isWeekend(date) || isPublicHoliday(date);
   }
 
-  function dateIsBeforeToday(date: Date) {
+  function isBeforeToday(date: Date) {
     return isPast(date) && !isToday(date);
   }
 
-  function dateIsPublicHoliday(date: Date) {
+  function isPublicHoliday(date: Date) {
     return publicHolidays.includes(getDateString(date));
   }
 
-  function dateIsWeekend(date: Date) {
+  function isWeekend(date: Date) {
     return [0, 6].includes(date.getDay());
   }
 
@@ -215,10 +215,10 @@ export default function VacationCalendar({
               weekdayFormat="ddd"
               defaultDate={thisYearJanuary}
               highlightToday={true}
-              value={value}
-              onChange={handleChange}
+              value={vacationDates}
+              onChange={updateVacationDates}
               renderDay={dayRenderer}
-              excludeDate={dateIsUnselectable}
+              excludeDate={isUnselectable}
             />
           </MantineProvider>
         </div>
