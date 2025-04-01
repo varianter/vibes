@@ -7,7 +7,6 @@ import { DatePicker, DatePickerProps } from "@mantine/dates";
 import InfoBox from "./InfoBox";
 import { isPast, isToday } from "date-fns";
 
-// TODO Work with Date objects all the way; use getDateString() only for displaying info to the user
 // TODO Find non-hardcoded solution for styling 'custom-calendar'
 
 export default function VacationCalendar({
@@ -27,6 +26,8 @@ export default function VacationCalendar({
   const [vacationInformation, setVacationInformation] = useState(vacationDays);
   const [savedMessage, setSavedMessage] = useState("");
 
+  const publicHolidayDates = publicHolidays?.map((holiday) => new Date(holiday)) ?? [];
+
   const today = new Date();
   const thisYear = today.getFullYear();
   const thisYearJanuary = new Date(thisYear, 0, 1);
@@ -35,34 +36,34 @@ export default function VacationCalendar({
     if (!selection || !vacationDates) {
       return;
     }
+    if (selection.length == vacationDates.length) {
+      return;
+    }
 
-    const updatedSelection = selection.map(getDateString);
-    const previousSelection = vacationDates.map(getDateString);
+    if (selection.length > vacationDates.length) {
+      // a selected date is always appended to the selection array
+      const selectedDate = selection.slice(-1)[0];
+      const selectedDay = getDayString(selectedDate);
 
-    if (
-      updatedSelection.length > previousSelection.length ||
-      (previousSelection.length == 1 && previousSelection[0] == "")
-    ) {
-      const addedDate = updatedSelection.find((date) => previousSelection.indexOf(date) < 0)!;
-      addVacationDay(addedDate).then((res) => {
+      addVacationDay(selectedDay).then((res) => {
         if (res) {
-          setSavedMessage(`Ferie ${addedDate} ble lagret`);
+          setSavedMessage(`Ferie ${selectedDay} ble lagret`);
           setVacationInformation({ ...res });
         }
       });
     }
-    if (
-      updatedSelection.length < previousSelection.length ||
-      (updatedSelection.length == 1 && updatedSelection[0] == "")
-    ) {
-      const removedDate = previousSelection.find((date) => updatedSelection.indexOf(date) < 0)!;
-      removeVacationDay(removedDate).then((res) => {
+    else {
+      const deselectedDate = vacationDates.find((date) => !isInCollection(selection, date))!;
+      const deselectedDay = getDayString(deselectedDate);
+
+      removeVacationDay(deselectedDay).then((res) => {
         if (res) {
-          setSavedMessage(`Ferie ${removedDate} ble fjernet`);
+          setSavedMessage(`Ferie ${deselectedDay} ble fjernet`);
           setVacationInformation({ ...res });
         }
       });
     }
+
     setVacationDates(selection);
   }
 
@@ -106,7 +107,7 @@ export default function VacationCalendar({
     }
   }
 
-  function getDateString(date: Date) {
+  function getDayString(date: Date) {
     const year = date.getFullYear();
     const month = getTwoDigits(1 + date.getMonth()); // +1 to counteract the 0-indexing of 'month'
     const day = getTwoDigits(date.getDate());
@@ -162,13 +163,18 @@ export default function VacationCalendar({
   }
 
   function isPublicHoliday(date: Date) {
-    return publicHolidays.includes(getDateString(date));
+    return isInCollection(publicHolidayDates, date);
   }
 
   function isPastVacation(date: Date) {
-    const isVacation = vacationDates.find((vacationDay) => getDateString(vacationDay) == getDateString(date));
+    return isBeforeToday(date) && isInCollection(vacationDates, date);
+  }
 
-    return isVacation && isBeforeToday(date);
+  function isInCollection(dates: Date[], targetDate: Date) {
+    return dates.some((date) =>
+      date.getFullYear() === targetDate.getFullYear() &&
+      date.getMonth() === targetDate.getMonth() &&
+      date.getDate() === targetDate.getDate());
   }
 
   return (
