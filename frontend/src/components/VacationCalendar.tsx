@@ -7,6 +7,9 @@ import { DatePicker, DatePickerProps } from "@mantine/dates";
 import InfoBox from "./InfoBox";
 import { isPast, isToday } from "date-fns";
 
+// TODO Work with Date objects all the way; use getDateString() only for displaying info to the user
+// TODO Find non-hardcoded solution for styling 'custom-calendar'
+
 export default function VacationCalendar({
   consultant,
   vacationDays,
