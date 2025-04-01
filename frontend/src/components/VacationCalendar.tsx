@@ -75,11 +75,15 @@ export default function VacationCalendar({
   }
 
   function getDateString(date: Date) {
-    const year = date.getFullYear().toString();
-    const month = date.getMonth().toString().padStart(2, "0");
-    const day = date.getDate().toString().padStart(2, "0");
+    const year = date.getFullYear();
+    const month = getTwoDigits(1 + date.getMonth()); // +1 to counteract the 0-indexing of 'month'
+    const day = getTwoDigits(date.getDate());
 
     return `${year}-${month}-${day}`;
+  }
+
+  function getTwoDigits(number: Number): string {
+    return number.toString().padStart(2, '0');
   }
 
   async function addVacationDay(vacationDay: string) {
@@ -126,12 +130,8 @@ export default function VacationCalendar({
     return dateIsWeekend(date) || dateIsPublicHoliday(date);
   }
 
-    // TODO Handle 0-indexed month more consistently
-    function dateIsPublicHoliday(date: Date) {
-    var shiftedDate = new Date(date);
-    shiftedDate.setMonth(1 + date.getMonth());
-
-    return publicHolidays.includes(getDateString(shiftedDate));
+  function dateIsPublicHoliday(date: Date) {
+    return publicHolidays.includes(getDateString(date));
   }
 
   function dateIsWeekend(date: Date) {
