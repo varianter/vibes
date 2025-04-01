@@ -29,6 +29,7 @@ export default function VacationCalendar({
 
   const today = new Date();
   const thisYear = today.getFullYear();
+  const thisYearJanuary = new Date(thisYear, 0, 1);
 
   const dayRenderer: DatePickerProps['renderDay'] = (date: Date) => {
     const day = date.getDate(); // TODO 'One hour extra' trick?
@@ -206,18 +207,18 @@ export default function VacationCalendar({
           <p className="normal text-black">{consultant.department.name}</p>
           <MantineProvider>
             <DatePicker
+              class-name="custom-calendar"
               type="multiple"
               numberOfColumns={12}
-              withWeekNumbers
               maxLevel="month"
+              withWeekNumbers
               weekdayFormat="ddd"
-              excludeDate={dateIsUnselectable}
-              defaultDate={new Date(thisYear, 0, 1)}
+              defaultDate={thisYearJanuary}
               highlightToday={true}
               value={value}
               onChange={handleChange}
-              class-name="custom-calendar"
               renderDay={dayRenderer}
+              excludeDate={dateIsUnselectable}
             />
           </MantineProvider>
         </div>
