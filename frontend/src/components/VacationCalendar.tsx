@@ -31,37 +31,6 @@ export default function VacationCalendar({
   const thisYear = today.getFullYear();
   const thisYearJanuary = new Date(thisYear, 0, 1);
 
-  const dayRenderer: DatePickerProps['renderDay'] = (date: Date) => {
-    const day = date.getDate(); // TODO 'One hour extra' trick?
-    const style = getStyle(date);
-
-    return style
-      ? (<div style={style}>{day}</div>)
-      : (<div>{day}</div>);
-  };
-
-  function getStyle(date: Date): React.CSSProperties | null {
-    if (isPastVacation(date)) {
-      return {
-        color: "#FFF",
-        backgroundColor: "var(--mantine-color-dimmed)",
-        borderRadius: "inherit",
-        width: "100%",
-        height: "100%",
-        textAlign: "center",
-        alignContent: "center"
-      };
-    }
-    if (isPublicHoliday(date)) {
-      return { color: "#B91456" };
-    }
-    if (isWeekend(date)) {
-      return { color: "#00445B" };
-    }
-
-    return null;
-  }
-
   function updateVacationDates(selection: Date[]) {
     if (!selection || !vacationDates) {
       return;
@@ -95,18 +64,6 @@ export default function VacationCalendar({
       });
     }
     setVacationDates(selection);
-  }
-
-  function getDateString(date: Date) {
-    const year = date.getFullYear();
-    const month = getTwoDigits(1 + date.getMonth()); // +1 to counteract the 0-indexing of 'month'
-    const day = getTwoDigits(date.getDate());
-
-    return `${year}-${month}-${day}`;
-  }
-
-  function getTwoDigits(number: Number): string {
-    return number.toString().padStart(2, '0');
   }
 
   async function addVacationDay(vacationDay: string) {
@@ -149,10 +106,47 @@ export default function VacationCalendar({
     }
   }
 
-  function isPastVacation(date: Date) {
-    const isVacation = vacationDates.find((vacationDay) => getDateString(vacationDay) == getDateString(date));
+  function getDateString(date: Date) {
+    const year = date.getFullYear();
+    const month = getTwoDigits(1 + date.getMonth()); // +1 to counteract the 0-indexing of 'month'
+    const day = getTwoDigits(date.getDate());
 
-    return isVacation && isBeforeToday(date);
+    return `${year}-${month}-${day}`;
+  }
+
+  function getTwoDigits(number: Number): string {
+    return number.toString().padStart(2, '0');
+  }
+
+  const dayRenderer: DatePickerProps['renderDay'] = (date: Date) => {
+    const day = date.getDate(); // TODO 'One hour extra' trick?
+    const style = getStyle(date);
+
+    return style
+      ? (<div style={style}>{day}</div>)
+      : (<div>{day}</div>);
+  };
+
+  function getStyle(date: Date): React.CSSProperties | null {
+    if (isPastVacation(date)) {
+      return {
+        color: "#FFF",
+        backgroundColor: "var(--mantine-color-dimmed)",
+        borderRadius: "inherit",
+        width: "100%",
+        height: "100%",
+        textAlign: "center",
+        alignContent: "center"
+      };
+    }
+    if (isPublicHoliday(date)) {
+      return { color: "#B91456" };
+    }
+    if (isWeekend(date)) {
+      return { color: "#00445B" };
+    }
+
+    return null;
   }
 
   function isUnselectable(date: Date) {
@@ -163,12 +157,18 @@ export default function VacationCalendar({
     return isPast(date) && !isToday(date);
   }
 
+  function isWeekend(date: Date) {
+    return [0, 6].includes(date.getDay());
+  }
+
   function isPublicHoliday(date: Date) {
     return publicHolidays.includes(getDateString(date));
   }
 
-  function isWeekend(date: Date) {
-    return [0, 6].includes(date.getDay());
+  function isPastVacation(date: Date) {
+    const isVacation = vacationDates.find((vacationDay) => getDateString(vacationDay) == getDateString(date));
+
+    return isVacation && isBeforeToday(date);
   }
 
   return (
