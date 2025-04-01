@@ -1,7 +1,7 @@
 "use client";
 
 import { ConsultantReadModel, VacationReadModel } from "@/api-types";
-import React, { useState } from "react";
+import React, { HTMLAttributes, useState } from "react";
 import { MantineProvider } from "@mantine/core";
 import { DatePicker, DatePickerProps } from "@mantine/dates";
 import InfoBox from "./InfoBox";
@@ -120,34 +120,33 @@ export default function VacationCalendar({
   }
 
   const dayRenderer: DatePickerProps['renderDay'] = (date: Date) => {
-    const day = date.getDate(); // TODO 'One hour extra' trick?
-    const style = getStyle(date);
+    const day = date.getDate();
+    const attributes = getHtmlAttributes(date);
 
-    return style
-      ? (<div style={style}>{day}</div>)
-      : (<div>{day}</div>);
+    return (<div {...attributes}>{day}</div>);
   };
 
-  function getStyle(date: Date): React.CSSProperties | null {
+  function getHtmlAttributes(date: Date): HTMLAttributes<HTMLDivElement> | undefined {
     if (isPastVacation(date)) {
       return {
-        color: "#FFF",
-        backgroundColor: "var(--mantine-color-dimmed)",
-        borderRadius: "inherit",
-        width: "100%",
-        height: "100%",
-        textAlign: "center",
-        alignContent: "center"
+        style: {
+          color: "#FFF",
+          backgroundColor: "var(--mantine-color-dimmed)",
+          borderRadius: "inherit",
+          width: "100%",
+          height: "100%",
+          textAlign: "center",
+          alignContent: "center"
+        },
+        title: "Planlagte feriedager tilbake i tid kan ikke endres"
       };
     }
     if (isPublicHoliday(date)) {
-      return { color: "#B91456" };
+      return { style: { color: "#B91456" } };
     }
     if (isWeekend(date)) {
-      return { color: "#00445B" };
+      return { style: { color: "#00445B" } };
     }
-
-    return null;
   }
 
   function isUnselectable(date: Date) {
@@ -192,14 +191,18 @@ export default function VacationCalendar({
               infoName="Antall overført fra i fjor"
               infoValue={vacationInformation?.vacationMetaData?.transferredDays?.toString()}
             />
-            <InfoBox
-              infoName="Planlagte feriedager"
-              infoValue={vacationInformation?.vacationMetaData?.planned?.toString()}
-            />
-            <InfoBox
-              infoName="Brukte feriedager"
-              infoValue={vacationInformation?.vacationMetaData?.used?.toString()}
-            />
+            <span title="Antall feriedager du har planlagt å ta fra og med idag.">
+              <InfoBox
+                infoName="Kommende feriedager"
+                infoValue={vacationInformation?.vacationMetaData?.planned?.toString()}
+              />
+            </span>
+            <span title="Antall feriedager du har planlagt tilbake i tid.">
+              <InfoBox
+                infoName="Tidligere feriedager"
+                infoValue={vacationInformation?.vacationMetaData?.used?.toString()}
+              />
+            </span>
             <InfoBox
               infoName="Gjenstående dager å planlegge"
               infoValue={vacationInformation?.vacationMetaData?.leftToPlan?.toString()}
