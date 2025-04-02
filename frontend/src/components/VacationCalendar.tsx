@@ -1,11 +1,11 @@
 "use client";
 
 import { ConsultantReadModel, VacationReadModel } from "@/api-types";
-import React, { HTMLAttributes, useState } from "react";
+import React, { HTMLAttributes, ReactNode, useState } from "react";
 import { MantineProvider } from "@mantine/core";
-import { DatePicker, DatePickerProps } from "@mantine/dates";
+import { DatePicker } from "@mantine/dates";
 import InfoBox from "./InfoBox";
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 
 // TODO Find non-hardcoded solution for styling 'custom-calendar'
 
@@ -111,7 +111,7 @@ export default function VacationCalendar({
     return `${dayjs(date).format('YYYY-MM-DD')}`;
   }
 
-  const dayRenderer: DatePickerProps['renderDay'] = (date: Date) => {
+  function dayRenderer(date: Date): ReactNode {
     const day = date.getDate();
     const attributes = getHtmlAttributes(date);
 
