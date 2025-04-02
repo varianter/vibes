@@ -5,7 +5,7 @@ import React, { HTMLAttributes, useState } from "react";
 import { MantineProvider } from "@mantine/core";
 import { DatePicker, DatePickerProps } from "@mantine/dates";
 import InfoBox from "./InfoBox";
-import { isPast, isToday } from "date-fns";
+import dayjs from 'dayjs';
 
 // TODO Find non-hardcoded solution for styling 'custom-calendar'
 
@@ -108,15 +108,7 @@ export default function VacationCalendar({
   }
 
   function getDayString(date: Date) {
-    const year = date.getFullYear();
-    const month = getTwoDigits(1 + date.getMonth()); // +1 to counteract the 0-indexing of 'month'
-    const day = getTwoDigits(date.getDate());
-
-    return `${year}-${month}-${day}`;
-  }
-
-  function getTwoDigits(number: Number): string {
-    return number.toString().padStart(2, '0');
+    return `${dayjs(date).format('YYYY-MM-DD')}`;
   }
 
   const dayRenderer: DatePickerProps['renderDay'] = (date: Date) => {
@@ -154,7 +146,7 @@ export default function VacationCalendar({
   }
 
   function isBeforeToday(date: Date) {
-    return isPast(date) && !isToday(date);
+    return dayjs().isAfter(date, 'date');
   }
 
   function isWeekend(date: Date) {
