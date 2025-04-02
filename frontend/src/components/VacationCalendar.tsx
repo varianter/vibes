@@ -1,10 +1,13 @@
 "use client";
+
 import { ConsultantReadModel, VacationReadModel } from "@/api-types";
-import React, { useState } from "react";
-import type { Value } from "react-multi-date-picker";
-import { Calendar, DateObject } from "react-multi-date-picker";
+import React, { HTMLAttributes, ReactNode, useState } from "react";
+import { MantineProvider } from "@mantine/core";
+import { DatePicker } from "@mantine/dates";
 import InfoBox from "./InfoBox";
-import { map } from "lodash";
+import dayjs from "dayjs";
+
+// TODO Find non-hardcoded solution for styling 'custom-calendar'
 
 export default function VacationCalendar({
   consultant,
@@ -17,51 +20,53 @@ export default function VacationCalendar({
   publicHolidays: string[];
   organisationUrl: string;
 }) {
-  const [value, setValue] = useState<Value>(
-    vacationDays.vacationDays?.map((date) => new DateObject(date)) ?? [],
+  const [vacationDates, setVacationDates] = useState<Date[]>(
+    vacationDays.vacationDays?.map((day) => new Date(day)) ?? [],
   );
   const [vacationInformation, setVacationInformation] = useState(vacationDays);
   const [savedMessage, setSavedMessage] = useState("");
 
-  const today = new DateObject();
+  const publicHolidayDates =
+    publicHolidays?.map((holiday) => new Date(holiday)) ?? [];
 
-  function handleChange(e: Value) {
-    const searchRegExp = /\//g;
-    const replaceWith = "-";
-    const dates = e?.toString().replace(searchRegExp, replaceWith).split(",");
-    const valueDates = value
-      ?.toString()
-      .replace(searchRegExp, replaceWith)
-      .split(",");
+  const today = new Date();
+  const thisYear = today.getFullYear();
+  const thisYearJanuary = new Date(thisYear, 0, 1);
 
-    if (!dates || !valueDates) {
+  function updateVacationDates(selection: Date[]) {
+    if (!selection || !vacationDates) {
       return;
     }
-    if (
-      dates.length > valueDates.length ||
-      (valueDates.length == 1 && valueDates[0] == "")
-    ) {
-      const newDates = dates.filter((item) => valueDates.indexOf(item) < 0);
-      addVacationDay(newDates[0]).then((res) => {
+    if (selection.length == vacationDates.length) {
+      return;
+    }
+
+    if (selection.length > vacationDates.length) {
+      // a selected date is always appended to the selection array
+      const selectedDate = selection.slice(-1)[0];
+      const selectedDay = getDayString(selectedDate);
+
+      addVacationDay(selectedDay).then((res) => {
         if (res) {
-          setSavedMessage(`Ferie ${newDates[0]} ble lagret`);
+          setSavedMessage(`Ferie ${selectedDay} ble lagret`);
+          setVacationInformation({ ...res });
+        }
+      });
+    } else {
+      const deselectedDate = vacationDates.find(
+        (date) => !isInCollection(selection, date),
+      )!;
+      const deselectedDay = getDayString(deselectedDate);
+
+      removeVacationDay(deselectedDay).then((res) => {
+        if (res) {
+          setSavedMessage(`Ferie ${deselectedDay} ble fjernet`);
           setVacationInformation({ ...res });
         }
       });
     }
-    if (
-      dates.length < valueDates.length ||
-      (dates.length == 1 && dates[0] == "")
-    ) {
-      const removeDates = valueDates.filter((item) => dates.indexOf(item) < 0);
-      removeVacationDay(removeDates[0]).then((res) => {
-        if (res) {
-          setSavedMessage(`Ferie ${removeDates[0]} ble fjernet`);
-          setVacationInformation({ ...res });
-        }
-      });
-    }
-    setValue(e);
+
+    setVacationDates(selection);
   }
 
   async function addVacationDay(vacationDay: string) {
@@ -104,69 +109,76 @@ export default function VacationCalendar({
     }
   }
 
-  function dateIsPublicHoliday(date: DateObject) {
-    return publicHolidays.includes(
-      `${date.year.toString()}-${
-        date.month.number > 9
-          ? date.month.number.toString()
-          : "0" + date.month.number.toString()
-      }-${date.day > 9 ? date.day.toString() : "0" + date.day.toString()}`,
-    );
+  function getDayString(date: Date) {
+    return `${dayjs(date).format("YYYY-MM-DD")}`;
   }
 
-  function dateIsVacationDayInThePast(date: DateObject, dateCopy: DateObject) {
-    return (
-      vacationDays.vacationDays?.includes(
-        `${date.year.toString()}-${
-          date.month.number > 9
-            ? date.month.number.toString()
-            : "0" + date.month.number.toString()
-        }-${date.day > 9 ? date.day.toString() : "0" + date.day.toString()}`,
-      ) && dateCopy.toDate() < new Date()
-    );
+  function dayRenderer(date: Date): ReactNode {
+    const day = date.getDate();
+    const attributes = getHtmlAttributes(date);
+
+    return <div {...attributes}>{day}</div>;
   }
 
-  function dateIsWeekend(date: DateObject) {
-    return [0, 6].includes(date.weekDay.index);
-  }
-
-  function dateIsPast(date: DateObject) {
-    return date.toDate() < new Date();
-  }
-
-  function mapDayToStyling(date: DateObject) {
-    //Since the date object is created before the today object, an extra hour is added to a copied version of the date object to ensure that you can edit today
-    const dateCopy = new DateObject(date);
-    dateCopy.add(1, "h");
-
-    /*
-    if (dateIsVacationDayInThePast(date, dateCopy))
+  function getHtmlAttributes(
+    date: Date,
+  ): HTMLAttributes<HTMLDivElement> | undefined {
+    if (isPastVacation(date)) {
       return {
-        disabled: true,
         style: {
-          color: "#00445B",
-          opacity: 0.5,
-          backgroundColor: "#C8EEFB",
+          color: "#FFF",
+          backgroundColor: "var(--mantine-color-dimmed)",
+          borderRadius: "inherit",
+          width: "100%",
+          height: "100%",
+          textAlign: "center",
+          alignContent: "center",
         },
+        title: "Planlagte feriedager tilbake i tid kan ikke endres",
       };
-     */
-    if (dateIsPublicHoliday(date))
-      return {
-        disabled: true,
-        style: { color: "#B91456", opacity: 0.5 },
-      };
-    else if (dateIsWeekend(date) || dateIsPast(dateCopy))
-      return {
-        disabled: true,
-        style: { color: "#00445B", opacity: 0.5 },
-      };
+    }
+    if (isPublicHoliday(date)) {
+      return { style: { color: "#B91456" } };
+    }
+    if (isWeekend(date)) {
+      return { style: { color: "#00445B" } };
+    }
+  }
+
+  function isUnselectable(date: Date) {
+    return isBeforeToday(date) || isWeekend(date) || isPublicHoliday(date);
+  }
+
+  function isBeforeToday(date: Date) {
+    return dayjs().isAfter(date, "date");
+  }
+
+  function isWeekend(date: Date) {
+    return [0, 6].includes(date.getDay());
+  }
+
+  function isPublicHoliday(date: Date) {
+    return isInCollection(publicHolidayDates, date);
+  }
+
+  function isPastVacation(date: Date) {
+    return isBeforeToday(date) && isInCollection(vacationDates, date);
+  }
+
+  function isInCollection(dates: Date[], targetDate: Date) {
+    return dates.some(
+      (date) =>
+        date.getFullYear() === targetDate.getFullYear() &&
+        date.getMonth() === targetDate.getMonth() &&
+        date.getDate() === targetDate.getDate(),
+    );
   }
 
   return (
     <div className="flex flex-row">
       <div className="sidebar z-10">
         <div className="bg-primary/5 h-full flex flex-col gap-6 p-4 w-[300px]">
-          <h1 className="">{new Date().getFullYear()}</h1>
+          <h1 className="">{thisYear}</h1>
           <div className="flex flex-col gap-2">
             <p className="small text-black">Ferieoversikt</p>
             <InfoBox
@@ -177,14 +189,18 @@ export default function VacationCalendar({
               infoName="Antall overført fra i fjor"
               infoValue={vacationInformation?.vacationMetaData?.transferredDays?.toString()}
             />
-            <InfoBox
-              infoName="Planlagte feriedager"
-              infoValue={vacationInformation?.vacationMetaData?.planned?.toString()}
-            />
-            <InfoBox
-              infoName="Brukte feriedager"
-              infoValue={vacationInformation?.vacationMetaData?.used?.toString()}
-            />
+            <span title="Antall feriedager du har planlagt å ta fra og med idag.">
+              <InfoBox
+                infoName="Kommende feriedager"
+                infoValue={vacationInformation?.vacationMetaData?.planned?.toString()}
+              />
+            </span>
+            <span title="Antall feriedager du har planlagt tilbake i tid.">
+              <InfoBox
+                infoName="Tidligere feriedager"
+                infoValue={vacationInformation?.vacationMetaData?.used?.toString()}
+              />
+            </span>
             <InfoBox
               infoName="Gjenstående dager å planlegge"
               infoValue={vacationInformation?.vacationMetaData?.leftToPlan?.toString()}
@@ -192,22 +208,26 @@ export default function VacationCalendar({
           </div>
         </div>
       </div>
-
       <div className="flex flex-row gap-3 w-full">
         <div className="flex flex-col justify-center m-4">
           <h1 className="text-black">{consultant.name}</h1>
           <p className="normal text-black">{consultant.department.name}</p>
-          <Calendar
-            multiple
-            fullYear
-            weekStartDayIndex={1}
-            displayWeekNumbers
-            currentDate={today}
-            value={value}
-            onChange={handleChange}
-            className="custom-calendar"
-            mapDays={({ date }) => mapDayToStyling(date)}
-          />
+          <MantineProvider>
+            <DatePicker
+              class-name="custom-calendar"
+              type="multiple"
+              numberOfColumns={12}
+              maxLevel="month"
+              withWeekNumbers
+              weekdayFormat="ddd"
+              defaultDate={thisYearJanuary}
+              highlightToday={true}
+              value={vacationDates}
+              onChange={updateVacationDates}
+              renderDay={dayRenderer}
+              excludeDate={isUnselectable}
+            />
+          </MantineProvider>
         </div>
         <p className="absolute right-1 p-4 hidden lg:flex normal-semibold">
           {savedMessage}
