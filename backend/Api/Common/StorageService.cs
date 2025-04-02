@@ -1,5 +1,6 @@
 using Api.Consultants;
 using Core.Consultants;
+using Core.Consultants.Competences;
 using Core.Customers;
 using Core.Engagements;
 using Core.Organizations;
@@ -106,6 +107,7 @@ public class StorageService(IMemoryCache cache, ILogger<StorageService> logger, 
     private List<Consultant> LoadConsultantsFromDb(string orgUrlKey)
     {
         var consultantList = context.Consultant
+            .Include(c => c.Discipline)
             .Include(consultant => consultant.Department)
             .ThenInclude(department => department.Organization)
             .Include(c => c.CompetenceConsultant)

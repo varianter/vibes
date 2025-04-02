@@ -1,4 +1,4 @@
-using Core.Consultants;
+using Core.Consultants.Competences;
 
 namespace Api.Common.Types;
 
