@@ -283,11 +283,11 @@
     background-color: #242424;
   }
 
-  [class-name='custom-calendar'] {
+  [class-name="custom-calendar"] {
     display: flex;
   }
 
-  [class-name='custom-calendar'] > div {
+  [class-name="custom-calendar"] > div {
     flex-wrap: wrap;
     flex-basis: 50%;
   }

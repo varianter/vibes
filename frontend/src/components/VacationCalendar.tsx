@@ -26,7 +26,8 @@ export default function VacationCalendar({
   const [vacationInformation, setVacationInformation] = useState(vacationDays);
   const [savedMessage, setSavedMessage] = useState("");
 
-  const publicHolidayDates = publicHolidays?.map((holiday) => new Date(holiday)) ?? [];
+  const publicHolidayDates =
+    publicHolidays?.map((holiday) => new Date(holiday)) ?? [];
 
   const today = new Date();
   const thisYear = today.getFullYear();
@@ -51,9 +52,10 @@ export default function VacationCalendar({
           setVacationInformation({ ...res });
         }
       });
-    }
-    else {
-      const deselectedDate = vacationDates.find((date) => !isInCollection(selection, date))!;
+    } else {
+      const deselectedDate = vacationDates.find(
+        (date) => !isInCollection(selection, date),
+      )!;
       const deselectedDay = getDayString(deselectedDate);
 
       removeVacationDay(deselectedDay).then((res) => {
@@ -108,17 +110,19 @@ export default function VacationCalendar({
   }
 
   function getDayString(date: Date) {
-    return `${dayjs(date).format('YYYY-MM-DD')}`;
+    return `${dayjs(date).format("YYYY-MM-DD")}`;
   }
 
   function dayRenderer(date: Date): ReactNode {
     const day = date.getDate();
     const attributes = getHtmlAttributes(date);
 
-    return (<div {...attributes}>{day}</div>);
-  };
+    return <div {...attributes}>{day}</div>;
+  }
 
-  function getHtmlAttributes(date: Date): HTMLAttributes<HTMLDivElement> | undefined {
+  function getHtmlAttributes(
+    date: Date,
+  ): HTMLAttributes<HTMLDivElement> | undefined {
     if (isPastVacation(date)) {
       return {
         style: {
@@ -128,9 +132,9 @@ export default function VacationCalendar({
           width: "100%",
           height: "100%",
           textAlign: "center",
-          alignContent: "center"
+          alignContent: "center",
         },
-        title: "Planlagte feriedager tilbake i tid kan ikke endres"
+        title: "Planlagte feriedager tilbake i tid kan ikke endres",
       };
     }
     if (isPublicHoliday(date)) {
@@ -146,7 +150,7 @@ export default function VacationCalendar({
   }
 
   function isBeforeToday(date: Date) {
-    return dayjs().isAfter(date, 'date');
+    return dayjs().isAfter(date, "date");
   }
 
   function isWeekend(date: Date) {
@@ -162,10 +166,12 @@ export default function VacationCalendar({
   }
 
   function isInCollection(dates: Date[], targetDate: Date) {
-    return dates.some((date) =>
-      date.getFullYear() === targetDate.getFullYear() &&
-      date.getMonth() === targetDate.getMonth() &&
-      date.getDate() === targetDate.getDate());
+    return dates.some(
+      (date) =>
+        date.getFullYear() === targetDate.getFullYear() &&
+        date.getMonth() === targetDate.getMonth() &&
+        date.getDate() === targetDate.getDate(),
+    );
   }
 
   return (
