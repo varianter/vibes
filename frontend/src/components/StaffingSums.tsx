@@ -48,7 +48,7 @@ export default function StaffingSums({
       )}
       <tr>
         <td colSpan={2}>
-          <p className="small-medium text-black">Sum ordre og tilbud</p>
+          <p className="small-medium text-black">Sum ordre, opsjon og tilbud</p>
         </td>
         {totalBillableAndOfferedHours.map(
           (totalBillableAndOfferedHour, index) => (

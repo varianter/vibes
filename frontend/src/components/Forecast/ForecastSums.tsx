@@ -55,7 +55,7 @@ export function ForecastSums({
       )}
       <tr>
         <td colSpan={1}>
-          <p className="small-medium text-black">Sum ordre og tilbud</p>
+          <p className="small-medium text-black">Sum ordre, opsjon og tilbud</p>
         </td>
         {totalBillableAndOfferedHours.map(
           (totalBillableAndOfferedHour, index) => (
