@@ -1,3 +1,4 @@
+using Api.Common.Types;
 using Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;

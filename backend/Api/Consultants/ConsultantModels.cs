@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Api.Common.Types;
 using Core.Consultants;
 
 // ReSharper disable NotAccessedPositionalProperty.Global
@@ -39,16 +40,6 @@ public record SingleConsultantReadModel(
     {
     }
 }
-
-public record DisciplineReadModel(string Id, string Name);
-
-public record CompetenceReadModel(
-    string Id,
-    string Name);
-
-public record UpdateDepartmentReadModel(
-    string Id,
-    string Name);
 
 public record ConsultantsEmploymentReadModel(
     [property: Required] string Email,
