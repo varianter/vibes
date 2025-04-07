@@ -184,6 +184,10 @@ public class StorageService(IMemoryCache cache, ILogger<StorageService> logger, 
         var department =
             await context.Department.FirstOrDefaultAsync(d => d.Id == body.Department.Id, cancellationToken);
 
+        var updatedDiscipline = body.Discipline is { } discipline
+            ? await context.Disciplines.SingleOrDefaultAsync(d => d.Id == discipline.Id, cancellationToken)
+            : null;
+
         consultant.Name = body.Name;
         consultant.Email = body.Email;
         consultant.StartDate = body.StartDate.HasValue ? DateOnly.FromDateTime(body.StartDate.Value.Date) : null;
@@ -191,6 +195,7 @@ public class StorageService(IMemoryCache cache, ILogger<StorageService> logger, 
         if (department is not null) consultant.Department = department;
         consultant.GraduationYear = body.GraduationYear;
         consultant.Degree = body.Degree;
+        consultant.Discipline = updatedDiscipline;
 
         // Clear the CompetenceConsultant collection
         consultant.CompetenceConsultant.Clear();
