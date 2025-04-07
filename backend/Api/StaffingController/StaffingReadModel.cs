@@ -25,17 +25,14 @@ public record StaffingReadModel(
             consultant.Id,
             consultant.Name,
             consultant.Email,
-            consultant.CompetenceConsultant.Select(cc => new CompetenceReadModel(cc.Competence.Id, cc.Competence.Name))
-                .ToList(),
-            new UpdateDepartmentReadModel(consultant.Department.Id, consultant.Department.Name),
+            CompetenceReadModel.CreateSeveral(consultant.CompetenceConsultant),
+            UpdateDepartmentReadModel.Create(consultant.Department),
             consultant.YearsOfExperience,
             consultant.Degree ?? Degree.Master,
             bookings,
             detailedBookings,
             IsOccupied,
-            consultant.Discipline is null
-                ? null
-                : new DisciplineReadModel(consultant.Discipline.Id, consultant.Discipline.Name)
+            DisciplineReadModel.CreateIfExists(consultant.Discipline)
         )
     {
     }

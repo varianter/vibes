@@ -26,16 +26,12 @@ public record SingleConsultantReadModel(
             consultant.Email,
             consultant.StartDate,
             consultant.EndDate,
-            consultant.CompetenceConsultant
-                .Select(cc => new CompetenceReadModel(cc.Competence.Id, cc.Competence.Name))
-                .ToList(),
-            new UpdateDepartmentReadModel(consultant.Department.Id, consultant.Department.Name),
+            CompetenceReadModel.CreateSeveral(consultant.CompetenceConsultant),
+            UpdateDepartmentReadModel.Create(consultant.Department),
             consultant.GraduationYear,
             consultant.YearsOfExperience,
             consultant.Degree ?? Degree.Master,
-            consultant.Discipline is null
-                ? null
-                : new DisciplineReadModel(consultant.Discipline.Id, consultant.Discipline.Name)
+            DisciplineReadModel.CreateIfExists(consultant.Discipline)
         )
     {
     }
