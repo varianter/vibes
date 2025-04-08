@@ -58,7 +58,12 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime, IColle
         {
             DbAdapter = DbAdapter.SqlServer,
             SchemasToInclude = ["dbo"],
-            TablesToIgnore = [new Table("dbo", "__EFMigrationsHistory")]
+            TablesToIgnore =
+            [
+                new Table("dbo", "__EFMigrationsHistory"),
+                new Table("dbo", nameof(ApplicationContext.Disciplines)),
+                new Table("dbo", nameof(ApplicationContext.Competence))
+            ]
         });
 
     }

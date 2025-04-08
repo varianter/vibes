@@ -1,4 +1,5 @@
 using Core.Consultants;
+using Core.Consultants.Competences;
 using Infrastructure.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
@@ -32,6 +33,17 @@ public class ConsultantDbRepository(ApplicationContext context) : IConsultantRep
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<Consultant?> UpdateDiscipline(int consultantId, string? disciplineId,
+        CancellationToken cancellationToken)
+    {
+        var affectedRows = await context.Consultant.Where(c => c.Id == consultantId)
+            .ExecuteUpdateAsync(c => c.SetProperty(x => x.DisciplineId, disciplineId), cancellationToken);
+
+        if (affectedRows == 0) return null;
+
+        return await BaseConsultantQuery().SingleOrDefaultAsync(c => c.Id == consultantId, cancellationToken);
+    }
+
 
     /*
      * Ensures consistent Includes to keep expected base data present
@@ -39,6 +51,7 @@ public class ConsultantDbRepository(ApplicationContext context) : IConsultantRep
     private IIncludableQueryable<Consultant, Competence> BaseConsultantQuery()
     {
         return context.Consultant
+            .Include(c => c.Discipline)
             .Include(c => c.Department)
             .ThenInclude(d => d.Organization)
             .Include(c => c.CompetenceConsultant)

@@ -16,7 +16,8 @@ public record StaffingReadModel(
     Degree Degree,
     List<BookedHoursPerWeek> Bookings,
     List<DetailedBooking> DetailedBooking,
-    bool IsOccupied)
+    bool IsOccupied,
+    DisciplineReadModel? Discipline)
 {
     public StaffingReadModel(Consultant consultant, List<BookedHoursPerWeek> bookings,
         List<DetailedBooking> detailedBookings, bool IsOccupied)
@@ -24,14 +25,14 @@ public record StaffingReadModel(
             consultant.Id,
             consultant.Name,
             consultant.Email,
-            consultant.CompetenceConsultant.Select(cc => new CompetenceReadModel(cc.Competence.Id, cc.Competence.Name))
-                .ToList(),
-            new UpdateDepartmentReadModel(consultant.Department.Id, consultant.Department.Name),
+            CompetenceReadModel.CreateSeveral(consultant.CompetenceConsultant),
+            UpdateDepartmentReadModel.Create(consultant.Department),
             consultant.YearsOfExperience,
             consultant.Degree ?? Degree.Master,
             bookings,
             detailedBookings,
-            IsOccupied
+            IsOccupied,
+            DisciplineReadModel.CreateIfExists(consultant.Discipline)
         )
     {
     }

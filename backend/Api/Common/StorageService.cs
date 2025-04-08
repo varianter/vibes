@@ -1,5 +1,7 @@
+using Api.Common.Types;
 using Api.Consultants;
 using Core.Consultants;
+using Core.Consultants.Competences;
 using Core.Customers;
 using Core.Engagements;
 using Core.Organizations;
@@ -106,6 +108,7 @@ public class StorageService(IMemoryCache cache, ILogger<StorageService> logger, 
     private List<Consultant> LoadConsultantsFromDb(string orgUrlKey)
     {
         var consultantList = context.Consultant
+            .Include(c => c.Discipline)
             .Include(consultant => consultant.Department)
             .ThenInclude(department => department.Organization)
             .Include(c => c.CompetenceConsultant)
@@ -192,6 +195,11 @@ public class StorageService(IMemoryCache cache, ILogger<StorageService> logger, 
         if (department is not null) consultant.Department = department;
         consultant.GraduationYear = body.GraduationYear;
         consultant.Degree = body.Degree;
+
+        if (body.Discipline?.Id != consultant.DisciplineId)
+        {
+            await UpdateDiscipline(consultant, body.Discipline, cancellationToken);
+        }
 
         // Clear the CompetenceConsultant collection
         consultant.CompetenceConsultant.Clear();
@@ -320,5 +328,19 @@ public class StorageService(IMemoryCache cache, ILogger<StorageService> logger, 
         context.SaveChanges();
 
         cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
+    }
+
+    private async Task UpdateDiscipline(Consultant consultant, DisciplineReadModel? discipline, CancellationToken cancellationToken)
+    {
+        var newDiscipline = discipline?.Id is { } disciplineId
+            ? await context.Disciplines.SingleOrDefaultAsync(d => d.Id == disciplineId, cancellationToken)
+            : null;
+
+        consultant.Discipline = newDiscipline;
+
+        if (newDiscipline is null)
+        {
+            consultant.DisciplineId = null;
+        }
     }
 }

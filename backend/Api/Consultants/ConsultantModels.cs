@@ -1,48 +1,41 @@
 using System.ComponentModel.DataAnnotations;
+using Api.Common.Types;
 using Core.Consultants;
+
+// ReSharper disable NotAccessedPositionalProperty.Global
 
 namespace Api.Consultants;
 
 public record SingleConsultantReadModel(
-    [property: Required] int Id,
-    [property: Required] string Name,
-    [property: Required] string Email,
-    [property: Required] DateOnly? StartDate,
-    [property: Required] DateOnly? EndDate,
-    [property: Required] List<CompetenceReadModel> Competences,
-    [property: Required] UpdateDepartmentReadModel Department,
-    [property: Required] int? GraduationYear,
-    [property: Required] int YearsOfExperience,
-    [property: Required] Degree Degree)
-
+    int Id,
+    string Name,
+    string Email,
+    DateOnly? StartDate,
+    DateOnly? EndDate,
+    List<CompetenceReadModel> Competences,
+    UpdateDepartmentReadModel Department,
+    int? GraduationYear,
+    int YearsOfExperience,
+    Degree Degree,
+    DisciplineReadModel? Discipline)
 {
-    public SingleConsultantReadModel(Consultant? consultant)
+    public SingleConsultantReadModel(Consultant consultant)
         : this(
             consultant.Id,
             consultant.Name,
             consultant.Email,
             consultant.StartDate,
             consultant.EndDate,
-            consultant.CompetenceConsultant
-                .Where(cc => cc != null && cc.Competence != null)
-                .Select(cc => new CompetenceReadModel(cc.Competence.Id, cc.Competence.Name))
-                .ToList(),
-            new UpdateDepartmentReadModel(consultant.Department.Id, consultant.Department.Name),
+            CompetenceReadModel.CreateSeveral(consultant.CompetenceConsultant),
+            UpdateDepartmentReadModel.Create(consultant.Department),
             consultant.GraduationYear,
             consultant.YearsOfExperience,
-            consultant.Degree ?? Degree.Master
+            consultant.Degree ?? Degree.Master,
+            DisciplineReadModel.CreateIfExists(consultant.Discipline)
         )
     {
     }
 }
-
-public record CompetenceReadModel(
-    string Id,
-    string Name);
-
-public record UpdateDepartmentReadModel(
-    string Id,
-    string Name);
 
 public record ConsultantsEmploymentReadModel(
     [property: Required] string Email,
@@ -68,4 +61,5 @@ public record ConsultantWriteModel(
     List<CompetenceReadModel>? Competences,
     UpdateDepartmentReadModel Department,
     int GraduationYear,
-    Degree Degree);
+    Degree Degree,
+    DisciplineReadModel? Discipline);
