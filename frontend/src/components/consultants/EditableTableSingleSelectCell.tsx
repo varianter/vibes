@@ -1,7 +1,9 @@
 import Select, { SingleValue } from "react-select";
 import React, { useEffect, useState } from "react";
 
-export default function EditableTableSingleSelectCell<T extends { id: string, name: string }>({
+export default function EditableTableSingleSelectCell<
+  T extends { id: string; name: string },
+>({
   originalSelection,
   canResetSelection,
   setConsultant,
@@ -14,15 +16,16 @@ export default function EditableTableSingleSelectCell<T extends { id: string, na
   isEditing: boolean;
   options: T[];
 }) {
-  const [newSelection, setNewSelection] =
-    useState<T | undefined>(originalSelection);
+  const [newSelection, setNewSelection] = useState<T | undefined>(
+    originalSelection,
+  );
 
   const [selection, setSelection] = useState<{
     value: string;
     label: string;
   }>({
-    value: originalSelection?.id ?? '',
-    label: originalSelection?.name ?? '',
+    value: originalSelection?.id ?? "",
+    label: originalSelection?.name ?? "",
   });
 
   const selectOptions = options.map((option) => ({
@@ -33,8 +36,8 @@ export default function EditableTableSingleSelectCell<T extends { id: string, na
   useEffect(() => {
     if (isEditing) {
       setSelection({
-        value: newSelection?.id ?? '',
-        label: newSelection?.name ?? '',
+        value: newSelection?.id ?? "",
+        label: newSelection?.name ?? "",
       });
       setConsultant(newSelection);
     }
@@ -74,8 +77,7 @@ export default function EditableTableSingleSelectCell<T extends { id: string, na
                 id: selOptions.value,
                 name: selOptions.label,
               } as T);
-            }
-            else if (canResetSelection) {
+            } else if (canResetSelection) {
               setNewSelection(undefined);
               setConsultant(undefined);
             }
