@@ -75,6 +75,7 @@ export default function Project({
         consultants={consultants ?? []}
         departments={[]}
         competences={[]}
+        disciplines={[]}
         customers={[]}
       >
         <Sidebar project={project} />

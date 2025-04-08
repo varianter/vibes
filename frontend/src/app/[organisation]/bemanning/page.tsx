@@ -52,6 +52,7 @@ export default async function Bemanning({
       consultants={consultants ?? []}
       departments={departments ?? []}
       competences={competences ?? []}
+      disciplines={[]}
       customers={customers ?? []}
     >
       <StaffingContent />

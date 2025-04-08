@@ -48,6 +48,7 @@ export default async function Rapport({
       consultants={consultants ?? []}
       departments={departments ?? []}
       competences={competences ?? []}
+      disciplines={[]}
       customers={customers ?? []}
     >
       <ReportContent />
