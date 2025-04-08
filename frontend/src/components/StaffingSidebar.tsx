@@ -5,6 +5,7 @@ import SearchBarComponent from "./SearchBarComponent";
 import { ArrowLeft } from "react-feather";
 import RawYearsFilter from "./RawYearsFilter";
 import CompetenceFilter from "./CompetenceFilter";
+import DisciplineFilter from "./DisciplineFilter";
 import ExperienceFilter from "./ExperienceFilter";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { FilteredForecastContext } from "@/hooks/ForecastFilter/ForecastFilterProvider";
@@ -53,6 +54,9 @@ export default function StaffingSidebar({
             context={isForecast ? FilteredForecastContext : FilteredContext}
           />
           <CompetenceFilter
+            context={isForecast ? FilteredForecastContext : FilteredContext}
+          />
+          <DisciplineFilter
             context={isForecast ? FilteredForecastContext : FilteredContext}
           />
         </div>
