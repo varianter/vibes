@@ -2,6 +2,7 @@ import {
   CompetenceReadModel,
   ConsultantReadModel,
   DepartmentReadModel,
+  DisciplineReadModel,
 } from "@/api-types";
 import ConsultantsContent from "@/components/consultants/ConsultantsContent";
 import {
@@ -20,19 +21,22 @@ export default async function Konsulenter({
 }: {
   params: { organisation: string };
 }) {
-  const [consultants, departments, competences] = await Promise.all([
-    fetchEmployeesWithImageAndToken(`${params.organisation}/consultants`),
-    fetchWithToken<DepartmentReadModel[]>(
-      `organisations/${params.organisation}/departments`,
-    ),
-    fetchWithToken<CompetenceReadModel[]>(`competences`),
-  ]);
+  const [consultants, departments, competences, disciplines] =
+    await Promise.all([
+      fetchEmployeesWithImageAndToken(`${params.organisation}/consultants`),
+      fetchWithToken<DepartmentReadModel[]>(
+        `organisations/${params.organisation}/departments`,
+      ),
+      fetchWithToken<CompetenceReadModel[]>(`competences`),
+      fetchWithToken<DisciplineReadModel[]>(`disciplines`),
+    ]);
 
   return (
     <ConsultantFilterProvider
       consultants={consultants ?? []}
       departments={departments ?? []}
       competences={competences ?? []}
+      disciplines={disciplines ?? []}
       customers={[]}
     >
       <ConsultantsContent />

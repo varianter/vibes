@@ -5,6 +5,7 @@ import {
   DepartmentReadModel,
   CompetenceReadModel,
   EngagementPerCustomerReadModel,
+  DisciplineReadModel,
 } from "@/api-types";
 import React, { createContext, ReactNode, useEffect, useState } from "react";
 import { parseYearWeekFromUrlString, weekToString } from "@/data/urlUtils";
@@ -28,6 +29,7 @@ export type FilterContextType = {
   setConsultants: React.Dispatch<React.SetStateAction<ConsultantReadModel[]>>;
   departments: DepartmentReadModel[];
   competences: CompetenceReadModel[];
+  disciplines: DisciplineReadModel[];
   customers: EngagementPerCustomerReadModel[];
   isDisabledHotkeys: boolean;
   setIsDisabledHotkeys: React.Dispatch<React.SetStateAction<boolean>>;
@@ -40,6 +42,7 @@ export const FilteredContext = createContext<FilterContextType>({
   setConsultants: () => null,
   departments: [],
   competences: [],
+  disciplines: [],
   customers: [],
   isDisabledHotkeys: false,
   setIsDisabledHotkeys: () => {},
@@ -51,6 +54,7 @@ export function ConsultantFilterProvider(props: {
   consultants: ConsultantReadModel[];
   departments: DepartmentReadModel[];
   competences: CompetenceReadModel[];
+  disciplines: DisciplineReadModel[];
   customers: EngagementPerCustomerReadModel[];
   children: ReactNode;
 }) {

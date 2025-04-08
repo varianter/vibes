@@ -49,6 +49,7 @@ export function CustomerPageContent(props: Props) {
     <ConsultantFilterProvider
       consultants={[]}
       competences={[]}
+      disciplines={[]}
       departments={departments ?? []}
       customers={[]}
     >

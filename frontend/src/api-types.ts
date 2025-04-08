@@ -51,6 +51,7 @@ export interface ConsultantReadModel {
   startDate?: Date;
   endDate?: Date;
   competences: Competence[];
+  discipline?: DisciplineReadModel;
   /** @minLength 1 */
   department: DepartmentReadModel;
   /** @format int32 */
@@ -111,6 +112,13 @@ export interface DepartmentReadModel {
 }
 
 export interface CompetenceReadModel {
+  /** @minLength 1 */
+  id: string;
+  /** @minLength 1 */
+  name: string;
+}
+
+export interface DisciplineReadModel {
   /** @minLength 1 */
   id: string;
   /** @minLength 1 */
@@ -208,6 +216,7 @@ export interface SingleConsultantReadModel {
   /** @format date */
   endDate: string;
   competences: CompetenceReadModel[];
+  discipline?: DisciplineReadModel;
   department: DepartmentReadModel;
   /** @format int32 */
   graduationYear: number;

@@ -4,6 +4,7 @@ import {
   ConsultantReadModel,
   Degree,
   DepartmentReadModel,
+  DisciplineReadModel,
 } from "@/api-types";
 import { useSimpleConsultantsFilter } from "@/hooks/staffing/useConsultantsFilter";
 import Image from "next/image";
@@ -17,6 +18,7 @@ import { useParams } from "next/navigation";
 import EditableTableCompetencesCell from "./EditableTableCompetencesCell";
 import EditableTableDegreeCell from "./EditableTableDegreeCell";
 import EditableTableSelectGradYearCell from "./EditableTableSelectGradYearEdit";
+import EditableTableSingleSelectCell from "./EditableTableSingleSelectCell";
 import { isEqual } from "lodash";
 
 export default function FilteredConsultantsComp({
@@ -36,7 +38,7 @@ export default function FilteredConsultantsComp({
 
   const listRef = useRef<HTMLTableSectionElement>(null);
   const { setIsDisabledHotkeys } = useContext(FilteredContext);
-  const { competences, departments } = useContext(FilteredContext);
+  const { competences, departments, disciplines } = useContext(FilteredContext);
   const currentConsultantEditRef = useRef(selectedEditConsultant);
 
   useEffect(() => {
@@ -133,6 +135,12 @@ export default function FilteredConsultantsComp({
           <th className="min-w-[120px] md:min-w-[200px] py-1 pt-3">
             <div className="flex flex-col gap-1">
               <p className="normal text-left">Kompetanse</p>
+            </div>
+          </th>
+
+          <th className="py-1 pt-3 w-44">
+            <div className="flex flex-col gap-1">
+              <p className="normal text-left">Faggruppe</p>
             </div>
           </th>
 
@@ -285,6 +293,18 @@ export default function FilteredConsultantsComp({
                 }
                 competences={consultant.competences}
                 isEditing={selectedEditConsultant?.id === consultant.id}
+              />
+              <EditableTableSingleSelectCell
+                options={disciplines}
+                setConsultant={(discipline: DisciplineReadModel | undefined) =>
+                  setSelectedEditConsultant((selectedConsultant) => {
+                    if (!selectedConsultant) return null;
+                    return { ...selectedConsultant, discipline };
+                  })
+                }
+                originalSelection={consultant.discipline}
+                canResetSelection={true}
+                isEditing={selectedEditConsultant?.id == consultant.id}
               />
               <EditableTableDegreeCell
                 setConsultant={(degree: Degree) =>
@@ -477,6 +497,18 @@ export default function FilteredConsultantsComp({
                 }
                 competences={consultant.competences}
                 isEditing={selectedEditConsultant?.id === consultant.id}
+              />
+              <EditableTableSingleSelectCell
+                options={disciplines}
+                setConsultant={(discipline: DisciplineReadModel | undefined) =>
+                  setSelectedEditConsultant((selectedConsultant) => {
+                    if (!selectedConsultant) return null;
+                    return { ...selectedConsultant, discipline };
+                  })
+                }
+                originalSelection={consultant.discipline}
+                canResetSelection={true}
+                isEditing={selectedEditConsultant?.id == consultant.id}
               />
               <EditableTableDegreeCell
                 setConsultant={(degree: Degree) =>
