@@ -303,6 +303,7 @@ export default function FilteredConsultantsComp({
                   })
                 }
                 originalSelection={consultant.discipline}
+                canResetSelection={true}
                 isEditing={selectedEditConsultant?.id == consultant.id}
               />
               <EditableTableDegreeCell
@@ -506,6 +507,7 @@ export default function FilteredConsultantsComp({
                   })
                 }
                 originalSelection={consultant.discipline}
+                canResetSelection={true}
                 isEditing={selectedEditConsultant?.id == consultant.id}
               />
               <EditableTableDegreeCell

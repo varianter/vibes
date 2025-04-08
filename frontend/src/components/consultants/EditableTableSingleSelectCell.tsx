@@ -3,11 +3,13 @@ import React, { useEffect, useState } from "react";
 
 export default function EditableTableSingleSelectCell<T extends { id: string, name: string }>({
   originalSelection,
+  canResetSelection,
   setConsultant,
   isEditing,
   options,
 }: {
   originalSelection: T | undefined;
+  canResetSelection: boolean;
   setConsultant: (selectedOption: T | undefined) => void;
   isEditing: boolean;
   options: T[];
@@ -63,7 +65,7 @@ export default function EditableTableSingleSelectCell<T extends { id: string, na
           options={selectOptions}
           isMulti={false}
           defaultValue={selection}
-          isClearable
+          isClearable={canResetSelection}
           onChange={(
             selOptions: SingleValue<{ value: string; label: string }>,
           ) => {
@@ -73,7 +75,7 @@ export default function EditableTableSingleSelectCell<T extends { id: string, na
                 name: selOptions.label,
               } as T);
             }
-            else {
+            else if (canResetSelection) {
               setNewSelection(undefined);
               setConsultant(undefined);
             }
