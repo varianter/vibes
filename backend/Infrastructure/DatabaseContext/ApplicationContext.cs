@@ -193,14 +193,11 @@ public class ApplicationContext(IOptions<InfrastructureConfig> config) : DbConte
             new() { Id = "frontend", Name = "Frontend" },
             new() { Id = "dotnet", Name = ".NET" },
             new() { Id = "platform", Name = "Plattform" },
-            new() { Id = "strategic-design", Name = "Strategisk Design" },
-            new() { Id = "ux-design", Name = "UX Design" },
+            new() { Id = "strategic-design", Name = "Strategisk design" },
+            new() { Id = "ux-design", Name = "UX-design" },
             new() { Id = "service-design", Name = "Tjenestedesign" },
-            new() { Id = "ppp", Name = "Prosjekt/Produkt/Prosess" },
-            new() { Id = "counselling", Name = "Rådgivning" },
-            new() { Id = "data-engineer", Name = "Data Engineer" },
-            new() { Id = "app-development", Name = "App-utvikling" },
-            new() { Id = "jvm", Name = "Java/JVM" }
+            new() { Id = "ppp", Name = "PPP-ledelse" },
+            new() { Id = "jvm", Name = "JVM" }
         });
 
         modelBuilder.Entity<Agreement>(entity =>
