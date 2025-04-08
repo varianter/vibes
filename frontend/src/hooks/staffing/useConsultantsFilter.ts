@@ -154,9 +154,10 @@ export function filterConsultants({
         disciplineFilter.toLowerCase().split(","),
       );
 
-      newFilteredConsultants = newFilteredConsultants.filter((consultant) =>
-        consultant.discipline &&
-        disciplineFilterSet.has(consultant.discipline.id),
+      newFilteredConsultants = newFilteredConsultants.filter(
+        (consultant) =>
+          consultant.discipline &&
+          disciplineFilterSet.has(consultant.discipline.id),
       );
     }
     if (yearFilter.length > 0) {
