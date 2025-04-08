@@ -43,6 +43,16 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
+## Regenerate types
+
+Want to create TypeScript types for new types in the backend? Make sure the backend is running, then go to the `frontend` folder and run
+
+```bash
+yarn generate-types
+```
+
+Note: The output file (and other parameters) can be changed in the `"generate-types"` script in `package.json`.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
