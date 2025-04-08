@@ -1,3 +1,4 @@
+using Api.Common.Types;
 using Api.Consultants;
 using Core.Consultants;
 using Core.Consultants.Competences;
@@ -184,10 +185,6 @@ public class StorageService(IMemoryCache cache, ILogger<StorageService> logger, 
         var department =
             await context.Department.FirstOrDefaultAsync(d => d.Id == body.Department.Id, cancellationToken);
 
-        var updatedDiscipline = body.Discipline is { } discipline
-            ? await context.Disciplines.SingleOrDefaultAsync(d => d.Id == discipline.Id, cancellationToken)
-            : null;
-
         consultant.Name = body.Name;
         consultant.Email = body.Email;
         consultant.StartDate = body.StartDate.HasValue ? DateOnly.FromDateTime(body.StartDate.Value.Date) : null;
@@ -195,7 +192,11 @@ public class StorageService(IMemoryCache cache, ILogger<StorageService> logger, 
         if (department is not null) consultant.Department = department;
         consultant.GraduationYear = body.GraduationYear;
         consultant.Degree = body.Degree;
-        consultant.Discipline = updatedDiscipline;
+
+        if (body.Discipline?.Id != consultant.DisciplineId)
+        {
+            await UpdateDiscipline(consultant, body.Discipline, cancellationToken);
+        }
 
         // Clear the CompetenceConsultant collection
         consultant.CompetenceConsultant.Clear();
@@ -324,5 +325,19 @@ public class StorageService(IMemoryCache cache, ILogger<StorageService> logger, 
         context.SaveChanges();
 
         cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
+    }
+
+    private async Task UpdateDiscipline(Consultant consultant, DisciplineReadModel? discipline, CancellationToken cancellationToken)
+    {
+        var newDiscipline = discipline?.Id is { } disciplineId
+            ? await context.Disciplines.SingleOrDefaultAsync(d => d.Id == disciplineId, cancellationToken)
+            : null;
+
+        consultant.Discipline = newDiscipline;
+
+        if (newDiscipline is null)
+        {
+            consultant.DisciplineId = null;
+        }
     }
 }
