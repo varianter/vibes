@@ -197,7 +197,8 @@ public class ApplicationContext(IOptions<InfrastructureConfig> config) : DbConte
             new() { Id = "ux-design", Name = "UX-design" },
             new() { Id = "service-design", Name = "Tjenestedesign" },
             new() { Id = "ppp", Name = "PPP-ledelse" },
-            new() { Id = "jvm", Name = "JVM" }
+            new() { Id = "jvm", Name = "JVM" },
+            new() { Id = "sales", Name = "Salg" },
         });
 
         modelBuilder.Entity<Agreement>(entity =>
