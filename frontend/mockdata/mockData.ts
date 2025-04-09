@@ -9,6 +9,7 @@ import {
   EngagementPerCustomerReadModel,
   OrganisationReadModel,
   BookingReadModel,
+  DisciplineReadModel,
 } from "@/api-types";
 
 const MockWeeklyBookingReadModel: BookingReadModel = {
@@ -53,6 +54,14 @@ export const MockCompetences: CompetenceReadModel[] = [
     name: "Utvikling",
   },
 ];
+
+export const MockDisciplines: DisciplineReadModel[] = [
+  {
+    id: "frontend",
+    name: "Frontend",
+  },
+];
+
 const mockDetailedBookings: DetailedBooking[] = [
   {
     bookingDetails: {
@@ -393,6 +402,7 @@ export const MockConsultants: ConsultantReadModel[] = [
     name: "Test Consultant",
     email: "test@company.io",
     competences: [{ id: "development", name: "Utvikling" }],
+    discipline: { id: "frontend", name: "Frontend" },
     department: { id: "mydepartment", name: "My Department" },
     bookings: [
       {
