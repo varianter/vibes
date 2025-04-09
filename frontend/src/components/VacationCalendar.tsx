@@ -6,6 +6,8 @@ import { MantineProvider } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import InfoBox from "./InfoBox";
 import dayjs from "dayjs";
+import "@mantine/core/styles.css";
+import "@mantine/dates/styles.css";
 
 // TODO Find non-hardcoded solution for styling 'custom-calendar'
 
