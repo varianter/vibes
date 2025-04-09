@@ -291,4 +291,16 @@
     flex-wrap: wrap;
     flex-basis: 50%;
   }
+
+  @media (max-width: 1900px) {
+    [class-name="custom-calendar"] > div {
+      flex-basis: 75%;
+    }
+  }
+
+  @media (max-width: 1200px) {
+    [class-name="custom-calendar"] > div {
+      flex-basis: 100%;
+    }
+  }
 }
