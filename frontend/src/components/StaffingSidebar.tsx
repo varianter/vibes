@@ -22,6 +22,8 @@ export default function StaffingSidebar({
   closeSidebar: () => void;
   isForecast?: boolean;
 }) {
+  const context = isForecast ? FilteredForecastContext : FilteredContext;
+
   return (
     <>
       {isSidebarOpen && (
@@ -36,36 +38,22 @@ export default function StaffingSidebar({
             </button>
           </div>
           <SearchBarComponent
-            context={isForecast ? FilteredForecastContext : FilteredContext}
+            context={context}
             placeholder="Søk etter konsulent"
           />
-          {isStaffing ? (
-            <AvailabilityFilter
-              context={isForecast ? FilteredForecastContext : FilteredContext}
-            />
-          ) : null}
-          <DepartmentFilter
-            context={isForecast ? FilteredForecastContext : FilteredContext}
-          />
-          <RawYearsFilter
-            context={isForecast ? FilteredForecastContext : FilteredContext}
-          />
-          <ExperienceFilter
-            context={isForecast ? FilteredForecastContext : FilteredContext}
-          />
-          <CompetenceFilter
-            context={isForecast ? FilteredForecastContext : FilteredContext}
-          />
-          <DisciplineFilter
-            context={isForecast ? FilteredForecastContext : FilteredContext}
-          />
+          {isStaffing ? <AvailabilityFilter context={context} /> : null}
+          <DepartmentFilter context={context} />
+          <RawYearsFilter context={context} />
+          <ExperienceFilter context={context} />
+          <CompetenceFilter context={context} />
+          <DisciplineFilter context={context} />
         </div>
       )}
       {!isSidebarOpen && (
         <div className="sidebar z-10">
           <SearchBarComponent
             placeholder="Søk etter konsulent"
-            context={isForecast ? FilteredForecastContext : FilteredContext}
+            context={context}
             hidden={!isSidebarOpen}
           />
         </div>
