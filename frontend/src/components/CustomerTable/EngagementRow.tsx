@@ -74,6 +74,7 @@ export default function EngagementRows({
         search: "",
         departmentFilter: activeFilters.departmentFilter,
         competenceFilter: activeFilters.competenceFilter,
+        disciplineFilter: activeFilters.disciplineFilter,
         yearFilter: [],
         consultants: selectedConsultants,
         availabilityFilterOn: false,

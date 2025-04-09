@@ -8,6 +8,7 @@ import {
   MockCompetences,
   MockConsultants,
   MockDepartments,
+  MockDisciplines,
   MockEngagements,
   MockOrganisations,
 } from "../../mockdata/mockData";
@@ -283,6 +284,9 @@ function mockedCall<T>(path: string): Promise<T> {
     }
     if (path.includes("competences")) {
       resolve(MockCompetences as T);
+    }
+    if (path.includes("disciplines")) {
+      resolve(MockDisciplines as T);
     }
   });
 }

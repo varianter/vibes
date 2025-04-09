@@ -13,6 +13,7 @@ export function useSimpleConsultantsFilter() {
   const {
     departmentFilter,
     competenceFilter,
+    disciplineFilter,
     searchFilter,
     experienceFromFilter,
     experienceToFilter,
@@ -25,6 +26,7 @@ export function useSimpleConsultantsFilter() {
     search: searchFilter,
     departmentFilter,
     competenceFilter,
+    disciplineFilter,
     yearFilter: filteredYears,
     consultants,
     availabilityFilterOn,
@@ -46,6 +48,7 @@ export function useConsultantsFilter() {
   const {
     departmentFilter,
     competenceFilter,
+    disciplineFilter,
     searchFilter,
     experienceFromFilter,
     experienceToFilter,
@@ -58,6 +61,7 @@ export function useConsultantsFilter() {
     search: searchFilter,
     departmentFilter,
     competenceFilter,
+    disciplineFilter,
     yearFilter: filteredYears,
     consultants,
     availabilityFilterOn,
@@ -87,6 +91,7 @@ export function filterConsultants({
   search,
   departmentFilter,
   competenceFilter,
+  disciplineFilter,
   yearFilter,
   consultants,
   availabilityFilterOn,
@@ -96,6 +101,7 @@ export function filterConsultants({
   search: string;
   departmentFilter: string;
   competenceFilter: string;
+  disciplineFilter: string;
   yearFilter: YearRange[];
   consultants: ConsultantReadModel[];
   availabilityFilterOn: boolean;
@@ -106,6 +112,7 @@ export function filterConsultants({
     search,
     departmentFilter,
     competenceFilter,
+    disciplineFilter,
     activeExperienceFrom,
     activeExperienceTo,
     availabilityFilterOn,
@@ -140,6 +147,17 @@ export function filterConsultants({
         consultant.competences.some((c) =>
           competenceFilterSet.has(c.id.toLowerCase()),
         ),
+      );
+    }
+    if (disciplineFilter && disciplineFilter.length > 0) {
+      const disciplineFilterSet = new Set(
+        disciplineFilter.toLowerCase().split(","),
+      );
+
+      newFilteredConsultants = newFilteredConsultants.filter(
+        (consultant) =>
+          consultant.discipline &&
+          disciplineFilterSet.has(consultant.discipline.id),
       );
     }
     if (yearFilter.length > 0) {

@@ -1,5 +1,6 @@
 import {
   CompetenceReadModel,
+  DisciplineReadModel,
   ConsultantReadModel,
   DepartmentReadModel,
   EngagementPerCustomerReadModel,
@@ -30,29 +31,31 @@ export default async function Bemanning({
   );
   const weekSpan = searchParams.weekSpan || undefined;
   console.time("Staffing page.tsx fetch all");
-  const [consultants, departments, competences, customers] = await Promise.all([
-    fetchEmployeesWithImageAndToken(
-      `${params.organisation}/staffings${
-        selectedWeek
-          ? `?Year=${selectedWeek.year}&Week=${selectedWeek.weekNumber}`
-          : ""
-      }${weekSpan ? `${selectedWeek ? "&" : "?"}WeekSpan=${weekSpan}` : ""}`,
-    ),
-    fetchWithToken<DepartmentReadModel[]>(
-      `organisations/${params.organisation}/departments`,
-    ),
-    fetchWithToken<CompetenceReadModel[]>(`competences`),
-    fetchWithToken<EngagementPerCustomerReadModel[]>(
-      `${params.organisation}/projects`,
-    ),
-  ]);
+  const [consultants, departments, competences, disciplines, customers] =
+    await Promise.all([
+      fetchEmployeesWithImageAndToken(
+        `${params.organisation}/staffings${
+          selectedWeek
+            ? `?Year=${selectedWeek.year}&Week=${selectedWeek.weekNumber}`
+            : ""
+        }${weekSpan ? `${selectedWeek ? "&" : "?"}WeekSpan=${weekSpan}` : ""}`,
+      ),
+      fetchWithToken<DepartmentReadModel[]>(
+        `organisations/${params.organisation}/departments`,
+      ),
+      fetchWithToken<CompetenceReadModel[]>(`competences`),
+      fetchWithToken<DisciplineReadModel[]>(`disciplines`),
+      fetchWithToken<EngagementPerCustomerReadModel[]>(
+        `${params.organisation}/projects`,
+      ),
+    ]);
   console.timeEnd("Staffing page.tsx fetch all");
   return (
     <ConsultantFilterProvider
       consultants={consultants ?? []}
       departments={departments ?? []}
       competences={competences ?? []}
-      disciplines={[]}
+      disciplines={disciplines ?? []}
       customers={customers ?? []}
     >
       <StaffingContent />
