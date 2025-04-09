@@ -56,9 +56,7 @@ export default function StaffingSidebar({
           <CompetenceFilter
             context={isForecast ? FilteredForecastContext : FilteredContext}
           />
-          <DisciplineFilter
-            context={isForecast ? FilteredForecastContext : FilteredContext}
-          />
+          {isForecast ? null : <DisciplineFilter context={FilteredContext} />}
         </div>
       )}
       {!isSidebarOpen && (
