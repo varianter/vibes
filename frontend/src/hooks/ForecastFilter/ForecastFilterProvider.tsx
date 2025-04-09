@@ -3,6 +3,7 @@
 import {
   DepartmentReadModel,
   CompetenceReadModel,
+  DisciplineReadModel,
   ConsultantWithForecast,
 } from "@/api-types";
 import React, { createContext, ReactNode, useEffect, useState } from "react";
@@ -12,6 +13,7 @@ const defaultFilters: ForecastFilters = {
   availabilityFilter: false,
   departmentFilter: "",
   competenceFilter: "",
+  disciplineFilter: "",
   searchFilter: "",
   startDate: "",
   rawYearFilter: "",
@@ -26,6 +28,7 @@ export type ForecastContextType = {
   >;
   departments: DepartmentReadModel[];
   competences: CompetenceReadModel[];
+  disciplines: DisciplineReadModel[];
   isDisabledHotkeys: boolean;
   setIsDisabledHotkeys: React.Dispatch<React.SetStateAction<boolean>>;
   activeFilters: ForecastFilters;
@@ -37,6 +40,7 @@ export const FilteredForecastContext = createContext<ForecastContextType>({
   setConsultants: () => null,
   departments: [],
   competences: [],
+  disciplines: [],
   isDisabledHotkeys: false,
   setIsDisabledHotkeys: () => {},
   activeFilters: defaultFilters,
@@ -47,6 +51,7 @@ export function ForecastFilterProvider(props: {
   consultants: ConsultantWithForecast[];
   departments: DepartmentReadModel[];
   competences: CompetenceReadModel[];
+  disciplines: DisciplineReadModel[];
   children: ReactNode;
 }) {
   const [isDisabledHotkeys, setIsDisabledHotkeys] = useState(false);
@@ -76,6 +81,7 @@ interface UpdateFilterParams {
   search?: string;
   departments?: string;
   competences?: string;
+  disciplines?: string;
   years?: string;
   startDate: string;
   availability?: boolean;
@@ -87,6 +93,7 @@ export type ForecastFilters = {
   availabilityFilter: boolean;
   departmentFilter: string;
   competenceFilter: string;
+  disciplineFilter: string;
   rawYearFilter: string;
   startDate: string;
   searchFilter: string;
@@ -110,6 +117,9 @@ function useUrlRouteFilter(): [ForecastFilters, UpdateFilters] {
   const [competenceFilter, setCompetenceFilter] = useState(
     searchParams.get("compFilter") || "",
   );
+  const [disciplineFilter, setDisciplineFilter] = useState(
+    searchParams.get("disciplineFilter") || "",
+  );
   const [yearFilter, setYearFilter] = useState(
     searchParams.get("yearFilter") || "",
   );
@@ -130,18 +140,20 @@ function useUrlRouteFilter(): [ForecastFilters, UpdateFilters] {
     const { search = searchFilter } = updateParams;
     const { departments = departmentFilter } = updateParams;
     const { competences = competenceFilter } = updateParams;
+    const { disciplines = disciplineFilter } = updateParams;
     const { years = yearFilter } = updateParams;
     const { experienceFrom = experienceFromFilter } = updateParams;
     const { experienceTo = experienceToFilter } = updateParams;
     const { startDate = date } = updateParams;
     const { availability = availabilityFilter } = updateParams;
 
-    const url = `${pathname}?search=${search}&depFilter=${departments}&compFilter=${competences}&yearFilter=${years}${`&startDate=${startDate}`}&experienceFromFilter=${experienceFrom}&experienceToFilter=${experienceTo}&availabilityFilter=${availability}`;
+    const url = `${pathname}?search=${search}&depFilter=${departments}&compFilter=${competences}&disciplineFilter=${disciplines}&yearFilter=${years}${`&startDate=${startDate}`}&experienceFromFilter=${experienceFrom}&experienceToFilter=${experienceTo}&availabilityFilter=${availability}`;
 
     setYearFilter(years);
     setSearchFilter(search);
     setDepartmentFilter(departments);
     setCompetenceFilter(competences);
+    setDisciplineFilter(disciplines);
     setAvailabilityFilter(availability);
     setDate(startDate);
     setExperienceFromFilter(experienceFrom);
@@ -159,6 +171,7 @@ function useUrlRouteFilter(): [ForecastFilters, UpdateFilters] {
       searchFilter,
       departmentFilter,
       competenceFilter,
+      disciplineFilter,
       rawYearFilter: yearFilter,
       availabilityFilter,
       startDate: date,

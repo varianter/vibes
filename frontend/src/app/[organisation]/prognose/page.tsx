@@ -2,6 +2,7 @@ import {
   CompetenceReadModel,
   DepartmentReadModel,
   ConsultantWithForecast,
+  DisciplineReadModel,
 } from "@/api-types";
 import React from "react";
 import {
@@ -23,13 +24,14 @@ export default async function Prognose({
   searchParams: { selectedWeek?: string; weekSpan?: string };
 }) {
   console.time("Forecast page.tsx fetch");
-  const [consultantsWithForecasts, departments, competences] =
+  const [consultantsWithForecasts, departments, competences, disciplines] =
     await Promise.all([
       fetchForecastWithToken(`${params.organisation}/forecasts`),
       fetchWithToken<DepartmentReadModel[]>(
         `organisations/${params.organisation}/departments`,
       ),
       fetchWithToken<CompetenceReadModel[]>(`competences`),
+      fetchWithToken<DisciplineReadModel[]>(`disciplines`),
     ]);
   console.timeEnd("Forecast page.tsx fetch");
   return (
@@ -37,6 +39,7 @@ export default async function Prognose({
       consultants={consultantsWithForecasts ?? []}
       departments={departments ?? []}
       competences={competences ?? []}
+      disciplines={disciplines ?? []}
     >
       <ForecastContent />
     </ForecastFilterProvider>
