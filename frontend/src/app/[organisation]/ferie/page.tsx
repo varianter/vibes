@@ -6,6 +6,9 @@ import {
 import VacationCalendar from "@/components/VacationCalendar";
 import { fetchWithToken } from "@/data/apiCallsWithToken";
 import { Metadata } from "next";
+import "@mantine/core/styles.css";
+import "@mantine/dates/styles.css";
+import "./styles.css";
 
 export const metadata: Metadata = {
   title: "Ferie | VIBES",
