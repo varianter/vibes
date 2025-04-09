@@ -282,37 +282,4 @@
     padding: 0.3rem 0.7rem;
     background-color: #242424;
   }
-
-  [class-name="custom-calendar"] {
-    display: flex;
-  }
-
-  [class-name="custom-calendar"] > div {
-    flex-wrap: wrap;
-    flex-basis: 50%;
-  }
-
-  @media (max-width: 2200px) {
-    [class-name="custom-calendar"] > div {
-      flex-basis: 63%;
-    }
-  }
-
-  @media (max-width: 1900px) {
-    [class-name="custom-calendar"] > div {
-      flex-basis: 75%;
-    }
-  }
-
-  @media (max-width: 1550px) {
-    [class-name="custom-calendar"] > div {
-      flex-basis: 95%;
-    }
-  }
-
-  @media (max-width: 1200px) {
-    [class-name="custom-calendar"] > div {
-      flex-basis: 100%;
-    }
-  }
 }
