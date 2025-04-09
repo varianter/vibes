@@ -121,10 +121,10 @@ export function filterConsultants({
 
   if (anyFilterActive || yearFilter.length > 0) {
     if (search && search.length > 0) {
-      const searchRegex = new RegExp(`(?<!\\p{L})${search}.*\\b`, "giu");
+      const searchRegex = new RegExp(`(?<!\\p{L})${search}.*\\b`, "iu");
 
       newFilteredConsultants = newFilteredConsultants.filter((consultant) =>
-        consultant.consultant.name.match(searchRegex),
+        searchRegex.test(consultant.consultant.name),
       );
     }
     if (departmentFilter && departmentFilter.length > 0) {
