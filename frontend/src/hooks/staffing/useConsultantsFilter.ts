@@ -117,7 +117,7 @@ export function filterConsultants({
       const searchRegex = new RegExp(`(?<!\\p{L})${search}.*\\b`, "giu");
 
       newFilteredConsultants = newFilteredConsultants.filter((consultant) =>
-        searchRegex.test(consultant.name),
+        consultant.name.match(searchRegex),
       );
     }
     if (departmentFilter && departmentFilter.length > 0) {
