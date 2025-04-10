@@ -10,7 +10,7 @@ import { fetchWithToken } from "@/data/apiCallsWithToken";
 import { OrganisationReadModel } from "@/api-types";
 import { OrganizationContextProvider } from "@/context/organization";
 import { ReactQueryClientProvider } from "@/query-client";
-import { MantineProvider } from "@mantine/core";
+import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 
 export const metadata: Metadata = {
   title: "VIBES",
@@ -36,6 +36,9 @@ export default async function RootLayout({ children }: PropsWithChildren) {
 
   return (
     <html>
+      <head>
+        <ColorSchemeScript />
+      </head>
       <body className="layout-grid">
         <ReactQueryClientProvider>
           <OrganizationContextProvider
