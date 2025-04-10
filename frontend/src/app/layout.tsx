@@ -12,7 +12,7 @@ import { fetchWithToken } from "@/data/apiCallsWithToken";
 import { OrganisationReadModel } from "@/api-types";
 import { OrganizationContextProvider } from "@/context/organization";
 import { ReactQueryClientProvider } from "@/query-client";
-import { ColorSchemeScript, MantineProvider } from "@mantine/core";
+import { ColorSchemeScript, MantineProvider, mantineHtmlProps } from "@mantine/core";
 
 export const metadata: Metadata = {
   title: "VIBES",
@@ -37,7 +37,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
     (await fetchWithToken<OrganisationReadModel[]>("organisations")) ?? [];
 
   return (
-    <html>
+    <html {...mantineHtmlProps}>
       <head>
         <ColorSchemeScript />
       </head>
@@ -48,16 +48,14 @@ export default async function RootLayout({ children }: PropsWithChildren) {
             organization={chosenOrg}
             setOrganization={setOrganisationInCookie}
           >
-            <MantineProvider>
-              <NavBar />
-              <NextTopLoader
-                showSpinner={false}
-                color="#FF87B7"
-                height={3}
-                initialPosition={0.2}
-              />
-              {children}
-            </MantineProvider>
+            <NavBar />
+            <NextTopLoader
+              showSpinner={false}
+              color="#FF87B7"
+              height={3}
+              initialPosition={0.2}
+            />
+            <MantineProvider>{children}</MantineProvider>
           </OrganizationContextProvider>
         </ReactQueryClientProvider>
       </body>
