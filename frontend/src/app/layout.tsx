@@ -1,6 +1,8 @@
 import NextTopLoader from "nextjs-toploader";
 
 import "./globals.css";
+import "@mantine/core/styles.css";
+import "@mantine/dates/styles.css";
 import NavBar from "@/components/NavBar/NavBar";
 import { Metadata } from "next";
 import { cookies } from "next/headers";
@@ -10,6 +12,11 @@ import { fetchWithToken } from "@/data/apiCallsWithToken";
 import { OrganisationReadModel } from "@/api-types";
 import { OrganizationContextProvider } from "@/context/organization";
 import { ReactQueryClientProvider } from "@/query-client";
+import {
+  ColorSchemeScript,
+  MantineProvider,
+  mantineHtmlProps,
+} from "@mantine/core";
 
 export const metadata: Metadata = {
   title: "VIBES",
@@ -34,7 +41,10 @@ export default async function RootLayout({ children }: PropsWithChildren) {
     (await fetchWithToken<OrganisationReadModel[]>("organisations")) ?? [];
 
   return (
-    <html>
+    <html {...mantineHtmlProps}>
+      <head>
+        <ColorSchemeScript />
+      </head>
       <body className="layout-grid">
         <ReactQueryClientProvider>
           <OrganizationContextProvider
@@ -49,7 +59,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
               height={3}
               initialPosition={0.2}
             />
-            {children}
+            <MantineProvider>{children}</MantineProvider>
           </OrganizationContextProvider>
         </ReactQueryClientProvider>
       </body>

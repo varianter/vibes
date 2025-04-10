@@ -2,7 +2,6 @@
 
 import { ConsultantReadModel, VacationReadModel } from "@/api-types";
 import React, { HTMLAttributes, ReactNode, useState } from "react";
-import { MantineProvider } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import InfoBox from "./InfoBox";
 import dayjs from "dayjs";
@@ -212,22 +211,20 @@ export default function VacationCalendar({
         <div className="flex flex-col justify-center m-4">
           <h1 className="text-black">{consultant.name}</h1>
           <p className="normal text-black">{consultant.department.name}</p>
-          <MantineProvider>
-            <DatePicker
-              class-name="custom-calendar"
-              type="multiple"
-              numberOfColumns={12}
-              maxLevel="month"
-              withWeekNumbers
-              weekdayFormat="ddd"
-              defaultDate={thisYearJanuary}
-              highlightToday={true}
-              value={vacationDates}
-              onChange={updateVacationDates}
-              renderDay={dayRenderer}
-              excludeDate={isUnselectable}
-            />
-          </MantineProvider>
+          <DatePicker
+            class-name="custom-calendar"
+            type="multiple"
+            numberOfColumns={12}
+            maxLevel="month"
+            withWeekNumbers
+            weekdayFormat="ddd"
+            defaultDate={thisYearJanuary}
+            highlightToday={true}
+            value={vacationDates}
+            onChange={updateVacationDates}
+            renderDay={dayRenderer}
+            excludeDate={isUnselectable}
+          />
         </div>
         <p className="absolute right-1 p-4 hidden lg:flex normal-semibold">
           {savedMessage}
