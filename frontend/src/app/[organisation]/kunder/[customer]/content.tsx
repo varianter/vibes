@@ -10,6 +10,7 @@ import {
 } from "@/api-types";
 import { useOrganizationContext } from "@/context/organization";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 
 type Props = {
   customer: string;
@@ -18,6 +19,7 @@ type Props = {
 
 export function CustomerPageContent(props: Props) {
   const { currentOrganization } = useOrganizationContext();
+  const [isFetching, setIsFetching] = useState(true);
 
   const numWorkHours = currentOrganization?.hoursPerWeek ?? 0;
 
@@ -39,7 +41,20 @@ export function CustomerPageContent(props: Props) {
       ),
   });
 
-  const isFetching = customerFetching || departmentsFetching;
+  useEffect(() => {
+    if (
+      (!customerFetching && !departmentsFetching) ||
+      (isFetching && customer && departments)
+    ) {
+      setIsFetching(false);
+    }
+  }, [
+    customer,
+    customerFetching,
+    departments,
+    departmentsFetching,
+    isFetching,
+  ]);
 
   if (isFetching) {
     return <></>;
