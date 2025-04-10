@@ -1,3 +1,6 @@
+@import "@mantine/core/styles.css";
+@import "@mantine/dates/styles.css";
+
 [class-name="custom-calendar"] {
   display: flex;
 }
