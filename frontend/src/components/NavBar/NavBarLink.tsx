@@ -15,6 +15,7 @@ export default function NavBarLink(props: { text: string; path: string }) {
           : "large opacity-70 hover:opacity-100"
       }`}
       href={orgUrl != "" ? `/${orgUrl}/${props.path}` : "/"}
+      prefetch={props.path !== "ferie"}
     >
       {props.text}
     </Link>
