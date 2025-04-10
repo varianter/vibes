@@ -211,20 +211,20 @@ export default function VacationCalendar({
         <div className="flex flex-col justify-center m-4">
           <h1 className="text-black">{consultant.name}</h1>
           <p className="normal text-black">{consultant.department.name}</p>
-            <DatePicker
-              class-name="custom-calendar"
-              type="multiple"
-              numberOfColumns={12}
-              maxLevel="month"
-              withWeekNumbers
-              weekdayFormat="ddd"
-              defaultDate={thisYearJanuary}
-              highlightToday={true}
-              value={vacationDates}
-              onChange={updateVacationDates}
-              renderDay={dayRenderer}
-              excludeDate={isUnselectable}
-            />
+          <DatePicker
+            class-name="custom-calendar"
+            type="multiple"
+            numberOfColumns={12}
+            maxLevel="month"
+            withWeekNumbers
+            weekdayFormat="ddd"
+            defaultDate={thisYearJanuary}
+            highlightToday={true}
+            value={vacationDates}
+            onChange={updateVacationDates}
+            renderDay={dayRenderer}
+            excludeDate={isUnselectable}
+          />
         </div>
         <p className="absolute right-1 p-4 hidden lg:flex normal-semibold">
           {savedMessage}
