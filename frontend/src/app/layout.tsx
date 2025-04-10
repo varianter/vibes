@@ -10,6 +10,7 @@ import { fetchWithToken } from "@/data/apiCallsWithToken";
 import { OrganisationReadModel } from "@/api-types";
 import { OrganizationContextProvider } from "@/context/organization";
 import { ReactQueryClientProvider } from "@/query-client";
+import { MantineProvider } from "@mantine/core";
 
 export const metadata: Metadata = {
   title: "VIBES",
@@ -42,14 +43,16 @@ export default async function RootLayout({ children }: PropsWithChildren) {
             organization={chosenOrg}
             setOrganization={setOrganisationInCookie}
           >
-            <NavBar />
-            <NextTopLoader
-              showSpinner={false}
-              color="#FF87B7"
-              height={3}
-              initialPosition={0.2}
-            />
-            {children}
+            <MantineProvider>
+              <NavBar />
+              <NextTopLoader
+                showSpinner={false}
+                color="#FF87B7"
+                height={3}
+                initialPosition={0.2}
+              />
+              {children}
+            </MantineProvider>
           </OrganizationContextProvider>
         </ReactQueryClientProvider>
       </body>
