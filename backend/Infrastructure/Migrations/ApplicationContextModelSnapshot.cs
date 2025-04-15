@@ -179,6 +179,9 @@ namespace Infrastructure.Migrations
                     b.Property<int>("GraduationYear")
                         .HasColumnType("int");
 
+                    b.Property<int?>("MentorId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -196,6 +199,8 @@ namespace Infrastructure.Migrations
                     b.HasIndex("DepartmentId");
 
                     b.HasIndex("DisciplineId");
+
+                    b.HasIndex("MentorId");
 
                     b.ToTable("Consultant");
 
@@ -271,6 +276,29 @@ namespace Infrastructure.Migrations
                             Id = "sales",
                             Name = "Salg"
                         });
+                });
+
+            modelBuilder.Entity("Core.Consultants.Mentor.Mentor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ConsultantId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OrganizationUrlKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConsultantId")
+                        .IsUnique();
+
+                    b.ToTable("Mentors");
                 });
 
             modelBuilder.Entity("Core.Customers.Customer", b =>
@@ -580,6 +608,10 @@ namespace Infrastructure.Migrations
                         .WithMany("Consultants")
                         .HasForeignKey("DisciplineId");
 
+                    b.HasOne("Core.Consultants.Mentor.Mentor", null)
+                        .WithMany("Mentees")
+                        .HasForeignKey("MentorId");
+
                     b.Navigation("Department");
 
                     b.Navigation("Discipline");
@@ -697,6 +729,11 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Core.Consultants.Disciplines.Discipline", b =>
                 {
                     b.Navigation("Consultants");
+                });
+
+            modelBuilder.Entity("Core.Consultants.Mentor.Mentor", b =>
+                {
+                    b.Navigation("Mentees");
                 });
 
             modelBuilder.Entity("Core.Customers.Customer", b =>

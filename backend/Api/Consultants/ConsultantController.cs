@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Api.Consultants;
 
@@ -20,10 +21,11 @@ public class ConsultantController(
     IConsultantRepository consultantRepository) : ControllerBase
 {
     private readonly StorageService _storageService = new(cache, logger, context);
-    
+
     [HttpGet]
     [Route("{Email}")]
-    public async Task<ActionResult<SingleConsultantReadModel>> Get([FromRoute] string orgUrlKey, CancellationToken cancellationToken,
+    public async Task<ActionResult<SingleConsultantReadModel>> Get([FromRoute] string orgUrlKey,
+        CancellationToken cancellationToken,
         [FromRoute(Name = "Email")] string? email = "")
     {
         var consultant = await consultantRepository.GetConsultantByEmail(orgUrlKey, email ?? "", cancellationToken);
@@ -47,7 +49,8 @@ public class ConsultantController(
 
     [HttpGet]
     [Route("employment")]
-    public async Task<OkObjectResult> GetConsultantsEmployment([FromRoute] string orgUrlKey, CancellationToken cancellationToken)
+    public async Task<OkObjectResult> GetConsultantsEmployment([FromRoute] string orgUrlKey,
+        CancellationToken cancellationToken)
     {
         var consultants = await consultantRepository.GetConsultantsInOrganizationByUrlKey(orgUrlKey, cancellationToken);
 
@@ -107,5 +110,31 @@ public class ConsultantController(
             return TypedResults.NotFound($"Could not find consultant with id {consultantId}");
 
         return TypedResults.Ok(new SingleConsultantReadModel(consultant));
+    }
+
+    [HttpPut]
+    [Route("{consultantId:int}/personnelTeam")]
+    public async Task<Results<NotFound<string>, Ok>> UpdatePersonnelTeamByConsultant(
+        [FromRoute] int consultantId, [FromQuery] int? personnelTeamId, CancellationToken cancellationToken,
+        string orgUrlKey)
+    {
+        var personnelTeam =
+            await consultantRepository.GetPersonnelTeamInOrganizationByUrlKey(orgUrlKey, cancellationToken);
+
+        if (personnelTeam.IsNullOrEmpty())
+        {
+            return TypedResults.NotFound(
+                $"Could not find personnel team with id {personnelTeamId} in organization {orgUrlKey}");
+        }
+
+        var res = await consultantRepository.UpdatePersonnelTeamByConsultantId(consultantId, personnelTeamId,
+            cancellationToken);
+
+        if (res == Results.NotFound())
+        {
+            return TypedResults.NotFound($"Could not find consultant with id {consultantId}");
+        }
+
+        return TypedResults.Ok();
     }
 }
