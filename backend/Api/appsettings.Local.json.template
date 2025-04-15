@@ -7,7 +7,7 @@
     "ApiScope": "Azure Ad -> App Registrations -> [app] -> Expose an Api"
   },
   "InfrastructureConfig": {
-    "ConnectionString": "<use-same-as-in-Development.json>"
+    "ConnectionString": "<use-same-as-in-Development.json>",
     "EnableSensitiveDataLogging": true
   },
   "TestContainersConfig": {
