@@ -4,6 +4,7 @@ using Infrastructure.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20250422074724_AddMentor")]
+    partial class AddMentor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -179,6 +182,9 @@ namespace Infrastructure.Migrations
                     b.Property<int>("GraduationYear")
                         .HasColumnType("int");
 
+                    b.Property<int?>("MentorId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -273,7 +279,7 @@ namespace Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Core.Consultants.PersonnelTeam.PersonnelTeam", b =>
+            modelBuilder.Entity("Core.Consultants.Mentor.Mentor", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -281,7 +287,7 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("LeaderId")
+                    b.Property<int>("ConsultantId")
                         .HasColumnType("int");
 
                     b.Property<string>("OrganizationUrlKey")
@@ -290,26 +296,13 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LeaderId")
+                    b.HasIndex("ConsultantId")
                         .IsUnique();
 
-                    b.HasIndex("LeaderId", "OrganizationUrlKey")
+                    b.HasIndex("ConsultantId", "OrganizationUrlKey")
                         .IsUnique();
 
-                    b.ToTable("PersonnelTeams");
-                });
-
-            modelBuilder.Entity("Core.Consultants.PersonnelTeam.PersonnelTeamByConsultant", b =>
-                {
-                    b.Property<int>("ConsultantId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PersonnelTeamId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ConsultantId", "PersonnelTeamId");
-
-                    b.ToTable("PersonnelTeamByConsultants");
+                    b.ToTable("Mentors");
                 });
 
             modelBuilder.Entity("Core.Customers.Customer", b =>

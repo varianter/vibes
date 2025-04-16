@@ -35,6 +35,7 @@ public class ConsultantDbRepository(ApplicationContext context) : IConsultantRep
             .Where(m => m.OrganizationUrlKey == urlKey)
             .ToListAsync(cancellationToken);
     }
+
     public Task<List<Consultant>> GetConsultantsInOrganizationByUrlKey(string urlKey,
         CancellationToken cancellationToken)
     {
@@ -122,12 +123,17 @@ public class ConsultantDbRepository(ApplicationContext context) : IConsultantRep
             .ExecuteDeleteAsync(cancellationToken);
         if (deletedRows == 0)
         {
+<<<<<<< HEAD
             return Task.FromResult(Results.NotFound($"Could not find personnelTeam with id {personnelTeamId}"));
         }
         
         var deletedMembers = await context.PersonnelTeamByConsultants
             .Where(m => m.PersonnelTeamId == personnelTeamId)
             .ExecuteDeleteAsync(cancellationToken);
+=======
+            return Task.FromResult(Results.NotFound($"Could not find mentor with id {personnelTeamId}"));
+        }
+>>>>>>> 08aa68f (feat: adds 'AddPersonnelTeam' migration)
 
         await context.SaveChangesAsync(cancellationToken);
         return Task.FromResult(Results.Ok($"Deleted personnel team and {deletedMembers} members"));   

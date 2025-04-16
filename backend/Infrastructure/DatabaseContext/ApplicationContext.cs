@@ -3,7 +3,7 @@ using Core.Agreements;
 using Core.Consultants;
 using Core.Consultants.Competences;
 using Core.Consultants.Disciplines;
-using Core.Consultants.Mentor;
+using Core.Consultants.PersonnelTeam;
 using Core.Customers;
 using Core.Engagements;
 using Core.Forecasts;
@@ -20,7 +20,8 @@ namespace Infrastructure.DatabaseContext;
 
 public class ApplicationContext(IOptions<InfrastructureConfig> config) : DbContext
 {
-    public DbSet<Mentor> Mentors { get; init; } = null!;
+    public DbSet<PersonnelTeam> PersonnelTeams { get; init; } = null!;
+    public DbSet<PersonnelTeamByConsultant> PersonnelTeamByConsultants { get; init; } = null!;
     public DbSet<Discipline> Disciplines { get; init; } = null!;
     public DbSet<Consultant> Consultant { get; init; } = null!;
     public DbSet<Competence> Competence { get; init; } = null!;
@@ -169,9 +170,12 @@ public class ApplicationContext(IOptions<InfrastructureConfig> config) : DbConte
         modelBuilder.Entity<Forecast>()
             .HasKey(f => new { f.ConsultantId, f.Month });
 
-        modelBuilder.Entity<Mentor>()
-            .HasIndex(m => new { m.ConsultantId, m.OrganizationUrlKey })
+        modelBuilder.Entity<PersonnelTeam>()
+            .HasIndex(m => new { ConsultantId = m.LeaderId, m.OrganizationUrlKey })
             .IsUnique();
+        
+        modelBuilder.Entity<PersonnelTeamByConsultant>()
+            .HasKey(m => new { m.ConsultantId, m.PersonnelTeamId });
 
 
         /*
