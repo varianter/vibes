@@ -195,15 +195,15 @@ export function MonthCell({
       setPercentageDragValue(undefined);
       return;
     }
-    var startMonth = startDragMonth;
-    var endMonth = currentDragMonth;
+    var firstMonth = startDragMonth;
+    var lastMonth = currentDragMonth;
 
     if (startDragMonth > currentDragMonth) {
-      startMonth = currentDragMonth;
-      endMonth = startDragMonth;
+      firstMonth = currentDragMonth;
+      lastMonth = startDragMonth;
     }
 
-    saveMany(startMonth, endMonth, inputValue);
+    saveMany(firstMonth, lastMonth, inputValue);
     setStartDragMonth(undefined);
     setCurrentDragMonth(undefined);
     setPercentageDragValue(undefined);

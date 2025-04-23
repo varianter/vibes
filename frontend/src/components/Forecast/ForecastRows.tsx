@@ -71,19 +71,23 @@ export default function ForecastRows({
     });
   }
 
-  async function saveMany(startMonth: string, endMonth: string, value: number) {
+  async function saveMany(
+    firstMonth: string,
+    lastMonth: string,
+    value: number,
+  ) {
     await putWithToken<
       Forecast[],
       {
         consultantId: number;
-        startMonth: string;
-        endMonth: string;
+        firstMonth: string;
+        lastMonth: string;
         adjustedValue: number;
       }
     >(`${orgUrlKey}/forecasts/update/several`, {
       consultantId: consultant.consultant.id,
-      startMonth: startMonth,
-      endMonth: endMonth,
+      firstMonth: firstMonth,
+      lastMonth: lastMonth,
       adjustedValue: value,
     }).then((res) => {
       if (!res) return;

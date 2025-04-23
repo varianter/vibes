@@ -119,7 +119,7 @@ public class ForecastController(
         var adjustedPercentage = forecastWriteModel.AdjustedValue;
 
         var consultant = service.LoadConsultantForSingleWeek(forecastWriteModel.ConsultantId,
-            Week.FromDateOnly(forecastWriteModel.StartMonthDateOnly));
+            Week.FromDateOnly(forecastWriteModel.FirstMonthDateOnly));
 
         if (consultant is null)
         {
@@ -128,8 +128,8 @@ public class ForecastController(
 
         consultant = await AddRelationalDataToConsultant(consultant, cancellationToken);
 
-        var withForecast = ConsultantWithForecastFactory.CreateSingle(consultant, forecastWriteModel.StartMonthDateOnly,
-            forecastWriteModel.EndMonthDateOnly.AddMonths(1));
+        var withForecast = ConsultantWithForecastFactory.CreateSingle(consultant, forecastWriteModel.FirstMonthDateOnly,
+            forecastWriteModel.LastMonthDateOnly.AddMonths(1));
 
         var forecastsToUpsert = withForecast.Forecasts.Select(forecast =>
         {
@@ -225,8 +225,8 @@ public record ForecastWriteModel(
     public DateOnly DateOnly => new(Month.Year, Month.Month, 1);
 }
 
-public record ForecastSeveralWriteModel(int ConsultantId, DateTime StartMonth, DateTime EndMonth, int AdjustedValue)
+public record ForecastSeveralWriteModel(int ConsultantId, DateTime FirstMonth, DateTime LastMonth, int AdjustedValue)
 {
-    public DateOnly StartMonthDateOnly => new(StartMonth.Year, StartMonth.Month, 1);
-    public DateOnly EndMonthDateOnly => new(EndMonth.Year, EndMonth.Month, 1);
+    public DateOnly FirstMonthDateOnly => new(FirstMonth.Year, FirstMonth.Month, 1);
+    public DateOnly LastMonthDateOnly => new(LastMonth.Year, LastMonth.Month, 1);
 }
