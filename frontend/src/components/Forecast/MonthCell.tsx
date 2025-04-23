@@ -1,9 +1,5 @@
-import {
-  BookedHoursInMonth,
-  ConsultantReadModel,
-  ConsultantWithForecast,
-} from "@/api-types";
-import React, { useMemo, useRef, useState } from "react";
+import { BookedHoursInMonth, ConsultantWithForecast } from "@/api-types";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { HoveredMonth } from "./HoveredMonth";
 import RenderInfoPills from "../Staffing/RenderInfoPills";
 import { useOnClickOutside } from "usehooks-ts";
@@ -21,6 +17,17 @@ type Props = {
   isLastCol: boolean;
   isSecondLastCol: boolean;
   numWorkHours: number;
+  setPercentageDragValue: (value: number | undefined) => void;
+  setStartDragMonth: (value: string | undefined) => void;
+  setCurrentDragMonth: (value: string | undefined) => void;
+  saveMany: (
+    startMonth: string,
+    endMonth: string,
+    value: number,
+  ) => Promise<void>;
+  percentageDragValue?: number;
+  startDragMonth?: string;
+  currentDragMonth?: string;
   onChange?: (value: number) => void;
 };
 
@@ -37,6 +44,14 @@ export function MonthCell({
   isLastCol,
   isSecondLastCol,
   numWorkHours,
+  setPercentageDragValue,
+  percentageDragValue,
+  setStartDragMonth,
+  startDragMonth,
+  setCurrentDragMonth,
+  currentDragMonth,
+  saveMany,
+
   ...props
 }: Props) {
   const uneditable = billablePercentage === 100;
@@ -45,6 +60,11 @@ export function MonthCell({
   const [storedValue, setStoredValue] = useState<number>(forecastValue);
   const [inputValue, setInputValue] = useState<number>(forecastValue);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+
+  useEffect(() => {
+    setInputValue(forecastValue);
+    setStoredValue(forecastValue);
+  }, [forecastValue]);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const ref = useRef(null);
@@ -145,6 +165,50 @@ export function MonthCell({
     !dropdownOpen && onChange(inputValue);
   }
 
+  function checkIfMarked() {
+    if (startDragMonth == undefined || currentDragMonth == undefined) {
+      return false;
+    }
+
+    const startDragMonthIndex = consultant.bookings.findIndex(
+      (booking) => booking.month === startDragMonth,
+    );
+    const currentDragMonthIndex = consultant.bookings.findIndex(
+      (booking) => booking.month === currentDragMonth,
+    );
+    const index = consultant.bookings.findIndex(
+      (booking) => booking.month === month,
+    );
+
+    if (startDragMonthIndex > currentDragMonthIndex) {
+      return index >= currentDragMonthIndex && index <= startDragMonthIndex;
+    } else {
+      return index >= startDragMonthIndex && index <= currentDragMonthIndex;
+    }
+  }
+
+  function handleDragEnd() {
+    if (startDragMonth == undefined || currentDragMonth == undefined) return;
+    if (startDragMonth == currentDragMonth) {
+      setStartDragMonth(undefined);
+      setCurrentDragMonth(undefined);
+      setPercentageDragValue(undefined);
+      return;
+    }
+    var startMonth = startDragMonth;
+    var endMonth = currentDragMonth;
+
+    if (startDragMonth > currentDragMonth) {
+      startMonth = currentDragMonth;
+      endMonth = startDragMonth;
+    }
+
+    saveMany(startMonth, endMonth, inputValue);
+    setStartDragMonth(undefined);
+    setCurrentDragMonth(undefined);
+    setPercentageDragValue(undefined);
+  }
+
   return (
     <td
       key={month}
@@ -154,7 +218,10 @@ export function MonthCell({
       <div
         className={`flex  ${
           hasFreeTime ? "bg-available/50" : "bg-primary/[3%]"
-        } flex-col gap-1 p-2 justify-end rounded w-full h-full relative border border-transparent hover:border-primary/30 `}
+        } flex-col gap-1 p-2 justify-end rounded w-full h-full relative border  hover:border-primary/30 ${
+          checkIfMarked() ? " border-primary" : "border-transparent"
+        }
+        `}
         onMouseEnter={() => {
           setHoveredMonth(month);
         }}
@@ -195,6 +262,14 @@ export function MonthCell({
               setDropdownOpen(true);
             }}
             onKeyDown={handleKeyDown}
+            onDragStart={() => {
+              setStartDragMonth(month);
+              setPercentageDragValue(inputValue);
+            }}
+            onDragEnter={() => {
+              setCurrentDragMonth(month);
+            }}
+            onDragEnd={handleDragEnd}
             className={`${
               billablePercentage == inputValue ? "small" : "small-medium"
             } rounded w-full bg-transparent focus:outline-none min-w-[24px] text-right ${

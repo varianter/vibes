@@ -110,6 +110,67 @@ public class ForecastController(
         return Ok(forecast);
     }
 
+    [HttpPut]
+    [Route("update/several")]
+    public async Task<ActionResult> Put([FromRoute] string orgUrlKey, [FromBody] ForecastSeveralWriteModel forecastWriteModel,
+        CancellationToken cancellationToken)
+    {
+        var service = new StorageService(cache, logger, context);
+        var adjustedPercentage = forecastWriteModel.AdjustedValue;
+
+        var consultant = service.LoadConsultantForSingleWeek(forecastWriteModel.ConsultantId,
+            Week.FromDateOnly(forecastWriteModel.StartMonthDateOnly));
+
+        if (consultant is null)
+        {
+            return NotFound("Consultant not found");
+        }
+
+        consultant = await AddRelationalDataToConsultant(consultant, cancellationToken);
+
+        var withForecast = ConsultantWithForecastFactory.CreateSingle(consultant, forecastWriteModel.StartMonthDateOnly,
+            forecastWriteModel.EndMonthDateOnly.AddMonths(1));
+
+        var forecastsToUpsert = withForecast.Forecasts.Select(forecast =>
+        {
+            var billablePercentage = forecast.BillablePercentage;
+
+            var newPercentage = adjustedPercentage;
+
+            if (billablePercentage == 100 || adjustedPercentage < billablePercentage)
+            {
+                newPercentage = forecast.BillablePercentage;
+            }
+
+            if (adjustedPercentage > 100)
+            {
+                newPercentage = 100;
+            }
+
+            var newForecast = consultant.Forecasts.FirstOrDefault(f => f.Month == forecast.Month);
+            if (newForecast is null)
+            {
+                newForecast = new Forecast
+                {
+                    Month = forecast.Month,
+                    ConsultantId = consultant.Id,
+                    AdjustedValue = newPercentage,
+                };
+            }
+            else
+            {
+                newForecast.AdjustedValue = newPercentage;
+            }
+
+            return newForecast;
+
+        }).ToArray();
+
+        await forecastRepository.UpsertForecasts(forecastsToUpsert, cancellationToken);
+
+        return Ok(forecastsToUpsert);
+    }
+
     private async Task<Consultant> AddRelationalDataToConsultant(Consultant consultant,
         CancellationToken cancellationToken)
     {
@@ -162,4 +223,10 @@ public record ForecastWriteModel(
 )
 {
     public DateOnly DateOnly => new(Month.Year, Month.Month, 1);
+}
+
+public record ForecastSeveralWriteModel(int ConsultantId, DateTime StartMonth, DateTime EndMonth, int AdjustedValue)
+{
+    public DateOnly StartMonthDateOnly => new(StartMonth.Year, StartMonth.Month, 1);
+    public DateOnly EndMonthDateOnly => new(EndMonth.Year, EndMonth.Month, 1);
 }
