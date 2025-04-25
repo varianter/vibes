@@ -117,16 +117,16 @@ public class ForecastController(
     {
         var service = new StorageService(cache, logger, context);
         var adjustedPercentage = forecastWriteModel.AdjustedValue;
-
-        var consultant = service.LoadConsultantForSingleWeek(forecastWriteModel.ConsultantId,
-            Week.FromDateOnly(forecastWriteModel.FirstMonthDateOnly));
+        
+       var consultant = service.GetBaseConsultantByIdWithoutTracking(forecastWriteModel.ConsultantId);
 
         if (consultant is null)
         {
             return NotFound("Consultant not found");
         }
-
-        consultant = await AddRelationalDataToConsultant(consultant, cancellationToken);
+        
+        //Create new AddRelationalData for period
+        consultant = await AddRelationalDataToConsultantForSetPeriod(consultant, service, forecastWriteModel.FirstMonthDateOnly, forecastWriteModel.LastMonthDateOnly, cancellationToken);
 
         var withForecast = ConsultantWithForecastFactory.CreateSingle(consultant, forecastWriteModel.FirstMonthDateOnly,
             forecastWriteModel.LastMonthDateOnly.AddMonths(1));
@@ -182,6 +182,34 @@ public class ForecastController(
         consultant.Staffings = staffings;
         consultant.PlannedAbsences = plannedAbsences;
         consultant.Forecasts = forecasts;
+
+        return consultant;
+    }
+    
+    private async Task<Consultant> AddRelationalDataToConsultantForSetPeriod(Consultant consultant, StorageService service, DateOnly firstMonth, DateOnly lastMonth,
+        CancellationToken cancellationToken)
+    {
+        var startWeek = Week.FromDateOnly(firstMonth);
+        var endWeek = Week.FromDateOnly(lastMonth);
+
+        var weekSet = startWeek.CompareTo(endWeek) < 0
+            ? startWeek.GetNextWeeks(endWeek)
+            : endWeek.GetNextWeeks(startWeek);
+        
+        var staffings = await staffingRepository.GetStaffingForConsultantForWeekSet(consultant.Id, cancellationToken, weekSet);
+        var plannedAbsences =
+            await plannedAbsenceRepository.GetPlannedAbsenceForConsultantForWeekSet(consultant.Id, cancellationToken, weekSet);
+        
+        var months = firstMonth.GetMonthsUntil(lastMonth).ToList();
+        
+        var forecasts = await forecastRepository.GetForecastForConsultantForMonthSet(consultant.Id, cancellationToken, months );
+
+        var vacations = service.LoadConsultantVacation(consultant.Id);
+
+        consultant.Staffings = staffings;
+        consultant.PlannedAbsences = plannedAbsences;
+        consultant.Forecasts = forecasts;
+        consultant.Vacations = vacations;
 
         return consultant;
     }
