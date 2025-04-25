@@ -125,7 +125,7 @@ public class ForecastController(
         }
         
         //Create new AddRelationalData for period
-        consultant = await AddRelationalDataToConsultantForSetPeriod(consultant, service, forecastWriteModel.FirstMonthDateOnly, forecastWriteModel.LastMonthDateOnly, cancellationToken);
+        consultant = await AddRelationalDataToConsultantForSetPeriod(consultant, service, forecastWriteModel.FirstMonthDateOnly, forecastWriteModel.LastMonthDateOnly.AddMonths(1), cancellationToken);
 
         var withForecast = ConsultantWithForecastFactory.CreateSingle(consultant, forecastWriteModel.FirstMonthDateOnly,
             forecastWriteModel.LastMonthDateOnly.AddMonths(1));
