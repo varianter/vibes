@@ -190,9 +190,7 @@ export function MonthCell({
   function handleDragEnd() {
     if (startDragMonth == undefined || currentDragMonth == undefined) return;
     if (startDragMonth == currentDragMonth) {
-      setStartDragMonth(undefined);
-      setCurrentDragMonth(undefined);
-      setPercentageDragValue(undefined);
+      resetDrag();
       return;
     }
     var firstMonth = startDragMonth;
@@ -204,6 +202,10 @@ export function MonthCell({
     }
 
     saveMany(firstMonth, lastMonth, inputValue);
+    resetDrag();
+  }
+
+  function resetDrag() {
     setStartDragMonth(undefined);
     setCurrentDragMonth(undefined);
     setPercentageDragValue(undefined);
