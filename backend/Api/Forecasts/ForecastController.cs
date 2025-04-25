@@ -116,7 +116,6 @@ public class ForecastController(
         CancellationToken cancellationToken)
     {
         var service = new StorageService(cache, logger, context);
-        var adjustedPercentage = forecastWriteModel.AdjustedValue;
         
        var consultant = service.GetBaseConsultantByIdWithoutTracking(forecastWriteModel.ConsultantId);
 
@@ -133,36 +132,25 @@ public class ForecastController(
 
         var forecastsToUpsert = withForecast.Forecasts.Select(forecast =>
         {
-            var billablePercentage = forecast.BillablePercentage;
+            var adjustedValue = Math.Min(Math.Max(forecastWriteModel.AdjustedValue, forecast.BillablePercentage), 100);
 
-            var newPercentage = adjustedPercentage;
-
-            if (billablePercentage == 100 || adjustedPercentage < billablePercentage)
+            var updatedForecast = consultant.Forecasts.FirstOrDefault(f => f.Month == forecast.Month);
+            
+            if (updatedForecast is null)
             {
-                newPercentage = forecast.BillablePercentage;
-            }
-
-            if (adjustedPercentage > 100)
-            {
-                newPercentage = 100;
-            }
-
-            var newForecast = consultant.Forecasts.FirstOrDefault(f => f.Month == forecast.Month);
-            if (newForecast is null)
-            {
-                newForecast = new Forecast
+                updatedForecast = new Forecast
                 {
                     Month = forecast.Month,
                     ConsultantId = consultant.Id,
-                    AdjustedValue = newPercentage,
+                    AdjustedValue = adjustedValue,
                 };
             }
             else
             {
-                newForecast.AdjustedValue = newPercentage;
+                updatedForecast.AdjustedValue = adjustedValue;
             }
 
-            return newForecast;
+            return updatedForecast;
 
         }).ToArray();
 
