@@ -174,11 +174,11 @@ public class ForecastController(
         return consultant;
     }
     
-    private async Task<Consultant> AddRelationalDataToConsultantForSetPeriod(Consultant consultant, StorageService service, DateOnly firstMonth, DateOnly lastMonth,
+    private async Task<Consultant> AddRelationalDataToConsultantForSetPeriod(Consultant consultant, StorageService service, DateOnly firstDay, DateOnly lastDay,
         CancellationToken cancellationToken)
     {
-        var startWeek = Week.FromDateOnly(firstMonth);
-        var endWeek = Week.FromDateOnly(lastMonth);
+        var startWeek = Week.FromDateOnly(firstDay);
+        var endWeek = Week.FromDateOnly(lastDay);
 
         var weekSet = startWeek.CompareTo(endWeek) < 0
             ? startWeek.GetNextWeeks(endWeek)
@@ -188,10 +188,11 @@ public class ForecastController(
         var plannedAbsences =
             await plannedAbsenceRepository.GetPlannedAbsenceForConsultantForWeekSet(consultant.Id, cancellationToken, weekSet);
         
-        var months = firstMonth.GetMonthsUntil(lastMonth).ToList();
+        var months = firstDay.GetMonthsUntil(lastDay).ToList();
         
-        var forecasts = await forecastRepository.GetForecastForConsultantForMonthSet(consultant.Id, cancellationToken, months );
+        var forecasts = await forecastRepository.GetForecastForConsultantForMonthSet(consultant.Id, cancellationToken, months);
 
+        //This fetches all vacations for the consultant, if slow, consider implementing a method to fetch only the vacations in the range
         var vacations = service.LoadConsultantVacation(consultant.Id);
 
         consultant.Staffings = staffings;
