@@ -1,14 +1,18 @@
 namespace Core.Months;
 
-public class Month(DateOnly date)
+public sealed class Month(int year, int month) : IComparable<Month>, IEquatable<Month>
 {
-	private readonly int _year = date.Year;
-	private readonly int _month = date.Month;
+	public Month(DateOnly date) : this(date.Year, date.Month)
+	{
+	}
 
 	private DateOnly? _firstDay;
 	private DateOnly? _lastDay;
 	private DateOnly? _firstWeekday { get; set; }
 	private DateOnly? _lastWeekday { get; set; }
+
+	public int Year { get; } = year;
+	public int MonthIndex { get; } = month;
 
 	public DateOnly FirstDay => GetFirstDay();
 	public DateOnly LastDay => GetLastDay();
@@ -17,7 +21,7 @@ public class Month(DateOnly date)
 
 	private DateOnly GetFirstDay()
 	{
-		_firstDay ??= new DateOnly(_year, _month, 1);
+		_firstDay ??= new DateOnly(Year, MonthIndex, 1);
 
 		return _firstDay.Value;
 	}
@@ -61,5 +65,89 @@ public class Month(DateOnly date)
 			DayOfWeek.Saturday => LastDay.AddDays(-1),
 			_ => LastDay,
 		};
+	}
+
+	public Month GetNext()
+	{
+		return new Month(FirstDay.AddMonths(1));
+	}
+
+	public Month AddMonths(int monthCount)
+	{
+		return new Month(FirstDay.AddMonths(monthCount));
+	}
+
+	#region Helper methods to remove
+
+	public DateOnly FirstDayInMonth() => FirstDay;
+	public DateOnly LastDayInMonth() => LastDay;
+	public DateOnly FirstWeekdayInMonth() => FirstWeekday;
+
+	public bool EqualsMonth(Month other) => Equals(other);
+	#endregion
+
+	public int CompareTo(Month? other)
+	{
+		if (other is null)
+		{
+			return 1;
+		}
+
+		if (Year == other.Year)
+		{
+			return MonthIndex - other.MonthIndex;
+		}
+
+		return Year - other.Year;
+	}
+
+	public bool Equals(Month? other)
+	{
+		if (other is null) return false;
+
+		return Year == other.Year && MonthIndex == other.MonthIndex;
+	}
+
+	public override bool Equals(object? other)
+	{
+		if (other is null)
+		{
+			return false;
+		}
+
+		return typeof(object) == typeof(Month) && EqualsMonth(other as Month);
+	}
+
+	public override int GetHashCode()
+	{
+		return HashCode.Combine(Year, MonthIndex);
+	}
+
+	public static bool operator <(Month left, Month right)
+	{
+		if (left.Year < right.Year) return true;
+		if (left.Year > right.Year) return false;
+		return left.MonthIndex < right.MonthIndex;
+	}
+
+	public static bool operator >(Month left, Month right)
+	{
+		if (left.Year > right.Year) return true;
+		if (left.Year < right.Year) return false;
+		return left.MonthIndex > right.MonthIndex;
+	}
+
+	public static bool operator <=(Month left, Month right)
+	{
+		if (left.Year < right.Year) return true;
+		if (left.Year > right.Year) return false;
+		return left.MonthIndex <= right.MonthIndex;
+	}
+
+	public static bool operator >=(Month left, Month right)
+	{
+		if (left.Year > right.Year) return true;
+		if (left.Year < right.Year) return false;
+		return left.MonthIndex >= right.MonthIndex;
 	}
 }

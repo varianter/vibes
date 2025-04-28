@@ -1,4 +1,5 @@
 using Core.Forecasts;
+using Core.Months;
 using Infrastructure.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,11 +7,11 @@ namespace Infrastructure.Repositories.Forecasts;
 
 public class ForecastDbRepository(ApplicationContext context) : IForecastRepository
 {
-    public async Task<Forecast?> GetForecast(int consultantId, DateOnly month, CancellationToken cancellationToken)
+    public async Task<Forecast?> GetForecast(int consultantId, Month month, CancellationToken cancellationToken)
     {
         return await context.Forecasts
             .AsNoTracking()
-            .FirstOrDefaultAsync(forecast => forecast.ConsultantId == consultantId && forecast.Month == month,
+            .FirstOrDefaultAsync(forecast => forecast.ConsultantId == consultantId && forecast.Month == month.FirstDay,
                 cancellationToken);
     }
 

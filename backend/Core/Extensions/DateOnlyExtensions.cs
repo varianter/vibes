@@ -1,3 +1,4 @@
+using Core.Months;
 using Core.Weeks;
 
 namespace Core.Extensions;
@@ -16,7 +17,7 @@ public static class DateOnlyExtensions
 
 	public static bool IsWeekday(this DateOnly date) => date.DayOfWeek is >= DayOfWeek.Monday and <= DayOfWeek.Friday;
 
-	public static int CountWeekdaysInMonth(this DateOnly month) => GetWeekdaysInMonth(month).Count();
+	public static int CountWeekdaysInMonth(this Month month) => GetWeekdaysInMonth(month).Count();
 
 	public static DateOnly FirstDayInMonth(this DateOnly month)
 	{
@@ -45,17 +46,14 @@ public static class DateOnlyExtensions
 		};
 	}
 
-	public static DateOnly FirstDayInQuarter(this DateOnly date)
+	public static Month FirstMonthInQuarter(this DateOnly date)
 	{
-		return new DateOnly(date.Year, date.FirstMonthInQuarter(), 1);
+		var firstMonthInQuarter = QuarterlyMonths.Where(month => date.Month >= month).Max();
+
+		return new Month(date.Year, firstMonthInQuarter);
 	}
 
-	private static int FirstMonthInQuarter(this DateOnly date)
-	{
-		return QuarterlyMonths.Where(month => date.Month >= month).Max();
-	}
-
-	public static IEnumerable<DateOnly> GetWeekdaysInMonth(this DateOnly month)
+	public static IEnumerable<DateOnly> GetWeekdaysInMonth(this Month month)
 	{
 		for (var date = month.FirstDayInMonth(); date.EqualsMonth(month); date = date.AddDays(1))
 		{
@@ -66,7 +64,7 @@ public static class DateOnlyExtensions
 		}
 	}
 
-	public static IEnumerable<Week> GetWeeksInMonth(this DateOnly month)
+	public static IEnumerable<Week> GetWeeksInMonth(this Month month)
 	{
 		return month.FirstDayInMonth().GetWeeksThrough(month.LastDayInMonth());
 	}
@@ -80,34 +78,52 @@ public static class DateOnlyExtensions
 	{
 		return date > other ? date : other;
 	}
-	
+
 	public static bool EqualsMonth(this DateOnly month, DateOnly other)
 	{
 		return month.Year == other.Year && month.Month == other.Month;
 	}
 
-	public static IEnumerable<DateOnly> GetMonthsUntil(this DateOnly fromMonth, DateOnly firstExcludedMonth)
+	public static bool EqualsMonth(this DateOnly date, Month month)
 	{
-		if (firstExcludedMonth <= fromMonth)
+		return date.Year == month.Year && date.Month == month.MonthIndex;
+	}
+
+	public static IEnumerable<Month> GetMonthsUntil(this DateOnly fromDate, DateOnly untilDate)
+	{
+		var fromMonth = new Month(fromDate);
+		var untilMonth = new Month(untilDate);
+
+		return GetMonthsUntil(fromMonth, untilMonth);
+	}
+
+	public static IEnumerable<Month> GetMonthsUntil(this Month fromMonth, Month untilMonth)
+	{
+		if (untilMonth <= fromMonth)
 		{
 			yield break;
 		}
 
-		for (var month = fromMonth; month < firstExcludedMonth; month = month.AddMonths(1))
+		for (var month = fromMonth; month < untilMonth; month = month.GetNext())
 		{
 			yield return month;
 		}
 	}
 
-	public static IEnumerable<Week> GetWeeksThrough(this DateOnly fromDate, DateOnly lastIncludedDate)
+	private static IEnumerable<Week> GetWeeksThrough(this DateOnly fromDate, DateOnly lastIncludedDate)
 	{
 		var firstWeek = Week.FromDateOnly(fromDate);
-		var lastWeek = Week.FromDateOnly(lastIncludedDate.LastDayInMonth());
+		var lastWeek = Week.FromDateOnly(lastIncludedDate);
 
 		return firstWeek.GetNextWeeks(lastWeek);
 	}
 
-	public static bool WholeMonthIsIncludedInTimeSpan(this DateOnly month, DateOnly firstDayInTimeSpan, DateOnly lastDayInTimeSpan)
+	public static IEnumerable<Week> GetWeeksThrough(this Month fromMonth, Month throughMonth)
+	{
+		return GetWeeksThrough(fromMonth.FirstDay, throughMonth.LastDay);
+	}
+
+	public static bool WholeMonthIsIncludedInTimeSpan(this Month month, DateOnly firstDayInTimeSpan, DateOnly lastDayInTimeSpan)
 	{
 		if (month.FirstDayInMonth() < firstDayInTimeSpan)
 		{

@@ -4,6 +4,7 @@ using Api.Helpers;
 using Core.Consultants;
 using Core.Extensions;
 using Core.Forecasts;
+using Core.Months;
 using Core.PlannedAbsences;
 using Core.Staffings;
 using Core.Weeks;
@@ -42,10 +43,10 @@ public class ForecastController(
             $"GET FORECAST - [Checkpoint 5] Add relational data completed - {stopwatch.ElapsedMilliseconds} ms");
         var date = requestedDate ?? DateOnly.FromDateTime(DateTime.Today);
 
-        var firstDayInQuarter = date.FirstDayInQuarter();
+        var firstMonthInQuarter = date.FirstMonthInQuarter();
 
         var consultantsWithForecast =
-            ConsultantWithForecastFactory.CreateMultiple(consultants, firstDayInQuarter, monthCount);
+            ConsultantWithForecastFactory.CreateMultiple(consultants, firstMonthInQuarter, monthCount);
         Console.WriteLine($"GET FORECAST - [Checkpoint 6] Created forecast data - {stopwatch.ElapsedMilliseconds} ms");
         stopwatch.Stop();
         return Ok(consultantsWithForecast);
@@ -69,8 +70,8 @@ public class ForecastController(
 
         consultant = await AddRelationalDataToConsultant(consultant, cancellationToken);
 
-        var withForecast = ConsultantWithForecastFactory.CreateSingle(consultant, forecastWriteModel.DateOnly,
-            forecastWriteModel.DateOnly.AddMonths(1));
+        var withForecast = ConsultantWithForecastFactory.CreateSingle(consultant, forecastWriteModel.Month,
+            forecastWriteModel.Month.GetNext());
 
         var billablePercentage = withForecast.Forecasts[0].BillablePercentage;
 
@@ -157,9 +158,9 @@ public class ForecastController(
 
 public record ForecastWriteModel(
     int ConsultantId,
-    DateTime Month,
+    Month Month,
     int AdjustedValue
 )
 {
-    public DateOnly DateOnly => new(Month.Year, Month.Month, 1);
+    public DateOnly DateOnly => Month.FirstDay;
 }

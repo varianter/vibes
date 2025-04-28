@@ -1,19 +1,20 @@
 using Api.Forecasts;
 using Core.Extensions;
+using Core.Months;
 using Core.Organizations;
 
 namespace Api.Helpers;
 
 public static class WorkloadHelper
 {
-	public static List<MonthlyHours> CalculateMonthlyWorkHoursBefore(DateOnly date, List<DateOnly> months, Organization organization)
+	public static List<MonthlyHours> CalculateMonthlyWorkHoursBefore(DateOnly date, List<Month> months, Organization organization)
 	{
 		var fromDate = months.Min().FirstWeekdayInMonth();
 
 		return CalculateMonthlyWorkHours(fromDate, toDateExclusive: date, organization);
 	}
 
-	public static List<MonthlyHours> CalculateMonthlyWorkHoursAfter(DateOnly date, List<DateOnly> months, Organization organization)
+	public static List<MonthlyHours> CalculateMonthlyWorkHoursAfter(DateOnly date, List<Month> months, Organization organization)
 	{
 		var fromDate = date.AddDays(1);
 		var toDateExclusive = months.Max().AddMonths(1).FirstDayInMonth();
@@ -37,7 +38,7 @@ public static class WorkloadHelper
 			.ToList();
 	}
 
-	private static MonthlyHours CalculateWorkHoursForMonthInTimeSpan(DateOnly month, DateOnly firstDayInTimeSpan, DateOnly lastDayInTimeSpan, Organization organization)
+	private static MonthlyHours CalculateWorkHoursForMonthInTimeSpan(Month month, DateOnly firstDayInTimeSpan, DateOnly lastDayInTimeSpan, Organization organization)
 	{
 		var workdays = month.WholeMonthIsIncludedInTimeSpan(firstDayInTimeSpan, lastDayInTimeSpan)
 			? CalculateWorkdaysInMonth(month, organization)
@@ -48,7 +49,7 @@ public static class WorkloadHelper
 		return new MonthlyHours(month, workHours);
 	}
 
-	private static double CalculateWorkdaysInMonth(DateOnly month, Organization organization)
+	private static double CalculateWorkdaysInMonth(Month month, Organization organization)
 	{
 		var weekdayHolidaysInMonth = organization.GetHolidaysInMonth(month)
 			.Count(DateOnlyExtensions.IsWeekday);
@@ -56,7 +57,7 @@ public static class WorkloadHelper
 		return month.CountWeekdaysInMonth() - weekdayHolidaysInMonth;
 	}
 
-	private static int CalculateWorkdaysInMonthWithinTimeSpan(DateOnly month, DateOnly firstDayInTimeSpan, DateOnly lastDayInTimeSpan, Organization organization)
+	private static int CalculateWorkdaysInMonthWithinTimeSpan(Month month, DateOnly firstDayInTimeSpan, DateOnly lastDayInTimeSpan, Organization organization)
 	{
 		var fromDate = DateOnlyExtensions.Max(month.FirstDayInMonth(), firstDayInTimeSpan);
 		var toDateInclusive = DateOnlyExtensions.Min(month.LastDayInMonth(), lastDayInTimeSpan);
