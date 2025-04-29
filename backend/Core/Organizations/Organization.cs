@@ -75,7 +75,7 @@ public class Organization
 
     public double GetTotalWeekdayHoursInMonth(Month month)
     {
-        return HoursPerWorkday * month.CountWeekdaysInMonth();
+        return HoursPerWorkday * month.CountWeekdays();
     }
 
     private bool IsHoliday(DateOnly day)

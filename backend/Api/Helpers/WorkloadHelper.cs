@@ -54,7 +54,7 @@ public static class WorkloadHelper
 		var weekdayHolidaysInMonth = organization.GetHolidaysInMonth(month)
 			.Count(DateOnlyExtensions.IsWeekday);
 
-		return month.CountWeekdaysInMonth() - weekdayHolidaysInMonth;
+		return month.CountWeekdays() - weekdayHolidaysInMonth;
 	}
 
 	private static int CalculateWorkdaysInMonthWithinTimeSpan(Month month, DateOnly firstDayInTimeSpan, DateOnly lastDayInTimeSpan, Organization organization)
@@ -62,7 +62,7 @@ public static class WorkloadHelper
 		var fromDate = DateOnlyExtensions.Max(month.FirstDay, firstDayInTimeSpan);
 		var toDateInclusive = DateOnlyExtensions.Min(month.LastDay, lastDayInTimeSpan);
 
-		var weekdays = month.GetWeekdaysInMonth()
+		var weekdays = month.GetWeekdays()
 			.CountDaysInTimeSpan(fromDate, toDateInclusive);
 
 		var weekdayHolidays = organization.GetHolidaysInMonth(month)

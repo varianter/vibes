@@ -50,7 +50,7 @@ public record struct MonthlyHours(Month Month, double Hours)
 {
 	public static MonthlyHours For(Month month, List<Staffing> staffings, Consultant consultant)
 	{
-		var staffedHoursInMonth = month.GetWeeksInMonth()
+		var staffedHoursInMonth = month.GetWeeks()
 			.Sum(week => MonthlyHoursHelper.GetStaffedHoursForMonthInWeek(month, week, staffings, consultant));
 
 		return new MonthlyHours(month, staffedHoursInMonth);
@@ -58,7 +58,7 @@ public record struct MonthlyHours(Month Month, double Hours)
 
 	public static MonthlyHours For(Month month, List<PlannedAbsence> plannedAbsences, Consultant consultant)
 	{
-		var absenceHoursInMonth = month.GetWeeksInMonth()
+		var absenceHoursInMonth = month.GetWeeks()
 			.Sum(week => MonthlyHoursHelper.GetPlannedAbsenceHoursForMonthInWeek(month, week, plannedAbsences, consultant));
 
 		return new MonthlyHours(month, absenceHoursInMonth);
