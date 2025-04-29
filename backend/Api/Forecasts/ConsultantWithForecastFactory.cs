@@ -71,8 +71,8 @@ public static class ConsultantWithForecastFactory
 				Hours: vacationHoursPerMonth));
 		}
 
-		var firstWorkDayInScope = fromMonth.FirstWeekdayInMonth();
-		var firstWorkDayOutOfScope = firstExcludedMonth.FirstWeekdayInMonth();
+		var firstWorkDayInScope = fromMonth.FirstWeekday;
+		var firstWorkDayOutOfScope = firstExcludedMonth.FirstWeekday;
 
 		if (consultant.StartDate > firstWorkDayInScope)
 		{

@@ -19,33 +19,6 @@ public static class DateOnlyExtensions
 
 	public static int CountWeekdaysInMonth(this Month month) => GetWeekdaysInMonth(month).Count();
 
-	public static DateOnly FirstDayInMonth(this DateOnly month)
-	{
-		if (month.Day == 1)
-		{
-			return month;
-		}
-
-		return new DateOnly(month.Year, month.Month, 1);
-	}
-
-	public static DateOnly LastDayInMonth(this DateOnly month)
-	{
-		return month.FirstDayInMonth().AddMonths(1).AddDays(-1);
-	}
-
-	public static DateOnly FirstWeekdayInMonth(this DateOnly month)
-	{
-		var firstDayInMonth = month.FirstDayInMonth();
-
-		return firstDayInMonth.DayOfWeek switch
-		{
-			DayOfWeek.Saturday => firstDayInMonth.AddDays(2),
-			DayOfWeek.Sunday => firstDayInMonth.AddDays(1),
-			_ => firstDayInMonth,
-		};
-	}
-
 	public static Month FirstMonthInQuarter(this DateOnly date)
 	{
 		var firstMonthInQuarter = QuarterlyMonths.Where(month => date.Month >= month).Max();
@@ -55,7 +28,7 @@ public static class DateOnlyExtensions
 
 	public static IEnumerable<DateOnly> GetWeekdaysInMonth(this Month month)
 	{
-		for (var date = month.FirstDayInMonth(); date.EqualsMonth(month); date = date.AddDays(1))
+		for (var date = month.FirstDay; date.EqualsMonth(month); date = date.AddDays(1))
 		{
 			if (date.IsWeekday())
 			{
@@ -66,7 +39,7 @@ public static class DateOnlyExtensions
 
 	public static IEnumerable<Week> GetWeeksInMonth(this Month month)
 	{
-		return month.FirstDayInMonth().GetWeeksThrough(month.LastDayInMonth());
+		return month.FirstDay.GetWeeksThrough(month.LastDay);
 	}
 
 	public static DateOnly Min(DateOnly date, DateOnly other)
@@ -77,11 +50,6 @@ public static class DateOnlyExtensions
 	public static DateOnly Max(DateOnly date, DateOnly other)
 	{
 		return date > other ? date : other;
-	}
-
-	public static bool EqualsMonth(this DateOnly month, DateOnly other)
-	{
-		return month.Year == other.Year && month.Month == other.Month;
 	}
 
 	public static bool EqualsMonth(this DateOnly date, Month month)
@@ -125,12 +93,12 @@ public static class DateOnlyExtensions
 
 	public static bool WholeMonthIsIncludedInTimeSpan(this Month month, DateOnly firstDayInTimeSpan, DateOnly lastDayInTimeSpan)
 	{
-		if (month.FirstDayInMonth() < firstDayInTimeSpan)
+		if (month.FirstDay < firstDayInTimeSpan)
 		{
 			return false;
 		}
 
-		if (lastDayInTimeSpan < month.LastDayInMonth())
+		if (lastDayInTimeSpan < month.LastDay)
 		{
 			return false;
 		}

@@ -23,7 +23,7 @@ public record DetailedBookingForMonth(BookingDetails BookingDetails, List<Monthl
 	public double TotalHoursForMonth(Month month)
 	{
 		return Hours
-			.Where(hoursPerMonth => hoursPerMonth.Month.EqualsMonth(month))
+			.Where(hoursPerMonth => hoursPerMonth.Month.Equals(month))
 			.Sum(hoursInMonth => hoursInMonth.Hours);
 	}
 
@@ -78,7 +78,7 @@ public record ForecastForMonth(
 			.SingleOrDefault(f => f.Month.EqualsMonth(month))?
 			.AdjustedValue ?? 0;
 
-		var booking = bookingSummary.SingleOrDefault(bs => bs.Month.EqualsMonth(month))?.BookingModel;
+		var booking = bookingSummary.SingleOrDefault(bs => bs.Month.Equals(month))?.BookingModel;
 
 		if (booking == null)
 		{

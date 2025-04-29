@@ -77,15 +77,6 @@ public sealed class Month(int year, int month) : IComparable<Month>, IEquatable<
 		return new Month(FirstDay.AddMonths(monthCount));
 	}
 
-	#region Helper methods to remove
-
-	public DateOnly FirstDayInMonth() => FirstDay;
-	public DateOnly LastDayInMonth() => LastDay;
-	public DateOnly FirstWeekdayInMonth() => FirstWeekday;
-
-	public bool EqualsMonth(Month other) => Equals(other);
-	#endregion
-
 	public int CompareTo(Month? other)
 	{
 		if (other is null)
@@ -115,7 +106,7 @@ public sealed class Month(int year, int month) : IComparable<Month>, IEquatable<
 			return false;
 		}
 
-		return typeof(object) == typeof(Month) && EqualsMonth(other as Month);
+		return typeof(object) == typeof(Month) && Equals(other as Month);
 	}
 
 	public override int GetHashCode()

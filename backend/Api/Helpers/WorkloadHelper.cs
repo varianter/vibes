@@ -9,7 +9,7 @@ public static class WorkloadHelper
 {
 	public static List<MonthlyHours> CalculateMonthlyWorkHoursBefore(DateOnly date, List<Month> months, Organization organization)
 	{
-		var fromDate = months.Min().FirstWeekdayInMonth();
+		var fromDate = months.Min().FirstWeekday;
 
 		return CalculateMonthlyWorkHours(fromDate, toDateExclusive: date, organization);
 	}
@@ -17,7 +17,7 @@ public static class WorkloadHelper
 	public static List<MonthlyHours> CalculateMonthlyWorkHoursAfter(DateOnly date, List<Month> months, Organization organization)
 	{
 		var fromDate = date.AddDays(1);
-		var toDateExclusive = months.Max().AddMonths(1).FirstDayInMonth();
+		var toDateExclusive = months.Max().GetNext().FirstDay;
 
 		return CalculateMonthlyWorkHours(fromDate, toDateExclusive, organization);
 	}
@@ -59,8 +59,8 @@ public static class WorkloadHelper
 
 	private static int CalculateWorkdaysInMonthWithinTimeSpan(Month month, DateOnly firstDayInTimeSpan, DateOnly lastDayInTimeSpan, Organization organization)
 	{
-		var fromDate = DateOnlyExtensions.Max(month.FirstDayInMonth(), firstDayInTimeSpan);
-		var toDateInclusive = DateOnlyExtensions.Min(month.LastDayInMonth(), lastDayInTimeSpan);
+		var fromDate = DateOnlyExtensions.Max(month.FirstDay, firstDayInTimeSpan);
+		var toDateInclusive = DateOnlyExtensions.Min(month.LastDay, lastDayInTimeSpan);
 
 		var weekdays = month.GetWeekdaysInMonth()
 			.CountDaysInTimeSpan(fromDate, toDateInclusive);
