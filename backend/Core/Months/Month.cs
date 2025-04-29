@@ -67,12 +67,12 @@ public sealed class Month(int year, int month) : IComparable<Month>, IEquatable<
 		};
 	}
 
-	public Month GetNext()
-	{
-		return new Month(FirstDay.AddMonths(1));
-	}
+	public Month GetNext() => SkipAhead(1);
 
-	public Month AddMonths(int monthCount)
+	/// <summary>
+	/// Returns a Month object for the month coming monthCount months after this instance
+	/// </summary>
+	public Month SkipAhead(int monthCount)
 	{
 		return new Month(FirstDay.AddMonths(monthCount));
 	}

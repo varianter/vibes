@@ -12,10 +12,8 @@ namespace Api.Forecasts;
 
 public static class ConsultantWithForecastFactory
 {
-	public static List<ConsultantWithForecast> CreateMultiple(List<Consultant> consultants, Month fromMonth, int monthCount)
+	public static List<ConsultantWithForecast> CreateMultiple(List<Consultant> consultants, Month fromMonth, Month throughMonth)
 	{
-		var throughMonth = fromMonth.AddMonths(monthCount - 1);
-
 		return consultants
 			.Where(c => c.EndDate == null || c.EndDate > fromMonth.FirstDay)
 			.Where(c => c.StartDate == null || c.StartDate <= throughMonth.LastDay)
