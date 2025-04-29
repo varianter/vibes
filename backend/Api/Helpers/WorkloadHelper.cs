@@ -10,31 +10,30 @@ public static class WorkloadHelper
 	public static List<MonthlyHours> CalculateMonthlyWorkHoursBefore(DateOnly date, List<Month> months, Organization organization)
 	{
 		var fromDate = months.Min().FirstWeekday;
+		var throughDate = date.AddDays(-1);
 
-		return CalculateMonthlyWorkHours(fromDate, toDateExclusive: date, organization);
+		return CalculateMonthlyWorkHours(fromDate, throughDate, organization);
 	}
 
 	public static List<MonthlyHours> CalculateMonthlyWorkHoursAfter(DateOnly date, List<Month> months, Organization organization)
 	{
 		var fromDate = date.AddDays(1);
-		var toDateExclusive = months.Max().GetNext().FirstDay;
+		var throughDate = months.Max().LastDay;
 
-		return CalculateMonthlyWorkHours(fromDate, toDateExclusive, organization);
+		return CalculateMonthlyWorkHours(fromDate, throughDate, organization);
 	}
 
-	private static List<MonthlyHours> CalculateMonthlyWorkHours(DateOnly fromDate, DateOnly toDateExclusive, Organization organization)
+	private static List<MonthlyHours> CalculateMonthlyWorkHours(DateOnly fromDate, DateOnly throughDate, Organization organization)
 	{
-		if (fromDate >= toDateExclusive)
+		if (fromDate > throughDate)
 		{
 			return [];
 		}
 
-		var months = fromDate.GetMonthsUntil(toDateExclusive).ToList();
-
-		var toDateInclusive = toDateExclusive.AddDays(-1);
+		var months = fromDate.GetMonthsThrough(throughDate);
 
 		return months
-			.Select(month => CalculateWorkHoursForMonthInTimeSpan(month, fromDate, toDateInclusive, organization))
+			.Select(month => CalculateWorkHoursForMonthInTimeSpan(month, fromDate, throughDate, organization))
 			.ToList();
 	}
 
@@ -60,14 +59,14 @@ public static class WorkloadHelper
 	private static int CalculateWorkdaysInMonthWithinTimeSpan(Month month, DateOnly firstDayInTimeSpan, DateOnly lastDayInTimeSpan, Organization organization)
 	{
 		var fromDate = DateOnlyExtensions.Max(month.FirstDay, firstDayInTimeSpan);
-		var toDateInclusive = DateOnlyExtensions.Min(month.LastDay, lastDayInTimeSpan);
+		var throughDate = DateOnlyExtensions.Min(month.LastDay, lastDayInTimeSpan);
 
 		var weekdays = month.GetWeekdays()
-			.CountDaysInTimeSpan(fromDate, toDateInclusive);
+			.CountDaysInTimeSpan(fromDate, throughDate);
 
 		var weekdayHolidays = organization.GetHolidaysInMonth(month)
 			.Where(DateOnlyExtensions.IsWeekday)
-			.CountDaysInTimeSpan(fromDate, toDateInclusive);
+			.CountDaysInTimeSpan(fromDate, throughDate);
 
 		return weekdays - weekdayHolidays;
 	}

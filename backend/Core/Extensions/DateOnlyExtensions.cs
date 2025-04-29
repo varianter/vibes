@@ -39,24 +39,33 @@ public static class DateOnlyExtensions
 		return date.Year == month.Year && date.Month == month.MonthIndex;
 	}
 
-	public static IEnumerable<Month> GetMonthsUntil(this DateOnly fromDate, DateOnly untilDate)
+	/// <summary>
+	/// Returns a Month object for each month between and including fromDate and throughDate
+	/// </summary>
+	public static IEnumerable<Month> GetMonthsThrough(this DateOnly fromDate, DateOnly throughDate)
 	{
 		var fromMonth = new Month(fromDate);
-		var untilMonth = new Month(untilDate);
+		var throughMonth = new Month(throughDate);
 
-		return fromMonth.GetMonthsUntil(untilMonth);
+		return fromMonth.GetMonthsThrough(throughMonth);
 	}
 
-	public static IEnumerable<Week> GetWeeksThrough(this DateOnly fromDate, DateOnly lastIncludedDate)
+	/// <summary>
+	/// Returns a Week object for each week between and including fromDate and throughDate
+	/// </summary>
+	public static IEnumerable<Week> GetWeeksThrough(this DateOnly fromDate, DateOnly throughDate)
 	{
 		var firstWeek = Week.FromDateOnly(fromDate);
-		var lastWeek = Week.FromDateOnly(lastIncludedDate);
+		var lastWeek = Week.FromDateOnly(throughDate);
 
 		return firstWeek.GetNextWeeks(lastWeek);
 	}
 
-	public static int CountDaysInTimeSpan(this IEnumerable<DateOnly> days, DateOnly fromDate, DateOnly toDateInclusive)
+	/// <summary>
+	/// Returns the number of days between and including fromDate and throughDate
+	/// </summary>
+	public static int CountDaysInTimeSpan(this IEnumerable<DateOnly> days, DateOnly fromDate, DateOnly throughDate)
 	{
-		return days.Count(day => day >= fromDate && day <= toDateInclusive);
+		return days.Count(day => day >= fromDate && day <= throughDate);
 	}
 }

@@ -18,29 +18,41 @@ public static class MonthExtensions
 		}
 	}
 
+	/// <summary>
+	/// Returns a Week object for each week (whole or partial) that coincide with the month
+	/// </summary>
 	public static IEnumerable<Week> GetWeeks(this Month month)
 	{
 		return month.FirstDay.GetWeeksThrough(month.LastDay);
 	}
 
-	public static IEnumerable<Month> GetMonthsUntil(this Month fromMonth, Month untilMonth)
+	/// <summary>
+	/// Returns a Month object for each month between and including fromMonth and throughMonth
+	/// </summary>
+	public static IEnumerable<Month> GetMonthsThrough(this Month fromMonth, Month throughMonth)
 	{
-		if (untilMonth <= fromMonth)
+		if (throughMonth < fromMonth)
 		{
 			yield break;
 		}
 
-		for (var month = fromMonth; month < untilMonth; month = month.GetNext())
+		for (var month = fromMonth; month <= throughMonth; month = month.GetNext())
 		{
 			yield return month;
 		}
 	}
 
+	/// <summary>
+	/// Returns a Week object for each week between and including fromMonth and throughMonth
+	/// </summary>
 	public static IEnumerable<Week> GetWeeksThrough(this Month fromMonth, Month throughMonth)
 	{
 		return fromMonth.FirstDay.GetWeeksThrough(throughMonth.LastDay);
 	}
 
+	/// <summary>
+	/// Returns true if the time span running from firstDayInTimeSpan to lastDayInTimeSpan (inclusive) covers all the days in the month
+	/// </summary>
 	public static bool WholeMonthIsIncludedInTimeSpan(this Month month, DateOnly firstDayInTimeSpan, DateOnly lastDayInTimeSpan)
 	{
 		if (month.FirstDay < firstDayInTimeSpan)

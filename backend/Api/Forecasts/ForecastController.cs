@@ -70,8 +70,7 @@ public class ForecastController(
 
         consultant = await AddRelationalDataToConsultant(consultant, cancellationToken);
 
-        var withForecast = ConsultantWithForecastFactory.CreateSingle(consultant, forecastWriteModel.Month,
-            forecastWriteModel.Month.GetNext());
+        var withForecast = ConsultantWithForecastFactory.CreateSingle(consultant, forecastWriteModel.Month);
 
         var billablePercentage = withForecast.Forecasts[0].BillablePercentage;
 
