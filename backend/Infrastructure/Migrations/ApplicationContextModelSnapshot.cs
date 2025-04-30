@@ -286,14 +286,11 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("OrganizationUrlKey")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("LeaderId")
-                        .IsUnique();
-
-                    b.HasIndex("LeaderId", "OrganizationUrlKey")
                         .IsUnique();
 
                     b.ToTable("PersonnelTeams");
@@ -308,6 +305,11 @@ namespace Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("ConsultantId", "PersonnelTeamId");
+
+                    b.HasIndex("ConsultantId")
+                        .IsUnique();
+
+                    b.HasIndex("PersonnelTeamId");
 
                     b.ToTable("PersonnelTeamByConsultants");
                 });
@@ -622,6 +624,30 @@ namespace Infrastructure.Migrations
                     b.Navigation("Department");
 
                     b.Navigation("Discipline");
+                });
+
+            modelBuilder.Entity("Core.Consultants.PersonnelTeam.PersonnelTeam", b =>
+                {
+                    b.HasOne("Core.Consultants.Consultant", null)
+                        .WithOne()
+                        .HasForeignKey("Core.Consultants.PersonnelTeam.PersonnelTeam", "LeaderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Core.Consultants.PersonnelTeam.PersonnelTeamByConsultant", b =>
+                {
+                    b.HasOne("Core.Consultants.Consultant", null)
+                        .WithMany()
+                        .HasForeignKey("ConsultantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Consultants.PersonnelTeam.PersonnelTeam", null)
+                        .WithMany()
+                        .HasForeignKey("PersonnelTeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Core.Customers.Customer", b =>

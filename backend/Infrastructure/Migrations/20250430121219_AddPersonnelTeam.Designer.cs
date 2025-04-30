@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20250422074724_AddMentor")]
-    partial class AddMentor
+    [Migration("20250430121219_AddPersonnelTeam")]
+    partial class AddPersonnelTeam
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -182,9 +182,6 @@ namespace Infrastructure.Migrations
                     b.Property<int>("GraduationYear")
                         .HasColumnType("int");
 
-                    b.Property<int?>("MentorId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -279,7 +276,7 @@ namespace Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Core.Consultants.Mentor.Mentor", b =>
+            modelBuilder.Entity("Core.Consultants.PersonnelTeam.PersonnelTeam", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -287,22 +284,37 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ConsultantId")
+                    b.Property<int>("LeaderId")
                         .HasColumnType("int");
 
                     b.Property<string>("OrganizationUrlKey")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LeaderId")
+                        .IsUnique();
+
+                    b.ToTable("PersonnelTeams");
+                });
+
+            modelBuilder.Entity("Core.Consultants.PersonnelTeam.PersonnelTeamByConsultant", b =>
+                {
+                    b.Property<int>("ConsultantId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PersonnelTeamId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ConsultantId", "PersonnelTeamId");
 
                     b.HasIndex("ConsultantId")
                         .IsUnique();
 
-                    b.HasIndex("ConsultantId", "OrganizationUrlKey")
-                        .IsUnique();
+                    b.HasIndex("PersonnelTeamId");
 
-                    b.ToTable("Mentors");
+                    b.ToTable("PersonnelTeamByConsultants");
                 });
 
             modelBuilder.Entity("Core.Customers.Customer", b =>
@@ -615,6 +627,30 @@ namespace Infrastructure.Migrations
                     b.Navigation("Department");
 
                     b.Navigation("Discipline");
+                });
+
+            modelBuilder.Entity("Core.Consultants.PersonnelTeam.PersonnelTeam", b =>
+                {
+                    b.HasOne("Core.Consultants.Consultant", null)
+                        .WithOne()
+                        .HasForeignKey("Core.Consultants.PersonnelTeam.PersonnelTeam", "LeaderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Core.Consultants.PersonnelTeam.PersonnelTeamByConsultant", b =>
+                {
+                    b.HasOne("Core.Consultants.Consultant", null)
+                        .WithMany()
+                        .HasForeignKey("ConsultantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Consultants.PersonnelTeam.PersonnelTeam", null)
+                        .WithMany()
+                        .HasForeignKey("PersonnelTeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Core.Customers.Customer", b =>
