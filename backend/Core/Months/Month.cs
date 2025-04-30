@@ -8,8 +8,8 @@ public sealed class Month(int year, int month) : IComparable<Month>, IEquatable<
 
 	private DateOnly? _firstDay;
 	private DateOnly? _lastDay;
-	private DateOnly? _firstWeekday { get; set; }
-	private DateOnly? _lastWeekday { get; set; }
+	private DateOnly? _firstWeekday;
+	private DateOnly? _lastWeekday;
 
 	public int Year { get; } = year;
 	public int MonthIndex { get; } = month;

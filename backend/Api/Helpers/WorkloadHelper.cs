@@ -9,7 +9,9 @@ public static class WorkloadHelper
 {
 	public static List<MonthlyHours> CalculateMonthlyWorkHoursBefore(DateOnly date, List<Month> months, Organization organization)
 	{
-		var fromDate = months.Min().FirstWeekday;
+		if (months.Count == 0) return [];
+
+		var fromDate = months.Min()!.FirstWeekday;
 		var throughDate = date.AddDays(-1);
 
 		return CalculateMonthlyWorkHours(fromDate, throughDate, organization);
@@ -17,8 +19,10 @@ public static class WorkloadHelper
 
 	public static List<MonthlyHours> CalculateMonthlyWorkHoursAfter(DateOnly date, List<Month> months, Organization organization)
 	{
+		if (months.Count == 0) return [];
+
 		var fromDate = date.AddDays(1);
-		var throughDate = months.Max().LastDay;
+		var throughDate = months.Max()!.LastDay;
 
 		return CalculateMonthlyWorkHours(fromDate, throughDate, organization);
 	}
