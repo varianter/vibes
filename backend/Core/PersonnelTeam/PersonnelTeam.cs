@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Core.Consultants.PersonnelTeam;
+namespace Core.PersonnelTeam;
 
 [Index(nameof(LeaderId), IsUnique = true)]
 public class PersonnelTeam

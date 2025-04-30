@@ -1,4 +1,4 @@
-using Core.Consultants.PersonnelTeam;
+using Core.PersonnelTeam;
 
 namespace Api.Common.Types;
 

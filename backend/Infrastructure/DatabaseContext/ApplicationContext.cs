@@ -3,11 +3,11 @@ using Core.Agreements;
 using Core.Consultants;
 using Core.Consultants.Competences;
 using Core.Consultants.Disciplines;
-using Core.Consultants.PersonnelTeam;
 using Core.Customers;
 using Core.Engagements;
 using Core.Forecasts;
 using Core.Organizations;
+using Core.PersonnelTeam;
 using Core.PlannedAbsences;
 using Core.Staffings;
 using Core.Vacations;
@@ -181,12 +181,14 @@ public class ApplicationContext(IOptions<InfrastructureConfig> config) : DbConte
         modelBuilder.Entity<PersonnelTeamByConsultant>()
             .HasOne<PersonnelTeam>()
             .WithMany()
-            .HasForeignKey(ptc => ptc.PersonnelTeamId);
+            .HasForeignKey(ptc => ptc.PersonnelTeamId)
+            .OnDelete(DeleteBehavior.NoAction);
         
         modelBuilder.Entity<PersonnelTeamByConsultant>()
             .HasOne<Consultant>()
             .WithMany()
-            .HasForeignKey(ptc => ptc.ConsultantId);
+            .HasForeignKey(ptc => ptc.ConsultantId)
+            .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Entity<PersonnelTeamByConsultant>()
             .HasIndex(ptc => ptc.ConsultantId)

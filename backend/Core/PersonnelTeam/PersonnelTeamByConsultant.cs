@@ -1,4 +1,4 @@
-namespace Core.Consultants.PersonnelTeam;
+namespace Core.PersonnelTeam;
 
 public class PersonnelTeamByConsultant
 {

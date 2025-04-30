@@ -1,6 +1,6 @@
 using Api.Common.Types;
 using Core.Consultants;
-using Core.Consultants.PersonnelTeam;
+using Core.PersonnelTeam;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -11,7 +11,7 @@ namespace Api.Consultants;
 [Route("/v0/{orgUrlKey}/personnelTeams")]
 [ApiController]
 public class PersonnelTeamController(
-    IConsultantRepository consultantRepository) : ControllerBase
+    IPersonnelTeamRepository personnelTeamRepository, IConsultantRepository consultantRepository) : ControllerBase
 {
     [HttpGet]
     [Route("{personnelTeamId:int}")]
@@ -19,7 +19,7 @@ public class PersonnelTeamController(
         [FromRoute(Name = "personnelTeamId")] int personnelTeamId,
         CancellationToken cancellationToken)
     {
-        var consultant = await consultantRepository.GetLeaderByPersonnelTeamId(personnelTeamId, cancellationToken);
+        var consultant = await personnelTeamRepository.GetLeaderByPersonnelTeamId(personnelTeamId, cancellationToken);
 
         if (consultant is null) return NotFound();
 
@@ -41,7 +41,7 @@ public class PersonnelTeamController(
         CancellationToken cancellationToken)
     {
         var members =
-            await consultantRepository.GetMembersByPersonnelTeamId(orgUrlKey, personnelTeamId, cancellationToken);
+            await personnelTeamRepository.GetMembersByPersonnelTeamId(orgUrlKey, personnelTeamId, cancellationToken);
 
         if (members.IsNullOrEmpty()) return NotFound();
 
@@ -83,7 +83,7 @@ public class PersonnelTeamController(
         if (personnelTeamAlreadyExists)
             return Conflict($"PersonnelTeam with leaderId {leaderId} already exists in organization {orgUrlKey}");
 
-        var personnelTeamId = await consultantRepository.CreatePersonnelTeam(orgUrlKey, leaderId, cancellationToken);
+        var personnelTeamId = await personnelTeamRepository.CreatePersonnelTeam(orgUrlKey, leaderId, cancellationToken);
 
         return Ok(personnelTeamId);
     }
@@ -93,6 +93,6 @@ public class PersonnelTeamController(
     public async Task<IResult> DeletePersonnelTeam([FromRoute(Name = "personnelTeamId")] int personnelTeamId,
         CancellationToken cancellationToken)
     {
-        return await consultantRepository.DeletePersonnelTeam(personnelTeamId, cancellationToken);
+        return await personnelTeamRepository.DeletePersonnelTeam(personnelTeamId, cancellationToken);
     }
 }
