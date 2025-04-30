@@ -47,7 +47,7 @@ public class ForecastDbRepository(ApplicationContext context) : IForecastReposit
             .ToArrayAsync(cancellationToken);
 
         var doesExist = forecasts.ToLookup(f =>
-            filteredForecasts.Any(k => k.ConsultantId == f.ConsultantId && k.Month == f.Month));
+            filteredForecasts.Any(k => k.ConsultantId == f.ConsultantId && k.Month.Equals(f.Month)));
 
         context.Forecasts.UpdateRange(doesExist[true]);
         context.Forecasts.AddRange(doesExist[false]);
