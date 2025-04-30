@@ -6,6 +6,10 @@ public sealed class Month(int year, int month) : IComparable<Month>, IEquatable<
 	{
 	}
 
+	public Month(DateTime date) : this(date.Year, date.Month)
+	{
+	}
+
 	private DateOnly? _firstDay;
 	private DateOnly? _lastDay;
 	private DateOnly? _firstWeekday;

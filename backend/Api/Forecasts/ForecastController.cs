@@ -4,6 +4,7 @@ using Api.Helpers;
 using Core.Consultants;
 using Core.Extensions;
 using Core.Forecasts;
+using Core.Months;
 using Core.PlannedAbsences;
 using Core.Staffings;
 using Core.Weeks;
@@ -61,7 +62,7 @@ public class ForecastController(
         var adjustedPercentage = forecastWriteModel.AdjustedValue;
 
         var consultant = service.LoadConsultantForSingleWeek(forecastWriteModel.ConsultantId,
-            Week.FromDateOnly(forecastWriteModel.DateOnly));
+            Week.FromDateTime(forecastWriteModel.Month));
 
         if (consultant is null)
         {
@@ -70,7 +71,9 @@ public class ForecastController(
 
         consultant = await AddRelationalDataToConsultant(consultant, cancellationToken);
 
-        var withForecast = ConsultantWithForecastFactory.CreateSingle(consultant, forecastWriteModel.DateOnly);
+        var month = new Month(forecastWriteModel.Month);
+
+        var withForecast = ConsultantWithForecastFactory.CreateSingle(consultant, month);
 
         var billablePercentage = withForecast.Forecasts[0].BillablePercentage;
 
@@ -90,12 +93,12 @@ public class ForecastController(
             return BadRequest("Percentage cannot be higher than 100");
         }
 
-        var forecast = consultant.Forecasts.FirstOrDefault(f => f.Month == forecastWriteModel.DateOnly);
+        var forecast = consultant.Forecasts.FirstOrDefault(f => f.Month.Equals(month));
         if (forecast is null)
         {
             forecast = new Forecast
             {
-                Month = forecastWriteModel.DateOnly,
+                Month = month,
                 ConsultantId = consultant.Id,
                 AdjustedValue = adjustedPercentage,
             };
@@ -159,7 +162,4 @@ public record ForecastWriteModel(
     int ConsultantId,
     DateTime Month,
     int AdjustedValue
-)
-{
-    public DateOnly DateOnly => new(Month.Year, Month.Month, 1);
-}
+);

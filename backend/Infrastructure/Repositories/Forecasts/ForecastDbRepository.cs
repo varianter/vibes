@@ -11,7 +11,7 @@ public class ForecastDbRepository(ApplicationContext context) : IForecastReposit
     {
         return await context.Forecasts
             .AsNoTracking()
-            .FirstOrDefaultAsync(forecast => forecast.ConsultantId == consultantId && forecast.Month == month.FirstDay,
+            .FirstOrDefaultAsync(forecast => forecast.ConsultantId == consultantId && forecast.Month == month,
                 cancellationToken);
     }
 

@@ -1,6 +1,7 @@
 using Bogus;
 using Core.Consultants;
 using Core.Forecasts;
+using Core.Months;
 using Core.Organizations;
 using Infrastructure.Repositories.Forecasts;
 using Microsoft.EntityFrameworkCore;
@@ -58,7 +59,7 @@ public class ForecastRepositoryTests(ApiFactory apiFactory) : TestsBase(apiFacto
         {
             ConsultantId = org.Departments[0].Consultants[0].Id,
             AdjustedValue = _faker.Random.Int(0, 90),
-            Month = new DateOnly(2025, _faker.Random.Int(1, 12), 1)
+            Month = new Month(2025, _faker.Random.Int(1, 12))
         };
     }
 

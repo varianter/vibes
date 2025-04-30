@@ -85,7 +85,7 @@ public record ForecastForMonth(
 	public static ForecastForMonth GetFor(Consultant consultant, Month month, IEnumerable<BookedHoursInMonth> bookingSummary)
 	{
 		var manuallySetPercentage = consultant.Forecasts
-			.SingleOrDefault(f => f.Month.EqualsMonth(month))?
+			.SingleOrDefault(f => f.Month.Equals(month))?
 			.AdjustedValue ?? 0;
 
 		var booking = bookingSummary.SingleOrDefault(bs => bs.Month.Equals(month))?.BookingModel;
