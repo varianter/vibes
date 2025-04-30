@@ -21,8 +21,10 @@ public static class ConsultantWithForecastFactory
 			.ToList();
 	}
 
-	public static ConsultantWithForecast CreateSingle(Consultant consultant, Month month)
+	public static ConsultantWithForecast CreateSingle(Consultant consultant, DateOnly forecastMonth)
 	{
+		var month = new Month(forecastMonth);
+
 		return CreateSingle(consultant, fromMonth: month, throughMonth: month);
 	}
 

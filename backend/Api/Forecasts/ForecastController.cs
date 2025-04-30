@@ -4,7 +4,6 @@ using Api.Helpers;
 using Core.Consultants;
 using Core.Extensions;
 using Core.Forecasts;
-using Core.Months;
 using Core.PlannedAbsences;
 using Core.Staffings;
 using Core.Weeks;
@@ -71,7 +70,7 @@ public class ForecastController(
 
         consultant = await AddRelationalDataToConsultant(consultant, cancellationToken);
 
-        var withForecast = ConsultantWithForecastFactory.CreateSingle(consultant, forecastWriteModel.Month);
+        var withForecast = ConsultantWithForecastFactory.CreateSingle(consultant, forecastWriteModel.DateOnly);
 
         var billablePercentage = withForecast.Forecasts[0].BillablePercentage;
 
@@ -158,9 +157,9 @@ public class ForecastController(
 
 public record ForecastWriteModel(
     int ConsultantId,
-    Month Month,
+    DateTime Month,
     int AdjustedValue
 )
 {
-    public DateOnly DateOnly => Month.FirstDay;
+    public DateOnly DateOnly => new(Month.Year, Month.Month, 1);
 }

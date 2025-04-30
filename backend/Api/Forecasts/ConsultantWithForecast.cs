@@ -66,12 +66,22 @@ public record struct MonthlyHours(Month Month, double Hours)
 }
 
 public record ForecastForMonth(
-	Month Month,
+	DateOnly Month,
 	double BillableHours,
 	double SalariedHours,
 	int BillablePercentage,
 	int DisplayedPercentage)
 {
+	private ForecastForMonth(
+		Month month,
+		double billableHours,
+		double salariedHours,
+		int billablePercentage,
+		int displayedPercentage)
+		: this(month.FirstDay, billableHours, salariedHours, billablePercentage, displayedPercentage)
+	{
+	}
+
 	public static ForecastForMonth GetFor(Consultant consultant, Month month, IEnumerable<BookedHoursInMonth> bookingSummary)
 	{
 		var manuallySetPercentage = consultant.Forecasts
