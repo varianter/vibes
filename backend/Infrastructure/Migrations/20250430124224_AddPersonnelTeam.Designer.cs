@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20250430121219_AddPersonnelTeam")]
+    [Migration("20250430124224_AddPersonnelTeam")]
     partial class AddPersonnelTeam
     {
         /// <inheritdoc />
@@ -276,47 +276,6 @@ namespace Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Core.Consultants.PersonnelTeam.PersonnelTeam", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("LeaderId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("OrganizationUrlKey")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LeaderId")
-                        .IsUnique();
-
-                    b.ToTable("PersonnelTeams");
-                });
-
-            modelBuilder.Entity("Core.Consultants.PersonnelTeam.PersonnelTeamByConsultant", b =>
-                {
-                    b.Property<int>("ConsultantId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PersonnelTeamId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ConsultantId", "PersonnelTeamId");
-
-                    b.HasIndex("ConsultantId")
-                        .IsUnique();
-
-                    b.HasIndex("PersonnelTeamId");
-
-                    b.ToTable("PersonnelTeamByConsultants");
-                });
-
             modelBuilder.Entity("Core.Customers.Customer", b =>
                 {
                     b.Property<int>("Id")
@@ -463,6 +422,47 @@ namespace Infrastructure.Migrations
                             NumberOfVacationDaysInYear = 25,
                             UrlKey = "variant-as"
                         });
+                });
+
+            modelBuilder.Entity("Core.PersonnelTeam.PersonnelTeam", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("LeaderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OrganizationUrlKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LeaderId")
+                        .IsUnique();
+
+                    b.ToTable("PersonnelTeams");
+                });
+
+            modelBuilder.Entity("Core.PersonnelTeam.PersonnelTeamByConsultant", b =>
+                {
+                    b.Property<int>("ConsultantId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PersonnelTeamId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ConsultantId", "PersonnelTeamId");
+
+                    b.HasIndex("ConsultantId")
+                        .IsUnique();
+
+                    b.HasIndex("PersonnelTeamId");
+
+                    b.ToTable("PersonnelTeamByConsultants");
                 });
 
             modelBuilder.Entity("Core.PlannedAbsences.PlannedAbsence", b =>
@@ -629,30 +629,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("Discipline");
                 });
 
-            modelBuilder.Entity("Core.Consultants.PersonnelTeam.PersonnelTeam", b =>
-                {
-                    b.HasOne("Core.Consultants.Consultant", null)
-                        .WithOne()
-                        .HasForeignKey("Core.Consultants.PersonnelTeam.PersonnelTeam", "LeaderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Core.Consultants.PersonnelTeam.PersonnelTeamByConsultant", b =>
-                {
-                    b.HasOne("Core.Consultants.Consultant", null)
-                        .WithMany()
-                        .HasForeignKey("ConsultantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Core.Consultants.PersonnelTeam.PersonnelTeam", null)
-                        .WithMany()
-                        .HasForeignKey("PersonnelTeamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Core.Customers.Customer", b =>
                 {
                     b.HasOne("Core.Organizations.Organization", "Organization")
@@ -693,6 +669,30 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Organization");
+                });
+
+            modelBuilder.Entity("Core.PersonnelTeam.PersonnelTeam", b =>
+                {
+                    b.HasOne("Core.Consultants.Consultant", null)
+                        .WithOne()
+                        .HasForeignKey("Core.PersonnelTeam.PersonnelTeam", "LeaderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Core.PersonnelTeam.PersonnelTeamByConsultant", b =>
+                {
+                    b.HasOne("Core.Consultants.Consultant", null)
+                        .WithMany()
+                        .HasForeignKey("ConsultantId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Core.PersonnelTeam.PersonnelTeam", null)
+                        .WithMany()
+                        .HasForeignKey("PersonnelTeamId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Core.PlannedAbsences.PlannedAbsence", b =>

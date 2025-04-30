@@ -44,14 +44,12 @@ namespace Infrastructure.Migrations
                         name: "FK_PersonnelTeamByConsultants_Consultant_ConsultantId",
                         column: x => x.ConsultantId,
                         principalTable: "Consultant",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_PersonnelTeamByConsultants_PersonnelTeams_PersonnelTeamId",
                         column: x => x.PersonnelTeamId,
                         principalTable: "PersonnelTeams",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
