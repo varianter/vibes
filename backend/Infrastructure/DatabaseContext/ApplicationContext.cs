@@ -171,19 +171,26 @@ public class ApplicationContext(IOptions<InfrastructureConfig> config) : DbConte
             .HasKey(f => new { f.ConsultantId, f.Month });
 
         modelBuilder.Entity<PersonnelTeam>()
-            .HasIndex(m => new { ConsultantId = m.LeaderId, m.OrganizationUrlKey })
-            .IsUnique();
+            .HasOne<Consultant>()
+            .WithOne()
+            .HasForeignKey<PersonnelTeam>(pt => pt.LeaderId);
         
         modelBuilder.Entity<PersonnelTeamByConsultant>()
-            .HasKey(m => new { m.ConsultantId, m.PersonnelTeamId });
+            .HasKey(ptc => new { ptc.ConsultantId, ptc.PersonnelTeamId });
+        
+        modelBuilder.Entity<PersonnelTeamByConsultant>()
+            .HasOne<PersonnelTeam>()
+            .WithMany()
+            .HasForeignKey(ptc => ptc.PersonnelTeamId);
+        
+        modelBuilder.Entity<PersonnelTeamByConsultant>()
+            .HasOne<Consultant>()
+            .WithMany()
+            .HasForeignKey(ptc => ptc.ConsultantId);
 
-
-        /*
-        modelBuilder.Entity<Forecast>()
-            .HasIndex(f => new { f.ConsultantId, f.Month })
+        modelBuilder.Entity<PersonnelTeamByConsultant>()
+            .HasIndex(ptc => ptc.ConsultantId)
             .IsUnique();
-            */
-
 
         modelBuilder.Entity<Competence>().HasData(new List<Competence>
         {

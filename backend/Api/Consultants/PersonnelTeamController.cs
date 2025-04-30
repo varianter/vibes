@@ -30,7 +30,7 @@ public class PersonnelTeamController(
             OrganizationUrlKey = orgUrlKey
         };
 
-        return Ok(PersonnelTeamReadModel.CreateIfExists(personnelTeam));
+        return Ok(PersonnelTeamReadModel.Create(personnelTeam));
     }
 
     [HttpGet]
@@ -57,10 +57,10 @@ public class PersonnelTeamController(
         CancellationToken cancellationToken)
     {
         var personnelTeams =
-            await consultantRepository.GetPersonnelTeamInOrganizationByUrlKey(orgUrlKey, cancellationToken);
+            await consultantRepository.GetPersonnelTeamsInOrganizationByUrlKey(orgUrlKey, cancellationToken);
 
         var readModels = personnelTeams
-            .Select(PersonnelTeamReadModel.CreateIfExists)
+            .Select(PersonnelTeamReadModel.Create)
             .DefaultIfEmpty();
 
         return Ok(readModels);
@@ -77,7 +77,7 @@ public class PersonnelTeamController(
             return NotFound($"Consultant with id {leaderId} not found, cannot create personnel team without a leader");
 
         var allPersonnelTeams =
-            await consultantRepository.GetPersonnelTeamInOrganizationByUrlKey(orgUrlKey, cancellationToken);
+            await consultantRepository.GetPersonnelTeamsInOrganizationByUrlKey(orgUrlKey, cancellationToken);
         var personnelTeamAlreadyExists = allPersonnelTeams.Exists(m => m.LeaderId == leaderId);
 
         if (personnelTeamAlreadyExists)
@@ -90,7 +90,7 @@ public class PersonnelTeamController(
 
     [HttpDelete]
     [Route("{personnelTeamId:int}")]
-    public async Task<Task<IResult>> DeletePersonnelTeam([FromRoute(Name = "personnelTeamId")] int personnelTeamId,
+    public async Task<IResult> DeletePersonnelTeam([FromRoute(Name = "personnelTeamId")] int personnelTeamId,
         CancellationToken cancellationToken)
     {
         return await consultantRepository.DeletePersonnelTeam(personnelTeamId, cancellationToken);

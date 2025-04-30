@@ -62,4 +62,4 @@ public record ConsultantWriteModel(
     UpdateDepartmentReadModel Department,
     int GraduationYear,
     Degree Degree,
-    DisciplineReadModel? Discipline );
+    DisciplineReadModel? Discipline);

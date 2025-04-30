@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Api.Consultants;
 
@@ -118,10 +117,10 @@ public class ConsultantController(
         [FromRoute] int consultantId, [FromQuery] int? personnelTeamId, CancellationToken cancellationToken,
         string orgUrlKey)
     {
-        var personnelTeam =
-            await consultantRepository.GetPersonnelTeamInOrganizationByUrlKey(orgUrlKey, cancellationToken);
+        var personnelTeamList =
+            await consultantRepository.GetPersonnelTeamsInOrganizationByUrlKey(orgUrlKey, cancellationToken);
 
-        if (personnelTeam.IsNullOrEmpty())
+        if (!personnelTeamList.Exists(pt => pt.Id.Equals(personnelTeamId)))
         {
             return TypedResults.NotFound(
                 $"Could not find personnel team with id {personnelTeamId} in organization {orgUrlKey}");

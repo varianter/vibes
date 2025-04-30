@@ -3,7 +3,6 @@ using Core.Consultants.Competences;
 using Core.Consultants.PersonnelTeam;
 using Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 
@@ -28,7 +27,7 @@ public class ConsultantDbRepository(ApplicationContext context) : IConsultantRep
         return consultant;
     }
 
-    public async Task<List<PersonnelTeam>> GetPersonnelTeamInOrganizationByUrlKey(string urlKey,
+    public async Task<List<PersonnelTeam>> GetPersonnelTeamsInOrganizationByUrlKey(string urlKey,
         CancellationToken cancellationToken)
     {
         return await context.PersonnelTeams
@@ -94,15 +93,20 @@ public class ConsultantDbRepository(ApplicationContext context) : IConsultantRep
         return savedPersonnelTeam.Entity.Id;
     }
 
-    public async Task<IResult> UpdatePersonnelTeamByConsultantId(int consultantId, int? personnelTeamId, CancellationToken cancellationToken)
+    public async Task<IResult> UpdatePersonnelTeamByConsultantId(int consultantId, int? personnelTeamId,
+        CancellationToken cancellationToken)
     {
-        var affectedRows = await context.PersonnelTeamByConsultants
-            .Where(c => c.ConsultantId == consultantId)
-            .ExecuteDeleteAsync(cancellationToken);
-        if (affectedRows == 0)
+        var consultant = await context.Consultant.SingleOrDefaultAsync(c => c.Id == consultantId, cancellationToken);
+        
+        if (consultant == null)
         {
             return Results.NotFound($"Could not find consultant with id {consultantId}");
         }
+        
+        await context.PersonnelTeamByConsultants
+            .Where(c => c.ConsultantId == consultantId)
+            .ExecuteDeleteAsync(cancellationToken);
+        
         if (personnelTeamId != null)
         {
             var personnelTeamByConsultant = new PersonnelTeamByConsultant
@@ -112,26 +116,27 @@ public class ConsultantDbRepository(ApplicationContext context) : IConsultantRep
             };
             await context.PersonnelTeamByConsultants.AddAsync(personnelTeamByConsultant, cancellationToken);
         }
+
         await context.SaveChangesAsync(cancellationToken);
         return Results.Ok();
     }
 
-    public async Task<Task<IResult>> DeletePersonnelTeam(int personnelTeamId, CancellationToken cancellationToken)
+    public async Task<IResult> DeletePersonnelTeam(int personnelTeamId, CancellationToken cancellationToken)
     {
         var deletedRows = await context.PersonnelTeams
             .Where(m => m.Id == personnelTeamId)
             .ExecuteDeleteAsync(cancellationToken);
         if (deletedRows == 0)
         {
-            return Task.FromResult(Results.NotFound($"Could not find personnelTeam with id {personnelTeamId}"));
+            return Results.NotFound($"Could not find personnelTeam with id {personnelTeamId}");
         }
-        
+
         var deletedMembers = await context.PersonnelTeamByConsultants
             .Where(m => m.PersonnelTeamId == personnelTeamId)
             .ExecuteDeleteAsync(cancellationToken);
 
         await context.SaveChangesAsync(cancellationToken);
-        return Task.FromResult(Results.Ok($"Deleted personnel team and {deletedMembers} members"));   
+        return Results.Ok($"Deleted personnel team and {deletedMembers} members");
     }
 
     /*
