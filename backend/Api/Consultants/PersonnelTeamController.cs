@@ -19,14 +19,14 @@ public class PersonnelTeamController(
         [FromRoute(Name = "personnelTeamId")] int personnelTeamId,
         CancellationToken cancellationToken)
     {
-        var consultant = await personnelTeamRepository.GetLeaderByPersonnelTeamId(personnelTeamId, cancellationToken);
+        var leader = await personnelTeamRepository.GetLeaderByPersonnelTeamId(personnelTeamId, cancellationToken);
 
-        if (consultant is null) return NotFound();
+        if (leader is null) return NotFound($"No leader found with connection to personnelTeamId {personnelTeamId}");
 
         var personnelTeam = new PersonnelTeam
         {
             Id = personnelTeamId,
-            LeaderId = consultant.Id,
+            LeaderId = leader.Id,
             OrganizationUrlKey = orgUrlKey
         };
 
