@@ -1,6 +1,8 @@
 using Core.Consultants;
 using Core.Consultants.Competences;
+using Core.PersonnelTeam;
 using Infrastructure.DatabaseContext;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 
@@ -25,6 +27,14 @@ public class ConsultantDbRepository(ApplicationContext context) : IConsultantRep
         return consultant;
     }
 
+    public async Task<List<PersonnelTeam>> GetPersonnelTeamsInOrganizationByUrlKey(string urlKey,
+        CancellationToken cancellationToken)
+    {
+        return await context.PersonnelTeams
+            .Where(m => m.OrganizationUrlKey == urlKey)
+            .ToListAsync(cancellationToken);
+    }
+
     public Task<List<Consultant>> GetConsultantsInOrganizationByUrlKey(string urlKey,
         CancellationToken cancellationToken)
     {
@@ -42,6 +52,35 @@ public class ConsultantDbRepository(ApplicationContext context) : IConsultantRep
         if (affectedRows == 0) return null;
 
         return await BaseConsultantQuery().SingleOrDefaultAsync(c => c.Id == consultantId, cancellationToken);
+    }
+
+
+    public async Task<IResult> UpdatePersonnelTeamByConsultantId(int consultantId, int? personnelTeamId,
+        CancellationToken cancellationToken)
+    {
+        var consultant = await context.Consultant.SingleOrDefaultAsync(c => c.Id == consultantId, cancellationToken);
+        
+        if (consultant == null)
+        {
+            return Results.NotFound($"Could not find consultant with id {consultantId}");
+        }
+        
+        await context.PersonnelTeamByConsultants
+            .Where(c => c.ConsultantId == consultantId)
+            .ExecuteDeleteAsync(cancellationToken);
+        
+        if (personnelTeamId != null)
+        {
+            var personnelTeamByConsultant = new PersonnelTeamByConsultant
+            {
+                ConsultantId = consultantId,
+                PersonnelTeamId = (int)personnelTeamId
+            };
+            await context.PersonnelTeamByConsultants.AddAsync(personnelTeamByConsultant, cancellationToken);
+        }
+
+        await context.SaveChangesAsync(cancellationToken);
+        return Results.Ok();
     }
 
 

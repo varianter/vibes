@@ -220,7 +220,6 @@ public class StorageService(IMemoryCache cache, ILogger<StorageService> logger, 
         await context.SaveChangesAsync(cancellationToken);
         ClearConsultantCache(org.UrlKey);
 
-
         return consultant;
     }
 
