@@ -36,7 +36,7 @@ public static class DateOnlyExtensions
 
 	public static bool EqualsMonth(this DateOnly date, Month month)
 	{
-		return date.Year == month.Year && date.Month == month.MonthIndex;
+		return date.Year == month.Year && date.Month == month.MonthNumber;
 	}
 
 	/// <summary>

@@ -16,7 +16,7 @@ public sealed class Month(int year, int month) : IComparable<Month>, IEquatable<
 	private DateOnly? _lastWeekday;
 
 	public int Year { get; } = year;
-	public int MonthIndex { get; } = month;
+	public int MonthNumber { get; } = month;
 
 	public DateOnly FirstDay => GetFirstDay();
 	public DateOnly LastDay => GetLastDay();
@@ -25,7 +25,7 @@ public sealed class Month(int year, int month) : IComparable<Month>, IEquatable<
 
 	private DateOnly GetFirstDay()
 	{
-		_firstDay ??= new DateOnly(Year, MonthIndex, 1);
+		_firstDay ??= new DateOnly(Year, MonthNumber, 1);
 
 		return _firstDay.Value;
 	}
@@ -90,7 +90,7 @@ public sealed class Month(int year, int month) : IComparable<Month>, IEquatable<
 
 		if (Year == other.Year)
 		{
-			return MonthIndex - other.MonthIndex;
+			return MonthNumber - other.MonthNumber;
 		}
 
 		return Year - other.Year;
@@ -100,7 +100,7 @@ public sealed class Month(int year, int month) : IComparable<Month>, IEquatable<
 	{
 		if (other is null) return false;
 
-		return Year == other.Year && MonthIndex == other.MonthIndex;
+		return Year == other.Year && MonthNumber == other.MonthNumber;
 	}
 
 	public override bool Equals(object? other)
@@ -115,34 +115,34 @@ public sealed class Month(int year, int month) : IComparable<Month>, IEquatable<
 
 	public override int GetHashCode()
 	{
-		return HashCode.Combine(Year, MonthIndex);
+		return HashCode.Combine(Year, MonthNumber);
 	}
 
 	public static bool operator <(Month left, Month right)
 	{
 		if (left.Year < right.Year) return true;
 		if (left.Year > right.Year) return false;
-		return left.MonthIndex < right.MonthIndex;
+		return left.MonthNumber < right.MonthNumber;
 	}
 
 	public static bool operator >(Month left, Month right)
 	{
 		if (left.Year > right.Year) return true;
 		if (left.Year < right.Year) return false;
-		return left.MonthIndex > right.MonthIndex;
+		return left.MonthNumber > right.MonthNumber;
 	}
 
 	public static bool operator <=(Month left, Month right)
 	{
 		if (left.Year < right.Year) return true;
 		if (left.Year > right.Year) return false;
-		return left.MonthIndex <= right.MonthIndex;
+		return left.MonthNumber <= right.MonthNumber;
 	}
 
 	public static bool operator >=(Month left, Month right)
 	{
 		if (left.Year > right.Year) return true;
 		if (left.Year < right.Year) return false;
-		return left.MonthIndex >= right.MonthIndex;
+		return left.MonthNumber >= right.MonthNumber;
 	}
 }

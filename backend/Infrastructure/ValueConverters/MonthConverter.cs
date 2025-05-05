@@ -10,7 +10,7 @@ public class MonthConverter() : ValueConverter<Month, int>(
 	/// <summary>
 	/// Converts a Month object to an int with six digits: YYYYMM
 	/// </summary>
-	private static int ToSortableInt(Month month) => month.Year * 100 + month.MonthIndex;
+	private static int ToSortableInt(Month month) => month.Year * 100 + month.MonthNumber;
 
 	/// <summary>
 	/// Converts an int of six digits (YYYYMM) to a Month object
