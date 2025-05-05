@@ -9,10 +9,7 @@ import React, { useState } from "react";
 import { MonthCell } from "./MonthCell";
 import Image from "next/image";
 import { putWithToken } from "@/data/apiCallsWithToken";
-import {
-  useForecastFilter,
-  useSimpleForecastFilter,
-} from "@/hooks/ForecastFilter/useForecastFilter";
+import { useSimpleForecastFilter } from "@/hooks/ForecastFilter/useForecastFilter";
 
 function bookingForMonth(bookings: BookedHoursInMonth[], month: string) {
   return bookings.find((booking) => booking.month === month);
@@ -30,6 +27,16 @@ export default function ForecastRows({
   const [currentConsultant, setCurrentConsultant] =
     useState<ConsultantWithForecast>(consultant);
   const [hoveredMonth, setHoveredMonth] = useState("");
+
+  const [percentageDragValue, setPercentageDragValue] = useState<
+    number | undefined
+  >(undefined);
+  const [startDragMonth, setStartDragMonth] = useState<string | undefined>(
+    undefined,
+  );
+  const [currentDragMonth, setCurrentDragMonth] = useState<string | undefined>(
+    undefined,
+  );
 
   const columnCount = consultant.bookings.length ?? 0;
 
@@ -61,6 +68,52 @@ export default function ForecastRows({
       }
       forecast.displayedPercentage = res.adjustedValue;
       setConsultants([...filteredConsultants]);
+    });
+  }
+
+  async function saveMany(
+    firstMonth: string,
+    lastMonth: string,
+    value: number,
+  ) {
+    await putWithToken<
+      Forecast[],
+      {
+        consultantId: number;
+        firstMonth: string;
+        lastMonth: string;
+        adjustedValue: number;
+      }
+    >(`${orgUrlKey}/forecasts/update/several`, {
+      consultantId: consultant.consultant.id,
+      firstMonth: firstMonth,
+      lastMonth: lastMonth,
+      adjustedValue: value,
+    }).then((res) => {
+      if (!res) return;
+      // Attempt to locate forecasts in consultant, and update value, so that the
+      // forecast table sums update accordingly
+      const filteredConsultant = filteredConsultants.find(
+        (c) => c.consultant.id === consultant.consultant.id,
+      );
+      if (!filteredConsultant) {
+        return;
+      }
+      const updatedForecasts = filteredConsultant.forecasts.map((f) => {
+        const forecast = res.find((r) => r.month === f.month);
+        if (forecast) {
+          return {
+            ...f,
+            displayedPercentage: forecast.adjustedValue,
+          };
+        }
+        return f;
+      });
+      filteredConsultant.forecasts = updatedForecasts;
+      setConsultants([...filteredConsultants]);
+      setCurrentConsultant({
+        ...filteredConsultant,
+      });
     });
   }
 
@@ -111,6 +164,13 @@ export default function ForecastRows({
             isSecondLastCol={index == currentConsultant.bookings.length - 2}
             numWorkHours={numWorkHours}
             onChange={(value) => save(b.month, value)}
+            startDragMonth={startDragMonth}
+            setStartDragMonth={setStartDragMonth}
+            currentDragMonth={currentDragMonth}
+            setCurrentDragMonth={setCurrentDragMonth}
+            percentageDragValue={percentageDragValue}
+            setPercentageDragValue={setPercentageDragValue}
+            saveMany={saveMany}
           />
         ))}
       </tr>

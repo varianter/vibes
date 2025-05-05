@@ -1,3 +1,5 @@
+using Core.Weeks;
+
 namespace Core.Staffings;
 
 public interface IStaffingRepository
@@ -6,6 +8,8 @@ public interface IStaffingRepository
         CancellationToken cancellationToken);
 
     public Task<List<Staffing>> GetStaffingForConsultant(int consultantId, CancellationToken cancellationToken);
+    
+    public Task<List<Staffing>> GetStaffingForConsultantForWeekSet(int consultantId, CancellationToken cancellationToken, List<Week> weeks);
 
     public Task UpsertStaffing(Staffing staffing, CancellationToken cancellationToken);
 

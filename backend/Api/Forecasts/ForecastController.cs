@@ -108,6 +108,55 @@ public class ForecastController(
         return Ok(forecast);
     }
 
+    [HttpPut]
+    [Route("update/several")]
+    public async Task<ActionResult> Put([FromRoute] string orgUrlKey, [FromBody] ForecastSeveralWriteModel forecastWriteModel,
+        CancellationToken cancellationToken)
+    {
+        var service = new StorageService(cache, logger, context);
+        
+       var consultant = service.GetBaseConsultantByIdWithoutTracking(forecastWriteModel.ConsultantId);
+
+        if (consultant is null)
+        {
+            return NotFound("Consultant not found");
+        }
+        
+        //Create new AddRelationalData for period
+        consultant = await AddRelationalDataToConsultantForSetPeriod(consultant, service, forecastWriteModel.FirstMonthDateOnly, forecastWriteModel.LastMonthDateOnly.AddMonths(1), cancellationToken);
+
+        var withForecast = ConsultantWithForecastFactory.CreateSingle(consultant, forecastWriteModel.FirstMonthDateOnly,
+            forecastWriteModel.LastMonthDateOnly.AddMonths(1));
+
+        var forecastsToUpsert = withForecast.Forecasts.Select(forecast =>
+        {
+            var adjustedValue = Math.Min(Math.Max(forecastWriteModel.AdjustedValue, forecast.BillablePercentage), 100);
+
+            var updatedForecast = consultant.Forecasts.FirstOrDefault(f => f.Month == forecast.Month);
+            
+            if (updatedForecast is null)
+            {
+                updatedForecast = new Forecast
+                {
+                    Month = forecast.Month,
+                    ConsultantId = consultant.Id,
+                    AdjustedValue = adjustedValue,
+                };
+            }
+            else
+            {
+                updatedForecast.AdjustedValue = adjustedValue;
+            }
+
+            return updatedForecast;
+
+        }).ToArray();
+
+        await forecastRepository.UpsertForecasts(forecastsToUpsert, cancellationToken);
+
+        return Ok(forecastsToUpsert);
+    }
+
     private async Task<Consultant> AddRelationalDataToConsultant(Consultant consultant,
         CancellationToken cancellationToken)
     {
@@ -119,6 +168,35 @@ public class ForecastController(
         consultant.Staffings = staffings;
         consultant.PlannedAbsences = plannedAbsences;
         consultant.Forecasts = forecasts;
+
+        return consultant;
+    }
+    
+    private async Task<Consultant> AddRelationalDataToConsultantForSetPeriod(Consultant consultant, StorageService service, DateOnly firstDay, DateOnly lastDay,
+        CancellationToken cancellationToken)
+    {
+        var startWeek = Week.FromDateOnly(firstDay);
+        var endWeek = Week.FromDateOnly(lastDay);
+
+        var weekSet = startWeek.CompareTo(endWeek) < 0
+            ? startWeek.GetNextWeeks(endWeek)
+            : endWeek.GetNextWeeks(startWeek);
+        
+        var staffings = await staffingRepository.GetStaffingForConsultantForWeekSet(consultant.Id, cancellationToken, weekSet);
+        var plannedAbsences =
+            await plannedAbsenceRepository.GetPlannedAbsenceForConsultantForWeekSet(consultant.Id, cancellationToken, weekSet);
+        
+        var months = firstDay.GetMonthsUntil(lastDay).ToList();
+        
+        var forecasts = await forecastRepository.GetForecastForConsultantForMonthSet(consultant.Id, cancellationToken, months);
+
+        //This fetches all vacations for the consultant, if slow, consider implementing a method to fetch only the vacations in the range
+        var vacations = service.LoadConsultantVacation(consultant.Id);
+
+        consultant.Staffings = staffings;
+        consultant.PlannedAbsences = plannedAbsences;
+        consultant.Forecasts = forecasts;
+        consultant.Vacations = vacations;
 
         return consultant;
     }
@@ -160,4 +238,10 @@ public record ForecastWriteModel(
 )
 {
     public DateOnly DateOnly => new(Month.Year, Month.Month, 1);
+}
+
+public record ForecastSeveralWriteModel(int ConsultantId, DateTime FirstMonth, DateTime LastMonth, int AdjustedValue)
+{
+    public DateOnly FirstMonthDateOnly => new(FirstMonth.Year, FirstMonth.Month, 1);
+    public DateOnly LastMonthDateOnly => new(LastMonth.Year, LastMonth.Month, 1);
 }
