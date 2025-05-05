@@ -40,12 +40,10 @@ public class ForecastController(
         consultants = await AddRelationalDataToConsultant(consultants, cancellationToken);
         Console.WriteLine(
             $"GET FORECAST - [Checkpoint 5] Add relational data completed - {stopwatch.ElapsedMilliseconds} ms");
-        var date = requestedDate ?? DateOnly.FromDateTime(DateTime.Today);
-
-        var firstDayInQuarter = date.FirstDayInQuarter();
+        var date = requestedDate?.FirstDayInQuarter() ?? new DateOnly(DateTimeOffset.Now.Year, 1, 1);
 
         var consultantsWithForecast =
-            ConsultantWithForecastFactory.CreateMultiple(consultants, firstDayInQuarter, monthCount);
+            ConsultantWithForecastFactory.CreateMultiple(consultants, date, monthCount);
         Console.WriteLine($"GET FORECAST - [Checkpoint 6] Created forecast data - {stopwatch.ElapsedMilliseconds} ms");
         stopwatch.Stop();
         return Ok(consultantsWithForecast);
