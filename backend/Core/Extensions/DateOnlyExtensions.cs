@@ -1,3 +1,4 @@
+using Core.Months;
 using Core.Weeks;
 
 namespace Core.Extensions;
@@ -16,59 +17,11 @@ public static class DateOnlyExtensions
 
 	public static bool IsWeekday(this DateOnly date) => date.DayOfWeek is >= DayOfWeek.Monday and <= DayOfWeek.Friday;
 
-	public static int CountWeekdaysInMonth(this DateOnly month) => GetWeekdaysInMonth(month).Count();
-
-	public static DateOnly FirstDayInMonth(this DateOnly month)
+	public static Month FirstMonthInQuarter(this DateOnly date)
 	{
-		if (month.Day == 1)
-		{
-			return month;
-		}
+		var firstMonthInQuarter = QuarterlyMonths.Where(month => date.Month >= month).Max();
 
-		return new DateOnly(month.Year, month.Month, 1);
-	}
-
-	public static DateOnly LastDayInMonth(this DateOnly month)
-	{
-		return month.FirstDayInMonth().AddMonths(1).AddDays(-1);
-	}
-
-	public static DateOnly FirstWeekdayInMonth(this DateOnly month)
-	{
-		var firstDayInMonth = month.FirstDayInMonth();
-
-		return firstDayInMonth.DayOfWeek switch
-		{
-			DayOfWeek.Saturday => firstDayInMonth.AddDays(2),
-			DayOfWeek.Sunday => firstDayInMonth.AddDays(1),
-			_ => firstDayInMonth,
-		};
-	}
-
-	public static DateOnly FirstDayInQuarter(this DateOnly date)
-	{
-		return new DateOnly(date.Year, date.FirstMonthInQuarter(), 1);
-	}
-
-	private static int FirstMonthInQuarter(this DateOnly date)
-	{
-		return QuarterlyMonths.Where(month => date.Month >= month).Max();
-	}
-
-	public static IEnumerable<DateOnly> GetWeekdaysInMonth(this DateOnly month)
-	{
-		for (var date = month.FirstDayInMonth(); date.EqualsMonth(month); date = date.AddDays(1))
-		{
-			if (date.IsWeekday())
-			{
-				yield return date;
-			}
-		}
-	}
-
-	public static IEnumerable<Week> GetWeeksInMonth(this DateOnly month)
-	{
-		return month.FirstDayInMonth().GetWeeksThrough(month.LastDayInMonth());
+		return new Month(date.Year, firstMonthInQuarter);
 	}
 
 	public static DateOnly Min(DateOnly date, DateOnly other)
@@ -80,50 +33,39 @@ public static class DateOnlyExtensions
 	{
 		return date > other ? date : other;
 	}
-	
-	public static bool EqualsMonth(this DateOnly month, DateOnly other)
+
+	public static bool EqualsMonth(this DateOnly date, Month month)
 	{
-		return month.Year == other.Year && month.Month == other.Month;
+		return date.Year == month.Year && date.Month == month.MonthNumber;
 	}
 
-	public static IEnumerable<DateOnly> GetMonthsUntil(this DateOnly fromMonth, DateOnly firstExcludedMonth)
+	/// <summary>
+	/// Returns a Month object for each month between and including fromDate and throughDate
+	/// </summary>
+	public static IEnumerable<Month> GetMonthsThrough(this DateOnly fromDate, DateOnly throughDate)
 	{
-		if (firstExcludedMonth <= fromMonth)
-		{
-			yield break;
-		}
+		var fromMonth = new Month(fromDate);
+		var throughMonth = new Month(throughDate);
 
-		for (var month = fromMonth; month < firstExcludedMonth; month = month.AddMonths(1))
-		{
-			yield return month;
-		}
+		return fromMonth.GetMonthsThrough(throughMonth);
 	}
 
-	public static IEnumerable<Week> GetWeeksThrough(this DateOnly fromDate, DateOnly lastIncludedDate)
+	/// <summary>
+	/// Returns a Week object for each week between and including fromDate and throughDate
+	/// </summary>
+	public static IEnumerable<Week> GetWeeksThrough(this DateOnly fromDate, DateOnly throughDate)
 	{
 		var firstWeek = Week.FromDateOnly(fromDate);
-		var lastWeek = Week.FromDateOnly(lastIncludedDate.LastDayInMonth());
+		var lastWeek = Week.FromDateOnly(throughDate);
 
 		return firstWeek.GetNextWeeks(lastWeek);
 	}
 
-	public static bool WholeMonthIsIncludedInTimeSpan(this DateOnly month, DateOnly firstDayInTimeSpan, DateOnly lastDayInTimeSpan)
+	/// <summary>
+	/// Returns the number of days between and including fromDate and throughDate
+	/// </summary>
+	public static int CountDaysInTimeSpan(this IEnumerable<DateOnly> days, DateOnly fromDate, DateOnly throughDate)
 	{
-		if (month.FirstDayInMonth() < firstDayInTimeSpan)
-		{
-			return false;
-		}
-
-		if (lastDayInTimeSpan < month.LastDayInMonth())
-		{
-			return false;
-		}
-
-		return true;
-	}
-
-	public static int CountDaysInTimeSpan(this IEnumerable<DateOnly> days, DateOnly fromDate, DateOnly toDateInclusive)
-	{
-		return days.Count(day => day >= fromDate && day <= toDateInclusive);
+		return days.Count(day => day >= fromDate && day <= throughDate);
 	}
 }

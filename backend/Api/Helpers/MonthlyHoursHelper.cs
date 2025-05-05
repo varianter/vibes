@@ -1,5 +1,6 @@
 using Core.Consultants;
 using Core.Extensions;
+using Core.Months;
 using Core.PlannedAbsences;
 using Core.Staffings;
 using Core.Weeks;
@@ -8,7 +9,7 @@ namespace Api.Helpers;
 
 public static class MonthlyHoursHelper
 {
-	public static double GetStaffedHoursForMonthInWeek(DateOnly month, Week week, List<Staffing> staffings, Consultant consultant)
+	public static double GetStaffedHoursForMonthInWeek(Month month, Week week, List<Staffing> staffings, Consultant consultant)
 	{
 		var staffedHoursInWeek = staffings
 			.Where(staffing => staffing.Week.Equals(week))
@@ -17,7 +18,7 @@ public static class MonthlyHoursHelper
 		return GetBookedHoursInWeekWithinMonth(month, week, staffedHoursInWeek, consultant);
 	}
 
-	public static double GetPlannedAbsenceHoursForMonthInWeek(DateOnly month, Week week, List<PlannedAbsence> plannedAbsences, Consultant consultant)
+	public static double GetPlannedAbsenceHoursForMonthInWeek(Month month, Week week, List<PlannedAbsence> plannedAbsences, Consultant consultant)
 	{
 		var absenceHoursInWeek = plannedAbsences
 			.Where(absence => absence.Week.Equals(week))
@@ -26,7 +27,7 @@ public static class MonthlyHoursHelper
 		return GetBookedHoursInWeekWithinMonth(month, week, absenceHoursInWeek, consultant);
 	}
 
-	private static double GetBookedHoursInWeekWithinMonth(DateOnly month, Week week, double bookedHoursInWeek, Consultant consultant)
+	private static double GetBookedHoursInWeekWithinMonth(Month month, Week week, double bookedHoursInWeek, Consultant consultant)
 	{
 		if (bookedHoursInWeek.IsEqualTo(0))
 		{
@@ -72,13 +73,13 @@ public static class MonthlyHoursHelper
 		return bookedHoursInWeek * (bookableHours.InWeekWithinMonth / bookableHours.InWeek);
 	}
 
-	private static bool WholeWorkWeekIsInMonth(DateOnly month, Week week)
+	private static bool WholeWorkWeekIsInMonth(Month month, Week week)
 	{
 		return week.FirstDayOfWorkWeek().EqualsMonth(month) &&
 			   week.LastWorkDayOfWeek().EqualsMonth(month);
 	}
 
-	private static (double InWeek, double InWeekWithinMonth, double InWeekWithinOtherMonth) GetBookableHours(DateOnly month, Week week, Consultant consultant)
+	private static (double InWeek, double InWeekWithinMonth, double InWeekWithinOtherMonth) GetBookableHours(Month month, Week week, Consultant consultant)
 	{
 		var organization = consultant.Department.Organization;
 

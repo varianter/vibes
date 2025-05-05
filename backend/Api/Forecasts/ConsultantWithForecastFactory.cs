@@ -4,6 +4,7 @@ using Api.Helpers;
 using Core.Consultants;
 using Core.Engagements;
 using Core.Extensions;
+using Core.Months;
 using Core.Vacations;
 using Core.Weeks;
 
@@ -11,22 +12,25 @@ namespace Api.Forecasts;
 
 public static class ConsultantWithForecastFactory
 {
-	public static List<ConsultantWithForecast> CreateMultiple(List<Consultant> consultants, DateOnly fromMonth, int monthCount)
+	public static List<ConsultantWithForecast> CreateMultiple(List<Consultant> consultants, Month fromMonth, Month throughMonth)
 	{
-		var toMonthExclusive = fromMonth.AddMonths(monthCount);
-
 		return consultants
-			.Where(c => c.EndDate == null || c.EndDate > fromMonth)
-			.Where(c => c.StartDate == null || c.StartDate < toMonthExclusive)
-			.Select(consultant => CreateSingle(consultant, fromMonth, toMonthExclusive))
+			.Where(c => c.EndDate == null || c.EndDate > fromMonth.FirstDay)
+			.Where(c => c.StartDate == null || c.StartDate <= throughMonth.LastDay)
+			.Select(consultant => CreateSingle(consultant, fromMonth, throughMonth))
 			.ToList();
 	}
 
-	public static ConsultantWithForecast CreateSingle(Consultant consultant, DateOnly fromMonth, DateOnly firstExcludedMonth)
+	public static ConsultantWithForecast CreateSingle(Consultant consultant, Month month)
 	{
-		var months = fromMonth.GetMonthsUntil(firstExcludedMonth).ToList();
+		return CreateSingle(consultant, fromMonth: month, throughMonth: month);
+	}
 
-		var detailedBookings = GetDetailedBookings(consultant, months, fromMonth, firstExcludedMonth);
+	private static ConsultantWithForecast CreateSingle(Consultant consultant, Month fromMonth, Month throughMonth)
+	{
+		var months = fromMonth.GetMonthsThrough(throughMonth).ToList();
+
+		var detailedBookings = GetDetailedBookings(consultant, months, fromMonth, throughMonth);
 
 		var bookingSummary = months
 			.Select(month => GetBookedHours(consultant, month, detailedBookings))
@@ -42,7 +46,7 @@ public static class ConsultantWithForecastFactory
 	}
 
 	// Using a similar pattern as in DetailedBookings() in StaffingController/ReadModelFactory
-	private static List<DetailedBookingForMonth> GetDetailedBookings(Consultant consultant, List<DateOnly> months, DateOnly fromMonth, DateOnly firstExcludedMonth)
+	private static List<DetailedBookingForMonth> GetDetailedBookings(Consultant consultant, List<Month> months, Month fromMonth, Month throughMonth)
 	{
 		var weeks = months.First().GetWeeksThrough(months.Last()).ToList();
 		weeks.Sort();
@@ -56,7 +60,7 @@ public static class ConsultantWithForecastFactory
 
 		var organization = consultant.Department.Organization;
 
-		if (TryGetVacations(consultant, fromMonth, firstExcludedMonth, out var vacations))
+		if (TryGetVacations(consultant, fromMonth, throughMonth, out var vacations))
 		{
 			var vacationHoursPerMonth = months
 				.Select(month => new MonthlyHours(
@@ -70,10 +74,7 @@ public static class ConsultantWithForecastFactory
 				Hours: vacationHoursPerMonth));
 		}
 
-		var firstWorkDayInScope = fromMonth.FirstWeekdayInMonth();
-		var firstWorkDayOutOfScope = firstExcludedMonth.FirstWeekdayInMonth();
-
-		if (consultant.StartDate > firstWorkDayInScope)
+		if (consultant.StartDate > fromMonth.FirstWeekday)
 		{
 			var monthlyWorkHoursBeforeStartDate =
 				WorkloadHelper.CalculateMonthlyWorkHoursBefore(consultant.StartDate.Value, months, organization);
@@ -81,7 +82,7 @@ public static class ConsultantWithForecastFactory
 			detailedBookings = detailedBookings.Append(DetailedBookingForMonth.NotStartedOrQuit(monthlyWorkHoursBeforeStartDate));
 		}
 
-		if (consultant.EndDate < firstWorkDayOutOfScope)
+		if (consultant.EndDate <= throughMonth.LastWeekday)
 		{
 			var monthlyWorkHoursAfterEndDate =
 				WorkloadHelper.CalculateMonthlyWorkHoursAfter(consultant.EndDate.Value, months, organization);
@@ -92,16 +93,16 @@ public static class ConsultantWithForecastFactory
 		return detailedBookings.ToList();
 	}
 
-	private static bool TryGetVacations(Consultant consultant, DateOnly fromMonth, DateOnly firstExcludedMonth, out List<Vacation> vacations)
+	private static bool TryGetVacations(Consultant consultant, Month fromMonth, Month throughMonth, out List<Vacation> vacations)
 	{
 		vacations = consultant.Vacations
-			.Where(v => v.Date >= fromMonth && v.Date < firstExcludedMonth)
+			.Where(v => v.Date >= fromMonth.FirstDay && v.Date <= throughMonth.LastDay)
 			.ToList();
 
 		return vacations.Count > 0;
 	}
 
-	private static IEnumerable<DetailedBookingForMonth> GetBookings(Consultant consultant, List<DateOnly> months, List<Week> weeks, EngagementState state, BookingType bookingType)
+	private static IEnumerable<DetailedBookingForMonth> GetBookings(Consultant consultant, List<Month> months, List<Week> weeks, EngagementState state, BookingType bookingType)
 	{
 		return consultant.Staffings
 			.Where(staffing => staffing.Engagement.State == state)
@@ -112,7 +113,7 @@ public static class ConsultantWithForecastFactory
 				Hours: months.Select(month => MonthlyHours.For(month, projectGroup.ToList(), consultant)).ToList()));
 	}
 
-	private static IEnumerable<DetailedBookingForMonth> GetPlannedAbsences(Consultant consultant, List<DateOnly> months, List<Week> weeks)
+	private static IEnumerable<DetailedBookingForMonth> GetPlannedAbsences(Consultant consultant, List<Month> months, List<Week> weeks)
 	{
 		return consultant.PlannedAbsences
 			.Where(absence => weeks.Contains(absence.Week))
@@ -123,7 +124,7 @@ public static class ConsultantWithForecastFactory
 	}
 
 	// Using a similar pattern as in GetBookedHours() in StaffingController/ReadModelFactory
-	private static BookedHoursInMonth GetBookedHours(Consultant consultant, DateOnly month, IEnumerable<DetailedBookingForMonth> detailedBookings)
+	private static BookedHoursInMonth GetBookedHours(Consultant consultant, Month month, IEnumerable<DetailedBookingForMonth> detailedBookings)
 	{
 		var organization = consultant.Department.Organization;
 
