@@ -1,3 +1,4 @@
+using Core.Extensions;
 using Core.PlannedAbsences;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -26,7 +27,7 @@ public class PlannedAbsenceCacheRepository(IPlannedAbsenceRepository sourceRepos
         foreach (var (cId, plannedAbsences) in queriedPlannedAbsenceLists)
         {
             result.Add(cId, plannedAbsences);
-            cache.Set(PlannedAbsenceCacheKey(cId), plannedAbsences);
+            cache.SetPlannedAbsenceFor(cId, plannedAbsences);
         }
 
         return result;
@@ -39,14 +40,14 @@ public class PlannedAbsenceCacheRepository(IPlannedAbsenceRepository sourceRepos
         if (plannedAbsenceList is not null) return plannedAbsenceList;
 
         plannedAbsenceList = await sourceRepository.GetPlannedAbsenceForConsultant(consultantId, cancellationToken);
-        cache.Set(PlannedAbsenceCacheKey(consultantId), plannedAbsenceList);
+        cache.SetPlannedAbsenceFor(consultantId, plannedAbsenceList);
         return plannedAbsenceList;
     }
 
     public async Task UpsertPlannedAbsence(PlannedAbsence plannedAbsence, CancellationToken cancellationToken)
     {
         await sourceRepository.UpsertPlannedAbsence(plannedAbsence, cancellationToken);
-        ClearPlannedAbsenceCache(plannedAbsence.ConsultantId);
+        cache.ClearPlannedAbsenceFor(plannedAbsence.ConsultantId);
     }
 
     public async Task UpsertMultiplePlannedAbsences(List<PlannedAbsence> plannedAbsences,
@@ -55,25 +56,15 @@ public class PlannedAbsenceCacheRepository(IPlannedAbsenceRepository sourceRepos
         await sourceRepository.UpsertMultiplePlannedAbsences(plannedAbsences, cancellationToken);
         
         var consultantIds = plannedAbsences.Select(pa => pa.ConsultantId).Distinct();
-        foreach (var consultantId in consultantIds) ClearPlannedAbsenceCache(consultantId);
+        foreach (var consultantId in consultantIds) cache.ClearPlannedAbsenceFor(consultantId);
         
     }
     
     private List<PlannedAbsence>? GetPlannedAbsencesFromCache(int consultantId)
     {
-        if (cache.TryGetValue<List<PlannedAbsence>>(PlannedAbsenceCacheKey(consultantId), out var plannedAbsenceList) &&
+        if (cache.TryGetPlannedAbsenceFor(consultantId, out var plannedAbsenceList) &&
             plannedAbsenceList is not null) return plannedAbsenceList;
 
         return null;
-    }
-
-    private void ClearPlannedAbsenceCache(int consultantId)
-    {
-        cache.Remove(PlannedAbsenceCacheKey(consultantId));
-    }
-
-    private static string PlannedAbsenceCacheKey(int consultantId)
-    {
-        return $"PlannedAbsenceCacheRepository/{consultantId}";
     }
 }

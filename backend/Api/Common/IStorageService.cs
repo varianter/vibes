@@ -10,7 +10,6 @@ namespace Api.Common;
 
 public interface IStorageService
 {
-    void ClearConsultantCache(string orgUrlKey);
     List<Consultant> LoadConsultants(string orgUrlKey);
     Consultant? LoadConsultantForSingleWeek(int consultantId, Week week);
     Consultant? LoadConsultantForWeekSet(int consultantId, List<Week> weeks);
