@@ -29,6 +29,21 @@ public class AgreementDbRepository(ApplicationContext context) : IAgreementsRepo
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<List<int>> GetConsultantIdsRelatedToAgreementId(int agreementId, CancellationToken cancellationToken)
+    {
+        var consultantIds = await context.Agreements
+            .Include(a => a.Engagement)
+            .ThenInclude(e => e!.Staffings)
+            .Where(a => a.Id == agreementId)
+            .Where(a => a.Engagement != null)
+            .SelectMany(a => a.Engagement!.Staffings)
+            .Select(s => s.ConsultantId)
+            .Distinct()
+            .ToListAsync(cancellationToken);
+
+        return consultantIds;
+    }
+
     public async Task AddAgreementAsync(Agreement agreement, CancellationToken cancellationToken)
     {
         context.Agreements.Add(agreement);
