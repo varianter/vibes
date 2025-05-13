@@ -60,9 +60,18 @@ public static class MemoryCacheExtensions
 		return cache.TryGetValue(StaffingCacheKey(consultantId), out staffings);
 	}
 
+	/// <summary>
+	/// The Consultant cache contains basic information about each consultant employed in the given organization. Anything related to staffing (including projects/engagements) and planned absence is cached separately.
+	/// </summary>
 	private static string ConsultantCacheKey(string orgUrlKey) => $"consultantCacheKey/{orgUrlKey}";
 
+	/// <summary>
+	/// The Planned absence cache contains planned absence information for the given consultant
+	/// </summary>
 	private static string PlannedAbsenceCacheKey(int consultantId) => $"PlannedAbsenceCacheRepository/{consultantId}";
 
+	/// <summary>
+	/// The Staffing cache contains staffing and staffing-related information (such as projects/engagements) for the given consultant
+	/// </summary>
 	private static string StaffingCacheKey(int consultantId) => $"StaffingCacheRepository/{consultantId}";
 }
