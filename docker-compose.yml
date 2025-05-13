@@ -1,16 +1,15 @@
-version: '3.5'
-
 services:
   frontend:
     build:
       dockerfile: Frontend.Dockerfile
     container_name: vibes-frontend
     ports:
-      - '3000:3000'
+      - "3000:3000"
   database:
     image: mcr.microsoft.com/azure-sql-edge
     ports:
-      - '1433:1433'
+      - "1433:1433"
+    platform: linux/amd64
     environment:
-      ACCEPT_EULA: Y
       SA_PASSWORD: yourStrong(!)Password
+      ACCEPT_EULA: Y

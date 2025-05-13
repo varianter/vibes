@@ -7,6 +7,7 @@ using Core.Customers;
 using Core.Engagements;
 using Core.Forecasts;
 using Core.Organizations;
+using Core.PersonnelTeam;
 using Core.PlannedAbsences;
 using Core.Staffings;
 using Core.Vacations;
@@ -19,6 +20,8 @@ namespace Infrastructure.DatabaseContext;
 
 public class ApplicationContext(IOptions<InfrastructureConfig> config) : DbContext
 {
+    public DbSet<PersonnelTeam> PersonnelTeams { get; init; } = null!;
+    public DbSet<PersonnelTeamByConsultant> PersonnelTeamByConsultants { get; init; } = null!;
     public DbSet<Discipline> Disciplines { get; init; } = null!;
     public DbSet<Consultant> Consultant { get; init; } = null!;
     public DbSet<Competence> Competence { get; init; } = null!;
@@ -167,12 +170,29 @@ public class ApplicationContext(IOptions<InfrastructureConfig> config) : DbConte
         modelBuilder.Entity<Forecast>()
             .HasKey(f => new { f.ConsultantId, f.Month });
 
-        /*
-        modelBuilder.Entity<Forecast>()
-            .HasIndex(f => new { f.ConsultantId, f.Month })
-            .IsUnique();
-            */
+        modelBuilder.Entity<PersonnelTeam>()
+            .HasOne<Consultant>()
+            .WithOne()
+            .HasForeignKey<PersonnelTeam>(pt => pt.LeaderId);
+        
+        modelBuilder.Entity<PersonnelTeamByConsultant>()
+            .HasKey(ptc => new { ptc.ConsultantId, ptc.PersonnelTeamId });
+        
+        modelBuilder.Entity<PersonnelTeamByConsultant>()
+            .HasOne<PersonnelTeam>()
+            .WithMany()
+            .HasForeignKey(ptc => ptc.PersonnelTeamId)
+            .OnDelete(DeleteBehavior.NoAction);
+        
+        modelBuilder.Entity<PersonnelTeamByConsultant>()
+            .HasOne<Consultant>()
+            .WithMany()
+            .HasForeignKey(ptc => ptc.ConsultantId)
+            .OnDelete(DeleteBehavior.NoAction);
 
+        modelBuilder.Entity<PersonnelTeamByConsultant>()
+            .HasIndex(ptc => ptc.ConsultantId)
+            .IsUnique();
 
         modelBuilder.Entity<Competence>().HasData(new List<Competence>
         {
