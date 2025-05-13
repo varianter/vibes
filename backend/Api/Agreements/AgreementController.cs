@@ -1,6 +1,7 @@
 using Core.Agreements;
 using Core.Customers;
 using Core.Engagements;
+using Core.Extensions;
 using Core.Organizations;
 using Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Authorization;
@@ -183,7 +184,9 @@ public class AgreementController(
             PriceAdjustmentProcess: agreement.PriceAdjustmentProcess,
             Files: agreement.Files.Select(f => new FileReferenceReadModel(f)).ToList()
         );
-        cache.Remove($"consultantCacheKey/{orgUrlKey}");
+
+        await ClearStaffingCachesFor(agreement.Id, cancellationToken);
+        cache.ClearConsultantCache(orgUrlKey);
 
         return Ok(responseModel);
     }
@@ -276,7 +279,8 @@ public class AgreementController(
             agreement.Files.Select(f => new FileReferenceReadModel(f)).ToList()
         );
 
-        cache.Remove($"consultantCacheKey/{orgUrlKey}");
+        await ClearStaffingCachesFor(agreementId, cancellationToken);
+        cache.ClearConsultantCache(orgUrlKey);
 
         return Ok(responseModel);
     }
@@ -291,8 +295,12 @@ public class AgreementController(
         var agreement = await agreementsRepository.GetAgreementById(agreementId, cancellationToken);
         if (agreement is null) return NotFound();
 
+        var consultantIds = await GetConsultantIdsRelatedTo(agreementId, cancellationToken);
+
         await agreementsRepository.DeleteAgreementAsync(agreementId, cancellationToken);
-        cache.Remove($"consultantCacheKey/{orgUrlKey}");
+
+        cache.ClearStaffingFor(consultantIds);
+        cache.ClearConsultantCache(orgUrlKey);
 
         return Ok("Deleted");
     }
@@ -307,5 +315,17 @@ public class AgreementController(
         var priceAdjustmentIndexes = await agreementsRepository.GetPriceAdjustmentIndexesAsync(cancellationToken);
 
         return Ok(priceAdjustmentIndexes);
+    }
+
+    private async Task ClearStaffingCachesFor(int agreementId, CancellationToken cancellationToken)
+    {
+        var consultantIds = await GetConsultantIdsRelatedTo(agreementId, cancellationToken);
+
+        cache.ClearStaffingFor(consultantIds);
+    }
+
+    private async Task<List<int>> GetConsultantIdsRelatedTo(int agreementId, CancellationToken cancellationToken)
+    {
+        return await agreementsRepository.GetConsultantIdsRelatedToAgreementId(agreementId, cancellationToken);
     }
 }
