@@ -65,7 +65,7 @@ public static class ConsultantWithForecastFactory
 			var vacationHoursPerMonth = months
 				.Select(month => new MonthlyHours(
 					month,
-					Hours: organization.HoursPerWorkday *
+					hours: organization.HoursPerWorkday *
 						   vacations.Count(v => v.Date.EqualsMonth(month))))
 				.ToList();
 

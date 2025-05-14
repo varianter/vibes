@@ -16,14 +16,19 @@ public record ConsultantWithForecast(
 	List<ForecastForMonth> Forecasts,
 	bool ConsultantIsAvailable);
 
-public record BookedHoursInMonth(Month Month, BookingReadModel BookingModel);
+public record BookedHoursInMonth(DateOnly Month, BookingReadModel BookingModel)
+{
+	public BookedHoursInMonth(Month month, BookingReadModel bookingModel) : this(month.FirstDay, bookingModel)
+	{
+	}
+}
 
 public record DetailedBookingForMonth(BookingDetails BookingDetails, List<MonthlyHours> Hours)
 {
 	public double TotalHoursForMonth(Month month)
 	{
 		return Hours
-			.Where(hoursPerMonth => hoursPerMonth.Month.Equals(month))
+			.Where(hoursPerMonth => hoursPerMonth.Month.EqualsMonth(month))
 			.Sum(hoursInMonth => hoursInMonth.Hours);
 	}
 
@@ -46,8 +51,12 @@ public record DetailedBookingForMonth(BookingDetails BookingDetails, List<Monthl
 	}
 }
 
-public record struct MonthlyHours(Month Month, double Hours)
+public record struct MonthlyHours(DateOnly Month, double Hours)
 {
+	public MonthlyHours(Month month, double hours) : this(month.FirstDay, hours)
+	{
+	}
+
 	public static MonthlyHours For(Month month, List<Staffing> staffings, Consultant consultant)
 	{
 		var staffedHoursInMonth = month.GetWeeks()
@@ -88,7 +97,7 @@ public record ForecastForMonth(
 			.SingleOrDefault(f => f.Month.Equals(month))?
 			.AdjustedValue ?? 0;
 
-		var booking = bookingSummary.SingleOrDefault(bs => bs.Month.Equals(month))?.BookingModel;
+		var booking = bookingSummary.SingleOrDefault(bs => bs.Month.EqualsMonth(month))?.BookingModel;
 
 		if (booking == null)
 		{
