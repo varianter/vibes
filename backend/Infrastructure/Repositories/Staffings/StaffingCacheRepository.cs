@@ -1,3 +1,4 @@
+using Core.Extensions;
 using Core.Staffings;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -25,7 +26,7 @@ public class StaffingCacheRepository(IStaffingRepository sourceRepository, IMemo
         foreach (var (cId, staffings) in queriedStaffingLists)
         {
             result.Add(cId, staffings);
-            cache.Set(StaffingCacheKey(cId), staffings);
+            cache.SetStaffingFor(cId, staffings);
         }
 
         return result;
@@ -37,7 +38,7 @@ public class StaffingCacheRepository(IStaffingRepository sourceRepository, IMemo
         if (staffingList is not null) return staffingList;
 
         staffingList = await sourceRepository.GetStaffingForConsultant(consultantId, cancellationToken);
-        cache.Set(StaffingCacheKey(consultantId), staffingList);
+        cache.SetStaffingFor(consultantId, staffingList);
         return staffingList;
     }
 
@@ -45,7 +46,7 @@ public class StaffingCacheRepository(IStaffingRepository sourceRepository, IMemo
     {
         Console.WriteLine($"CACHE UpsertStaffing for consultant #{staffing.ConsultantId}");
         await sourceRepository.UpsertStaffing(staffing, cancellationToken);
-        ClearStaffingCache(staffing.ConsultantId);
+        cache.ClearStaffingFor(staffing.ConsultantId);
     }
 
     public async Task UpsertMultipleStaffings(List<Staffing> staffings, CancellationToken cancellationToken)
@@ -53,26 +54,16 @@ public class StaffingCacheRepository(IStaffingRepository sourceRepository, IMemo
         Console.WriteLine($"CACHE UpsertMultipleStaffings (count: {staffings.Count})");
         await sourceRepository.UpsertMultipleStaffings(staffings, cancellationToken);
 
-        var consultantIds = staffings.Select(staffing => staffing.ConsultantId).Distinct();
-        foreach (var consultantId in consultantIds) ClearStaffingCache(consultantId);
+        var consultantIds = staffings.Select(staffing => staffing.ConsultantId).Distinct().ToList();
+        cache.ClearStaffingFor(consultantIds);
     }
 
     private List<Staffing>? GetStaffingsFromCache(int consultantId)
     {
-        if (cache.TryGetValue<List<Staffing>>(StaffingCacheKey(consultantId), out var staffingList))
+        if (cache.TryGetStaffingFor(consultantId, out var staffingList))
             if (staffingList is not null)
                 return staffingList;
 
         return null;
-    }
-
-    public void ClearStaffingCache(int consultantId)
-    {
-        cache.Remove(StaffingCacheKey(consultantId));
-    }
-
-    private static string StaffingCacheKey(int consultantId)
-    {
-        return $"StaffingCacheRepository/{consultantId}";
     }
 }
