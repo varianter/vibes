@@ -176,8 +176,10 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("EstimatedHourPrice")
-                        .HasColumnType("int");
+                    b.Property<int>("EstimatedHourPrice")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<int>("GraduationYear")
                         .HasColumnType("int");

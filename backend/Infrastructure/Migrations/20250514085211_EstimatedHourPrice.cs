@@ -5,7 +5,7 @@
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddEstimatedHourPrice : Migration
+    public partial class EstimatedHourPrice : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -14,14 +14,15 @@ namespace Infrastructure.Migrations
                 name: "EstimatedHourPrice",
                 table: "Consultant",
                 type: "int",
-                nullable: true);
+                nullable: false,
+                defaultValue: 0);
 
             migrationBuilder.UpdateData(
                 table: "Consultant",
                 keyColumn: "Id",
                 keyValue: 1,
-                column: "EstimatedHourPrice",
-                value: null);
+                columns: new string[0],
+                values: new object[0]);
         }
 
         /// <inheritdoc />

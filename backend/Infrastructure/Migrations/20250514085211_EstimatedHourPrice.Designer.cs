@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20250428081743_AddEstimatedHourPrice")]
-    partial class AddEstimatedHourPrice
+    [Migration("20250514085211_EstimatedHourPrice")]
+    partial class EstimatedHourPrice
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -179,8 +179,10 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("EstimatedHourPrice")
-                        .HasColumnType("int");
+                    b.Property<int>("EstimatedHourPrice")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<int>("GraduationYear")
                         .HasColumnType("int");

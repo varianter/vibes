@@ -17,8 +17,7 @@ public record SingleConsultantReadModel(
     int? GraduationYear,
     int YearsOfExperience,
     Degree Degree,
-    DisciplineReadModel? Discipline,
-    int? EstimatedHourPrice)
+    DisciplineReadModel? Discipline)
 {
     public SingleConsultantReadModel(Consultant consultant)
         : this(
@@ -32,8 +31,7 @@ public record SingleConsultantReadModel(
             consultant.GraduationYear,
             consultant.YearsOfExperience,
             consultant.Degree ?? Degree.Master,
-            DisciplineReadModel.CreateIfExists(consultant.Discipline),
-            consultant.EstimatedHourPrice
+            DisciplineReadModel.CreateIfExists(consultant.Discipline)
         )
     {
     }
@@ -64,5 +62,4 @@ public record ConsultantWriteModel(
     UpdateDepartmentReadModel Department,
     int GraduationYear,
     Degree Degree,
-    DisciplineReadModel? Discipline,
-    int? EstimatedHourPrice);
+    DisciplineReadModel? Discipline);
