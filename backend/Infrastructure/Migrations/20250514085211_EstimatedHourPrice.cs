@@ -16,13 +16,6 @@ namespace Infrastructure.Migrations
                 type: "int",
                 nullable: false,
                 defaultValue: 0);
-
-            migrationBuilder.UpdateData(
-                table: "Consultant",
-                keyColumn: "Id",
-                keyValue: 1,
-                columns: new string[0],
-                values: new object[0]);
         }
 
         /// <inheritdoc />
