@@ -195,7 +195,6 @@ public class StorageService(IMemoryCache cache, ILogger<StorageService> logger, 
         if (department is not null) consultant.Department = department;
         consultant.GraduationYear = body.GraduationYear;
         consultant.Degree = body.Degree;
-        
 
         if (body.Discipline?.Id != consultant.DisciplineId)
         {
