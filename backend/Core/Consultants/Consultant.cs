@@ -36,6 +36,8 @@ public class Consultant
 
     public Discipline? Discipline { get; set; }
     public string? DisciplineId { get; set; }
+    
+    public int EstimatedHourPrice { get; set; }
 
 
     public int YearsOfExperience

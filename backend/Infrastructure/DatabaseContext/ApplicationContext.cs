@@ -155,6 +155,10 @@ public class ApplicationContext(IOptions<InfrastructureConfig> config) : DbConte
         modelBuilder.Entity<Consultant>()
             .Property(c => c.TransferredVacationDays)
             .HasDefaultValue(0);
+        
+        modelBuilder.Entity<Consultant>()
+            .Property(c => c.EstimatedHourPrice)
+            .HasDefaultValue(0);
 
         modelBuilder.Entity<CompetenceConsultant>()
             .HasKey(us => new { us.ConsultantId, us.CompetencesId });
