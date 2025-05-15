@@ -161,7 +161,7 @@ public class ForecastController(
 
         await forecastRepository.UpsertForecasts(forecastsToUpsert, cancellationToken);
 
-        return Ok(forecastsToUpsert);
+        return Ok(forecastsToUpsert.Select(f => new ForecastReadModel(f)).ToList());
     }
 
     private async Task<Consultant> AddRelationalDataToConsultant(Consultant consultant,
@@ -245,3 +245,10 @@ public record ForecastWriteModel(
 );
 
 public record ForecastSeveralWriteModel(int ConsultantId, DateTime FirstMonth, DateTime LastMonth, int AdjustedValue);
+
+public record ForecastReadModel(Forecast forecast)
+{
+    public int ConsultantId => forecast.ConsultantId;
+    public DateOnly Month => forecast.Month.FirstDay;
+    public int AdjustedValue => forecast.AdjustedValue ?? 0;
+}
