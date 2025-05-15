@@ -11,6 +11,7 @@ import Image from "next/image";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Edit3, Check } from "react-feather";
 import EditableTableTextCell from "./EditableTableTextCell";
+import EditableTableNumberCell from "./EditableTableNumberCell";
 import EditableTableDateCell from "./EditableTableDateCell";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import EditableTableSelectDepartmentCell from "./EditableTableSelectDepartmentCell";
@@ -155,6 +156,13 @@ export default function FilteredConsultantsComp({
               <p className="normal text-left">Eksamensår</p>
             </div>
           </th>
+
+          <th className="py-1 pt-3 w-32">
+            <div className="flex flex-col gap-1">
+              <p className="normal text-left" title="Estimert timepris">Timepris</p>
+            </div>
+          </th>
+
           <th className="py-1 pt-3 w-14">
             <div className="flex flex-col gap-1"></div>
           </th>
@@ -324,6 +332,17 @@ export default function FilteredConsultantsComp({
                   })
                 }
                 gradYear={consultant.graduationYear}
+                isEditing={selectedEditConsultant?.id === consultant.id}
+              />
+
+              <EditableTableNumberCell
+                setConsultant={(hourPrice: number) =>
+                  setSelectedEditConsultant((selectedConsultant) => {
+                    if (!selectedConsultant) return null;
+                    return { ...selectedConsultant, estimatedHourPrice: hourPrice };
+                  })
+                }
+                number={consultant.estimatedHourPrice}
                 isEditing={selectedEditConsultant?.id === consultant.id}
               />
 
