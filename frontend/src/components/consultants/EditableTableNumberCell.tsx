@@ -20,6 +20,15 @@ export default function EditableTableNumberCell({
     }
   }, [newValue]);
 
+  function withThousandSeparator(number: number): string {
+    if (number < 1000) return String(number);
+
+    const beforeSeparator = String(Math.floor(newValue / 1000));
+    const afterSeparator = String(Math.floor(newValue % 1000));
+
+    return `${beforeSeparator} ${afterSeparator.padStart(3, "000")}`;
+  }
+
   return (
     <td className="pr-3">
       {isEditing ? (
@@ -31,8 +40,10 @@ export default function EditableTableNumberCell({
           onChange={(e) => setNewValue(Number(e.target.value))}
         />
       ) : (
-        <p className={style ? style : "normal text-text_light_black"}>
-          {newValue}
+        <p
+          className={style ? style : "normal text-text_light_black float-right"}
+        >
+          { withThousandSeparator(newValue) }
         </p>
       )}
     </td>
