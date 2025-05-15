@@ -43,7 +43,7 @@ export default function EditableTableNumberCell({
         <p
           className={style ? style : "normal text-text_light_black float-right"}
         >
-          { withThousandSeparator(newValue) }
+          {withThousandSeparator(newValue)}
         </p>
       )}
     </td>
