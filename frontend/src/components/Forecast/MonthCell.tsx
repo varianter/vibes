@@ -193,13 +193,7 @@ export function MonthCell({
       resetDrag();
       return;
     }
-    var firstMonth = startDragMonth;
-    var lastMonth = currentDragMonth;
-
-    if (startDragMonth > currentDragMonth) {
-      firstMonth = currentDragMonth;
-      lastMonth = startDragMonth;
-    }
+    var [firstMonth, lastMonth] = [startDragMonth, currentDragMonth].sort();
 
     saveMany(firstMonth, lastMonth, inputValue);
     resetDrag();

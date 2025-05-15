@@ -109,7 +109,7 @@ public class ForecastController(
 
         await forecastRepository.UpsertForecasts([forecast], cancellationToken);
 
-        return Ok(forecast);
+        return Ok(new ForecastReadModel(forecast));
     }
 
     [HttpPut]
@@ -129,31 +129,23 @@ public class ForecastController(
         var firstMonth = new Month(forecastWriteModel.FirstMonth);
         var throughMonth = new Month(forecastWriteModel.LastMonth);
         
-        //Create new AddRelationalData for period
         consultant = await AddRelationalDataToConsultantForSetPeriod(consultant, service, firstMonth, throughMonth, cancellationToken);
 
-        var withForecast = ConsultantWithForecastFactory.CreateSingle(consultant, firstMonth,
-            throughMonth);
+        var withForecast = ConsultantWithForecastFactory.CreateSingle(consultant, firstMonth, throughMonth);
 
         var forecastsToUpsert = withForecast.Forecasts.Select(forecast =>
         {
             var adjustedValue = Math.Min(Math.Max(forecastWriteModel.AdjustedValue, forecast.BillablePercentage), 100);
 
-            var updatedForecast = consultant.Forecasts.FirstOrDefault(f => f.Month.Equals(new Month(forecast.Month)));
+            var updatedForecast = consultant.Forecasts.FirstOrDefault(f => forecast.Month.EqualsMonth(f.Month));
             
-            if (updatedForecast is null)
+            updatedForecast ??= new Forecast
             {
-                updatedForecast = new Forecast
-                {
-                    Month = new Month(forecast.Month),
-                    ConsultantId = consultant.Id,
-                    AdjustedValue = adjustedValue,
-                };
-            }
-            else
-            {
-                updatedForecast.AdjustedValue = adjustedValue;
-            }
+                Month = new Month(forecast.Month),
+                ConsultantId = consultant.Id,
+            };
+
+            updatedForecast.AdjustedValue = adjustedValue;
 
             return updatedForecast;
 
@@ -193,7 +185,7 @@ public class ForecastController(
         var plannedAbsences =
             await plannedAbsenceRepository.GetPlannedAbsenceForConsultantForWeekSet(consultant.Id, cancellationToken, weekSet);
         
-        var months = firstMonth.FirstDay.GetMonthsThrough(lastMonth.FirstDay).ToList();
+        var months = firstMonth.GetMonthsThrough(lastMonth).ToList();
         
         var forecasts = await forecastRepository.GetForecastForConsultantForMonthSet(consultant.Id, cancellationToken, months);
 
