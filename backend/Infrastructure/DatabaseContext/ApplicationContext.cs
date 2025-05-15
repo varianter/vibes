@@ -8,6 +8,7 @@ using Core.Engagements;
 using Core.Forecasts;
 using Core.Months;
 using Core.Organizations;
+using Core.PersonnelTeams;
 using Core.PlannedAbsences;
 using Core.Staffings;
 using Core.Vacations;
@@ -34,6 +35,7 @@ public class ApplicationContext(IOptions<InfrastructureConfig> config) : DbConte
     public DbSet<Staffing> Staffing { get; init; } = null!;
     public DbSet<Agreement> Agreements { get; init; } = null!;
     public DbSet<Forecast> Forecasts { get; init; } = null!;
+    public DbSet<PersonnelTeam> PersonnelTeams { get; init; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -182,6 +184,15 @@ public class ApplicationContext(IOptions<InfrastructureConfig> config) : DbConte
             .IsUnique();
             */
 
+        modelBuilder.Entity<PersonnelTeam>()
+            .HasOne(team => team.Leader)
+            .WithOne()
+            .HasForeignKey<PersonnelTeam>(team => team.LeaderId);
+
+        modelBuilder.Entity<PersonnelTeam>()
+            .HasMany(team => team.Members)
+            .WithOne(member => member.PersonnelTeam)
+            .HasForeignKey(member => member.PersonnelTeamId);
 
         modelBuilder.Entity<Competence>().HasData(new List<Competence>
         {

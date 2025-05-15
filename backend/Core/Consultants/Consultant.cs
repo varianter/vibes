@@ -4,6 +4,7 @@ using Core.Consultants.Disciplines;
 using Core.Engagements;
 using Core.Forecasts;
 using Core.Organizations;
+using Core.PersonnelTeams;
 using Core.PlannedAbsences;
 using Core.Staffings;
 using Core.Vacations;
@@ -39,6 +40,8 @@ public class Consultant
     
     public int EstimatedHourPrice { get; set; }
 
+    public PersonnelTeam? PersonnelTeam { get; set; }
+    public int? PersonnelTeamId { get; set; }
 
     public int YearsOfExperience
     {
