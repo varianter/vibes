@@ -35,7 +35,7 @@ public class ForecastDbRepository(ApplicationContext context) : IForecastReposit
         return forecastsByConsultant;
     }
 
-    public async Task<List<Forecast>> GetForecastForConsultantForMonthSet(int consultantId, CancellationToken cancellationToken, List<DateOnly> months)
+    public async Task<List<Forecast>> GetForecastForConsultantForMonthSet(int consultantId, CancellationToken cancellationToken, List<Month> months)
     {
         var forecastsByConsultant = await context.Forecasts
             .AsNoTracking()

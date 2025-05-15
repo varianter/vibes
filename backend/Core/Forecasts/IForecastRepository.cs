@@ -25,7 +25,7 @@ public interface IForecastRepository
 	/// Gets the forecasts registered on the consultants with the given consultantId and during spesified months
 	/// </summary>
 	public Task<List<Forecast>> GetForecastForConsultantForMonthSet(int consultantId,
-		CancellationToken cancellationToken, List<DateOnly> months);
+		CancellationToken cancellationToken, List<Month> months);
 	
 	/// <summary>
 	///     Inserts new or updates existing forecasts

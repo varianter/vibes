@@ -126,23 +126,26 @@ public class ForecastController(
             return NotFound("Consultant not found");
         }
         
+        var firstMonth = new Month(forecastWriteModel.FirstMonth);
+        var throughMonth = new Month(forecastWriteModel.LastMonth);
+        
         //Create new AddRelationalData for period
-        consultant = await AddRelationalDataToConsultantForSetPeriod(consultant, service, forecastWriteModel.FirstMonthDateOnly, forecastWriteModel.LastMonthDateOnly.AddMonths(1), cancellationToken);
+        consultant = await AddRelationalDataToConsultantForSetPeriod(consultant, service, firstMonth, throughMonth, cancellationToken);
 
-        var withForecast = ConsultantWithForecastFactory.CreateSingle(consultant, forecastWriteModel.FirstMonthDateOnly,
-            forecastWriteModel.LastMonthDateOnly.AddMonths(1));
+        var withForecast = ConsultantWithForecastFactory.CreateSingle(consultant, firstMonth,
+            throughMonth);
 
         var forecastsToUpsert = withForecast.Forecasts.Select(forecast =>
         {
             var adjustedValue = Math.Min(Math.Max(forecastWriteModel.AdjustedValue, forecast.BillablePercentage), 100);
 
-            var updatedForecast = consultant.Forecasts.FirstOrDefault(f => f.Month == forecast.Month);
+            var updatedForecast = consultant.Forecasts.FirstOrDefault(f => f.Month.Equals(new Month(forecast.Month)));
             
             if (updatedForecast is null)
             {
                 updatedForecast = new Forecast
                 {
-                    Month = forecast.Month,
+                    Month = new Month(forecast.Month),
                     ConsultantId = consultant.Id,
                     AdjustedValue = adjustedValue,
                 };
@@ -176,11 +179,11 @@ public class ForecastController(
         return consultant;
     }
     
-    private async Task<Consultant> AddRelationalDataToConsultantForSetPeriod(Consultant consultant, StorageService service, DateOnly firstDay, DateOnly lastDay,
+    private async Task<Consultant> AddRelationalDataToConsultantForSetPeriod(Consultant consultant, StorageService service, Month firstMonth, Month lastMonth,
         CancellationToken cancellationToken)
     {
-        var startWeek = Week.FromDateOnly(firstDay);
-        var endWeek = Week.FromDateOnly(lastDay);
+        var startWeek = Week.FromDateOnly(firstMonth.FirstWeekday);
+        var endWeek = Week.FromDateOnly(lastMonth.LastWeekday);
 
         var weekSet = startWeek.CompareTo(endWeek) < 0
             ? startWeek.GetNextWeeks(endWeek)
@@ -190,7 +193,7 @@ public class ForecastController(
         var plannedAbsences =
             await plannedAbsenceRepository.GetPlannedAbsenceForConsultantForWeekSet(consultant.Id, cancellationToken, weekSet);
         
-        var months = firstDay.GetMonthsUntil(lastDay).ToList();
+        var months = firstMonth.FirstDay.GetMonthsThrough(lastMonth.FirstDay).ToList();
         
         var forecasts = await forecastRepository.GetForecastForConsultantForMonthSet(consultant.Id, cancellationToken, months);
 
@@ -241,8 +244,4 @@ public record ForecastWriteModel(
     int AdjustedValue
 );
 
-public record ForecastSeveralWriteModel(int ConsultantId, DateTime FirstMonth, DateTime LastMonth, int AdjustedValue)
-{
-    public DateOnly FirstMonthDateOnly => new(FirstMonth.Year, FirstMonth.Month, 1);
-    public DateOnly LastMonthDateOnly => new(LastMonth.Year, LastMonth.Month, 1);
-}
+public record ForecastSeveralWriteModel(int ConsultantId, DateTime FirstMonth, DateTime LastMonth, int AdjustedValue);
