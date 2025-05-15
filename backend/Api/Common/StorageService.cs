@@ -4,6 +4,7 @@ using Core.Consultants;
 using Core.Consultants.Competences;
 using Core.Customers;
 using Core.Engagements;
+using Core.Extensions;
 using Core.Organizations;
 using Core.Vacations;
 using Core.Weeks;
@@ -16,20 +17,13 @@ namespace Api.Common;
 
 public class StorageService(IMemoryCache cache, ILogger<StorageService> logger, ApplicationContext context) : IStorageService
 {
-    private const string ConsultantCacheKey = "consultantCacheKey";
-
-    public void ClearConsultantCache(string orgUrlKey)
-    {
-        cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
-    }
-
     public List<Consultant> LoadConsultants(string orgUrlKey)
     {
-        if (cache.TryGetValue<List<Consultant>>($"{ConsultantCacheKey}/{orgUrlKey}", out var consultants) &&
+        if (cache.TryGetFromConsultantCache(orgUrlKey, out var consultants) &&
             consultants != null) return consultants;
 
         var loadedConsultants = LoadConsultantsFromDb(orgUrlKey);
-        cache.Set($"{ConsultantCacheKey}/{orgUrlKey}", loadedConsultants);
+        cache.SetConsultantCache(orgUrlKey, loadedConsultants);
         return loadedConsultants;
     }
 
@@ -182,7 +176,7 @@ public class StorageService(IMemoryCache cache, ILogger<StorageService> logger, 
 
 
         await context.SaveChangesAsync(cancellationToken);
-        ClearConsultantCache(org.UrlKey);
+        cache.ClearConsultantCache(org.UrlKey);
 
         return consultant;
     }
@@ -229,8 +223,7 @@ public class StorageService(IMemoryCache cache, ILogger<StorageService> logger, 
             });
 
         await context.SaveChangesAsync(cancellationToken);
-        ClearConsultantCache(org.UrlKey);
-
+        cache.ClearConsultantCache(org.UrlKey);
 
         return consultant;
     }
@@ -243,7 +236,7 @@ public class StorageService(IMemoryCache cache, ILogger<StorageService> logger, 
         customer.IsActive = active;
         context.Customer.Update(customer);
         context.SaveChanges();
-        ClearConsultantCache(orgUrlKey);
+        cache.ClearConsultantCache(orgUrlKey);
 
         return customer;
     }
@@ -268,8 +261,7 @@ public class StorageService(IMemoryCache cache, ILogger<StorageService> logger, 
 
         context.Customer.Add(customer);
         await context.SaveChangesAsync(cancellationToken);
-        ClearConsultantCache(orgUrlKey);
-
+        cache.ClearConsultantCache(orgUrlKey);
 
         return customer;
     }
@@ -315,7 +307,7 @@ public class StorageService(IMemoryCache cache, ILogger<StorageService> logger, 
         context.Vacation.Remove(vacation);
         context.SaveChanges();
 
-        cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
+        cache.ClearConsultantCache(orgUrlKey);
     }
 
     public void AddVacationDay(int consultantId, DateOnly date, string orgUrlKey)
@@ -338,7 +330,7 @@ public class StorageService(IMemoryCache cache, ILogger<StorageService> logger, 
         context.Add(vacation);
         context.SaveChanges();
 
-        cache.Remove($"{ConsultantCacheKey}/{orgUrlKey}");
+        cache.ClearConsultantCache(orgUrlKey);
     }
 
     private async Task UpdateDiscipline(Consultant consultant, DisciplineReadModel? discipline, CancellationToken cancellationToken)

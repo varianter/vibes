@@ -3,6 +3,7 @@ using Api.Common;
 using Api.Common.Types;
 using Api.Helpers;
 using Core.Consultants;
+using Core.Extensions;
 using Core.PlannedAbsences;
 using Core.Staffings;
 using Core.Weeks;
@@ -126,7 +127,7 @@ public class StaffingController(
                     await staffingRepository.UpsertStaffing(updatedStaffing, cancellationToken);
 
                     //TODO: Remove this once repositories for planned absence and vacations are done too
-                    service.ClearConsultantCache(orgUrlKey);
+                    cache.ClearConsultantCache(orgUrlKey);
                     break;
                 case BookingType.PlannedAbsence:
                     var updatedAbsence = CreateAbsence(new PlannedAbsenceKey(staffingWriteModel.EngagementId,
@@ -136,7 +137,7 @@ public class StaffingController(
                     await plannedAbsenceRepository.UpsertPlannedAbsence(updatedAbsence, cancellationToken);
 
                     //TODO: Remove this once repositories for planned absence and vacations are done too
-                    service.ClearConsultantCache(orgUrlKey);
+                    cache.ClearConsultantCache(orgUrlKey);
                     break;
                 case BookingType.Vacation:
                     break;
@@ -186,7 +187,7 @@ public class StaffingController(
                     await staffingRepository.UpsertMultipleStaffings(updatedStaffings, cancellationToken);
 
                     //TODO: Remove this once repositories for planned absence and vacations are done too
-                    service.ClearConsultantCache(orgUrlKey);
+                    cache.ClearConsultantCache(orgUrlKey);
                     break;
                 case BookingType.PlannedAbsence:
                     var updatedAbsences = GenerateUpdatedAbsences(severalStaffingWriteModel.ConsultantId,
@@ -195,7 +196,7 @@ public class StaffingController(
                     await plannedAbsenceRepository.UpsertMultiplePlannedAbsences(updatedAbsences, cancellationToken);
 
                     //TODO: Remove this once repositories for planned absence and vacations are done too
-                    service.ClearConsultantCache(orgUrlKey);
+                    cache.ClearConsultantCache(orgUrlKey);
                     break;
                 case BookingType.Vacation:
                     break;

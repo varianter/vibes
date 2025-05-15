@@ -1,11 +1,10 @@
 using Api.Common;
 using Api.StaffingController;
 using Core.Engagements;
+using Core.Extensions;
 using Core.Organizations;
-using Core.Staffings;
 using Core.Weeks;
 using Infrastructure.DatabaseContext;
-using Infrastructure.Repositories.Staffings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +21,6 @@ public class ProjectController(
     IMemoryCache cache,
     ILogger<StorageService> logger,
     IOrganisationRepository organisationRepository,
-    IStaffingRepository staffingRepository,
     IEngagementRepository engagementRepository) : ControllerBase
 {
     private const string AbsenceCustomerName = "Variant - Fravær";
@@ -122,11 +120,7 @@ public class ProjectController(
             context.Project.Remove(engagement);
             context.SaveChanges();
 
-            var staffingCacheRepository = new StaffingCacheRepository(staffingRepository, cache);
-            foreach (var consultant in engagement.Consultants)
-            {
-                staffingCacheRepository.ClearStaffingCache(consultant.Id);
-            }
+            ClearStaffingCachesFor(engagement);
         }
 
         return Ok();
@@ -165,13 +159,8 @@ public class ProjectController(
             var weekSet = selectedWeek.GetNextWeeks(projectWriteModel.WeekSpan);
 
 
-            service.ClearConsultantCache(orgUrlKey);
-
-            var staffingCacheRepository = new StaffingCacheRepository(staffingRepository, cache);
-            foreach (var consultant in engagement.Consultants)
-            {
-                staffingCacheRepository.ClearStaffingCache(consultant.Id);
-            }
+            cache.ClearConsultantCache(orgUrlKey);
+            ClearStaffingCachesFor(engagement);
 
             return new ReadModelFactory(service).GetConsultantReadModelForWeeks(
                 engagement.Consultants.Select(c => c.Id).ToList(), weekSet);
@@ -207,13 +196,8 @@ public class ProjectController(
             engagement.Name = engagementWriteModel.EngagementName;
             context.SaveChanges();
 
-            service.ClearConsultantCache(orgUrlKey);
-
-            var staffingCacheRepository = new StaffingCacheRepository(staffingRepository, cache);
-            foreach (var consultant in engagement.Consultants)
-            {
-                staffingCacheRepository.ClearStaffingCache(consultant.Id);
-            }
+            cache.ClearConsultantCache(orgUrlKey);
+            ClearStaffingCachesFor(engagement);
 
             var responseModel =
                 new EngagementReadModel(engagement.Id, engagement.Name, engagement.State, engagement.IsBillable);
@@ -239,12 +223,13 @@ public class ProjectController(
         var customer = service.DeactivateOrActivateCustomer(customerId, selectedOrg, activate, orgUrlKey);
         if (customer is null) return TypedResults.NotFound("Selected customer not found");
 
-        var staffingCacheRepository = new StaffingCacheRepository(staffingRepository, cache);
-        foreach (var consultantId in customer.Projects.SelectMany(project => project.Staffings)
-                     .Select(staffing => staffing.ConsultantId).Distinct())
-        {
-            staffingCacheRepository.ClearStaffingCache(consultantId);
-        }
+        var consultantIds = customer.Projects
+            .SelectMany(project => project.Staffings)
+            .Select(staffing => staffing.ConsultantId)
+            .Distinct()
+            .ToList();
+
+        cache.ClearStaffingFor(consultantIds);
 
         return TypedResults.Ok();
     }
@@ -286,7 +271,7 @@ public class ProjectController(
         }
 
         await context.SaveChangesAsync(cancellationToken);
-        service.ClearConsultantCache(orgUrlKey);
+        cache.ClearConsultantCache(orgUrlKey);
 
         var responseModel =
             new ProjectWithCustomerModel(project.Name, customer.Name, project.State, project.IsBillable, project.Id);
@@ -354,5 +339,12 @@ public class ProjectController(
 
         readModel.ActiveEngagements.Add(vacation);
         return readModel;
+    }
+
+    private void ClearStaffingCachesFor(Engagement engagement)
+    {
+        var consultantIds = engagement.Consultants.Select(c => c.Id).ToList();
+
+        cache.ClearStaffingFor(consultantIds);
     }
 }

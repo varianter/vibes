@@ -6,6 +6,7 @@ using Core.Consultants.Disciplines;
 using Core.Customers;
 using Core.Engagements;
 using Core.Forecasts;
+using Core.Months;
 using Core.Organizations;
 using Core.PlannedAbsences;
 using Core.Staffings;
@@ -50,6 +51,10 @@ public class ApplicationContext(IOptions<InfrastructureConfig> config) : DbConte
         configurationBuilder
             .Properties<Week>()
             .HaveConversion<WeekConverter>();
+
+        configurationBuilder
+            .Properties<Month>()
+            .HaveConversion<MonthConverter>();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -149,6 +154,10 @@ public class ApplicationContext(IOptions<InfrastructureConfig> config) : DbConte
 
         modelBuilder.Entity<Consultant>()
             .Property(c => c.TransferredVacationDays)
+            .HasDefaultValue(0);
+        
+        modelBuilder.Entity<Consultant>()
+            .Property(c => c.EstimatedHourPrice)
             .HasDefaultValue(0);
 
         modelBuilder.Entity<CompetenceConsultant>()

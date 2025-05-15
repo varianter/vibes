@@ -3,6 +3,7 @@ using Api.Consultants;
 using Api.Helpers;
 using Core.Consultants;
 using Core.Extensions;
+using Core.Months;
 using Core.PlannedAbsences;
 using Core.Staffings;
 
@@ -15,11 +16,16 @@ public record ConsultantWithForecast(
 	List<ForecastForMonth> Forecasts,
 	bool ConsultantIsAvailable);
 
-public record BookedHoursInMonth(DateOnly Month, BookingReadModel BookingModel);
+public record BookedHoursInMonth(DateOnly Month, BookingReadModel BookingModel)
+{
+	public BookedHoursInMonth(Month month, BookingReadModel bookingModel) : this(month.FirstDay, bookingModel)
+	{
+	}
+}
 
 public record DetailedBookingForMonth(BookingDetails BookingDetails, List<MonthlyHours> Hours)
 {
-	public double TotalHoursForMonth(DateOnly month)
+	public double TotalHoursForMonth(Month month)
 	{
 		return Hours
 			.Where(hoursPerMonth => hoursPerMonth.Month.EqualsMonth(month))
@@ -28,7 +34,7 @@ public record DetailedBookingForMonth(BookingDetails BookingDetails, List<Monthl
 
 	public static double GetTotalHoursForBookingTypeAndMonth(
 		IEnumerable<DetailedBookingForMonth> bookings,
-		DateOnly month,
+		Month month,
 		BookingType bookingType,
 		bool evaluateBillable = false,
 		bool isBillable = true)
@@ -47,17 +53,21 @@ public record DetailedBookingForMonth(BookingDetails BookingDetails, List<Monthl
 
 public record struct MonthlyHours(DateOnly Month, double Hours)
 {
-	public static MonthlyHours For(DateOnly month, List<Staffing> staffings, Consultant consultant)
+	public MonthlyHours(Month month, double hours) : this(month.FirstDay, hours)
 	{
-		var staffedHoursInMonth = month.GetWeeksInMonth()
+	}
+
+	public static MonthlyHours For(Month month, List<Staffing> staffings, Consultant consultant)
+	{
+		var staffedHoursInMonth = month.GetWeeks()
 			.Sum(week => MonthlyHoursHelper.GetStaffedHoursForMonthInWeek(month, week, staffings, consultant));
 
 		return new MonthlyHours(month, staffedHoursInMonth);
 	}
 
-	public static MonthlyHours For(DateOnly month, List<PlannedAbsence> plannedAbsences, Consultant consultant)
+	public static MonthlyHours For(Month month, List<PlannedAbsence> plannedAbsences, Consultant consultant)
 	{
-		var absenceHoursInMonth = month.GetWeeksInMonth()
+		var absenceHoursInMonth = month.GetWeeks()
 			.Sum(week => MonthlyHoursHelper.GetPlannedAbsenceHoursForMonthInWeek(month, week, plannedAbsences, consultant));
 
 		return new MonthlyHours(month, absenceHoursInMonth);
@@ -71,10 +81,20 @@ public record ForecastForMonth(
 	int BillablePercentage,
 	int DisplayedPercentage)
 {
-	public static ForecastForMonth GetFor(Consultant consultant, DateOnly month, IEnumerable<BookedHoursInMonth> bookingSummary)
+	private ForecastForMonth(
+		Month month,
+		double billableHours,
+		double salariedHours,
+		int billablePercentage,
+		int displayedPercentage)
+		: this(month.FirstDay, billableHours, salariedHours, billablePercentage, displayedPercentage)
+	{
+	}
+
+	public static ForecastForMonth GetFor(Consultant consultant, Month month, IEnumerable<BookedHoursInMonth> bookingSummary)
 	{
 		var manuallySetPercentage = consultant.Forecasts
-			.SingleOrDefault(f => f.Month.EqualsMonth(month))?
+			.SingleOrDefault(f => f.Month.Equals(month))?
 			.AdjustedValue ?? 0;
 
 		var booking = bookingSummary.SingleOrDefault(bs => bs.Month.EqualsMonth(month))?.BookingModel;
@@ -93,7 +113,7 @@ public record ForecastForMonth(
 		return new ForecastForMonth(month, billableHours, salariedHours, billablePercentage, displayedPercentage);
 	}
 
-	private static ForecastForMonth WithoutBookingInfo(DateOnly month, int displayedPercentage)
+	private static ForecastForMonth WithoutBookingInfo(Month month, int displayedPercentage)
 	{
 		return new ForecastForMonth(month, 0, 0, 0, displayedPercentage);
 	}
@@ -103,7 +123,7 @@ public record ForecastForMonth(
 		return booking.TotalBillable;
 	}
 
-	private static double GetSalariedHoursForMonth(DateOnly month, Consultant consultant, BookingReadModel booking)
+	private static double GetSalariedHoursForMonth(Month month, Consultant consultant, BookingReadModel booking)
 	{
 		var hoursInMonth = consultant.Department.Organization.GetTotalWeekdayHoursInMonth(month);
 

@@ -1,4 +1,5 @@
 using Core.Forecasts;
+using Core.Months;
 using Infrastructure.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,7 +7,7 @@ namespace Infrastructure.Repositories.Forecasts;
 
 public class ForecastDbRepository(ApplicationContext context) : IForecastRepository
 {
-    public async Task<Forecast?> GetForecast(int consultantId, DateOnly month, CancellationToken cancellationToken)
+    public async Task<Forecast?> GetForecast(int consultantId, Month month, CancellationToken cancellationToken)
     {
         return await context.Forecasts
             .AsNoTracking()
@@ -55,7 +56,7 @@ public class ForecastDbRepository(ApplicationContext context) : IForecastReposit
             .ToArrayAsync(cancellationToken);
 
         var doesExist = forecasts.ToLookup(f =>
-            filteredForecasts.Any(k => k.ConsultantId == f.ConsultantId && k.Month == f.Month));
+            filteredForecasts.Any(k => k.ConsultantId == f.ConsultantId && k.Month.Equals(f.Month)));
 
         context.Forecasts.UpdateRange(doesExist[true]);
         context.Forecasts.AddRange(doesExist[false]);
