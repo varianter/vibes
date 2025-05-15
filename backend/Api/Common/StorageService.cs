@@ -95,7 +95,18 @@ public class StorageService(IMemoryCache cache, ILogger<StorageService> logger, 
 
     public Consultant? GetBaseConsultantById(int id)
     {
-        return context.Consultant.Include(c => c.Department).ThenInclude(d => d.Organization)
+        return context.Consultant
+            .Include(c => c.Department)
+            .ThenInclude(d => d.Organization)
+            .FirstOrDefault(c => c.Id == id);
+    }
+    
+    public Consultant? GetBaseConsultantByIdWithoutTracking(int id)
+    {
+        return context.Consultant
+            .AsNoTracking()
+            .Include(c => c.Department)
+            .ThenInclude(d => d.Organization)
             .FirstOrDefault(c => c.Id == id);
     }
 
