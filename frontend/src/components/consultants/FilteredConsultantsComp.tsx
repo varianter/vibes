@@ -159,7 +159,9 @@ export default function FilteredConsultantsComp({
 
           <th className="py-1 pt-3 w-32">
             <div className="flex flex-col gap-1">
-              <p className="normal text-left" title="Estimert timepris">Timepris</p>
+              <p className="normal text-left" title="Estimert timepris">
+                Timepris
+              </p>
             </div>
           </th>
 
@@ -339,7 +341,10 @@ export default function FilteredConsultantsComp({
                 setConsultant={(hourPrice: number) =>
                   setSelectedEditConsultant((selectedConsultant) => {
                     if (!selectedConsultant) return null;
-                    return { ...selectedConsultant, estimatedHourPrice: hourPrice };
+                    return {
+                      ...selectedConsultant,
+                      estimatedHourPrice: hourPrice,
+                    };
                   })
                 }
                 number={consultant.estimatedHourPrice}
