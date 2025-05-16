@@ -157,7 +157,7 @@ export default function FilteredConsultantsComp({
             </div>
           </th>
 
-          <th className="py-1 pt-3 w-32">
+          <th className="py-1 pt-3 w-20">
             <div className="flex flex-col gap-1">
               <p className="normal text-left" title="Estimert timepris">
                 Timepris
