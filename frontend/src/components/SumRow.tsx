@@ -1,12 +1,14 @@
 export function SumRow({
   title,
   values,
+  colSpan = 1,
   minFractionDigits = 1,
   maxFractionDigits = 1,
   displayPercentage,
 }: {
   title: string;
   values: number[];
+  colSpan?: number;
   minFractionDigits?: number;
   maxFractionDigits?: number;
   displayPercentage?: boolean;
@@ -22,7 +24,7 @@ export function SumRow({
 
   return (
     <tr>
-      <td colSpan={1}>
+      <td colSpan={colSpan}>
         <p className="small-medium text-black">{title}</p>
       </td>
       {values?.map((value, index) => (
