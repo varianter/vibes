@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ForecastSumRow } from "./ForecastSumRow";
+import { SumRow } from "../SumRow";
 
 interface ForecastSumsProps {
   monthlyTotalBillable?: Map<number, number>;
@@ -38,20 +38,17 @@ export function ForecastSums({
   return (
     <thead className="border-t-[3px] border-t-primary/20">
       {monthlyTotalBillable && (
-        <ForecastSumRow title="Sum ordre" values={totalBillableHours!} />
+        <SumRow title="Sum ordre" values={totalBillableHours!} />
       )}
-      <ForecastSumRow
+      <SumRow
         title="Sum ordre, opsjon og tilbud"
         values={totalBillableAndOfferedHours}
       />
       {monthlyForecastHours && (
-        <ForecastSumRow
-          title="Prognosetall i timer"
-          values={monthlyForecastHours}
-        />
+        <SumRow title="Prognosetall i timer" values={monthlyForecastHours} />
       )}
       {monthlyInvoiceRatesArray && (
-        <ForecastSumRow
+        <SumRow
           title="Prognostisert faktureringsgrad"
           values={monthlyInvoiceRatesArray}
           displayPercentage={true}
