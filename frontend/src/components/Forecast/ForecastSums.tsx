@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ForecastSumRow } from "./ForecastSumRow";
 
 interface ForecastSumsProps {
   monthlyTotalBillable?: Map<number, number>;
@@ -37,71 +38,24 @@ export function ForecastSums({
   return (
     <thead className="border-t-[3px] border-t-primary/20">
       {monthlyTotalBillable && (
-        <tr>
-          <td colSpan={1}>
-            <p className="small-medium text-black">Sum ordre</p>
-          </td>
-          {totalBillableHours?.map((totalBillableHour, index) => (
-            <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
-              <p className="small-medium text-right">
-                {totalBillableHour.toLocaleString("nb-No", {
-                  maximumFractionDigits: 1,
-                  minimumFractionDigits: 1,
-                })}
-              </p>
-            </td>
-          ))}
-        </tr>
+        <ForecastSumRow title="Sum ordre" values={totalBillableHours!} />
       )}
-      <tr>
-        <td colSpan={1}>
-          <p className="small-medium text-black">Sum ordre, opsjon og tilbud</p>
-        </td>
-        {totalBillableAndOfferedHours.map(
-          (totalBillableAndOfferedHour, index) => (
-            <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
-              <p className="small-medium text-right">
-                {totalBillableAndOfferedHour.toLocaleString("nb-No", {
-                  maximumFractionDigits: 1,
-                  minimumFractionDigits: 1,
-                })}
-              </p>
-            </td>
-          ),
-        )}
-      </tr>
+      <ForecastSumRow
+        title="Sum ordre, opsjon og tilbud"
+        values={totalBillableAndOfferedHours}
+      />
       {monthlyForecastHours && (
-        <tr>
-          <td colSpan={1}>
-            <p className="small-medium text-black">Prognosetall i timer</p>
-          </td>
-          {monthlyForecastHours.map((indexRates, index) => (
-            <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
-              <p className="small-medium text-right">
-                {indexRates.toLocaleString("nb-No", {
-                  maximumFractionDigits: 1,
-                  minimumFractionDigits: 1,
-                })}
-              </p>
-            </td>
-          ))}
-        </tr>
+        <ForecastSumRow
+          title="Prognosetall i timer"
+          values={monthlyForecastHours}
+        />
       )}
       {monthlyInvoiceRatesArray && (
-        <tr>
-          <td colSpan={1}>
-            <p className="small-medium text-black">
-              Prognostisert faktureringsgrad
-            </p>
-          </td>
-          {monthlyInvoiceRatesArray.map((indexRates, index) => (
-            <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
-              <p className="small-medium text-right">
-                {Math.round(indexRates * 100)}%
-              </p>
-            </td>
-          ))}
-        </tr>
+        <ForecastSumRow
+          title="Prognostisert faktureringsgrad"
+          values={monthlyInvoiceRatesArray}
+          displayPercentage={true}
+        />
       )}
     </thead>
   );
