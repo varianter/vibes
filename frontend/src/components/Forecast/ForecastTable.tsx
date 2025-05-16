@@ -159,9 +159,12 @@ export default function ForecastTable() {
       </tbody>
       <ForecastSums
         monthlyTotalBillable={monthlyTotalBillable}
+        monthlyTotalBillableIncome={new Map<number, number>()}
         monthlyInvoiceRates={weeklyInvoiceRates}
+        monthlyTotalBillableAndOfferedIncome={new Map<number, number>()}
         monthlyTotalBillableAndOffered={monthlyTotalBillableAndOffered}
         monthlyForecastTotalHours={monthlyForecastTotalHours}
+        monthlyForecastIncome={new Map<number, number>()}
       />
     </table>
   );
