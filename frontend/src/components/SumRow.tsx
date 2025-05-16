@@ -1,4 +1,4 @@
-export function ForecastSumRow({
+export function SumRow({
   title,
   values,
   minFractionDigits = 1,
