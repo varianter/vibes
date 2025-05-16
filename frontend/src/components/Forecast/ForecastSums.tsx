@@ -2,34 +2,98 @@ import { SumRow } from "../SumRow";
 
 interface ForecastSumsProps {
   monthlyTotalBillable: Map<number, number>;
+  monthlyTotalBillableIncome: Map<number, number>;
   monthlyTotalBillableAndOffered: Map<number, number>;
+  monthlyTotalBillableAndOfferedIncome: Map<number, number>;
   monthlyInvoiceRates: Map<number, number>;
   monthlyForecastTotalHours: Map<number, number>;
+  monthlyForecastIncome: Map<number, number>;
 }
 
 export function ForecastSums({
   monthlyTotalBillable,
+  monthlyTotalBillableIncome,
   monthlyTotalBillableAndOffered,
+  monthlyTotalBillableAndOfferedIncome,
   monthlyInvoiceRates,
   monthlyForecastTotalHours,
+  monthlyForecastIncome,
 }: ForecastSumsProps) {
+  // Billable
   const totalBillableHours = Array.from(monthlyTotalBillable.values());
+  const totalBillableIncome = Array.from(monthlyTotalBillableIncome.values());
+  const totalBillableRealizedHourlyRate = realizedHourlyRateArray(
+    totalBillableHours,
+    totalBillableIncome,
+  );
+
+  // Billable and offered
   const totalBillableAndOfferedHours = Array.from(
     monthlyTotalBillableAndOffered.values(),
   );
+  const totalBillableAndOfferedIncome = Array.from(
+    monthlyTotalBillableAndOfferedIncome.values(),
+  );
+  const totalBillableAndOfferedRealizedHourlyRate = realizedHourlyRateArray(
+    totalBillableAndOfferedHours,
+    totalBillableAndOfferedIncome,
+  );
+
+  // Forecast
   const monthlyForecastHours = Array.from(monthlyForecastTotalHours.values());
+  const forecastIncome = Array.from(monthlyForecastIncome.values());
+  const forecastRealizedHourlyRate = realizedHourlyRateArray(
+    monthlyForecastHours,
+    forecastIncome,
+  );
   const monthlyInvoiceRatesArray = Array.from(monthlyInvoiceRates.values());
+
+  function realizedHourlyRateArray(
+    hours: number[],
+    income: number[],
+  ): number[] {
+    const count = [hours.length, income.length].sort()[0];
+
+    const realizedHourlyRates = Array<number>(count);
+
+    for (let i = 0; i < count; i++) {
+      realizedHourlyRates[i] = Math.floor(hours[i] / income[i]);
+    }
+
+    return realizedHourlyRates;
+  }
 
   return (
     <thead className="border-t-[3px] border-t-primary/20">
-      <SumRow title="Sum ordre" values={totalBillableHours} />
+      <tr>
+        <th align="left">Ordre</th>
+      </tr>
+      <SumRow title="Sum timer" values={totalBillableHours} />
+      <SumRow title="Total inntekt" values={totalBillableIncome} />
       <SumRow
-        title="Sum ordre, opsjon og tilbud"
-        values={totalBillableAndOfferedHours}
+        title="Oppnådd timepris (OT)"
+        values={totalBillableRealizedHourlyRate}
       />
-      <SumRow title="Prognosetall i timer" values={monthlyForecastHours} />
+      <tr>
+        <th align="left">Ordre, opsjon og tilbud</th>
+      </tr>
+      <SumRow title="Sum timer" values={totalBillableAndOfferedHours} />
+      <SumRow title="Total inntekt" values={totalBillableAndOfferedIncome} />
       <SumRow
-        title="Prognostisert faktureringsgrad"
+        title="Oppnådd timepris (OT)"
+        values={totalBillableAndOfferedRealizedHourlyRate}
+      />
+      <tr>
+        <th align="left">Prognose</th>
+      </tr>
+      <SumRow title="Sum timer" values={monthlyForecastHours} />
+      <SumRow title="Total inntekt" values={forecastIncome} />
+      <SumRow
+        title="Oppnådd timepris (OT)"
+        values={forecastRealizedHourlyRate}
+      />
+      <SumRow
+        title="Faktureringsgrad"
         values={monthlyInvoiceRatesArray}
         displayPercentage={true}
       />
