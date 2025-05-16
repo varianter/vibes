@@ -9,7 +9,7 @@ import {
 import { useSimpleConsultantsFilter } from "@/hooks/staffing/useConsultantsFilter";
 import Image from "next/image";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Edit3, Check } from "react-feather";
+import { Edit3, Check, Info } from "react-feather";
 import EditableTableTextCell from "./EditableTableTextCell";
 import EditableTableNumberCell from "./EditableTableNumberCell";
 import EditableTableDateCell from "./EditableTableDateCell";
@@ -161,6 +161,9 @@ export default function FilteredConsultantsComp({
             <div className="flex flex-col gap-1">
               <p className="normal text-left" title="Estimert timepris">
                 Timepris
+                <span className="pl-1">
+                  <Info className="inline" size="15" />
+                </span>
               </p>
             </div>
           </th>
