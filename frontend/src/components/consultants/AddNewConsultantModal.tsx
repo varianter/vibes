@@ -21,6 +21,7 @@ export default function AddNewConsultantModal({
     degree: Degree.None,
     graduationYear: new Date().getFullYear(),
     startDate: new Date(),
+    estimatedHourPrice: 0,
   });
   const { competences, departments } = useContext(FilteredContext);
   const { organisation } = useParams();

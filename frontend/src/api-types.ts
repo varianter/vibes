@@ -58,6 +58,8 @@ export interface ConsultantReadModel {
   yearsOfExperience: number;
   graduationYear: number;
   degree: Degree;
+  /** @format int32 */
+  estimatedHourPrice: number;
   bookings: BookedHoursPerWeek[];
   detailedBooking: DetailedBooking[];
   isOccupied: boolean;
@@ -76,6 +78,8 @@ export interface ConsultantWriteModel {
   degree: Degree;
   /** @format int32 */
   graduationYear: number;
+  /** @format int32 */
+  estimatedHourPrice: number;
   startDate: Date;
   endDate?: Date;
 }
@@ -222,6 +226,8 @@ export interface SingleConsultantReadModel {
   graduationYear: number;
   /** @format int32 */
   yearsOfExperience: number;
+  /** @format int32 */
+  estimatedHourPrice: number;
   degree: Degree;
   imageUrl?: string;
   imageThumbUrl?: string;
