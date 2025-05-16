@@ -1,108 +1,102 @@
-import { useEffect, useState } from "react";
+import { SumRow } from "../SumRow";
 
 interface ForecastSumsProps {
-  monthlyTotalBillable?: Map<number, number>;
+  monthlyTotalBillable: Map<number, number>;
+  monthlyTotalBillableIncome: Map<number, number>;
   monthlyTotalBillableAndOffered: Map<number, number>;
-  monthlyInvoiceRates?: Map<number, number>;
+  monthlyTotalBillableAndOfferedIncome: Map<number, number>;
+  monthlyInvoiceRates: Map<number, number>;
   monthlyForecastTotalHours: Map<number, number>;
+  monthlyForecastIncome: Map<number, number>;
 }
 
 export function ForecastSums({
   monthlyTotalBillable,
+  monthlyTotalBillableIncome,
   monthlyTotalBillableAndOffered,
+  monthlyTotalBillableAndOfferedIncome,
   monthlyInvoiceRates,
   monthlyForecastTotalHours,
+  monthlyForecastIncome,
 }: ForecastSumsProps) {
-  const [totalBillableHours, setTotalBillableHours] = useState<number[]>();
+  // Billable
+  const totalBillableHours = Array.from(monthlyTotalBillable.values());
+  const totalBillableIncome = Array.from(monthlyTotalBillableIncome.values());
+  const totalBillableRealizedHourlyRate = realizedHourlyRateArray(
+    totalBillableHours,
+    totalBillableIncome,
+  );
+
+  // Billable and offered
   const totalBillableAndOfferedHours = Array.from(
     monthlyTotalBillableAndOffered.values(),
   );
-  const [monthlyInvoiceRatesArray, setMonthlyInvoiceRatesArray] =
-    useState<number[]>();
-  const [monthlyForecastHours, setMonthlyForecastHours] = useState<number[]>();
+  const totalBillableAndOfferedIncome = Array.from(
+    monthlyTotalBillableAndOfferedIncome.values(),
+  );
+  const totalBillableAndOfferedRealizedHourlyRate = realizedHourlyRateArray(
+    totalBillableAndOfferedHours,
+    totalBillableAndOfferedIncome,
+  );
 
-  useEffect(() => {
-    if (monthlyTotalBillable) {
-      setTotalBillableHours(Array.from(monthlyTotalBillable.values()));
-    }
-    if (monthlyInvoiceRates) {
-      setMonthlyInvoiceRatesArray(Array.from(monthlyInvoiceRates.values()));
+  // Forecast
+  const monthlyForecastHours = Array.from(monthlyForecastTotalHours.values());
+  const forecastIncome = Array.from(monthlyForecastIncome.values());
+  const forecastRealizedHourlyRate = realizedHourlyRateArray(
+    monthlyForecastHours,
+    forecastIncome,
+  );
+  const monthlyInvoiceRatesArray = Array.from(monthlyInvoiceRates.values());
+
+  function realizedHourlyRateArray(
+    hours: number[],
+    income: number[],
+  ): number[] {
+    const count = [hours.length, income.length].sort()[0];
+
+    const realizedHourlyRates = Array<number>(count);
+
+    for (let i = 0; i < count; i++) {
+      realizedHourlyRates[i] = Math.floor(hours[i] / income[i]);
     }
 
-    if (monthlyForecastTotalHours) {
-      setMonthlyForecastHours(Array.from(monthlyForecastTotalHours.values()));
-    }
-  }, [monthlyTotalBillable, monthlyInvoiceRates]);
+    return realizedHourlyRates;
+  }
 
   return (
     <thead className="border-t-[3px] border-t-primary/20">
-      {monthlyTotalBillable && (
-        <tr>
-          <td colSpan={1}>
-            <p className="small-medium text-black">Sum ordre</p>
-          </td>
-          {totalBillableHours?.map((totalBillableHour, index) => (
-            <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
-              <p className="small-medium text-right">
-                {totalBillableHour.toLocaleString("nb-No", {
-                  maximumFractionDigits: 1,
-                  minimumFractionDigits: 1,
-                })}
-              </p>
-            </td>
-          ))}
-        </tr>
-      )}
       <tr>
-        <td colSpan={1}>
-          <p className="small-medium text-black">Sum ordre, opsjon og tilbud</p>
-        </td>
-        {totalBillableAndOfferedHours.map(
-          (totalBillableAndOfferedHour, index) => (
-            <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
-              <p className="small-medium text-right">
-                {totalBillableAndOfferedHour.toLocaleString("nb-No", {
-                  maximumFractionDigits: 1,
-                  minimumFractionDigits: 1,
-                })}
-              </p>
-            </td>
-          ),
-        )}
+        <th align="left">Ordre</th>
       </tr>
-      {monthlyForecastHours && (
-        <tr>
-          <td colSpan={1}>
-            <p className="small-medium text-black">Prognosetall i timer</p>
-          </td>
-          {monthlyForecastHours.map((indexRates, index) => (
-            <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
-              <p className="small-medium text-right">
-                {indexRates.toLocaleString("nb-No", {
-                  maximumFractionDigits: 1,
-                  minimumFractionDigits: 1,
-                })}
-              </p>
-            </td>
-          ))}
-        </tr>
-      )}
-      {monthlyInvoiceRatesArray && (
-        <tr>
-          <td colSpan={1}>
-            <p className="small-medium text-black">
-              Prognostisert faktureringsgrad
-            </p>
-          </td>
-          {monthlyInvoiceRatesArray.map((indexRates, index) => (
-            <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
-              <p className="small-medium text-right">
-                {Math.round(indexRates * 100)}%
-              </p>
-            </td>
-          ))}
-        </tr>
-      )}
+      <SumRow title="Sum timer" values={totalBillableHours} />
+      <SumRow title="Total inntekt" values={totalBillableIncome} />
+      <SumRow
+        title="Oppnådd timepris (OT)"
+        values={totalBillableRealizedHourlyRate}
+      />
+      <tr>
+        <th align="left">Ordre, opsjon og tilbud</th>
+      </tr>
+      <SumRow title="Sum timer" values={totalBillableAndOfferedHours} />
+      <SumRow title="Total inntekt" values={totalBillableAndOfferedIncome} />
+      <SumRow
+        title="Oppnådd timepris (OT)"
+        values={totalBillableAndOfferedRealizedHourlyRate}
+      />
+      <tr>
+        <th align="left">Prognose</th>
+      </tr>
+      <SumRow title="Sum timer" values={monthlyForecastHours} />
+      <SumRow title="Total inntekt" values={forecastIncome} />
+      <SumRow
+        title="Oppnådd timepris (OT)"
+        values={forecastRealizedHourlyRate}
+      />
+      <SumRow
+        title="Faktureringsgrad"
+        values={monthlyInvoiceRatesArray}
+        displayPercentage={true}
+      />
     </thead>
   );
 }
