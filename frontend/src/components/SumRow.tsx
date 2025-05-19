@@ -27,7 +27,7 @@ export function SumRow({
   return (
     <tr>
       <td colSpan={colSpan}>
-        <p className="small-medium text-black">{title}</p>
+        <p className="ml-3 small-medium text-black">{title}</p>
       </td>
       {values?.map((value, index) => (
         <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
