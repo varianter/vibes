@@ -57,8 +57,7 @@ export function ForecastSums({
     const realizedHourlyRates = Array<number>(count);
 
     for (let i = 0; i < count; i++) {
-      const realizedHourlyRate =
-        hours[i] === 0 ? 0 : Math.floor(income[i] / hours[i]);
+      const realizedHourlyRate = hours[i] === 0 ? 0 : income[i] / hours[i];
 
       realizedHourlyRates[i] = realizedHourlyRate;
     }
