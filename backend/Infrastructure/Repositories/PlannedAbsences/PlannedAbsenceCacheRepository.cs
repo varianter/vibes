@@ -1,5 +1,6 @@
 using Core.Extensions;
 using Core.PlannedAbsences;
+using Core.Weeks;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Infrastructure.Repositories.PlannedAbsences;
@@ -41,6 +42,17 @@ public class PlannedAbsenceCacheRepository(IPlannedAbsenceRepository sourceRepos
 
         plannedAbsenceList = await sourceRepository.GetPlannedAbsenceForConsultant(consultantId, cancellationToken);
         cache.SetPlannedAbsenceFor(consultantId, plannedAbsenceList);
+        return plannedAbsenceList;
+    }
+    
+    public async Task<List<PlannedAbsence>> GetPlannedAbsenceForConsultantForWeekSet(int consultantId,
+        CancellationToken cancellationToken, List<Week> weeks)
+    {
+        var plannedAbsenceList = GetPlannedAbsencesFromCache(consultantId);
+        if (plannedAbsenceList is not null) return plannedAbsenceList;
+
+        plannedAbsenceList = await sourceRepository.GetPlannedAbsenceForConsultantForWeekSet(consultantId, cancellationToken, weeks);
+        
         return plannedAbsenceList;
     }
 

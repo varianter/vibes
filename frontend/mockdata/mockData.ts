@@ -418,5 +418,6 @@ export const MockConsultants: ConsultantReadModel[] = [
     isOccupied: true,
     graduationYear: 2010,
     degree: Degree.Bachelor,
+    estimatedHourPrice: 1200,
   },
 ];

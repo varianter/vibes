@@ -1,4 +1,5 @@
 using Core.PlannedAbsences;
+using Core.Weeks;
 using Infrastructure.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +24,16 @@ public class PlannedAbsenceDbRepository(ApplicationContext context) : IPlannedAb
     {
         return await context.PlannedAbsence
             .Where(pa => pa.ConsultantId == consultantId)
+            .Include(absence => absence.Absence)
+            .Include(absence => absence.Consultant)
+            .ToListAsync(cancellationToken);
+    }
+    
+    public async Task<List<PlannedAbsence>> GetPlannedAbsenceForConsultantForWeekSet(int consultantId,
+        CancellationToken cancellationToken, List<Week> weeks)
+    {
+        return await context.PlannedAbsence
+            .Where(pa => pa.ConsultantId == consultantId && weeks.Contains(pa.Week))
             .Include(absence => absence.Absence)
             .Include(absence => absence.Consultant)
             .ToListAsync(cancellationToken);

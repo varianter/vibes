@@ -1,5 +1,6 @@
 using Core.Extensions;
 using Core.Staffings;
+using Core.Weeks;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Infrastructure.Repositories.Staffings;
@@ -39,6 +40,16 @@ public class StaffingCacheRepository(IStaffingRepository sourceRepository, IMemo
 
         staffingList = await sourceRepository.GetStaffingForConsultant(consultantId, cancellationToken);
         cache.SetStaffingFor(consultantId, staffingList);
+        return staffingList;
+    }
+    
+    public async Task<List<Staffing>> GetStaffingForConsultantForWeekSet(int consultantId, CancellationToken cancellationToken, List<Week> weeks)
+    {
+        var staffingList = GetStaffingsFromCache(consultantId);
+        if (staffingList is not null) return staffingList;
+
+        staffingList = await sourceRepository.GetStaffingForConsultantForWeekSet(consultantId, cancellationToken, weeks);
+        
         return staffingList;
     }
 
