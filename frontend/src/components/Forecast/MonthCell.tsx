@@ -224,6 +224,16 @@ export function MonthCell({
         onMouseLeave={() => {
           setHoveredMonth("");
         }}
+        draggable={!dropdownOpen}
+        onDragStart={() => {
+          if (dropdownOpen) return;
+          setStartDragMonth(month);
+          setPercentageDragValue(inputValue);
+        }}
+        onDragEnter={() => {
+          setCurrentDragMonth(month);
+        }}
+        onDragEnd={handleDragEnd}
       >
         {hoveredMonth != "" && hoveredMonth == month && (
           <HoveredMonth
@@ -249,7 +259,6 @@ export function MonthCell({
             max={100}
             step={10}
             value={`${Math.round(inputValue)}`}
-            draggable={!dropdownOpen}
             disabled={billablePercentage >= 100}
             onChange={handleInputChange}
             onFocus={handleOnFocus}
@@ -258,15 +267,6 @@ export function MonthCell({
               setDropdownOpen(true);
             }}
             onKeyDown={handleKeyDown}
-            onDragStart={() => {
-              if (dropdownOpen) return;
-              setStartDragMonth(month);
-              setPercentageDragValue(inputValue);
-            }}
-            onDragEnter={() => {
-              setCurrentDragMonth(month);
-            }}
-            onDragEnd={handleDragEnd}
             className={`${
               billablePercentage == inputValue ? "small" : "small-medium"
             } rounded w-full bg-transparent focus:outline-none min-w-[24px] text-right ${
