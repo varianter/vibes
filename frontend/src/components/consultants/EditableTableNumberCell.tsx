@@ -5,12 +5,10 @@ export default function EditableTableNumberCell({
   number,
   setConsultant,
   isEditing,
-  style,
 }: {
   number: number;
   setConsultant: (number: number) => void;
   isEditing: boolean;
-  style?: string;
 }) {
   const [newValue, setNewValue] = useState<number>(number);
 
@@ -32,7 +30,7 @@ export default function EditableTableNumberCell({
         />
       ) : (
         <p
-          className={style ? style : "normal text-text_light_black float-right"}
+          className="normal text-text_light_black float-right"
         >
           {newValue.toLocaleString("no-nb")}
         </p>
