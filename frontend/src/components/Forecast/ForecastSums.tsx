@@ -57,7 +57,10 @@ export function ForecastSums({
     const realizedHourlyRates = Array<number>(count);
 
     for (let i = 0; i < count; i++) {
-      realizedHourlyRates[i] = Math.floor(hours[i] / income[i]);
+      const realizedHourlyRate =
+        hours[i] === 0 ? 0 : Math.floor(income[i] / hours[i]);
+
+      realizedHourlyRates[i] = realizedHourlyRate;
     }
 
     return realizedHourlyRates;
@@ -69,28 +72,49 @@ export function ForecastSums({
         <th align="left">Ordre</th>
       </tr>
       <SumRow title="Sum timer" values={totalBillableHours} />
-      <SumRow title="Total inntekt" values={totalBillableIncome} />
+      <SumRow
+        title="Total inntekt"
+        values={totalBillableIncome}
+        minFractionDigits={0}
+        maxFractionDigits={0}
+      />
       <SumRow
         title="Oppnådd timepris (OT)"
         values={totalBillableRealizedHourlyRate}
+        minFractionDigits={0}
+        maxFractionDigits={0}
       />
       <tr>
         <th align="left">Ordre, opsjon og tilbud</th>
       </tr>
       <SumRow title="Sum timer" values={totalBillableAndOfferedHours} />
-      <SumRow title="Total inntekt" values={totalBillableAndOfferedIncome} />
+      <SumRow
+        title="Total inntekt"
+        values={totalBillableAndOfferedIncome}
+        minFractionDigits={0}
+        maxFractionDigits={0}
+      />
       <SumRow
         title="Oppnådd timepris (OT)"
         values={totalBillableAndOfferedRealizedHourlyRate}
+        minFractionDigits={0}
+        maxFractionDigits={0}
       />
       <tr>
         <th align="left">Prognose</th>
       </tr>
       <SumRow title="Sum timer" values={monthlyForecastHours} />
-      <SumRow title="Total inntekt" values={forecastIncome} />
+      <SumRow
+        title="Total inntekt"
+        values={forecastIncome}
+        minFractionDigits={0}
+        maxFractionDigits={0}
+      />
       <SumRow
         title="Oppnådd timepris (OT)"
         values={forecastRealizedHourlyRate}
+        minFractionDigits={0}
+        maxFractionDigits={0}
       />
       <SumRow
         title="Faktureringsgrad"
