@@ -67,7 +67,8 @@ export function ForecastSums({
   }
 
   return (
-    <thead className="border-t-[3px] border-t-primary/20">
+    <>
+    <tbody className="border-t-[3px] border-t-primary/20">
       <tr>
         <th align="left">Ordre</th>
       </tr>
@@ -84,8 +85,10 @@ export function ForecastSums({
         minFractionDigits={0}
         maxFractionDigits={0}
       />
+    </tbody>
+    <tbody className="bg-background_light_purple">
       <tr>
-        <th align="left">Ordre, opsjon og tilbud</th>
+        <th align="left" colSpan={20}>Ordre, opsjon og tilbud</th>
       </tr>
       <SumRow title="Sum timer" values={totalBillableAndOfferedHours} />
       <SumRow
@@ -100,6 +103,8 @@ export function ForecastSums({
         minFractionDigits={0}
         maxFractionDigits={0}
       />
+    </tbody>
+    <tbody>
       <tr>
         <th align="left">Prognose</th>
       </tr>
@@ -121,6 +126,7 @@ export function ForecastSums({
         values={monthlyInvoiceRatesArray}
         displayPercentage={true}
       />
-    </thead>
+    </tbody>
+    </>
   );
 }
