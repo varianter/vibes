@@ -35,6 +35,15 @@ public class ForecastDbRepository(ApplicationContext context) : IForecastReposit
         return forecastsByConsultant;
     }
 
+    public async Task<List<Forecast>> GetForecastForConsultantForMonthSet(int consultantId, CancellationToken cancellationToken, List<Month> months)
+    {
+        var forecastsByConsultant = await context.Forecasts
+            .AsNoTracking()
+            .Where(f => f.ConsultantId == consultantId && months.Contains(f.Month))
+            .ToListAsync(cancellationToken);
+        return forecastsByConsultant;
+    }
+
     public async Task<Forecast[]> UpsertForecasts(Forecast[] forecasts, CancellationToken cancellationToken)
     {
         var consultantIds = forecasts.Select(f => f.ConsultantId).ToHashSet();

@@ -26,7 +26,7 @@ public static class ConsultantWithForecastFactory
 		return CreateSingle(consultant, fromMonth: month, throughMonth: month);
 	}
 
-	private static ConsultantWithForecast CreateSingle(Consultant consultant, Month fromMonth, Month throughMonth)
+	public static ConsultantWithForecast CreateSingle(Consultant consultant, Month fromMonth, Month throughMonth)
 	{
 		var months = fromMonth.GetMonthsThrough(throughMonth).ToList();
 

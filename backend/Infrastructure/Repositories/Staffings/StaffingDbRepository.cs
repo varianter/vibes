@@ -1,4 +1,5 @@
 using Core.Staffings;
+using Core.Weeks;
 using Infrastructure.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,6 +30,15 @@ public class StaffingDbRepository(ApplicationContext context) : IStaffingReposit
             .Include(s => s.Engagement)
             .ThenInclude(p => p.Customer)
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<List<Staffing>> GetStaffingForConsultantForWeekSet(int consultantId, CancellationToken cancellationToken, List<Week> weeks)
+    {
+       return await context.Staffing
+           .Where(staffing => staffing.ConsultantId == consultantId && weeks.Contains(staffing.Week))
+           .Include(s => s.Engagement)
+           .ThenInclude(p => p.Customer)
+           .ToListAsync(cancellationToken);
     }
 
 
