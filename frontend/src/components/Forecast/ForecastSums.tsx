@@ -68,65 +68,67 @@ export function ForecastSums({
 
   return (
     <>
-    <tbody className="border-t-[3px] border-t-primary/20">
-      <tr>
-        <th align="left">Ordre</th>
-      </tr>
-      <SumRow title="Sum timer" values={totalBillableHours} />
-      <SumRow
-        title="Total inntekt"
-        values={totalBillableIncome}
-        minFractionDigits={0}
-        maxFractionDigits={0}
-      />
-      <SumRow
-        title="Oppnådd timepris (OT)"
-        values={totalBillableRealizedHourlyRate}
-        minFractionDigits={0}
-        maxFractionDigits={0}
-      />
-    </tbody>
-    <tbody className="bg-background_light_purple">
-      <tr>
-        <th align="left" colSpan={20}>Ordre, opsjon og tilbud</th>
-      </tr>
-      <SumRow title="Sum timer" values={totalBillableAndOfferedHours} />
-      <SumRow
-        title="Total inntekt"
-        values={totalBillableAndOfferedIncome}
-        minFractionDigits={0}
-        maxFractionDigits={0}
-      />
-      <SumRow
-        title="Oppnådd timepris (OT)"
-        values={totalBillableAndOfferedRealizedHourlyRate}
-        minFractionDigits={0}
-        maxFractionDigits={0}
-      />
-    </tbody>
-    <tbody>
-      <tr>
-        <th align="left">Prognose</th>
-      </tr>
-      <SumRow title="Sum timer" values={monthlyForecastHours} />
-      <SumRow
-        title="Total inntekt"
-        values={forecastIncome}
-        minFractionDigits={0}
-        maxFractionDigits={0}
-      />
-      <SumRow
-        title="Oppnådd timepris (OT)"
-        values={forecastRealizedHourlyRate}
-        minFractionDigits={0}
-        maxFractionDigits={0}
-      />
-      <SumRow
-        title="Faktureringsgrad"
-        values={monthlyInvoiceRatesArray}
-        displayPercentage={true}
-      />
-    </tbody>
+      <tbody className="border-t-[3px] border-t-primary/20">
+        <tr>
+          <th align="left">Ordre</th>
+        </tr>
+        <SumRow title="Sum timer" values={totalBillableHours} />
+        <SumRow
+          title="Total inntekt"
+          values={totalBillableIncome}
+          minFractionDigits={0}
+          maxFractionDigits={0}
+        />
+        <SumRow
+          title="Oppnådd timepris (OT)"
+          values={totalBillableRealizedHourlyRate}
+          minFractionDigits={0}
+          maxFractionDigits={0}
+        />
+      </tbody>
+      <tbody className="bg-background_light_purple">
+        <tr>
+          <th align="left" colSpan={20}>
+            Ordre, opsjon og tilbud
+          </th>
+        </tr>
+        <SumRow title="Sum timer" values={totalBillableAndOfferedHours} />
+        <SumRow
+          title="Total inntekt"
+          values={totalBillableAndOfferedIncome}
+          minFractionDigits={0}
+          maxFractionDigits={0}
+        />
+        <SumRow
+          title="Oppnådd timepris (OT)"
+          values={totalBillableAndOfferedRealizedHourlyRate}
+          minFractionDigits={0}
+          maxFractionDigits={0}
+        />
+      </tbody>
+      <tbody>
+        <tr>
+          <th align="left">Prognose</th>
+        </tr>
+        <SumRow title="Sum timer" values={monthlyForecastHours} />
+        <SumRow
+          title="Total inntekt"
+          values={forecastIncome}
+          minFractionDigits={0}
+          maxFractionDigits={0}
+        />
+        <SumRow
+          title="Oppnådd timepris (OT)"
+          values={forecastRealizedHourlyRate}
+          minFractionDigits={0}
+          maxFractionDigits={0}
+        />
+        <SumRow
+          title="Faktureringsgrad"
+          values={monthlyInvoiceRatesArray}
+          displayPercentage={true}
+        />
+      </tbody>
     </>
   );
 }
