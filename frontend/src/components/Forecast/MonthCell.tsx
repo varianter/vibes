@@ -249,7 +249,7 @@ export function MonthCell({
             max={100}
             step={10}
             value={`${Math.round(inputValue)}`}
-            draggable={true}
+            draggable={!dropdownOpen}
             disabled={billablePercentage >= 100}
             onChange={handleInputChange}
             onFocus={handleOnFocus}
@@ -259,6 +259,7 @@ export function MonthCell({
             }}
             onKeyDown={handleKeyDown}
             onDragStart={() => {
+              if (dropdownOpen) return;
               setStartDragMonth(month);
               setPercentageDragValue(inputValue);
             }}
