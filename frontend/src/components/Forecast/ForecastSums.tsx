@@ -72,16 +72,18 @@ export function ForecastSums({
         <tr>
           <th align="left">Ordre</th>
         </tr>
-        <SumRow title="Sum timer" values={totalBillableHours} />
+        <SumRow title="Sum timer" values={totalBillableHours} unit="t" />
         <SumRow
           title="Total inntekt"
           values={totalBillableIncome}
+          unit="kr"
           minFractionDigits={0}
           maxFractionDigits={0}
         />
         <SumRow
           title="Oppnådd timepris (OT)"
           values={totalBillableRealizedHourlyRate}
+          unit="kr"
           minFractionDigits={0}
           maxFractionDigits={0}
         />
@@ -92,16 +94,22 @@ export function ForecastSums({
             Ordre, opsjon og tilbud
           </th>
         </tr>
-        <SumRow title="Sum timer" values={totalBillableAndOfferedHours} />
+        <SumRow
+          title="Sum timer"
+          values={totalBillableAndOfferedHours}
+          unit="t"
+        />
         <SumRow
           title="Total inntekt"
           values={totalBillableAndOfferedIncome}
+          unit="kr"
           minFractionDigits={0}
           maxFractionDigits={0}
         />
         <SumRow
           title="Oppnådd timepris (OT)"
           values={totalBillableAndOfferedRealizedHourlyRate}
+          unit="kr"
           minFractionDigits={0}
           maxFractionDigits={0}
         />
@@ -110,16 +118,18 @@ export function ForecastSums({
         <tr>
           <th align="left">Prognose</th>
         </tr>
-        <SumRow title="Sum timer" values={monthlyForecastHours} />
+        <SumRow title="Sum timer" values={monthlyForecastHours} unit="t" />
         <SumRow
           title="Total inntekt"
           values={forecastIncome}
+          unit="kr"
           minFractionDigits={0}
           maxFractionDigits={0}
         />
         <SumRow
           title="Oppnådd timepris (OT)"
           values={forecastRealizedHourlyRate}
+          unit="kr"
           minFractionDigits={0}
           maxFractionDigits={0}
         />
