@@ -29,9 +29,7 @@ export default function EditableTableNumberCell({
           onChange={(e) => setNewValue(Number(e.target.value))}
         />
       ) : (
-        <p
-          className="normal text-text_light_black float-right"
-        >
+        <p className="normal text-text_light_black float-right">
           {newValue.toLocaleString("no-nb")}
         </p>
       )}
