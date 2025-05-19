@@ -73,11 +73,18 @@ export function useForecastFilter() {
     activeExperienceTo: experienceToFilter,
   });
 
-  const { monthlyTotalBillable, monthlyTotalBillableAndOffered } =
-    setMonthlyTotalBillable(filteredConsultants);
+  // Billable and offered
+  const {
+    monthlyTotalBillable,
+    monthlyTotalBillableIncome,
+    monthlyTotalBillableAndOffered,
+    monthlyTotalBillableAndOfferedIncome,
+  } = setMonthlyTotalBillable(filteredConsultants);
+
+  // Forecast
   const monthlyForecastSums = setMonthlyForecastSum(filteredConsultants);
-  const monthlyForecastTotalHours =
-    setMonthlyForecastHours(filteredConsultants);
+  const { monthlyForecastTotalHours, monthlyForecastIncome } =
+    setMonthlyForecastHoursAndIncome(filteredConsultants);
   const weeklyInvoiceRates = setMonthlyInvoiceRate(
     filteredConsultants,
     monthlyForecastTotalHours,
@@ -87,10 +94,13 @@ export function useForecastFilter() {
     numWorkHours,
     filteredConsultants,
     monthlyTotalBillable,
+    monthlyTotalBillableIncome,
     monthlyTotalBillableAndOffered,
+    monthlyTotalBillableAndOfferedIncome,
     weeklyInvoiceRates,
     monthlyForecastSums,
     monthlyForecastTotalHours,
+    monthlyForecastIncome,
   };
 }
 
@@ -221,10 +231,6 @@ function inYearRanges(
   }
   return false;
 }
-interface MonthlyTotal {
-  monthlyTotalBillable: Map<number, number>;
-  monthlyTotalBillableAndOffered: Map<number, number>;
-}
 
 function getMonth(date: string) {
   return new Date(date).getMonth();
@@ -256,61 +262,85 @@ function setMonthlyForecastSum(
 
 export function setMonthlyTotalBillable(
   filteredConsultants: ConsultantWithForecast[],
-): MonthlyTotal {
-  const monthlyTotalBillable = new Map<number, number>();
-  const monthlyTotalBillableAndOffered = new Map<number, number>();
+) {
+  const monthlyBillableHours = new Map<number, number>();
+  const monthlyBillableIncome = new Map<number, number>();
+  const monthlyBillableAndOfferedHours = new Map<number, number>();
+  const monthlyBillableAndOfferedIncome = new Map<number, number>();
 
   filteredConsultants.forEach((consultant) => {
+    const hourlyRate = consultant.consultant.estimatedHourPrice;
+
     consultant.bookings.forEach((booking) => {
       let month = getMonth(booking.month);
-      if (monthlyTotalBillable.has(month)) {
-        monthlyTotalBillable.set(
-          month,
-          (monthlyTotalBillable.get(month) ?? 0) +
-            booking.bookingModel.totalBillable,
-        );
-        monthlyTotalBillableAndOffered.set(
-          month,
-          (monthlyTotalBillableAndOffered.get(month) ?? 0) +
-            booking.bookingModel.totalBillable +
-            booking.bookingModel.totalOffered,
-        );
-      } else {
-        monthlyTotalBillable.set(month, booking.bookingModel.totalBillable);
-        monthlyTotalBillableAndOffered.set(
-          month,
-          booking.bookingModel.totalBillable +
-            booking.bookingModel.totalOffered,
-        );
-      }
+
+      let billableHours = booking.bookingModel.totalBillable;
+
+      monthlyBillableHours.set(
+        month,
+        (monthlyBillableHours.get(month) ?? 0) + billableHours,
+      );
+
+      monthlyBillableIncome.set(
+        month,
+        (monthlyBillableIncome.get(month) ?? 0) + billableHours * hourlyRate,
+      );
+
+      let billableAndOfferedHours =
+        billableHours + booking.bookingModel.totalOffered;
+
+      monthlyBillableAndOfferedHours.set(
+        month,
+        (monthlyBillableAndOfferedHours.get(month) ?? 0) +
+          billableAndOfferedHours,
+      );
+
+      monthlyBillableAndOfferedIncome.set(
+        month,
+        (monthlyBillableAndOfferedIncome.get(month) ?? 0) +
+          billableAndOfferedHours * hourlyRate,
+      );
     });
   });
 
   return {
-    monthlyTotalBillable,
-    monthlyTotalBillableAndOffered,
+    monthlyTotalBillable: monthlyBillableHours,
+    monthlyTotalBillableIncome: monthlyBillableIncome,
+    monthlyTotalBillableAndOffered: monthlyBillableAndOfferedHours,
+    monthlyTotalBillableAndOfferedIncome: monthlyBillableAndOfferedIncome,
   };
 }
 
-function setMonthlyForecastHours(filterConsultants: ConsultantWithForecast[]) {
-  const monthlyForecastHours = new Map<number, number>();
+function setMonthlyForecastHoursAndIncome(
+  filterConsultants: ConsultantWithForecast[],
+) {
+  const monthlyForecastTotalHours = new Map<number, number>();
+  const monthlyForecastIncome = new Map<number, number>();
+
   filterConsultants.forEach((consultant) => {
+    const hourlyRate = consultant.consultant.estimatedHourPrice;
+
     consultant.forecasts.forEach((forecast) => {
       const month = getMonth(forecast.month);
+
       //hours is billableHours from forecast unless the forecast value has been adjusted, and in that case we calculate it based on the adjusted percentage and salaried hours
       const hours =
         forecast.displayedPercentage == forecast.billablePercentage
           ? forecast.billableHours
           : (forecast.displayedPercentage / 100) * forecast.salariedHours;
-      if (monthlyForecastHours.has(month)) {
-        const totalHours = monthlyForecastHours.get(month) ?? 0;
-        monthlyForecastHours.set(month, totalHours + hours);
-      } else {
-        monthlyForecastHours.set(month, hours);
-      }
+
+      monthlyForecastTotalHours.set(
+        month,
+        (monthlyForecastTotalHours.get(month) ?? 0) + hours,
+      );
+
+      monthlyForecastIncome.set(
+        month,
+        (monthlyForecastIncome.get(month) ?? 0) + hours * hourlyRate,
+      );
     });
   });
-  return monthlyForecastHours;
+  return { monthlyForecastTotalHours, monthlyForecastIncome };
 }
 
 function setMonthlyInvoiceRate(

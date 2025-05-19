@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { SumRow } from "./SumRow";
 
 interface StaffingSumsProps {
   weeklyTotalBillable?: Map<number, number>;
@@ -30,52 +31,20 @@ export default function StaffingSums({
   return (
     <thead>
       {weeklyTotalBillable && (
-        <tr>
-          <td colSpan={2}>
-            <p className="small-medium text-black">Sum ordre</p>
-          </td>
-          {totalBillableHours?.map((totalBillableHour, index) => (
-            <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
-              <p className="small-medium text-right">
-                {totalBillableHour.toLocaleString("nb-No", {
-                  maximumFractionDigits: 1,
-                  minimumFractionDigits: 1,
-                })}
-              </p>
-            </td>
-          ))}
-        </tr>
+        <SumRow title="Sum ordre" values={totalBillableHours!} colSpan={2} />
       )}
-      <tr>
-        <td colSpan={2}>
-          <p className="small-medium text-black">Sum ordre, opsjon og tilbud</p>
-        </td>
-        {totalBillableAndOfferedHours.map(
-          (totalBillableAndOfferedHour, index) => (
-            <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
-              <p className="small-medium text-right">
-                {totalBillableAndOfferedHour.toLocaleString("nb-No", {
-                  maximumFractionDigits: 1,
-                  minimumFractionDigits: 1,
-                })}
-              </p>
-            </td>
-          ),
-        )}
-      </tr>
+      <SumRow
+        title="Sum ordre, opsjon og tilbud"
+        values={totalBillableAndOfferedHours}
+        colSpan={2}
+      />
       {weeklyInvoiceRatesArray && (
-        <tr>
-          <td colSpan={2}>
-            <p className="small-medium text-black">Faktureringsgrad</p>
-          </td>
-          {weeklyInvoiceRatesArray.map((indexRates, index) => (
-            <td key={index} className="m-2 px-2 py-1 pt-3 gap-1">
-              <p className="small-medium text-right">
-                {Math.round(indexRates * 100)}%
-              </p>
-            </td>
-          ))}
-        </tr>
+        <SumRow
+          title="Faktureringsgrad"
+          values={weeklyInvoiceRatesArray}
+          colSpan={2}
+          displayPercentage={true}
+        />
       )}
     </thead>
   );

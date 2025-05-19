@@ -28,10 +28,13 @@ export default function ForecastTable() {
     numWorkHours,
     filteredConsultants,
     monthlyTotalBillable,
+    monthlyTotalBillableIncome,
     monthlyTotalBillableAndOffered,
+    monthlyTotalBillableAndOfferedIncome,
     weeklyInvoiceRates,
     monthlyForecastSums,
     monthlyForecastTotalHours,
+    monthlyForecastIncome,
   } = useForecastFilter();
   const [publicHolidays, setPublicHolidays] = useState<string[]>([]);
   const organisationName = usePathname().split("/")[1];
@@ -159,9 +162,14 @@ export default function ForecastTable() {
       </tbody>
       <ForecastSums
         monthlyTotalBillable={monthlyTotalBillable}
+        monthlyTotalBillableIncome={monthlyTotalBillableIncome}
         monthlyInvoiceRates={weeklyInvoiceRates}
         monthlyTotalBillableAndOffered={monthlyTotalBillableAndOffered}
+        monthlyTotalBillableAndOfferedIncome={
+          monthlyTotalBillableAndOfferedIncome
+        }
         monthlyForecastTotalHours={monthlyForecastTotalHours}
+        monthlyForecastIncome={monthlyForecastIncome}
       />
     </table>
   );
