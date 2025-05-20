@@ -35,6 +35,8 @@ export default function ForecastTable() {
     monthlyForecastSums,
     monthlyForecastTotalHours,
     monthlyForecastIncome,
+    monthlyTotalPossibleHours,
+    monthlyTotalPossibleIncome,
   } = useForecastFilter();
   const [publicHolidays, setPublicHolidays] = useState<string[]>([]);
   const organisationName = usePathname().split("/")[1];
@@ -175,6 +177,11 @@ export default function ForecastTable() {
         hourMap={monthlyForecastTotalHours}
         incomeMap={monthlyForecastIncome}
         invoiceRateMap={weeklyInvoiceRates}
+      />
+      <ForecastSumSection
+        title="Champagnegaloppen"
+        hourMap={monthlyTotalPossibleHours}
+        incomeMap={monthlyTotalPossibleIncome}
       />
     </table>
   );
