@@ -233,13 +233,17 @@ function inYearRanges(
 }
 
 function getMonth(date: string) {
-  return new Date(date).getMonth();
+  const newDate = new Date(date);
+  return `${newDate.getFullYear()}-${String(newDate.getMonth() + 1).padStart(
+    2,
+    "0",
+  )}`;
 }
 
 function setMonthlyForecastSum(
   filteredConsultants: ConsultantWithForecast[],
-): Map<number, number> {
-  const monthlyForecastSums = new Map<number, number>();
+): Map<string, number> {
+  const monthlyForecastSums = new Map<string, number>();
 
   if (filteredConsultants.length == 0) return monthlyForecastSums;
 
@@ -263,10 +267,10 @@ function setMonthlyForecastSum(
 export function setMonthlyTotalBillable(
   filteredConsultants: ConsultantWithForecast[],
 ) {
-  const monthlyBillableHours = new Map<number, number>();
-  const monthlyBillableIncome = new Map<number, number>();
-  const monthlyBillableAndOfferedHours = new Map<number, number>();
-  const monthlyBillableAndOfferedIncome = new Map<number, number>();
+  const monthlyBillableHours = new Map<string, number>();
+  const monthlyBillableIncome = new Map<string, number>();
+  const monthlyBillableAndOfferedHours = new Map<string, number>();
+  const monthlyBillableAndOfferedIncome = new Map<string, number>();
 
   filteredConsultants.forEach((consultant) => {
     const hourlyRate = consultant.consultant.estimatedHourPrice;
@@ -314,8 +318,8 @@ export function setMonthlyTotalBillable(
 function setMonthlyForecastHoursAndIncome(
   filterConsultants: ConsultantWithForecast[],
 ) {
-  const monthlyForecastTotalHours = new Map<number, number>();
-  const monthlyForecastIncome = new Map<number, number>();
+  const monthlyForecastTotalHours = new Map<string, number>();
+  const monthlyForecastIncome = new Map<string, number>();
 
   filterConsultants.forEach((consultant) => {
     const hourlyRate = consultant.consultant.estimatedHourPrice;
@@ -345,9 +349,9 @@ function setMonthlyForecastHoursAndIncome(
 
 function setMonthlyInvoiceRate(
   filteredConsultants: ConsultantWithForecast[],
-  monthlyTotalBillableWithForecast: Map<number, number>,
+  monthlyTotalBillableWithForecast: Map<string, number>,
 ) {
-  const monthlyInvoiceRate = new Map<number, number>();
+  const monthlyInvoiceRate = new Map<string, number>();
 
   monthlyTotalBillableWithForecast.forEach((totalBillable, month) => {
     let totalAvailableMonthHours = 0;

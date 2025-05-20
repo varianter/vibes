@@ -1,13 +1,13 @@
 import { SumRow } from "../SumRow";
 
 interface ForecastSumsProps {
-  monthlyTotalBillable: Map<number, number>;
-  monthlyTotalBillableIncome: Map<number, number>;
-  monthlyTotalBillableAndOffered: Map<number, number>;
-  monthlyTotalBillableAndOfferedIncome: Map<number, number>;
-  monthlyInvoiceRates: Map<number, number>;
-  monthlyForecastTotalHours: Map<number, number>;
-  monthlyForecastIncome: Map<number, number>;
+  monthlyTotalBillable: Map<string, number>;
+  monthlyTotalBillableIncome: Map<string, number>;
+  monthlyTotalBillableAndOffered: Map<string, number>;
+  monthlyTotalBillableAndOfferedIncome: Map<string, number>;
+  monthlyInvoiceRates: Map<string, number>;
+  monthlyForecastTotalHours: Map<string, number>;
+  monthlyForecastIncome: Map<string, number>;
 }
 
 export function ForecastSums({

@@ -21,19 +21,25 @@ export default async function Prognose({
   searchParams,
 }: {
   params: { organisation: string };
-  searchParams: { selectedWeek?: string; weekSpan?: string };
+  searchParams: { startDate?: string; monthCount?: string };
 }) {
-  console.time("Forecast page.tsx fetch");
   const [consultantsWithForecasts, departments, competences, disciplines] =
     await Promise.all([
-      fetchForecastWithToken(`${params.organisation}/forecasts`),
+      fetchForecastWithToken(
+        `${params.organisation}/forecasts?${
+          searchParams.startDate ? `Date=${searchParams.startDate}` : ""
+        }${
+          searchParams.monthCount
+            ? `&MonthCount=${searchParams.monthCount}`
+            : ""
+        }`,
+      ),
       fetchWithToken<DepartmentReadModel[]>(
         `organisations/${params.organisation}/departments`,
       ),
       fetchWithToken<CompetenceReadModel[]>(`competences`),
       fetchWithToken<DisciplineReadModel[]>(`disciplines`),
     ]);
-  console.timeEnd("Forecast page.tsx fetch");
   return (
     <ForecastFilterProvider
       consultants={consultantsWithForecasts ?? []}

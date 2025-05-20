@@ -19,6 +19,7 @@ const defaultFilters: ForecastFilters = {
   rawYearFilter: "",
   experienceFromFilter: "",
   experienceToFilter: "",
+  monthCount: 12,
 };
 
 export type ForecastContextType = {
@@ -87,6 +88,7 @@ interface UpdateFilterParams {
   availability?: boolean;
   experienceFrom?: string;
   experienceTo?: string;
+  count?: number;
 }
 
 export type ForecastFilters = {
@@ -99,6 +101,7 @@ export type ForecastFilters = {
   searchFilter: string;
   experienceFromFilter: string;
   experienceToFilter: string;
+  monthCount: number;
 };
 
 export type UpdateFilters = (updateParams: UpdateFilterParams) => void;
@@ -133,7 +136,9 @@ function useUrlRouteFilter(): [ForecastFilters, UpdateFilters] {
     !!searchParams.get("availabilityFilter") || false,
   );
   const [date, setDate] = useState(searchParams.get("startDate") || "");
-  const quarterSpan = Number.parseInt(searchParams.get("quarterSpan") ?? "4");
+  const [monthCount, setMonthCount] = useState(
+    Number.parseInt(searchParams.get("monthCount") ?? "12"),
+  );
 
   function updateRoute(updateParams: UpdateFilterParams) {
     // If not defined, defaults to current value:
@@ -146,8 +151,9 @@ function useUrlRouteFilter(): [ForecastFilters, UpdateFilters] {
     const { experienceTo = experienceToFilter } = updateParams;
     const { startDate = date } = updateParams;
     const { availability = availabilityFilter } = updateParams;
+    const { count = monthCount } = updateParams;
 
-    const url = `${pathname}?search=${search}&depFilter=${departments}&compFilter=${competences}&disciplineFilter=${disciplines}&yearFilter=${years}${`&startDate=${startDate}`}&experienceFromFilter=${experienceFrom}&experienceToFilter=${experienceTo}&availabilityFilter=${availability}`;
+    const url = `${pathname}?search=${search}&depFilter=${departments}&compFilter=${competences}&disciplineFilter=${disciplines}&yearFilter=${years}&startDate=${startDate}&monthCount=${count}&experienceFromFilter=${experienceFrom}&experienceToFilter=${experienceTo}&availabilityFilter=${availability}`;
 
     setYearFilter(years);
     setSearchFilter(search);
@@ -158,12 +164,9 @@ function useUrlRouteFilter(): [ForecastFilters, UpdateFilters] {
     setDate(startDate);
     setExperienceFromFilter(experienceFrom);
     setExperienceToFilter(experienceTo);
+    setMonthCount(count);
 
-    if (updateParams.startDate) {
-      router.push(url);
-    } else {
-      window.history.pushState({}, "", url);
-    }
+    router.push(url);
   }
 
   return [
@@ -177,6 +180,7 @@ function useUrlRouteFilter(): [ForecastFilters, UpdateFilters] {
       startDate: date,
       experienceFromFilter,
       experienceToFilter,
+      monthCount,
     },
     updateRoute,
   ];

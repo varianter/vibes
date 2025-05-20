@@ -5,7 +5,7 @@ import {
   ConsultantWithForecast,
   Forecast,
 } from "@/api-types";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MonthCell } from "./MonthCell";
 import Image from "next/image";
 import { putWithToken } from "@/data/apiCallsWithToken";
@@ -43,6 +43,12 @@ export default function ForecastRows({
   const bookingsPerMonth = consultant.bookings;
 
   const { filteredConsultants, setConsultants } = useSimpleForecastFilter();
+
+  useEffect(() => {
+    setCurrentConsultant(consultant);
+  }, [consultant]);
+
+  console.log("hi");
 
   async function save(month: string, value: number) {
     await putWithToken<Forecast, Forecast>(`${orgUrlKey}/forecasts/update`, {
