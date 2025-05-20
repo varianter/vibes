@@ -1,0 +1,3 @@
+tbody.forecast-sum-section:nth-of-type(odd) {
+  background-color: whitesmoke;
+}

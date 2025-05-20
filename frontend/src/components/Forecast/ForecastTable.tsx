@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { getBusinessHoursPerMonth } from "./BusinessHoursPerMonth";
 import { useForecastFilter } from "@/hooks/ForecastFilter/useForecastFilter";
 import { ForecastForMonth } from "@/api-types";
-import { ForecastSums } from "./ForecastSums";
+import { ForecastSumSection } from "./ForecastSumSections/ForecastSumSection";
 
 function isCurrentMonth(dateString: string) {
   const date = new Date(dateString);
@@ -150,7 +150,7 @@ export default function ForecastTable() {
           )}
         </tr>
       </thead>
-      <tbody>
+      <tbody className="border-b-[3px] border-b-primary/20">
         {filteredConsultants.map((consultant) => (
           <ForecastRows
             key={consultant.consultant.id}
@@ -160,16 +160,21 @@ export default function ForecastTable() {
           />
         ))}
       </tbody>
-      <ForecastSums
-        monthlyTotalBillable={monthlyTotalBillable}
-        monthlyTotalBillableIncome={monthlyTotalBillableIncome}
-        monthlyInvoiceRates={weeklyInvoiceRates}
-        monthlyTotalBillableAndOffered={monthlyTotalBillableAndOffered}
-        monthlyTotalBillableAndOfferedIncome={
-          monthlyTotalBillableAndOfferedIncome
-        }
-        monthlyForecastTotalHours={monthlyForecastTotalHours}
-        monthlyForecastIncome={monthlyForecastIncome}
+      <ForecastSumSection
+        title="Ordre"
+        hourMap={monthlyTotalBillable}
+        incomeMap={monthlyTotalBillableIncome}
+      />
+      <ForecastSumSection
+        title="Ordre, opsjon og tilbud"
+        hourMap={monthlyTotalBillableAndOffered}
+        incomeMap={monthlyTotalBillableAndOfferedIncome}
+      />
+      <ForecastSumSection
+        title="Prognose"
+        hourMap={monthlyForecastTotalHours}
+        incomeMap={monthlyForecastIncome}
+        invoiceRateMap={weeklyInvoiceRates}
       />
     </table>
   );
