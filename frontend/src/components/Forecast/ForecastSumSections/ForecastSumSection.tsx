@@ -1,5 +1,4 @@
 import { SumRow } from "../../SumRow";
-import "./ForecastSumSection.css";
 
 export function ForecastSumSection({
   title,
@@ -38,7 +37,7 @@ export function ForecastSumSection({
   }
 
   return (
-    <tbody className="forecast-sum-section">
+    <tbody className="odd:bg-primary/5">
       <tr>
         <th align="left" colSpan={30}>
           {title}
