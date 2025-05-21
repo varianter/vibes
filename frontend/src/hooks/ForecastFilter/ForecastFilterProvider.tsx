@@ -166,7 +166,11 @@ function useUrlRouteFilter(): [ForecastFilters, UpdateFilters] {
     setExperienceToFilter(experienceTo);
     setMonthCount(count);
 
-    router.push(url);
+    if (updateParams.startDate || updateParams.count) {
+      router.push(url);
+    } else {
+      window.history.replaceState({}, "", url);
+    }
   }
 
   return [
