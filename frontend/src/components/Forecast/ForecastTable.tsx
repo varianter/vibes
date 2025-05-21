@@ -7,6 +7,7 @@ import { getBusinessHoursPerMonth } from "./BusinessHoursPerMonth";
 import { useForecastFilter } from "@/hooks/ForecastFilter/useForecastFilter";
 import { ForecastForMonth } from "@/api-types";
 import { ForecastSumSection } from "./ForecastSumSections/ForecastSumSection";
+import { IconChampagne } from "./ForecastSumSections/IconChampagne";
 
 function isCurrentMonth(dateString: string) {
   const date = new Date(dateString);
@@ -179,7 +180,8 @@ export default function ForecastTable() {
         invoiceRateMap={weeklyInvoiceRates}
       />
       <ForecastSumSection
-        title="Champagnegaloppen"
+        title="Champagnegalopp, baby!"
+        postTitleContent={<IconChampagne />}
         hourMap={monthlyTotalPossibleHours}
         incomeMap={monthlyTotalPossibleIncome}
       />

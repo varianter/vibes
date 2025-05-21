@@ -1,13 +1,15 @@
 import { SumRow } from "../../SumRow";
-import "./styles.css";
+import "./ForecastSumSection.css";
 
 export function ForecastSumSection({
   title,
+  postTitleContent,
   hourMap,
   incomeMap,
   invoiceRateMap,
 }: {
   title: string;
+  postTitleContent?: React.JSX.Element;
   hourMap: Map<number, number>;
   incomeMap: Map<number, number>;
   invoiceRateMap?: Map<number, number>;
@@ -40,6 +42,7 @@ export function ForecastSumSection({
       <tr>
         <th align="left" colSpan={30}>
           {title}
+          {postTitleContent}
         </th>
       </tr>
       <SumRow title="Sum timer" values={hours} unit="t" />
