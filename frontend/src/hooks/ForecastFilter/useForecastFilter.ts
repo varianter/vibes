@@ -90,6 +90,10 @@ export function useForecastFilter() {
     monthlyForecastTotalHours,
   );
 
+  // Total possible
+  const { monthlyTotalPossibleHours, monthlyTotalPossibleIncome } =
+    setMonthlyTotalPossibleHoursAndIncome(filteredConsultants);
+
   return {
     numWorkHours,
     filteredConsultants,
@@ -101,6 +105,8 @@ export function useForecastFilter() {
     monthlyForecastSums,
     monthlyForecastTotalHours,
     monthlyForecastIncome,
+    monthlyTotalPossibleHours,
+    monthlyTotalPossibleIncome,
   };
 }
 
@@ -309,6 +315,35 @@ export function setMonthlyTotalBillable(
     monthlyTotalBillableAndOffered: monthlyBillableAndOfferedHours,
     monthlyTotalBillableAndOfferedIncome: monthlyBillableAndOfferedIncome,
   };
+}
+
+function setMonthlyTotalPossibleHoursAndIncome(
+  consultants: ConsultantWithForecast[],
+) {
+  const monthlyTotalPossibleHours = new Map<number, number>();
+  const monthlyTotalPossibleIncome = new Map<number, number>();
+
+  consultants.forEach((consultant) => {
+    const hourlyRate = consultant.consultant.estimatedHourPrice;
+
+    consultant.forecasts.forEach((forecast) => {
+      const month = getMonth(forecast.month);
+      const possibleHours = forecast.salariedHours;
+
+      monthlyTotalPossibleHours.set(
+        month,
+        (monthlyTotalPossibleHours.get(month) ?? 0) + possibleHours,
+      );
+
+      monthlyTotalPossibleIncome.set(
+        month,
+        (monthlyTotalPossibleIncome.get(month) ?? 0) +
+          possibleHours * hourlyRate,
+      );
+    });
+  });
+
+  return { monthlyTotalPossibleHours, monthlyTotalPossibleIncome };
 }
 
 function setMonthlyForecastHoursAndIncome(
