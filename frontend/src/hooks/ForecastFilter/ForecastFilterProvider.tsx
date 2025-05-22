@@ -133,7 +133,7 @@ function useUrlRouteFilter(): [ForecastFilters, UpdateFilters] {
     searchParams.get("experienceToFilter") || "",
   );
   const [availabilityFilter, setAvailabilityFilter] = useState<boolean>(
-    !!searchParams.get("availabilityFilter") || false,
+    searchParams.get("availabilityFilter") === "true",
   );
   const [date, setDate] = useState(searchParams.get("startDate") || "");
   const [monthCount, setMonthCount] = useState(
