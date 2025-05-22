@@ -169,7 +169,7 @@ function useUrlRouteFilter(): [ForecastFilters, UpdateFilters] {
     if (updateParams.startDate || updateParams.count) {
       router.push(url);
     } else {
-      window.history.replaceState({}, "", url);
+      window.history.pushState({}, "", url);
     }
   }
 

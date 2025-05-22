@@ -48,8 +48,6 @@ export default function ForecastRows({
     setCurrentConsultant(consultant);
   }, [consultant]);
 
-  console.log("hi");
-
   async function save(month: string, value: number) {
     await putWithToken<Forecast, Forecast>(`${orgUrlKey}/forecasts/update`, {
       consultantId: consultant.consultant.id,
