@@ -9,9 +9,9 @@ export function ForecastSumSection({
 }: {
   title: string;
   postTitleContent?: React.JSX.Element;
-  hourMap: Map<number, number>;
-  incomeMap: Map<number, number>;
-  invoiceRateMap?: Map<number, number>;
+  hourMap: Map<string, number>;
+  incomeMap: Map<string, number>;
+  invoiceRateMap?: Map<string, number>;
 }) {
   const hours = Array.from(hourMap.values());
   const income = Array.from(incomeMap.values());

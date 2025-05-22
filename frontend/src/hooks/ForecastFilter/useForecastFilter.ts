@@ -324,8 +324,8 @@ export function setMonthlyTotalBillable(
 function setMonthlyTotalPossibleHoursAndIncome(
   consultants: ConsultantWithForecast[],
 ) {
-  const monthlyTotalPossibleHours = new Map<number, number>();
-  const monthlyTotalPossibleIncome = new Map<number, number>();
+  const monthlyTotalPossibleHours = new Map<string, number>();
+  const monthlyTotalPossibleIncome = new Map<string, number>();
 
   consultants.forEach((consultant) => {
     const hourlyRate = consultant.consultant.estimatedHourPrice;
