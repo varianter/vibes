@@ -28,10 +28,8 @@ export default async function Prognose({
       fetchForecastWithToken(
         `${params.organisation}/forecasts?${
           searchParams.startDate ? `Date=${searchParams.startDate}` : ""
-        }${
-          searchParams.monthCount
-            ? `&MonthCount=${searchParams.monthCount}`
-            : ""
+        }${searchParams.startDate && searchParams.monthCount ? "&" : ""}${
+          searchParams.monthCount ? `MonthCount=${searchParams.monthCount}` : ""
         }`,
       ),
       fetchWithToken<DepartmentReadModel[]>(
