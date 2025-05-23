@@ -1,22 +1,22 @@
 import { ArrowLeft, ArrowRight } from "react-feather";
-import ActionButton from "./Buttons/ActionButton";
-import IconActionButton from "./Buttons/IconActionButton";
-import DropDown from "./DropDown";
+import ActionButton from "../Buttons/ActionButton";
+import IconActionButton from "../Buttons/IconActionButton";
+import DropDown from "../DropDown";
 import { useContext } from "react";
 import { FilteredForecastContext } from "@/hooks/ForecastFilter/ForecastFilterProvider";
-import { useSelectedMonth } from "@/hooks/ForecastFilter/useSelectedMonth";
+import { useSelectedQuarter } from "@/hooks/ForecastFilter/useSelectedQuarter";
 
-export default function MonthSelector() {
+export default function QuarterSelector() {
   const monthSpanOptions = [4, 8, 12, 18];
 
   const { monthCount } = useContext(FilteredForecastContext).activeFilters;
 
   const {
-    decrementSelectedMonth,
-    incrementSelectedMonth,
-    resetSelectedMonth,
+    decrementSelectedQuarter,
+    incrementSelectedQuarter,
+    resetSelectedQuarter,
     setMonthCount,
-  } = useSelectedMonth();
+  } = useSelectedQuarter();
 
   const monthCountStringOptions = monthSpanOptions.map(
     (number) => number + " måneder",
@@ -36,18 +36,18 @@ export default function MonthSelector() {
         dropDownOptions={monthCountStringOptions}
         dropDownFunction={getNumberFromMonthSpan}
       />
-      <ActionButton variant="secondary" onClick={resetSelectedMonth}>
-        Nåværende måned
+      <ActionButton variant="secondary" onClick={resetSelectedQuarter}>
+        Nåværende kvartal
       </ActionButton>
       <IconActionButton
         variant={"secondary"}
         icon={<ArrowLeft />}
-        onClick={decrementSelectedMonth}
+        onClick={decrementSelectedQuarter}
       />
       <IconActionButton
         variant={"secondary"}
         icon={<ArrowRight />}
-        onClick={incrementSelectedMonth}
+        onClick={incrementSelectedQuarter}
       />
     </div>
   );

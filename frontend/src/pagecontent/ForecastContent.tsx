@@ -8,7 +8,7 @@ import { Filter } from "react-feather";
 import ActiveFilters from "@/components/ActiveFilters";
 import ForecastTable from "@/components/Forecast/ForecastTable";
 import { FilteredForecastContext } from "@/hooks/ForecastFilter/ForecastFilterProvider";
-import MonthSelector from "@/components/MonthSelector";
+import QuarterSelector from "@/components/Forecast/QuarterSelector";
 
 export function ForecastContent() {
   const [isSideBarOpen, setIsSidebarOpen] = useState<boolean>(false);
@@ -34,7 +34,7 @@ export function ForecastContent() {
             <ActiveFilters context={FilteredForecastContext} />
           </div>
         </div>
-        <MonthSelector />
+        <QuarterSelector />
         <ForecastTable />
         <InfoPillDescriptions />
       </div>
