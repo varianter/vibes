@@ -92,8 +92,9 @@ export async function fetchWithToken<ReturnType>(
 
 export async function fetchForecastWithToken(
   path: string,
+  startDate?: string,
 ): Promise<ConsultantWithForecast[] | undefined> {
-  return callForecastEmployee(path);
+  return callForecastEmployee(path, startDate);
 }
 
 export async function fetchEmployeesWithImageAndToken(
@@ -134,7 +135,7 @@ async function fetchWithTimeoutOrNull<T>(
   }
 }
 
-export async function callForecastEmployee(path: string) {
+export async function callForecastEmployee(path: string, startDate?: string) {
   if (process.env.NEXT_PUBLIC_NO_AUTH) {
     return mockedCall<undefined>(path);
   }
@@ -156,10 +157,16 @@ export async function callForecastEmployee(path: string) {
   };
 
   const completeUrl = `${apiBackendUrl}/${path}`;
+  let completeUrlWithStartDate = completeUrl;
+  if (startDate) {
+    completeUrlWithStartDate = `${completeUrl}?Date=${encodeURIComponent(
+      startDate,
+    )}`;
+  }
 
   try {
     const [response, employeeResponse] = await Promise.all([
-      fetch(completeUrl, options),
+      fetch(completeUrlWithStartDate, options),
       fetchWithTimeoutOrNull<{ employees: EmployeeItemChewbacca[] }>(
         `https://chewie-webapp-ld2ijhpvmb34c.azurewebsites.net/employees`,
       ),

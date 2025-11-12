@@ -8,6 +8,7 @@ import { useForecastFilter } from "@/hooks/ForecastFilter/useForecastFilter";
 import { ForecastForMonth } from "@/api-types";
 import { ForecastSumSection } from "./ForecastSumSections/ForecastSumSection";
 import { IconChampagne } from "./ForecastSumSections/IconChampagne";
+import { isThisYear } from "date-fns";
 
 function isCurrentMonth(dateString: string) {
   const date = new Date(dateString);
@@ -17,11 +18,19 @@ function isCurrentMonth(dateString: string) {
     today.getFullYear() === date.getFullYear()
   );
 }
+function isCurrentYear(dateString: string) {
+  const date = new Date(dateString);
+  return isThisYear(date);
+}
 
 function getShortenedMonthName(dateString: string) {
   const date = new Date(dateString);
-  const month = date.toLocaleString("nb-NO", { month: "short" });
-  return month.charAt(0).toUpperCase() + month.slice(1);
+
+  if (isCurrentYear(dateString)) {
+    return date.toLocaleString("nb-NO", { month: "short" });
+  }
+
+  return date.toLocaleString("nb-NO", { month: "short", year: "2-digit" });
 }
 
 export default function ForecastTable() {
@@ -107,9 +116,12 @@ export default function ForecastTable() {
                     )} */}
                       <div className="h-2 w-2 rounded-full bg-primary" />
 
-                      <p className="normal-medium text-right">
+                      <time
+                        dateTime={forecast.month}
+                        className="normal-medium text-right capitalize"
+                      >
                         {getShortenedMonthName(forecast.month)}
-                      </p>
+                      </time>
                     </div>
                   ) : (
                     <div
@@ -131,9 +143,12 @@ export default function ForecastTable() {
                         variant={weekSpan < 24 ? "wide" : "medium"}
                       />
                     )} */}
-                      <p className="normal text-right">
+                      <time
+                        dateTime={forecast.month}
+                        className="normal text-right capitalize"
+                      >
                         {getShortenedMonthName(forecast.month)}
-                      </p>
+                      </time>
                     </div>
                   )}
                   <p className="flex justify-end xsmall">
