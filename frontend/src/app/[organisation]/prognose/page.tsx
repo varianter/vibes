@@ -12,6 +12,7 @@ import {
 import { Metadata } from "next";
 import { ForecastContent } from "@/pagecontent/ForecastContent";
 import { ForecastFilterProvider } from "@/hooks/ForecastFilter/ForecastFilterProvider";
+import { format } from "date-fns";
 export const metadata: Metadata = {
   title: "Prognose | VIBES",
 };
@@ -21,12 +22,15 @@ export default async function Prognose({
   searchParams,
 }: {
   params: { organisation: string };
-  searchParams: { selectedWeek?: string; weekSpan?: string };
+  searchParams: { startDate?: string };
 }) {
   console.time("Forecast page.tsx fetch");
   const [consultantsWithForecasts, departments, competences, disciplines] =
     await Promise.all([
-      fetchForecastWithToken(`${params.organisation}/forecasts`),
+      fetchForecastWithToken(
+        `${params.organisation}/forecasts`,
+        searchParams.startDate ?? format(new Date(), "yyyy-MM-dd"),
+      ),
       fetchWithToken<DepartmentReadModel[]>(
         `organisations/${params.organisation}/departments`,
       ),

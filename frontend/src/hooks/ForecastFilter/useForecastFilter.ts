@@ -1,11 +1,41 @@
-import { YearRange } from "@/types";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { useRawYearsFilter } from "../staffing/useRawYearFilter";
-import { useAvailabilityFilter } from "../staffing/useAvailabilityFilter";
-import { usePathname } from "next/navigation";
-import { ConsultantWithForecast, SingleConsultantReadModel } from "@/api-types";
-import { FilteredForecastContext } from "./ForecastFilterProvider";
+import { ConsultantWithForecast } from "@/api-types";
 import { useOrganizationContext } from "@/context/organization";
+import { YearRange } from "@/types";
+import { addQuarters, format, isValid, parse } from "date-fns";
+import { useCallback, useContext } from "react";
+import { useAvailabilityFilter } from "../staffing/useAvailabilityFilter";
+import { useRawYearsFilter } from "../staffing/useRawYearFilter";
+import { FilteredForecastContext } from "./ForecastFilterProvider";
+
+export function useSelectedQuarter() {
+  const { activeFilters, updateFilters } = useContext(FilteredForecastContext);
+  const { startDate } = activeFilters;
+  const date = parse(startDate, "yyyy-MM-dd", new Date());
+
+  const nextQuarter = useCallback(() => {
+    if (!isValid(date)) return;
+
+    const next = addQuarters(date, 1);
+    updateFilters({ startDate: format(next, "yyyy-MM-dd") });
+  }, [date, updateFilters]);
+
+  const previousQuarter = useCallback(() => {
+    if (!isValid(date)) return;
+
+    const next = addQuarters(date, -1);
+    updateFilters({ startDate: format(next, "yyyy-MM-dd") });
+  }, [date, updateFilters]);
+
+  const setAsCurrentQuarter = useCallback(() => {
+    updateFilters({ startDate: format(new Date(), "yyyy-MM-dd") });
+  }, [updateFilters]);
+
+  return {
+    nextQuarter,
+    previousQuarter,
+    setAsCurrentQuarter,
+  };
+}
 
 export function useSimpleForecastFilter() {
   const { consultants, setConsultants, activeFilters } = useContext(
