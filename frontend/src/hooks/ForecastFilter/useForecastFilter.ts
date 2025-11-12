@@ -13,16 +13,14 @@ export function useSelectedQuarter() {
   const date = parse(startDate, "yyyy-MM-dd", new Date());
 
   const nextQuarter = useCallback(() => {
-    if (!isValid(date)) return;
-
-    const next = addQuarters(date, 1);
+    const current = isValid(date) ? date : new Date();
+    const next = addQuarters(current, 1);
     updateFilters({ startDate: format(next, "yyyy-MM-dd") });
   }, [date, updateFilters]);
 
   const previousQuarter = useCallback(() => {
-    if (!isValid(date)) return;
-
-    const next = addQuarters(date, -1);
+    const current = isValid(date) ? date : new Date();
+    const next = addQuarters(current, -1);
     updateFilters({ startDate: format(next, "yyyy-MM-dd") });
   }, [date, updateFilters]);
 
