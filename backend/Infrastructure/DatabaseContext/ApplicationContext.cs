@@ -249,7 +249,8 @@ public class ApplicationContext(IOptions<InfrastructureConfig> config) : DbConte
                 UrlKey = "variant-as",
                 Country = "norway",
                 HoursPerWorkday = 7.5,
-                HasVacationInChristmas = true,
+                HasVacationInChristmas = false,
+                HasVacationOnChristmasEveAndNewYearsEve = true,
                 NumberOfVacationDaysInYear = 25
             });
 

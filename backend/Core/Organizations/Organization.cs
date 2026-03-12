@@ -19,6 +19,12 @@ public class Organization
     public required string Country { get; init; }
     public required int NumberOfVacationDaysInYear { get; init; }
     public required bool HasVacationInChristmas { get; init; }
+
+    /// <summary>
+    /// When true, Dec 24 and Dec 31 are treated as vacation days.
+    /// Ignored if <see cref="HasVacationInChristmas"/> is true (full Dec 24–31 period takes precedence).
+    /// </summary>
+    public required bool HasVacationOnChristmasEveAndNewYearsEve { get; init; }
     public required double HoursPerWorkday { get; init; }
 
     [JsonIgnore] public List<Department> Departments { get; init; } = [];
@@ -104,12 +110,15 @@ public class Organization
 
     private bool IsChristmasHoliday(DateOnly date)
     {
-        if (!HasVacationInChristmas) return false;
-
-        var startDate = new DateOnly(date.Year, 12, 24);
-        var endDate = new DateOnly(date.Year, 12, 31);
-
-        return date >= startDate && date <= endDate;
+        if (HasVacationInChristmas)
+        {
+            var startDate = new DateOnly(date.Year, 12, 24);
+            var endDate = new DateOnly(date.Year, 12, 31);
+            return date >= startDate && date <= endDate;
+        }
+        if (HasVacationOnChristmasEveAndNewYearsEve)
+            return date == new DateOnly(date.Year, 12, 24) || date == new DateOnly(date.Year, 12, 31);
+        return false;
     }
 
     /// <summary>
@@ -119,13 +128,10 @@ public class Organization
     {
         var publicHoliday = GetPublicHoliday();
         var publicHolidays = publicHoliday.PublicHolidays(year).Select(DateOnly.FromDateTime).ToList();
-        if (!HasVacationInChristmas) return publicHolidays;
-
-        publicHolidays = publicHolidays
-            .Concat(GetChristmasHolidays(year))
-            .Distinct()
-            .ToList();
-
+        if (HasVacationInChristmas)
+            publicHolidays = publicHolidays.Concat(GetChristmasHolidays(year)).Distinct().ToList();
+        else if (HasVacationOnChristmasEveAndNewYearsEve)
+            publicHolidays = publicHolidays.Concat(GetChristmasEveAndNewYearsEveHolidays(year)).Distinct().ToList();
         return publicHolidays;
     }
 
@@ -136,5 +142,10 @@ public class Organization
         return Enumerable.Range(0, 1 + endDate.Subtract(startDate).Days)
             .Select(offset => DateOnly.FromDateTime(startDate.AddDays(offset)))
             .ToList();
+    }
+
+    private static List<DateOnly> GetChristmasEveAndNewYearsEveHolidays(int year)
+    {
+        return [new DateOnly(year, 12, 24), new DateOnly(year, 12, 31)];
     }
 }
