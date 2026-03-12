@@ -25,6 +25,7 @@ public class ForecastRepositoryTests(ApiFactory apiFactory) : TestsBase(apiFacto
             Country = "Norway",
             NumberOfVacationDaysInYear = 25,
             HasVacationInChristmas = true,
+            HasVacationOnChristmasEveAndNewYearsEve = false,
             HoursPerWorkday = 7.5,
             Customers = [],
             AbsenceTypes = [],

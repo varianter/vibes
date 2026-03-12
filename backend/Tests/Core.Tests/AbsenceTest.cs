@@ -44,6 +44,7 @@ public class AbsenceTests
             HoursPerWorkday = 7.5,
             Departments = [],
             HasVacationInChristmas = true,
+            HasVacationOnChristmasEveAndNewYearsEve = false,
             Customers = [],
             AbsenceTypes = []
         };
@@ -138,6 +139,7 @@ public class AbsenceTests
             NumberOfVacationDaysInYear = 25,
             HoursPerWorkday = 7.5,
             HasVacationInChristmas = false,
+            HasVacationOnChristmasEveAndNewYearsEve = false,
             Customers = [],
             AbsenceTypes = []
         };
@@ -190,5 +192,84 @@ public class AbsenceTests
             .BookingModel;
 
         Assert.Equal(30, bookedHours.TotalPlannedAbsences);
+    }
+
+    private static Organization CreateOrgWithPartialChristmas() => new Organization
+    {
+        Id = "konsulent-as",
+        Name = "Konsulent as",
+        UrlKey = "konsulent-as",
+        Country = "norway",
+        NumberOfVacationDaysInYear = 25,
+        HoursPerWorkday = 7.5,
+        HasVacationInChristmas = false,
+        HasVacationOnChristmasEveAndNewYearsEve = true,
+        Customers = [],
+        AbsenceTypes = []
+    };
+
+    [Fact]
+    public void WeekWithChristmasEve_HasOneHoliday_WhenPartialChristmasFlag()
+    {
+        // Week containing Dec 24, 2024 (Mon Dec 23 - Fri Dec 27)
+        var org = CreateOrgWithPartialChristmas();
+        var department = new Department
+        {
+            Id = "barteby", Name = "Barteby", Hotkey = 1, Organization = org,
+            Consultants = Substitute.For<List<Consultant>>()
+        };
+        var consultant = new Consultant
+        {
+            Id = 1, Name = "Test", Email = "t@v.no", GraduationYear = 2010, Department = department
+        };
+        // Dec 23, 2024 is a Monday (week containing Dec 24)
+        var week = Week.FromDateOnly(new DateOnly(2024, 12, 23));
+        var bookingModel = ReadModelFactory.MapToReadModelList(consultant, [week]).Bookings[0].BookingModel;
+
+        // Dec 24 is holiday (also public holiday in Norway), Dec 25 is public holiday — total 2 holiday days
+        Assert.True(bookingModel.TotalHolidayHours >= 7.5); // at least Dec 24
+    }
+
+    [Fact]
+    public void WeekWithNewYearsEve_HasOneExtraHoliday_WhenPartialChristmasFlag()
+    {
+        // Week Dec 30 - Jan 3, 2025 (Mon Dec 30, 2024)
+        var org = CreateOrgWithPartialChristmas();
+        var department = new Department
+        {
+            Id = "barteby", Name = "Barteby", Hotkey = 1, Organization = org,
+            Consultants = Substitute.For<List<Consultant>>()
+        };
+        var consultant = new Consultant
+        {
+            Id = 1, Name = "Test", Email = "t@v.no", GraduationYear = 2010, Department = department
+        };
+        // Dec 30, 2024 is a Monday; Dec 31 (Tuesday) should be a holiday
+        var week = Week.FromDateOnly(new DateOnly(2024, 12, 30));
+        var bookingModel = ReadModelFactory.MapToReadModelList(consultant, [week]).Bookings[0].BookingModel;
+
+        // Dec 31 is holiday, Jan 1 is also public holiday — total 2 holiday days
+        Assert.Equal(2 * 7.5, bookingModel.TotalHolidayHours);
+    }
+
+    [Fact]
+    public void WeekDec26To30_NoHolidays_WhenPartialChristmasFlag()
+    {
+        // Week Dec 26 - Dec 30, 2022 — under full Christmas this would be 5 holidays
+        var org = CreateOrgWithPartialChristmas();
+        var department = new Department
+        {
+            Id = "barteby", Name = "Barteby", Hotkey = 1, Organization = org,
+            Consultants = Substitute.For<List<Consultant>>()
+        };
+        var consultant = new Consultant
+        {
+            Id = 1, Name = "Test", Email = "t@v.no", GraduationYear = 2010, Department = department
+        };
+        var week = Week.FromDateOnly(new DateOnly(2022, 12, 26));
+        var bookingModel = ReadModelFactory.MapToReadModelList(consultant, [week]).Bookings[0].BookingModel;
+
+        // Dec 26-30 are not holidays under partial Christmas rule
+        Assert.Equal(0, bookingModel.TotalHolidayHours);
     }
 }
