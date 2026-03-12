@@ -226,8 +226,8 @@ public class AbsenceTests
         var week = Week.FromDateOnly(new DateOnly(2024, 12, 23));
         var bookingModel = ReadModelFactory.MapToReadModelList(consultant, [week]).Bookings[0].BookingModel;
 
-        // Dec 24 is holiday (also public holiday in Norway), Dec 25 is public holiday — total 2 holiday days
-        Assert.True(bookingModel.TotalHolidayHours >= 7.5); // at least Dec 24
+        // Dec 24 is holiday (via new flag, also a public holiday in Norway), Dec 25 is public holiday — total 2
+        Assert.Equal(2 * 7.5, bookingModel.TotalHolidayHours);
     }
 
     [Fact]
@@ -250,6 +250,39 @@ public class AbsenceTests
 
         // Dec 31 is holiday, Jan 1 is also public holiday — total 2 holiday days
         Assert.Equal(2 * 7.5, bookingModel.TotalHolidayHours);
+    }
+
+    [Fact]
+    public void HasVacationInChristmas_TakesPrecedenceOverNewFlag()
+    {
+        // Both flags true — should behave as full Christmas (Dec 24-31), not partial
+        var org = new Organization
+        {
+            Id = "konsulent-as",
+            Name = "Konsulent as",
+            UrlKey = "konsulent-as",
+            Country = "norway",
+            NumberOfVacationDaysInYear = 25,
+            HoursPerWorkday = 7.5,
+            HasVacationInChristmas = true,
+            HasVacationOnChristmasEveAndNewYearsEve = true,
+            Customers = [],
+            AbsenceTypes = []
+        };
+        var department = new Department
+        {
+            Id = "barteby", Name = "Barteby", Hotkey = 1, Organization = org,
+            Consultants = Substitute.For<List<Consultant>>()
+        };
+        var consultant = new Consultant
+        {
+            Id = 1, Name = "Test", Email = "t@v.no", GraduationYear = 2010, Department = department
+        };
+        // Week Dec 26-30, 2022 — all 5 days are holidays under full Christmas rule
+        var week = Week.FromDateOnly(new DateOnly(2022, 12, 26));
+        var bookingModel = ReadModelFactory.MapToReadModelList(consultant, [week]).Bookings[0].BookingModel;
+
+        Assert.Equal(5 * 7.5, bookingModel.TotalHolidayHours);
     }
 
     [Fact]

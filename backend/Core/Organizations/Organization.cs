@@ -19,6 +19,11 @@ public class Organization
     public required string Country { get; init; }
     public required int NumberOfVacationDaysInYear { get; init; }
     public required bool HasVacationInChristmas { get; init; }
+
+    /// <summary>
+    /// When true, Dec 24 and Dec 31 are treated as vacation days.
+    /// Ignored if <see cref="HasVacationInChristmas"/> is true (full Dec 24–31 period takes precedence).
+    /// </summary>
     public required bool HasVacationOnChristmasEveAndNewYearsEve { get; init; }
     public required double HoursPerWorkday { get; init; }
 
