@@ -55,6 +55,9 @@ public sealed class Week(int year, int weekNumber) : IComparable<Week>, IEquatab
         if (weekNumber == 1 && dateTime.Month == 12)
             year += 1;
 
+        if (weekNumber >= 52 && dateTime.Month == 1)
+            year -= 1;
+
         return new Week(year, weekNumber);
     }
 
