@@ -47,9 +47,9 @@ export default async function Ferie({
     ) ?? sortedConsultants[0];
 
   const vacationDays = consultant
-    ? ((await fetchWithToken<VacationReadModel>(
+    ? (await fetchWithToken<VacationReadModel>(
         `${params.organisation}/vacations/${consultant.id}/get`,
-      )) ?? undefined)
+      )) ?? undefined
     : undefined;
 
   return (

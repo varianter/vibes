@@ -46,9 +46,7 @@ export default function VacationCalendar({
   function onDepartmentChange(departmentId: string | null) {
     if (!departmentId) return;
     setSelectedDepartmentId(departmentId);
-    const first = allConsultants.find(
-      (c) => c.department.id === departmentId,
-    );
+    const first = allConsultants.find((c) => c.department.id === departmentId);
     if (first) {
       router.push(`/${organisationUrl}/ferie?consultantId=${first.id}`);
     }
