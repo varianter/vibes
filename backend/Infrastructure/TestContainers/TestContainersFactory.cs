@@ -2,7 +2,7 @@ using Infrastructure.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Testcontainers.SqlEdge;
+using Testcontainers.MsSql;
 
 namespace Infrastructure.TestContainers;
 
@@ -15,9 +15,9 @@ public class TestContainersFactory(TestContainersConfig config, ILogger<TestCont
     public static readonly string DefaultConnectionString =
         $"Server=127.0.0.1,{DbHostPort};Database=master;User Id=sa;Password={DbPassword};TrustServerCertificate=True";
 
-    private SqlEdgeContainer? _sqlEdgeContainer;
+    private MsSqlContainer? _msSqlContainer;
 
-    public string? CurrentConnectionString => _sqlEdgeContainer?.GetConnectionString();
+    public string? CurrentConnectionString => _msSqlContainer?.GetConnectionString();
 
     public async Task Start(CancellationToken cancellationToken = default, Overrides? overrides = null)
     {
@@ -30,18 +30,18 @@ public class TestContainersFactory(TestContainersConfig config, ILogger<TestCont
 
             logger.LogInformation("Starting TestContainers");
 
-            _sqlEdgeContainer = new SqlEdgeBuilder()
+            _msSqlContainer = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-latest")
                 .WithName(dbContainerName)
                 .WithReuse(true)
                 .WithPassword(DbPassword)
                 .WithPortBinding(dbHostPort, 1433)
                 .Build();
 
-            await _sqlEdgeContainer.StartAsync(cancellationToken);
+            await _msSqlContainer.StartAsync(cancellationToken);
 
             var options = Options.Create(new InfrastructureConfig
             {
-                ConnectionString = _sqlEdgeContainer.GetConnectionString(),
+                ConnectionString = _msSqlContainer.GetConnectionString(),
                 EnableSensitiveDataLogging = true
             });
 
@@ -61,7 +61,7 @@ public class TestContainersFactory(TestContainersConfig config, ILogger<TestCont
 
     public Task Stop(CancellationToken cancellationToken = default)
     {
-        var stopTask = _sqlEdgeContainer?.StopAsync(cancellationToken) ?? Task.CompletedTask;
+        var stopTask = _msSqlContainer?.StopAsync(cancellationToken) ?? Task.CompletedTask;
         return stopTask;
     }
 
