@@ -1,10 +1,12 @@
 "use client";
 
-import { ConsultantReadModel, VacationReadModel } from "@/api-types";
+import { SingleConsultantReadModel, VacationReadModel } from "@/api-types";
 import React, { HTMLAttributes, ReactNode, useState } from "react";
 import { DatePicker } from "@mantine/dates";
+import { Select } from "@mantine/core";
 import InfoBox from "./InfoBox";
 import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
 
 // TODO Find non-hardcoded solution for styling 'custom-calendar'
 
@@ -13,17 +15,44 @@ export default function VacationCalendar({
   vacationDays,
   publicHolidays,
   organisationUrl,
+  allConsultants,
 }: {
-  consultant: ConsultantReadModel;
+  consultant: SingleConsultantReadModel;
   vacationDays: VacationReadModel;
   publicHolidays: string[];
   organisationUrl: string;
+  allConsultants: SingleConsultantReadModel[];
 }) {
+  const router = useRouter();
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState(
+    consultant.department.id,
+  );
   const [vacationDates, setVacationDates] = useState<Date[]>(
     vacationDays.vacationDays?.map((day) => new Date(day)) ?? [],
   );
   const [vacationInformation, setVacationInformation] = useState(vacationDays);
   const [savedMessage, setSavedMessage] = useState("");
+
+  const departments = Array.from(
+    new Map(
+      allConsultants.map((c) => [c.department.id, c.department]),
+    ).values(),
+  ).sort((a, b) => a.name.localeCompare(b.name, "nb"));
+
+  const consultantsInDepartment = allConsultants.filter(
+    (c) => c.department.id === selectedDepartmentId,
+  );
+
+  function onDepartmentChange(departmentId: string | null) {
+    if (!departmentId) return;
+    setSelectedDepartmentId(departmentId);
+    const first = allConsultants.find(
+      (c) => c.department.id === departmentId,
+    );
+    if (first) {
+      router.push(`/${organisationUrl}/ferie?consultantId=${first.id}`);
+    }
+  }
 
   const publicHolidayDates =
     publicHolidays?.map((holiday) => new Date(holiday)) ?? [];
@@ -178,6 +207,34 @@ export default function VacationCalendar({
       <div className="sidebar z-10">
         <div className="bg-primary/5 h-full flex flex-col gap-6 p-4 w-[300px]">
           <h1 className="">{thisYear}</h1>
+          {departments.length > 1 && (
+            <Select
+              label="Avdeling"
+              data={departments.map((d) => ({
+                value: d.id,
+                label: d.name,
+              }))}
+              value={selectedDepartmentId}
+              onChange={onDepartmentChange}
+              size="sm"
+            />
+          )}
+          {consultantsInDepartment.length > 1 && (
+            <Select
+              label="Konsulent"
+              data={consultantsInDepartment.map((c) => ({
+                value: String(c.id),
+                label: c.name,
+              }))}
+              value={String(consultant.id)}
+              onChange={(id) =>
+                id &&
+                router.push(`/${organisationUrl}/ferie?consultantId=${id}`)
+              }
+              searchable
+              size="sm"
+            />
+          )}
           <div className="flex flex-col gap-2">
             <p className="small text-black">Ferieoversikt</p>
             <InfoBox
