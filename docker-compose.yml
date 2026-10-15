@@ -8,9 +8,10 @@ services:
     ports:
       - '3000:3000'
   database:
-    image: mcr.microsoft.com/azure-sql-edge
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64
     ports:
       - '1433:1433'
     environment:
       ACCEPT_EULA: Y
-      SA_PASSWORD: yourStrong(!)Password
+      MSSQL_SA_PASSWORD: yourStrong(!)Password
