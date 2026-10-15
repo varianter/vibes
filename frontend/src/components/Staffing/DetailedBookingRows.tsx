@@ -155,7 +155,11 @@ export function DetailedBookingRows(props: {
       </td>
       <td className="flex flex-row gap-2 justify-start relative" ref={menuRef}>
         <Link
-          href={`prosjekt/${detailedBooking.bookingDetails.projectId}`}
+          href={
+            detailedBooking.bookingDetails.type === BookingType.Vacation
+              ? `/${organisationName}/ferie?consultantId=${consultant.id}`
+              : `prosjekt/${detailedBooking.bookingDetails.projectId}`
+          }
           className={`flex items-center rounded`}
         >
           <div className="flex flex-row items-center gap-3 justify-end">

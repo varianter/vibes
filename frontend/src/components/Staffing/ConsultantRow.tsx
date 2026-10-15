@@ -1,7 +1,14 @@
 "use client";
 import { ConsultantReadModel, ProjectWithCustomerModel } from "@/api-types";
 import React, { useContext, useEffect, useState } from "react";
-import { AlertCircle, CheckCircle, ChevronDown, Plus } from "react-feather";
+import {
+  AlertCircle,
+  CheckCircle,
+  ChevronDown,
+  Plus,
+  Edit2,
+} from "react-feather";
+import Link from "next/link";
 import { DetailedBookingRows } from "@/components/Staffing/DetailedBookingRows";
 import { WeekCell } from "@/components/Staffing/WeekCell";
 import { useModal } from "@/hooks/useModal";
@@ -315,25 +322,35 @@ export default function ConsultantRows({
           ></td>
           <td>
             {!addNewRow && (
-              <button
-                onClick={() => {
-                  setAddNewRow(true);
-                  setIsDisabledHotkeys(true);
-                }}
-                className="flex flex-row items-center min-w-max gap-2 h-[52px]"
-                onMouseEnter={() => setIsAddStaffingHovered(true)}
-                onMouseLeave={() => setIsAddStaffingHovered(false)}
-              >
-                <span
-                  className={`w-8 h-8 flex justify-center items-center rounded bg-primary/0 ${
-                    isAddStaffingHovered && "bg-primary/10"
-                  }`}
+              <div className="flex flex-col">
+                <button
+                  onClick={() => {
+                    setAddNewRow(true);
+                    setIsDisabledHotkeys(true);
+                  }}
+                  className="flex flex-row items-center min-w-max gap-2 h-[36px]"
+                  onMouseEnter={() => setIsAddStaffingHovered(true)}
+                  onMouseLeave={() => setIsAddStaffingHovered(false)}
                 >
-                  <Plus size={16} className="text-primary" />
-                </span>
-
-                <p className="small text-primary">Legg til bemanning</p>
-              </button>
+                  <span
+                    className={`w-8 h-8 flex justify-center items-center rounded bg-primary/0 ${
+                      isAddStaffingHovered && "bg-primary/10"
+                    }`}
+                  >
+                    <Plus size={16} className="text-primary" />
+                  </span>
+                  <p className="small text-primary">Legg til bemanning</p>
+                </button>
+                <Link
+                  href={`/${organisationUrl}/ferie?consultantId=${currentConsultant.id}`}
+                  className="flex flex-row items-center min-w-max gap-2 h-[36px]"
+                >
+                  <span className="w-8 h-8 flex justify-center items-center rounded">
+                    <Edit2 size={16} className="text-primary" />
+                  </span>
+                  <p className="small text-primary">Rediger ferie</p>
+                </Link>
+              </div>
             )}
           </td>
         </tr>
