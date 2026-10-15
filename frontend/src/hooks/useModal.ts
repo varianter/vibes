@@ -1,22 +1,22 @@
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { isClickOutsideElement } from "./useOutsideClick";
 
 export function useModal(options?: { closeOnBackdropClick?: boolean }) {
   const { closeOnBackdropClick } = options || { closeOnBackdropClick: true };
 
   const modalRef = useRef<HTMLDialogElement>(null);
-  const modal = modalRef.current;
-  const modalNode = modal !== null;
 
   function openModal() {
-    modalNode && modal.showModal();
+    modalRef.current?.showModal();
   }
 
   function closeModal() {
-    modalNode && modal.close();
+    modalRef.current?.close();
   }
 
   useLayoutEffect(() => {
+    const modal = modalRef.current;
+
     function handleBackDropClick(e: MouseEvent) {
       const clickIsOutside = isClickOutsideElement(e, modal);
 
@@ -32,7 +32,7 @@ export function useModal(options?: { closeOnBackdropClick?: boolean }) {
         modal.removeEventListener("click", handleBackDropClick);
       };
     }
-  }, [modal, closeOnBackdropClick]);
+  }, [closeOnBackdropClick]);
 
   return {
     modalRef,
