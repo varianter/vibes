@@ -57,6 +57,7 @@ export default async function Ferie({
     vacationDays &&
     publicHolidays && (
       <VacationCalendar
+        key={consultant.id}
         consultant={consultant}
         vacationDays={vacationDays}
         publicHolidays={publicHolidays}
