@@ -94,7 +94,7 @@ export default function ForecastDepartmentReportModal() {
       const csv = generateCsv(data);
       downloadCsv(
         csv,
-        `prognose-per-avdeling-${year}-${QUARTERS[quarterIndex].startMonth}-${monthCount}mnd.csv`,
+        `ordre-per-avdeling-${year}-${QUARTERS[quarterIndex].startMonth}-${monthCount}mnd.csv`,
       );
       closeModal();
     } catch (e) {
@@ -117,14 +117,14 @@ export default function ForecastDepartmentReportModal() {
 
       <EasyModal
         modalRef={modalRef}
-        title="Prognose per avdeling"
+        title="Ordre per avdeling"
         showCloseButton
         onClose={closeModal}
         width="360px"
       >
         <div className="flex flex-col gap-4 pt-2">
           <p className="small text-black/60">
-            CSV-eksport av prognosetall summert per avdeling og måned.
+            CSV-eksport av ordretimer summert per avdeling og måned.
           </p>
 
           <div className="flex flex-col gap-1">

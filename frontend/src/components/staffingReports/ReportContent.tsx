@@ -32,8 +32,8 @@ export function ReportContent() {
       <div className="flex flex-row flex-wrap gap-4">
         <ReportCard
           icon={<BarChart2 size={20} />}
-          title="Prognose per avdeling"
-          description="Prognosetall summert per avdeling og måned for en valgfri periode. Eksporteres som CSV."
+          title="Ordre per avdeling"
+          description="Ordretimer summert per avdeling og måned for en valgfri periode. Eksporteres som CSV."
           action={<ForecastDepartmentReportModal />}
         />
       </div>
