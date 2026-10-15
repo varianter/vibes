@@ -9,13 +9,14 @@ import {
 import { useSimpleConsultantsFilter } from "@/hooks/staffing/useConsultantsFilter";
 import Image from "next/image";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Edit3, Check, Info } from "react-feather";
+import { Edit3, Check, Info, ArrowRight } from "react-feather";
 import EditableTableTextCell from "./EditableTableTextCell";
 import EditableTableNumberCell from "./EditableTableNumberCell";
 import EditableTableDateCell from "./EditableTableDateCell";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import EditableTableSelectDepartmentCell from "./EditableTableSelectDepartmentCell";
 import { useParams } from "next/navigation";
+import ActionLink from "../Buttons/ActionLink";
 import EditableTableCompetencesCell from "./EditableTableCompetencesCell";
 import EditableTableDegreeCell from "./EditableTableDegreeCell";
 import EditableTableSelectGradYearCell from "./EditableTableSelectGradYearEdit";
@@ -35,7 +36,6 @@ export default function FilteredConsultantsComp({
 
   const [selectedEditConsultant, setSelectedEditConsultant] =
     useState<ConsultantReadModel | null>(null);
-  const [hoveredRowIndex, setHoveredRowIndex] = useState<number | null>(null);
 
   const listRef = useRef<HTMLTableSectionElement>(null);
   const { setIsDisabledHotkeys } = useContext(FilteredContext);
@@ -171,10 +171,12 @@ export default function FilteredConsultantsComp({
           <th className="py-1 pt-3 w-14">
             <div className="flex flex-col gap-1"></div>
           </th>
+
+          <th className="py-1 pt-3 w-32 bg-white"></th>
         </tr>
       </thead>
 
-      <tbody ref={listRef} onMouseLeave={() => setHoveredRowIndex(null)}>
+      <tbody ref={listRef}>
         {editableConsultants
           .filter(
             (e) =>
@@ -183,14 +185,10 @@ export default function FilteredConsultantsComp({
                 new Date().setHours(0, 0, 0, 0),
           )
           .sort((a, b) => a.name.localeCompare(b.name))
-          .map((consultant, index) => (
+          .map((consultant) => (
             <tr
               key={consultant.id}
-              className="h-[52px] bg-background_light_purple outline-1 outline outline-transparent hover:outline-hoverBorder transition-all cursor-pointer rounded-md"
-              onDoubleClick={() => {
-                setSelectedEditConsultant(consultant);
-                setIsDisabledHotkeys(true);
-              }}
+              className="h-[52px] bg-background_light_purple rounded-md"
               onClick={() => {
                 if (
                   selectedEditConsultant &&
@@ -201,15 +199,8 @@ export default function FilteredConsultantsComp({
                   setIsDisabledHotkeys(false);
                 }
               }}
-              onMouseEnter={() => setHoveredRowIndex(index)}
             >
-              <td
-                className={`px-2 py-1 rounded-l-md border-l-2 ${
-                  hoveredRowIndex === index
-                    ? "hover:border-l-primary"
-                    : " border-l-primary/5"
-                }`}
-              >
+              <td className="px-2 py-1 rounded-l-md border-l-2 border-l-primary/5">
                 <div className="flex flex-row align-center self-center gap-2">
                   {consultant.imageThumbUrl ? (
                     <Image
@@ -374,16 +365,18 @@ export default function FilteredConsultantsComp({
                   {selectedEditConsultant?.id === consultant.id ? (
                     <Check className="text-primary" size="24" />
                   ) : (
-                    <Edit3
-                      className={` ${
-                        hoveredRowIndex === index
-                          ? "text-primary"
-                          : "text-primary/50"
-                      }`}
-                      size="24"
-                    />
+                    <Edit3 className="text-primary" size="24" />
                   )}
                 </button>
+              </td>
+              <td className="bg-white pl-2">
+                <ActionLink
+                  variant="secondary"
+                  iconRight={<ArrowRight />}
+                  href={`/${organisation}/ferie?consultantId=${consultant.id}`}
+                >
+                  Ferie
+                </ActionLink>
               </td>
             </tr>
           ))}
@@ -412,11 +405,7 @@ export default function FilteredConsultantsComp({
           .map((consultant) => (
             <tr
               key={consultant.id}
-              className="h-[52px] bg-background_light_purple hover:border-hoverBorder hover:border transition-all cursor-pointer rounded-md"
-              onDoubleClick={() => {
-                setSelectedEditConsultant(consultant);
-                setIsDisabledHotkeys(true);
-              }}
+              className="h-[52px] bg-background_light_purple rounded-md"
               onClick={() => {
                 if (
                   selectedEditConsultant &&

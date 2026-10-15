@@ -29,6 +29,39 @@ export default function ActionButton({
   small = false,
   type = "button",
 }: ActionButtonProps) {
+  const actionButtonClass = getActionButtonClassName({
+    variant,
+    disabled,
+    fullWidth,
+    iconBtn,
+    small,
+  });
+
+  return (
+    <BaseButton
+      className={`${actionButtonClass} ${className}`}
+      onClick={() => {
+        !disabled && onClick && onClick();
+      }}
+      type={type}
+    >
+      <IconBox small={small}>{iconLeft}</IconBox>
+      {children}
+      <IconBox small={small}>{iconRight}</IconBox>
+    </BaseButton>
+  );
+}
+
+export function getActionButtonClassName({
+  variant,
+  disabled = false,
+  fullWidth,
+  iconBtn = false,
+  small = false,
+}: Pick<
+  ActionButtonProps,
+  "variant" | "disabled" | "fullWidth" | "iconBtn" | "small"
+>) {
   const variantClass =
     {
       primary: `bg-primaryActionButton text-white ${
@@ -50,17 +83,5 @@ export default function ActionButton({
       : "px-3 py-2 rounded-lg"
     : "p-3 rounded-lg";
 
-  return (
-    <BaseButton
-      className={`${variantClass} ${disabledClass} ${fullWidthClass} ${buttonShapeClass} ${className}`}
-      onClick={() => {
-        !disabled && onClick && onClick();
-      }}
-      type={type}
-    >
-      <IconBox small={small}>{iconLeft}</IconBox>
-      {children}
-      <IconBox small={small}>{iconRight}</IconBox>
-    </BaseButton>
-  );
+  return `${variantClass} ${disabledClass} ${fullWidthClass} ${buttonShapeClass}`;
 }

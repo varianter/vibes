@@ -43,7 +43,9 @@ export default async function Ferie({
 
   const consultant =
     sortedConsultants.find((c) =>
-      selectedId !== undefined ? c.id === selectedId : c.email === email,
+      selectedId !== undefined
+        ? c.id === selectedId
+        : c.email.toLowerCase() === email.toLowerCase(),
     ) ?? sortedConsultants[0];
 
   const vacationDays = consultant
@@ -57,6 +59,7 @@ export default async function Ferie({
     vacationDays &&
     publicHolidays && (
       <VacationCalendar
+        key={consultant.id}
         consultant={consultant}
         vacationDays={vacationDays}
         publicHolidays={publicHolidays}
