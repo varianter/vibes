@@ -7,8 +7,10 @@ import Select, { MultiValue, SingleValue } from "react-select";
 
 export default function AddNewConsultantModal({
   onClose,
+  initialValues,
 }: {
   onClose: (res: ConsultantReadModel | null) => void;
+  initialValues?: Partial<ConsultantWriteModel>;
 }) {
   const [newConsultant, setNewConsultant] = useState<ConsultantWriteModel>({
     name: "",
@@ -22,6 +24,7 @@ export default function AddNewConsultantModal({
     graduationYear: new Date().getFullYear(),
     startDate: new Date(),
     estimatedHourPrice: 0,
+    ...initialValues,
   });
   const { competences, departments } = useContext(FilteredContext);
   const { organisation } = useParams();
@@ -66,6 +69,12 @@ export default function AddNewConsultantModal({
         >
           <X size={24} />
         </button>
+        {initialValues && (
+          <p className="small bg-primary/10 text-primary rounded-md p-3">
+            Forhåndsutfylt fra dokument (beta). Kontroller verdiene og fyll inn
+            det som mangler før du lagrer.
+          </p>
+        )}
         <div className="flex flex-col gap-2">
           <label htmlFor="name" className="text-sm">
             Navn

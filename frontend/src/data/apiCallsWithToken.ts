@@ -58,6 +58,27 @@ export async function callApiNoParse<Body>(
   return response;
 }
 
+export async function postFormDataWithTokenNoParse(
+  path: string,
+  formData: FormData,
+): Promise<Response | undefined> {
+  const session = await getCustomServerSession(authOptions);
+
+  if (!session || !session.access_token) return;
+
+  const apiBackendUrl = process.env.BACKEND_URL ?? "http://localhost:7172/v0";
+
+  const headers = new Headers();
+  headers.append("Authorization", `Bearer ${session.access_token}`);
+
+  // Content-Type (with multipart boundary) is set by fetch from the FormData body
+  return fetch(`${apiBackendUrl}/${path}`, {
+    method: "POST",
+    headers: headers,
+    body: formData,
+  });
+}
+
 export async function callApi<T, Body>(
   path: string,
   method: HttpMethod,
@@ -277,7 +298,7 @@ export async function deleteWithToken<ReturnType, BodyType>(
 
 function mockedCall<T>(path: string): Promise<T> {
   return new Promise((resolve) => {
-    if (path.includes("staffings")) {
+    if (path.includes("staffings") || path.endsWith("/consultants")) {
       resolve(MockConsultants as T);
     }
     if (path.includes("departments")) {

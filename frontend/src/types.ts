@@ -85,3 +85,12 @@ export interface FileReference {
   uploadedOn: Date;
   uploadedBy?: string;
 }
+
+// Draft returned by the backend after extracting values from an uploaded document (beta)
+export interface ConsultantDocumentDraft {
+  name: string;
+  departmentId: string | null;
+  degree: "Master" | "Bachelor" | "None";
+  graduationYear: number | null;
+  startDate: string | null;
+}
