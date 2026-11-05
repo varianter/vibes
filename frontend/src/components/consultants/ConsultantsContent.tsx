@@ -12,10 +12,16 @@ import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
 import { ConsultantReadModel, ConsultantWriteModel } from "@/api-types";
 import { useSimpleConsultantsFilter } from "@/hooks/staffing/useConsultantsFilter";
 import ActionButton from "../Buttons/ActionButton";
-import { ConsultantDocumentDraft } from "@/types";
+import { ActiveOnboardingReadModel, ConsultantDocumentDraft } from "@/types";
 import { draftToInitialValues } from "./consultantDocumentDraft";
 
-export default function ConsultantContent() {
+export default function ConsultantContent({
+  canUseOnboarding,
+  activeOnboardings,
+}: {
+  canUseOnboarding: boolean;
+  activeOnboardings: Record<number, ActiveOnboardingReadModel>;
+}) {
   const [isSideBarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const { setConsultants } = useSimpleConsultantsFilter();
   const [toggleAddConsultant, setToggleAddConsultant] =
@@ -40,16 +46,18 @@ export default function ConsultantContent() {
           <h1>Konsulenter</h1>
 
           <div className="flex flex-row items-center gap-2">
-            <ActionButton
-              variant="primary"
-              className="py-2 px-3 rounded-md flex flex-row items-center gap-2"
-              onClick={() => {
-                setIsDisabledHotkeys(true);
-                setToggleUploadDocument(true);
-              }}
-            >
-              <Plus size="20" /> Legg til konsulent (automatisert/beta)
-            </ActionButton>
+            {canUseOnboarding && (
+              <ActionButton
+                variant="primary"
+                className="py-2 px-3 rounded-md flex flex-row items-center gap-2"
+                onClick={() => {
+                  setIsDisabledHotkeys(true);
+                  setToggleUploadDocument(true);
+                }}
+              >
+                <Plus size="20" /> Legg til konsulent (automatisert/beta)
+              </ActionButton>
+            )}
             <ActionButton
               variant="primary"
               className="py-2 px-3 rounded-md flex flex-row items-center gap-2"
@@ -73,7 +81,10 @@ export default function ConsultantContent() {
             <ActiveFilters />
           </div>
         </div>
-        <FilteredConsultantsComp isModalOpen={toggleAddConsultant} />
+        <FilteredConsultantsComp
+          isModalOpen={toggleAddConsultant}
+          activeOnboardings={activeOnboardings}
+        />
       </div>
       {toggleUploadDocument && (
         <UploadConsultantDocumentModal
@@ -92,6 +103,7 @@ export default function ConsultantContent() {
       {toggleAddConsultant && (
         <AddNewConsultantModal
           initialValues={initialValues}
+          isOnboarding={initialValues !== undefined}
           onClose={(res: ConsultantReadModel | null) => {
             if (res !== null) {
               // add new consultant to list

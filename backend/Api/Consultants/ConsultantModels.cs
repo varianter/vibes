@@ -66,3 +66,10 @@ public record ConsultantWriteModel(
     Degree Degree,
     DisciplineReadModel? Discipline,
     int EstimatedHourPrice);
+
+public record ExtractedConsultantReadModel(
+    string Name,
+    string? DepartmentId,
+    Degree Degree,
+    int? GraduationYear,
+    DateOnly? StartDate);

@@ -1,4 +1,8 @@
-import { azureAdProvider, refreshAccessTokenError } from "@/utils/auth";
+import {
+  azureAdProvider,
+  refreshAccessTokenError,
+  withMockRoles,
+} from "@/utils/auth";
 import NextAuth, { AuthOptions, getServerSession, Session } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import AzureADProvider from "next-auth/providers/azure-ad";
@@ -6,6 +10,7 @@ import AzureADProvider from "next-auth/providers/azure-ad";
 export type CustomSession = {
   id_token?: string;
   access_token?: string;
+  roles?: string[];
 } & Session;
 
 function getAzureADProvider() {
@@ -88,8 +93,11 @@ export const authOptions: AuthOptions = {
     async redirect({ baseUrl }) {
       return baseUrl;
     },
-    async jwt({ token, account }) {
+    async jwt({ token, account, profile }) {
       if (account) {
+        // App roles assigned in Entra ID arrive as the "roles" claim in the ID token
+        token.roles =
+          (profile as { roles?: string[] } | undefined)?.roles ?? [];
         token.id_token = account.id_token;
         token.access_token = account.access_token;
         token.refresh_token = account.refresh_token;
@@ -111,6 +119,7 @@ export const authOptions: AuthOptions = {
         session = Object.assign({}, session, {
           id_token: token.id_token,
           access_token: token.access_token,
+          roles: withMockRoles((token.roles as string[] | undefined) ?? []),
         });
       }
       return session;

@@ -7,12 +7,22 @@
     "ApiScope": "Azure Ad -> App Registrations -> [app] -> Expose an Api"
   },
   "InfrastructureConfig": {
-    "ConnectionString": "<use-same-as-in-Development.json>"
+    "ConnectionString": "<use-same-as-in-Development.json>",
     "EnableSensitiveDataLogging": true
   },
   "TestContainersConfig": {
     "Enabled": true,
     "RunMigrations": true,
     "SeedDatabase": false
+  },
+  "MockRoles": "",
+  "MockDocumentExtraction": false,
+  "EntraProvisioning": {
+    "Enabled": true,
+    "Mock": true
+  },
+  "Flowcase": {
+    "Enabled": true,
+    "Mock": true
   }
 }

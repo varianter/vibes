@@ -11,6 +11,7 @@ import {
   BookingReadModel,
   DisciplineReadModel,
 } from "@/api-types";
+import { ActiveOnboardingReadModel, OnboardingReadModel } from "@/types";
 
 const MockWeeklyBookingReadModel: BookingReadModel = {
   totalHolidayHours: 0,
@@ -23,6 +24,60 @@ const MockWeeklyBookingReadModel: BookingReadModel = {
   totalExcludableAbsence: 0,
   totalNotStartedOrQuit: 0,
 };
+// Test Consultant (id 1) has onboarding 1 in process
+export const MockActiveOnboardings: ActiveOnboardingReadModel[] = [
+  {
+    id: 1,
+    consultantId: 1,
+    stepStatuses: ["Done", "Done", "Failed", "InProgress", "NotStarted"],
+  },
+];
+
+export const MockOnboarding: OnboardingReadModel = {
+  id: 1,
+  consultantId: 1,
+  consultantName: "Test Consultant",
+  createdAt: "2026-11-02T12:00:00Z",
+  steps: [
+    {
+      type: "EntraId",
+      order: 2,
+      status: "Done",
+      updatedAt: "2026-11-02T12:00:00Z",
+      dependsOn: ["Staffing"],
+    },
+    {
+      type: "Slack",
+      order: 4,
+      status: "InProgress",
+      updatedAt: "2026-11-02T12:00:00Z",
+      dependsOn: ["EntraId"],
+    },
+    {
+      type: "Flowcase",
+      order: 3,
+      status: "Failed",
+      updatedAt: "2026-11-02T12:00:00Z",
+      dependsOn: ["EntraId"],
+      message: "Fant ikke kontoret i Flowcase",
+    },
+    {
+      type: "Staffing",
+      order: 1,
+      status: "Done",
+      updatedAt: "2026-11-02T12:00:00Z",
+      dependsOn: [],
+    },
+    {
+      type: "Donut",
+      order: 5,
+      status: "NotStarted",
+      updatedAt: "2026-11-02T12:00:00Z",
+      dependsOn: ["Slack"],
+    },
+  ],
+};
+
 export const MockDepartments: DepartmentReadModel[] = [
   {
     id: "myDepartment",

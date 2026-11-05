@@ -1,6 +1,6 @@
 import { ConsultantReadModel, ConsultantWriteModel, Degree } from "@/api-types";
 import { FilteredContext } from "@/hooks/ConsultantFilterProvider";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useContext, useState } from "react";
 import { Check, X } from "react-feather";
 import Select, { MultiValue, SingleValue } from "react-select";
@@ -8,10 +8,15 @@ import Select, { MultiValue, SingleValue } from "react-select";
 export default function AddNewConsultantModal({
   onClose,
   initialValues,
+  isOnboarding = false,
 }: {
   onClose: (res: ConsultantReadModel | null) => void;
   initialValues?: Partial<ConsultantWriteModel>;
+  // Automated onboarding (beta): starts an onboarding and goes to its status page instead of closing
+  isOnboarding?: boolean;
 }) {
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
   const [newConsultant, setNewConsultant] = useState<ConsultantWriteModel>({
     name: "",
     email: "",
@@ -37,6 +42,25 @@ export default function AddNewConsultantModal({
       newConsultant.email === "" ||
       newConsultant.department.id === ""
     ) {
+      return;
+    }
+
+    if (isOnboarding) {
+      const response = await fetch(
+        `/${organisation}/konsulenter/api/onboarding`,
+        {
+          method: "POST",
+          body: JSON.stringify(newConsultant),
+        },
+      );
+      const onboarding = await response.json();
+
+      if (!response.ok) {
+        setError(onboarding.error ?? "Noe gikk galt");
+        return;
+      }
+
+      router.push(`/${organisation}/konsulenter/onboarding/${onboarding.id}`);
       return;
     }
 
@@ -297,11 +321,12 @@ export default function AddNewConsultantModal({
           />
         </div>
 
+        {error && <p className="small text-error">{error}</p>}
         <button
           type="submit"
           className="flex h-10 flex-row gap-2 justify-center bg-primary text-white py-2 rounded-md w-full focus:outline-none focus:ring-1 focus:ring-primary_50"
         >
-          <Check size="24" /> Lagre
+          <Check size="24" /> {isOnboarding ? "Start onboarding" : "Lagre"}
         </button>
       </form>
     </div>

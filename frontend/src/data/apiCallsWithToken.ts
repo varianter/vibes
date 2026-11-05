@@ -9,7 +9,9 @@ import {
   MockConsultants,
   MockDepartments,
   MockDisciplines,
+  MockActiveOnboardings,
   MockEngagements,
+  MockOnboarding,
   MockOrganisations,
 } from "../../mockdata/mockData";
 import {
@@ -85,7 +87,7 @@ export async function callApi<T, Body>(
   bodyInit?: Body,
 ): Promise<T | undefined> {
   if (process.env.NEXT_PUBLIC_NO_AUTH) {
-    return mockedCall<T>(path);
+    return mockedCall<T>(path, method);
   }
   const response = await callApiNoParse(path, method, bodyInit);
   if (!response || response.status == 204 || !response.ok) {
@@ -296,7 +298,7 @@ export async function deleteWithToken<ReturnType, BodyType>(
   return callApi<ReturnType, BodyType>(path, "DELETE", body);
 }
 
-function mockedCall<T>(path: string): Promise<T> {
+function mockedCall<T>(path: string, method: HttpMethod = "GET"): Promise<T> {
   return new Promise((resolve) => {
     if (path.includes("staffings") || path.endsWith("/consultants")) {
       resolve(MockConsultants as T);
@@ -315,6 +317,15 @@ function mockedCall<T>(path: string): Promise<T> {
     }
     if (path.includes("disciplines")) {
       resolve(MockDisciplines as T);
+    }
+    if (path.endsWith("/onboardings")) {
+      // GET lists onboardings in process, POST starts a new one
+      resolve(
+        (method === "POST" ? MockOnboarding : MockActiveOnboardings) as T,
+      );
+    }
+    if (path.includes("/onboardings/")) {
+      resolve(MockOnboarding as T);
     }
   });
 }

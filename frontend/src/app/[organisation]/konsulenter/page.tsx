@@ -4,7 +4,13 @@ import {
   DepartmentReadModel,
   DisciplineReadModel,
 } from "@/api-types";
+import {
+  authOptions,
+  getCustomServerSession,
+} from "@/app/api/auth/[...nextauth]/route";
 import ConsultantsContent from "@/components/consultants/ConsultantsContent";
+import { hasRole, onboardingRole } from "@/utils/auth";
+import { ActiveOnboardingReadModel } from "@/types";
 import {
   fetchEmployeesWithImageAndToken,
   fetchWithToken,
@@ -21,7 +27,15 @@ export default async function Konsulenter({
 }: {
   params: { organisation: string };
 }) {
-  const [consultants, departments, competences, disciplines] =
+  const session =
+    !process.env.NEXT_PUBLIC_NO_AUTH &&
+    (await getCustomServerSession(authOptions));
+
+  const canUseOnboarding =
+    !!process.env.NEXT_PUBLIC_NO_AUTH ||
+    (!!session && hasRole(session.roles, onboardingRole));
+
+  const [consultants, departments, competences, disciplines, onboardings] =
     await Promise.all([
       fetchEmployeesWithImageAndToken(`${params.organisation}/consultants`),
       fetchWithToken<DepartmentReadModel[]>(
@@ -29,7 +43,20 @@ export default async function Konsulenter({
       ),
       fetchWithToken<CompetenceReadModel[]>(`competences`),
       fetchWithToken<DisciplineReadModel[]>(`disciplines`),
+      canUseOnboarding
+        ? fetchWithToken<ActiveOnboardingReadModel[]>(
+            `${params.organisation}/onboardings`,
+          )
+        : undefined,
     ]);
+
+  // Consultant id -> onboarding in process
+  const activeOnboardings = Object.fromEntries(
+    (onboardings ?? []).map((onboarding) => [
+      onboarding.consultantId,
+      onboarding,
+    ]),
+  );
 
   return (
     <ConsultantFilterProvider
@@ -39,7 +66,10 @@ export default async function Konsulenter({
       disciplines={disciplines ?? []}
       customers={[]}
     >
-      <ConsultantsContent />
+      <ConsultantsContent
+        canUseOnboarding={canUseOnboarding}
+        activeOnboardings={activeOnboardings}
+      />
     </ConsultantFilterProvider>
   );
 }

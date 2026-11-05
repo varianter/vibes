@@ -94,3 +94,42 @@ export interface ConsultantDocumentDraft {
   graduationYear: number | null;
   startDate: string | null;
 }
+
+// Automated onboarding (beta), see backend Api/Onboardings
+export type OnboardingStepType =
+  | "EntraId"
+  | "Slack"
+  | "Flowcase"
+  | "Staffing"
+  | "Donut";
+
+export type OnboardingStepStatus =
+  | "NotStarted"
+  | "InProgress"
+  | "Done"
+  | "Failed";
+
+export interface OnboardingStepReadModel {
+  type: OnboardingStepType;
+  order: number;
+  status: OnboardingStepStatus;
+  updatedAt: string;
+  message?: string | null;
+  // Steps that must be done before this one can start
+  dependsOn: OnboardingStepType[];
+}
+
+export interface ActiveOnboardingReadModel {
+  id: number;
+  consultantId: number;
+  // Status of each step, in step order
+  stepStatuses: OnboardingStepStatus[];
+}
+
+export interface OnboardingReadModel {
+  id: number;
+  consultantId: number;
+  consultantName: string;
+  createdAt: string;
+  steps: OnboardingStepReadModel[];
+}

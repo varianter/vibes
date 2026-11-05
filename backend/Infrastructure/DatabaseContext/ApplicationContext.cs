@@ -7,6 +7,7 @@ using Core.Customers;
 using Core.Engagements;
 using Core.Forecasts;
 using Core.Months;
+using Core.Onboardings;
 using Core.Organizations;
 using Core.PersonnelTeams;
 using Core.PlannedAbsences;
@@ -36,6 +37,8 @@ public class ApplicationContext(IOptions<InfrastructureConfig> config) : DbConte
     public DbSet<Agreement> Agreements { get; init; } = null!;
     public DbSet<Forecast> Forecasts { get; init; } = null!;
     public DbSet<PersonnelTeam> PersonnelTeams { get; init; } = null!;
+    public DbSet<Onboarding> Onboardings { get; init; } = null!;
+    public DbSet<OnboardingStep> OnboardingSteps { get; init; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -89,6 +92,26 @@ public class ApplicationContext(IOptions<InfrastructureConfig> config) : DbConte
 
         modelBuilder.Entity<Engagement>()
             .Property(project => project.State)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<Onboarding>()
+            .HasOne(onboarding => onboarding.Consultant)
+            .WithMany()
+            .HasForeignKey(onboarding => onboarding.ConsultantId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Onboarding>()
+            .HasMany(onboarding => onboarding.Steps)
+            .WithOne()
+            .HasForeignKey(step => step.OnboardingId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<OnboardingStep>()
+            .Property(step => step.Type)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<OnboardingStep>()
+            .Property(step => step.Status)
             .HasConversion<string>();
 
         modelBuilder.Entity<Staffing>()

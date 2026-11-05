@@ -10,6 +10,8 @@ import { useSimpleConsultantsFilter } from "@/hooks/staffing/useConsultantsFilte
 import Image from "next/image";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Edit3, Check, Info, ArrowRight } from "react-feather";
+import OnboardingChip from "../onboarding/OnboardingChip";
+import { ActiveOnboardingReadModel } from "@/types";
 import EditableTableTextCell from "./EditableTableTextCell";
 import EditableTableNumberCell from "./EditableTableNumberCell";
 import EditableTableDateCell from "./EditableTableDateCell";
@@ -25,8 +27,11 @@ import { isEqual } from "lodash";
 
 export default function FilteredConsultantsComp({
   isModalOpen,
+  activeOnboardings,
 }: {
   isModalOpen: boolean;
+  // Consultant id -> onboarding in process (beta)
+  activeOnboardings: Record<number, ActiveOnboardingReadModel>;
 }) {
   const { filteredConsultants, setConsultants } = useSimpleConsultantsFilter();
   const [editableConsultants, setEditableConsultants] = useState<
@@ -233,9 +238,18 @@ export default function FilteredConsultantsComp({
                           }
                         />
                       ) : (
-                        <p className={"normal text-primary"}>
-                          {consultant.name}
-                        </p>
+                        <div className="flex flex-row items-center gap-2">
+                          <p className={"normal text-primary"}>
+                            {consultant.name}
+                          </p>
+                          {activeOnboardings[consultant.id] && (
+                            <OnboardingChip
+                              onboarding={activeOnboardings[consultant.id]}
+                              organisation={organisation as string}
+                              consultantName={consultant.name}
+                            />
+                          )}
+                        </div>
                       )}
                     </div>
                     {selectedEditConsultant?.id !== consultant.id ? (

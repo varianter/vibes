@@ -199,6 +199,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
+                    b.Property<string>("WorkEmail")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
@@ -354,6 +357,69 @@ namespace Infrastructure.Migrations
                     b.HasKey("ConsultantId", "Month");
 
                     b.ToTable("Forecasts");
+                });
+
+            modelBuilder.Entity("Core.Onboardings.Onboarding", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ConsultantId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EntraUserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConsultantId");
+
+                    b.ToTable("Onboardings");
+                });
+
+            modelBuilder.Entity("Core.Onboardings.OnboardingStep", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OnboardingId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OnboardingId");
+
+                    b.ToTable("OnboardingSteps");
                 });
 
             modelBuilder.Entity("Core.Organizations.Department", b =>
@@ -659,6 +725,26 @@ namespace Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Core.Onboardings.Onboarding", b =>
+                {
+                    b.HasOne("Core.Consultants.Consultant", "Consultant")
+                        .WithMany()
+                        .HasForeignKey("ConsultantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Consultant");
+                });
+
+            modelBuilder.Entity("Core.Onboardings.OnboardingStep", b =>
+                {
+                    b.HasOne("Core.Onboardings.Onboarding", null)
+                        .WithMany("Steps")
+                        .HasForeignKey("OnboardingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Core.Organizations.Department", b =>
                 {
                     b.HasOne("Core.Organizations.Organization", "Organization")
@@ -765,6 +851,11 @@ namespace Infrastructure.Migrations
                     b.Navigation("Agreements");
 
                     b.Navigation("Staffings");
+                });
+
+            modelBuilder.Entity("Core.Onboardings.Onboarding", b =>
+                {
+                    b.Navigation("Steps");
                 });
 
             modelBuilder.Entity("Core.Organizations.Department", b =>

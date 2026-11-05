@@ -19,6 +19,9 @@ public class Consultant
     public required string Name { get; set; }
     public required string Email { get; set; }
 
+    /// <summary>The @variant.no address created in O365 during onboarding. Email keeps the address from the form.</summary>
+    public string? WorkEmail { get; set; }
+
     public DateOnly? StartDate { get; set; }
     public DateOnly? EndDate { get; set; }
 

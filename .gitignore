@@ -459,3 +459,4 @@ backend/.vscode/*
 *.[Ll]ocal.json
 
 backend/Api/appsettings.Local.json
+*.iml
